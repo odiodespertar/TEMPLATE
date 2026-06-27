@@ -762,6 +762,8 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 
 /* una barrita para mover (opcional) */
 #fleet-drag-handle {{
+  position: relative;
+  z-index: 9999999;
   cursor: move;
   user-select: none;
   font-weight: 900;
@@ -1623,13 +1625,18 @@ USADAS
 function toggleFleetFloating() {{
     const panel = document.getElementById("fleet-sticky");
     const handle = document.getElementById("fleet-drag-handle");
-
     if (!panel) return;
 
     panel.classList.toggle("fleet-floating");
 
-    // ✅ Si quedó flotante, hacerlo arrastrable desde el handle
     if (panel.classList.contains("fleet-floating")) {{
+
+        // ✅ fijar posición real y quitar translateX para drag
+        const rect = panel.getBoundingClientRect();
+        panel.style.transform = "none";
+        panel.style.left = rect.left + "px";
+        panel.style.top  = rect.top + "px";
+
         makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
     }}
 }}
