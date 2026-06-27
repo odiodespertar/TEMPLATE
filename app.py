@@ -735,10 +735,10 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 
 
 
-/* ===== PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
+/* ===== DISEÑO DE PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
 #fleet-sticky.fleet-floating {{
   position: fixed !important;
-  top: 140px !important;
+  top: 100px !important;
 
   /* ✅ NO forzar left:50% ni transform */
   left: 20px; 
@@ -3873,148 +3873,7 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
     window.addEventListener("touchend", onUp);
 }}
 
-
-
-
-   // ==============================================================================
-    // 📊 DOBLE NÚCLEO: CONTADORES DUPLICADOS E INDEPENDIENTES PARA SCP1 Y SJA1
-    // ==============================================================================
-    function actualizarContadoresDuplicados() {{
-        let contScp1 = document.getElementById('mi-contador-scp1');
-        let contSja1 = document.getElementById('mi-contador-sja1');
-        
-        if (contScp1 && contSja1) {{
-            if (currentTab == 2) {{
-                contScp1.style.display = 'block';
-                contSja1.style.display = 'none';
-            }} else if (currentTab == 6) {{
-                contScp1.style.display = 'none';
-                contSja1.style.display = 'block';
-            }} else {{
-                contScp1.style.display = 'none';
-                contSja1.style.display = 'none';
-            }}
-        }}
-
-        // 1️⃣ MONITOR INDEPENDIENTE SCP1 (TAB 2)
-        if (contScp1 && currentTab == 2) {{
-            let html = `
-                <div class="drag-handle" style="
-                     cursor: move;
-                     user-select:none;
-                     font-weight:800;
-                     font-size:12px;
-                     letter-spacing:0.5px;
-                     padding:6px 8px;
-                     margin:-8px -8px 10px -8px;
-                     border-bottom:1px solid rgba(255,255,255,0.15);
-                     color:#26d0ff;">
-                 MOVER
-                </div>
-                <div style="text-align:center; font-weight:bold; color:#FFD700; border-bottom:1.5px solid #4682B4; padding-bottom:4px; margin-bottom:6px; letter-spacing:0.5px;">
-                   📊 STOCK DISPONIBLE (SCP1)
-                </div>`;
-            let conteo = 0;
-            let filas = document.querySelectorAll('#body-2 tr.master-row');
-            
-            filas.forEach(fila => {{
-                let name = fila.querySelector('.edit-name')?.innerText.trim();
-                if (!name || name === "IGNORAR" || name === "NUEVA UNIDAD") return;
-                
-                let stock = parseInt(fila.querySelector('.f-stock')?.innerText) || 0;
-                let left = parseInt(fila.querySelector('.f-left')?.innerText) || 0;
-                let celdas = fila.querySelectorAll('td');
-                let orh = celdas[1] ? celdas[1].innerText.trim() : "0";
-                let ocup = celdas[2] ? celdas[2].innerText.trim() : "0";
-
-                if (stock > 0) {{
-                    conteo++;
-                    let color = (left < 0) ? "#ff9b21" : (left === 0 ? "#DC143C" : "#00FF00");
-                    html += `<div class="cont-item">
-                                <div class="cont-name" title="${{name}}">${{name}}</div>
-                                <div class="cont-vals">
-                                    <span style="color:${{color}};">${{left}}</span>
-                                    <span style="color:#ffffff; font-size:15px;"> | ORH:${{orh}} | %:${{ocup}}</span>
-                                </div>
-                             </div>`;
-                }}
-            }});
-            if (conteo === 0) html += `<div style="text-align:center; color:#aaa; padding:10px 0; font-size:13px;">⚠️ No hay flota declarada en Schedule</div>`;
-            contScp1.innerHTML = html;
-        }}
-
-        // 2️⃣ MONITOR INDEPENDIENTE SJA1 (TAB 6)
-        if (contSja1 && currentTab == 6) {{
-            let html = `
-            <div class="drag-handle" style="
-            cursor: move;
-            user-select:none;
-            font-weight:800;
-            font-size:12px;
-            letter-spacing:0.5px;
-            padding:6px 8px;
-            margin:-8px -8px 10px -8px;
-            border-bottom:1px solid rgba(255,255,255,0.15);
-            color:#26d0ff;">
-          MOVER
-        </div>
-            
-            <div style="text-align:center; font-weight:bold; color:#FFD700; border-bottom:1.5px solid #4682B4; padding-bottom:4px; margin-bottom:6px; letter-spacing:0.5px;">
-                            📊 STOCK DISPONIBLE (SJA1)
-                        </div>`;
-            let conteo = 0;
-            let filas = document.querySelectorAll('#body-6 tr.master-row');
-            
-            filas.forEach(fila => {{
-                let name = fila.querySelector('.edit-name')?.innerText.trim();
-                if (!name || name === "IGNORAR" || name === "NUEVA UNIDAD") return;
-                
-                let stock = parseInt(fila.querySelector('.f-stock')?.innerText) || 0;
-                let left = parseInt(fila.querySelector('.f-left')?.innerText) || 0;
-                let celdas = fila.querySelectorAll('td');
-                let orh = celdas[1] ? celdas[1].innerText.trim() : "0";
-                let ocup = celdas[2] ? celdas[2].innerText.trim() : "0";
-
-                if (stock > 0) {{
-                    conteo++;
-                    let color = (left < 0) ? "#ff9b21" : (left === 0 ? "#fc765d" : "#49bf49");
-                    html += `<div class="cont-item">
-                                <div class="cont-name" title="${{name}}">${{name}}</div>
-                                <div class="cont-vals">
-                                    <span style="color:${{color}};">${{left}}</span>
-                                    <span style="color:#ffffff; font-size:15px;"> | ORH:${{orh}} | %:${{ocup}}</span>
-                                </div>
-                             </div>`;
-                }}
-            }});
-            if (conteo === 0) html += `<div style="text-align:center; color:#aaa; padding:10px 0; font-size:13px;">⚠️ No hay flota declarada en Schedule</div>`;
-            contSja1.innerHTML = html;
-            }}
-
-            // ✅ AQUÍ EXACTO (antes de cerrar actualizarContadoresDuplicados)
-        if (typeof makeDraggableFloatingBox === "function") {{
-            makeDraggableFloatingBox(contScp1, "pos-contador-scp1");
-            makeDraggableFloatingBox(contSja1, "pos-contador-sja1");
-        }}
-    }}
-
-    document.addEventListener('input', function(e) {{
-        actualizarContadoresDuplicados();
-    }});
-
-    document.addEventListener('click', function(e) {{
-        setTimeout(actualizarContadoresDuplicados, 40);
-    }});
-
-    let funcionRecalcOriginal = recalc;
-    recalc = function() {{
-        funcionRecalcOriginal();
-        actualizarContadoresDuplicados();
-    }};
-
-    setTimeout(actualizarContadoresDuplicados, 600);
-
-    
+   
     
 
 </script>
