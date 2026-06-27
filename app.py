@@ -3719,7 +3719,7 @@ function enableFleetVerticalDrag(){{
     // asegura que top sea controlable
     el.style.position = "fixed";
     el.style.bottom = "auto";
-    el.style.top = `${startTop}px`;
+    el.style.top = `${{startTop}}px`;
 
     handle.style.cursor = "grabbing";
     e.preventDefault();
