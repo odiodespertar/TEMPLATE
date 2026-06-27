@@ -573,6 +573,77 @@ app_html = f"""
 
 
 
+/* 📊 CONTADOR EXCLUSIVO PESTAÑA SCP1 */
+        #mi-contador-scp1 {{
+            position: fixed;
+            top: 156px; 
+            right: 20px; 
+            background: rgba(37, 40, 43, 0.98); 
+            color: #ffffff; 
+            padding: 16px; 
+            border-radius: 10px; 
+            z-index: 999999; 
+            font-family: sans-serif;
+            font-size: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            border: 1.2px solid transparent;
+            width: 300px;
+            max-height: 410px;
+            overflow-y: auto;
+            pointer-events: auto;
+            display: block;
+        }}
+
+        /* 📊 CONTADOR EXCLUSIVO PESTAÑA SJA1 */
+        #mi-contador-sja1 {{
+            position: fixed;
+            top: 156px; 
+            right: 20px; 
+            background: rgba(37, 40, 43, 0.98); 
+            color: #ffffff; 
+            padding: 16px; 
+            border-radius: 10px; 
+            z-index: 999999; 
+            font-family: sans-serif;
+            font-size: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            border: 1.2px solid transparent;
+            width: 350px;
+            max-height: 210px;
+            overflow-y: auto;
+            pointer-events: auto;
+            display: none;
+        }}
+
+        .cont-item {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 0;
+        }}
+
+        .cont-item:last-child {{
+            border-bottom: none;
+        }}
+
+        .cont-name {{
+            font-weight: normal;
+            color: #D3D3D3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            font-size: 14px;
+        }}
+
+        .cont-vals {{
+            font-family: monospace;
+            font-weight: bold;
+            text-align: right;
+            font-size: 14px;
+        }}
+
 
 
 
@@ -668,12 +739,13 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 #fleet-sticky.fleet-floating {{
   position: fixed !important;
   top: 140px !important;
-  left: 50px !important;     /* punto inicial */
-  right: auto !important;    /* ✅ clave */
-  transform: none !important;/* ✅ clave */
-  margin: 0 !important;      /* ✅ clave */
 
+  /* ✅ NO forzar left:50% ni transform */
+  left: 20px; 
+  right: 20px;
   width: min(1100px, 92vw) !important;
+  margin: 0 auto;
+
   max-height: 360px !important;
   overflow: hidden !important;
 
@@ -685,7 +757,6 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
   padding: 10px !important;
 }}
 
-
 /* scroll interno solo para la tabla activa */
 #fleet-sticky.fleet-floating .t-content {{
   max-height: 250px !important; /* ajusta */
@@ -694,7 +765,6 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 
 /* una barrita para mover (opcional) */
 #fleet-drag-handle {{
-  pointer-events: auto !important;
   position: relative;
   z-index: 9999999;
   cursor: move;
@@ -1556,23 +1626,22 @@ USADAS
 
 
 function toggleFleetFloating() {{
-  const panel = document.getElementById("fleet-sticky");
-  const handle = document.getElementById("fleet-drag-handle");
-  if (!panel) return;
+    const panel = document.getElementById("fleet-sticky");
+    const handle = document.getElementById("fleet-drag-handle");
+    if (!panel) return;
 
-  panel.classList.toggle("fleet-floating");
+    panel.classList.toggle("fleet-floating");
 
-  if (panel.classList.contains("fleet-floating")) {{
-    const r = panel.getBoundingClientRect();
-    panel.style.setProperty("position", "fixed", "important");
-    panel.style.setProperty("left", r.left + "px", "important");
-    panel.style.setProperty("top", r.top + "px", "important");
-    panel.style.setProperty("right", "auto", "important");
-    panel.style.setProperty("margin", "0", "important");
-    panel.style.setProperty("transform", "none", "important");
+    if (panel.classList.contains("fleet-floating")) {{
 
-    makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
-  }}
+        // ✅ fijar posición real y quitar translateX para drag
+        const rect = panel.getBoundingClientRect();
+        panel.style.transform = "none";
+        panel.style.left = rect.left + "px";
+        panel.style.top  = rect.top + "px";
+
+        makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
+    }}
 }}
 
 
@@ -3614,107 +3683,336 @@ actualizarRelojRuteos();
 
 
  // ==============================================================================
-    // FUNCIÓN TABLA FLOTANTE
+    // FUNCIÓN CONTADOR FLOTANTE
     // ==============================================================================
 
-function makeDraggableWithHandle(el, handleEl, storageKey) {{
-  if (!el) return;
+function makeDraggableFloatingBox(el, storageKey) {{
+    if (!el) return;
 
-  const key = "dragReady_" + storageKey;
-  if (el.dataset[key] === "1") return;
-  el.dataset[key] = "1";
+    // ✅ Candado para no poner listeners muchas veces
+    if (el.dataset.dragReady === "1") return;
+    el.dataset.dragReady = "1";
 
-  // restaurar
-  try {{
-    const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-    if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
-      el.style.setProperty("position", "fixed", "important");
-      el.style.setProperty("top", saved.top + "px", "important");
-      el.style.setProperty("left", saved.left + "px", "important");
-      el.style.setProperty("right", "auto", "important");
-      el.style.setProperty("margin", "0", "important");
-      el.style.setProperty("transform", "none", "important");
-    }}
-  }} catch (e) {{}}
+    // Restaurar posición guardada
+    try {{
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+        if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+            el.style.top = saved.top + "px";
+            el.style.left = saved.left + "px";
+            el.style.right = "auto";
+        }}
+    }} catch (e) {{}}
 
-  let isDown = false, startX = 0, startY = 0, startTop = 0, startLeft = 0;
+    let isDown = false;
+    let startX = 0, startY = 0;
+    let startTop = 0, startLeft = 0;
 
-  const getPoint = (ev) => (ev.touches && ev.touches[0])
-    ? {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }}
-    : {{ x: ev.clientX, y: ev.clientY }};
+    const getPoint = (ev) => {{
+        if (ev.touches && ev.touches[0]) {{
+            return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
+        }}
+        return {{ x: ev.clientX, y: ev.clientY }};
+    }};
 
-  const onDown = (ev) => {{
-    isDown = true;
+    const onDown = (ev) => {{
+        // No arrastrar si estás tocando controles
+        const tag = (ev.target && ev.target.tagName || "").toLowerCase();
+        if (["select", "option", "input", "textarea", "button", "label"].includes(tag)) return;
 
-    // asegurar que sea movible (gana a CSS)
-    el.style.setProperty("position", "fixed", "important");
-    el.style.setProperty("right", "auto", "important");
-    el.style.setProperty("margin", "0", "important");
-    el.style.setProperty("transform", "none", "important");
+        isDown = true;
+        const p = getPoint(ev);
+        startX = p.x; startY = p.y;
 
-    const p = getPoint(ev);
-    startX = p.x; startY = p.y;
+        const rect = el.getBoundingClientRect();
+        startTop = rect.top;
+        startLeft = rect.left;
 
-    const rect = el.getBoundingClientRect();
-    startTop = rect.top;
-    startLeft = rect.left;
+        el.style.right = "auto";
+        el.style.left = startLeft + "px";
+        el.style.top = startTop + "px";
+        el.style.userSelect = "none";
 
-    el.style.setProperty("top", startTop + "px", "important");
-    el.style.setProperty("left", startLeft + "px", "important");
+        ev.preventDefault();
+    }};
 
-    ev.preventDefault();
-    ev.stopPropagation();
-  }};
+    const onMove = (ev) => {{
+        if (!isDown) return;
 
- const onMove = (ev) => {{
-  if (!isDown) return;
+        const p = getPoint(ev);
+        const dx = p.x - startX;
+        const dy = p.y - startY;
 
-  const p = getPoint(ev);
-  const dx = p.x - startX;
-  const dy = p.y - startY;
+        // límites dentro de pantalla
+        const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
+        const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
 
-  const newLeft = startLeft + dx;
-  const newTop  = startTop + dy;
+        const newLeft = Math.max(0, Math.min(maxLeft, startLeft + dx));
+        const newTop  = Math.max(0, Math.min(maxTop, startTop + dy));
 
-  el.style.setProperty("left", newLeft + "px", "important");
-  el.style.setProperty("top",  newTop  + "px", "important");
+        el.style.left = newLeft + "px";
+        el.style.top = newTop + "px";
 
-  ev.preventDefault();
-  ev.stopPropagation();
-}};
+        ev.preventDefault();
+    }};
 
-  const onUp = (ev) => {{
-    if (!isDown) return;
-    isDown = false;
+    const onUp = () => {{
+        if (!isDown) return;
+        isDown = false;
+        el.style.userSelect = "";
 
-    const rect = el.getBoundingClientRect();
-    localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
+        const rect = el.getBoundingClientRect();
+        localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
+    }};
 
-    if (ev) {{
-      ev.preventDefault();
-      ev.stopPropagation();
-    }}
-  }};
+    // Mouse
+    el.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
 
-  const h = handleEl || el;
-
-  // evita selección de texto dentro del handle
-  h.style.userSelect = "none";
-  h.style.webkitUserSelect = "none";
-
-  h.addEventListener("mousedown", onDown, true);
-  window.addEventListener("mousemove", onMove, true);
-  window.addEventListener("mouseup", onUp, true);
-
-  h.addEventListener("touchstart", onDown, {{ passive: false, capture: true }});
-  window.addEventListener("touchmove", onMove, {{ passive: false, capture: true }});
-  window.addEventListener("touchend", onUp, {{ passive: false, capture: true }});
+    // Touch
+    el.addEventListener("touchstart", onDown, {{ passive: false }});
+    window.addEventListener("touchmove", onMove, {{ passive: false }});
+    window.addEventListener("touchend", onUp);
 }}
 
 
 
 
-  
+ // ==============================================================================
+    // FUNCIÓN TABLA FLOTANTE
+    // ==============================================================================
+
+function makeDraggableWithHandle(el, handleEl, storageKey) {{
+    if (!el) return;
+
+    // candado por llave (para que no se duplique)
+    const key = "dragReady_" + storageKey;
+    if (el.dataset[key] === "1") return;
+    el.dataset[key] = "1";
+
+    // restaurar
+    try {{
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+        if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+            el.style.top = saved.top + "px";
+            el.style.left = saved.left + "px";
+            el.style.right = "auto";
+            el.style.transform = "none"; // importante si antes estaba centrado
+        }}
+    }} catch (e) {{}}
+
+    let isDown = false;
+    let startX = 0, startY = 0;
+    let startTop = 0, startLeft = 0;
+
+    const getPoint = (ev) => {{
+        if (ev.touches && ev.touches[0]) {{
+            return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
+        }}
+        return {{ x: ev.clientX, y: ev.clientY }};
+    }};
+
+    const onDown = (ev) => {{
+        isDown = true;
+
+        // ✅ liberar centrado para que left/top funcionen
+        el.style.right = "auto";
+        el.style.margin = "0";
+
+        // quita el centrado por transform al comenzar a arrastrar
+        el.style.transform = "none";
+
+        const p = getPoint(ev);
+        startX = p.x; startY = p.y;
+
+        const rect = el.getBoundingClientRect();
+        startTop = rect.top;
+        startLeft = rect.left;
+
+        el.style.right = "auto";
+        el.style.left = startLeft + "px";
+        el.style.top = startTop + "px";
+        el.style.userSelect = "none";
+
+        ev.preventDefault();
+    }};
+
+    const onMove = (ev) => {{
+        if (!isDown) return;
+
+        const p = getPoint(ev);
+        const dx = p.x - startX;
+        const dy = p.y - startY;
+
+        const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
+        const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
+
+        el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + "px";
+        el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
+
+        ev.preventDefault();
+    }};
+
+    const onUp = () => {{
+        if (!isDown) return;
+        isDown = false;
+        el.style.userSelect = "";
+
+        const rect = el.getBoundingClientRect();
+        localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
+    }};
+
+    const h = handleEl || el;
+
+    h.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+
+    h.addEventListener("touchstart", onDown, {{ passive: false }});
+    window.addEventListener("touchmove", onMove, {{ passive: false }});
+    window.addEventListener("touchend", onUp);
+}}
+
+
+
+
+   // ==============================================================================
+    // 📊 DOBLE NÚCLEO: CONTADORES DUPLICADOS E INDEPENDIENTES PARA SCP1 Y SJA1
+    // ==============================================================================
+    function actualizarContadoresDuplicados() {{
+        let contScp1 = document.getElementById('mi-contador-scp1');
+        let contSja1 = document.getElementById('mi-contador-sja1');
+        
+        if (contScp1 && contSja1) {{
+            if (currentTab == 2) {{
+                contScp1.style.display = 'block';
+                contSja1.style.display = 'none';
+            }} else if (currentTab == 6) {{
+                contScp1.style.display = 'none';
+                contSja1.style.display = 'block';
+            }} else {{
+                contScp1.style.display = 'none';
+                contSja1.style.display = 'none';
+            }}
+        }}
+
+        // 1️⃣ MONITOR INDEPENDIENTE SCP1 (TAB 2)
+        if (contScp1 && currentTab == 2) {{
+            let html = `
+                <div class="drag-handle" style="
+                     cursor: move;
+                     user-select:none;
+                     font-weight:800;
+                     font-size:12px;
+                     letter-spacing:0.5px;
+                     padding:6px 8px;
+                     margin:-8px -8px 10px -8px;
+                     border-bottom:1px solid rgba(255,255,255,0.15);
+                     color:#26d0ff;">
+                 MOVER
+                </div>
+                <div style="text-align:center; font-weight:bold; color:#FFD700; border-bottom:1.5px solid #4682B4; padding-bottom:4px; margin-bottom:6px; letter-spacing:0.5px;">
+                   📊 STOCK DISPONIBLE (SCP1)
+                </div>`;
+            let conteo = 0;
+            let filas = document.querySelectorAll('#body-2 tr.master-row');
+            
+            filas.forEach(fila => {{
+                let name = fila.querySelector('.edit-name')?.innerText.trim();
+                if (!name || name === "IGNORAR" || name === "NUEVA UNIDAD") return;
+                
+                let stock = parseInt(fila.querySelector('.f-stock')?.innerText) || 0;
+                let left = parseInt(fila.querySelector('.f-left')?.innerText) || 0;
+                let celdas = fila.querySelectorAll('td');
+                let orh = celdas[1] ? celdas[1].innerText.trim() : "0";
+                let ocup = celdas[2] ? celdas[2].innerText.trim() : "0";
+
+                if (stock > 0) {{
+                    conteo++;
+                    let color = (left < 0) ? "#ff9b21" : (left === 0 ? "#DC143C" : "#00FF00");
+                    html += `<div class="cont-item">
+                                <div class="cont-name" title="${{name}}">${{name}}</div>
+                                <div class="cont-vals">
+                                    <span style="color:${{color}};">${{left}}</span>
+                                    <span style="color:#ffffff; font-size:15px;"> | ORH:${{orh}} | %:${{ocup}}</span>
+                                </div>
+                             </div>`;
+                }}
+            }});
+            if (conteo === 0) html += `<div style="text-align:center; color:#aaa; padding:10px 0; font-size:13px;">⚠️ No hay flota declarada en Schedule</div>`;
+            contScp1.innerHTML = html;
+        }}
+
+        // 2️⃣ MONITOR INDEPENDIENTE SJA1 (TAB 6)
+        if (contSja1 && currentTab == 6) {{
+            let html = `
+            <div class="drag-handle" style="
+            cursor: move;
+            user-select:none;
+            font-weight:800;
+            font-size:12px;
+            letter-spacing:0.5px;
+            padding:6px 8px;
+            margin:-8px -8px 10px -8px;
+            border-bottom:1px solid rgba(255,255,255,0.15);
+            color:#26d0ff;">
+          MOVER
+        </div>
+            
+            <div style="text-align:center; font-weight:bold; color:#FFD700; border-bottom:1.5px solid #4682B4; padding-bottom:4px; margin-bottom:6px; letter-spacing:0.5px;">
+                            📊 STOCK DISPONIBLE (SJA1)
+                        </div>`;
+            let conteo = 0;
+            let filas = document.querySelectorAll('#body-6 tr.master-row');
+            
+            filas.forEach(fila => {{
+                let name = fila.querySelector('.edit-name')?.innerText.trim();
+                if (!name || name === "IGNORAR" || name === "NUEVA UNIDAD") return;
+                
+                let stock = parseInt(fila.querySelector('.f-stock')?.innerText) || 0;
+                let left = parseInt(fila.querySelector('.f-left')?.innerText) || 0;
+                let celdas = fila.querySelectorAll('td');
+                let orh = celdas[1] ? celdas[1].innerText.trim() : "0";
+                let ocup = celdas[2] ? celdas[2].innerText.trim() : "0";
+
+                if (stock > 0) {{
+                    conteo++;
+                    let color = (left < 0) ? "#ff9b21" : (left === 0 ? "#fc765d" : "#49bf49");
+                    html += `<div class="cont-item">
+                                <div class="cont-name" title="${{name}}">${{name}}</div>
+                                <div class="cont-vals">
+                                    <span style="color:${{color}};">${{left}}</span>
+                                    <span style="color:#ffffff; font-size:15px;"> | ORH:${{orh}} | %:${{ocup}}</span>
+                                </div>
+                             </div>`;
+                }}
+            }});
+            if (conteo === 0) html += `<div style="text-align:center; color:#aaa; padding:10px 0; font-size:13px;">⚠️ No hay flota declarada en Schedule</div>`;
+            contSja1.innerHTML = html;
+            }}
+
+            // ✅ AQUÍ EXACTO (antes de cerrar actualizarContadoresDuplicados)
+        if (typeof makeDraggableFloatingBox === "function") {{
+            makeDraggableFloatingBox(contScp1, "pos-contador-scp1");
+            makeDraggableFloatingBox(contSja1, "pos-contador-sja1");
+        }}
+    }}
+
+    document.addEventListener('input', function(e) {{
+        actualizarContadoresDuplicados();
+    }});
+
+    document.addEventListener('click', function(e) {{
+        setTimeout(actualizarContadoresDuplicados, 40);
+    }});
+
+    let funcionRecalcOriginal = recalc;
+    recalc = function() {{
+        funcionRecalcOriginal();
+        actualizarContadoresDuplicados();
+    }};
+
+    setTimeout(actualizarContadoresDuplicados, 600);
 
     
     
