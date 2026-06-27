@@ -3709,11 +3709,10 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
     e.stopPropagation();
   }};
 
-  // IMPORTANT: pointer events en lugar de mouse/touch
-  const h = handle || el;
-  h.addEventListener("mousedown", onMouseDown, true);
-  window.addEventListener("mousemove", onMouseMove, true);
-  window.addEventListener("mouseup", onMouseUp, true);
+// Enganche correcto de eventos (pointer)
+h.addEventListener("pointerdown", onPointerDown, true);
+window.addEventListener("pointermove", onPointerMove, true);
+window.addEventListener("pointerup", onPointerUp, true);
 }}
 
 
