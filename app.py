@@ -668,13 +668,12 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 #fleet-sticky.fleet-floating {{
   position: fixed !important;
   top: 140px !important;
+  left: 50px !important;     /* punto inicial */
+  right: auto !important;    /* ✅ clave */
+  transform: none !important;/* ✅ clave */
+  margin: 0 !important;      /* ✅ clave */
 
-  /* ✅ NO forzar left:50% ni transform */
-  left: 20px; 
-  right: 20px;
   width: min(1100px, 92vw) !important;
-  margin: 0 auto;
-
   max-height: 360px !important;
   overflow: hidden !important;
 
@@ -685,6 +684,7 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
   box-shadow: 0 14px 28px rgba(0,0,0,0.30) !important;
   padding: 10px !important;
 }}
+
 
 /* scroll interno solo para la tabla activa */
 #fleet-sticky.fleet-floating .t-content {{
@@ -1555,22 +1555,23 @@ USADAS
 
 
 function toggleFleetFloating() {{
-    const panel = document.getElementById("fleet-sticky");
-    const handle = document.getElementById("fleet-drag-handle");
-    if (!panel) return;
+  const panel = document.getElementById("fleet-sticky");
+  const handle = document.getElementById("fleet-drag-handle");
+  if (!panel) return;
 
-    panel.classList.toggle("fleet-floating");
+  panel.classList.toggle("fleet-floating");
 
-    if (panel.classList.contains("fleet-floating")) {{
+  if (panel.classList.contains("fleet-floating")) {{
+    // ✅ fija coordenadas actuales como left/top para que el drag arranque estable
+    const r = panel.getBoundingClientRect();
+    panel.style.left = r.left + "px";
+    panel.style.top  = r.top + "px";
+    panel.style.right = "auto";
+    panel.style.transform = "none";
+    panel.style.margin = "0";
 
-        // ✅ fijar posición real y quitar translateX para drag
-        const rect = panel.getBoundingClientRect();
-        panel.style.transform = "none";
-        panel.style.left = rect.left + "px";
-        panel.style.top  = rect.top + "px";
-
-        makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
-    }}
+    makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
+  }}
 }}
 
 
@@ -3742,6 +3743,7 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
     }};
 
     const onDown = (ev) => {{
+        console.log("DOWN", ev.target);
         isDown = true;
 
         // ✅ liberar centrado para que left/top funcionen
