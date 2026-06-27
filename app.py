@@ -695,9 +695,8 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 /* una barrita para mover (opcional) */
 #fleet-drag-handle {{
   pointer-events: auto !important;
-  touch-action: none !important;
   position: relative;
-  z-index: 1000000;
+  z-index: 9999999;
   cursor: move;
   user-select: none;
   font-weight: 900;
@@ -3625,96 +3624,93 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
   if (el.dataset[key] === "1") return;
   el.dataset[key] = "1";
 
-  const h = handleEl || el;
+  // restaurar
+  try {{
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+      el.style.setProperty("position", "fixed", "important");
+      el.style.setProperty("top", saved.top + "px", "important");
+      el.style.setProperty("left", saved.left + "px", "important");
+      el.style.setProperty("right", "auto", "important");
+      el.style.setProperty("margin", "0", "important");
+      el.style.setProperty("transform", "none", "important");
+    }}
+  }} catch (e) {{}}
 
-  // handle usable
-  h.style.userSelect = "none";
-  h.style.webkitUserSelect = "none";
-  h.style.touchAction = "none"; // IMPORTANT: evita scroll en touch/pointer
-  h.style.cursor = "move";
+  let isDown = false, startX = 0, startY = 0, startTop = 0, startLeft = 0;
 
-  let dragging = false;
-  let startX = 0, startY = 0, startLeft = 0, startTop = 0;
+  const getPoint = (ev) => (ev.touches && ev.touches[0])
+    ? {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }}
+    : {{ x: ev.clientX, y: ev.clientY }};
 
-  const restore = () => {{
-    try {{
-      const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-      if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
-        el.style.setProperty("position", "fixed", "important");
-        el.style.setProperty("left", saved.left + "px", "important");
-        el.style.setProperty("top", saved.top + "px", "important");
-        el.style.setProperty("right", "auto", "important");
-        el.style.setProperty("bottom", "auto", "important");
-        el.style.setProperty("margin", "0", "important");
-        el.style.setProperty("transform", "none", "important");
-        el.style.setProperty("z-index", "999999", "important");
-      }}
-    }} catch (e) {{}}
-  }};
+  const onDown = (ev) => {{
+    isDown = true;
 
-  restore();
-
-  const onPointerDown = (e) => {{
-    console.log("POINTER DOWN", e.target);
-  
-    dragging = true;
-
-    // fuerza movible, por si el CSS lo pisa
+    // asegurar que sea movible (gana a CSS)
     el.style.setProperty("position", "fixed", "important");
     el.style.setProperty("right", "auto", "important");
-    el.style.setProperty("bottom", "auto", "important");
     el.style.setProperty("margin", "0", "important");
     el.style.setProperty("transform", "none", "important");
-    el.style.setProperty("z-index", "999999", "important");
+
+    const p = getPoint(ev);
+    startX = p.x; startY = p.y;
 
     const rect = el.getBoundingClientRect();
-    startLeft = rect.left;
     startTop = rect.top;
+    startLeft = rect.left;
 
-    startX = e.clientX;
-    startY = e.clientY;
-
-    el.style.setProperty("left", startLeft + "px", "important");
     el.style.setProperty("top", startTop + "px", "important");
+    el.style.setProperty("left", startLeft + "px", "important");
 
-    // captura el puntero aunque el mouse salga del handle
-    try {{ h.setPointerCapture(e.pointerId); }} catch (_) {{}}
-
-    e.preventDefault();
-    e.stopPropagation();
+    ev.preventDefault();
+    ev.stopPropagation();
   }};
 
-  const onPointerMove = (e) => {{
-    if (!dragging) return;
-    console.log("MOVE", e.clientX, e.clientY);
+ const onMove = (ev) => {{
+  if (!isDown) return;
 
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
+  const p = getPoint(ev);
+  const dx = p.x - startX;
+  const dy = p.y - startY;
 
-    el.style.setProperty("left", (startLeft + dx) + "px", "important");
-    el.style.setProperty("top", (startTop + dy) + "px", "important");
+  const newLeft = startLeft + dx;
+  const newTop  = startTop + dy;
 
-    e.preventDefault();
-    e.stopPropagation();
-  }};
+  el.style.setProperty("left", newLeft + "px", "important");
+  el.style.setProperty("top",  newTop  + "px", "important");
 
-  const onPointerUp = (e) => {{
-    if (!dragging) return;
-    dragging = false;
+  ev.preventDefault();
+  ev.stopPropagation();
+}};
+
+  const onUp = (ev) => {{
+    if (!isDown) return;
+    isDown = false;
 
     const rect = el.getBoundingClientRect();
     localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
 
-    e.preventDefault();
-    e.stopPropagation();
+    if (ev) {{
+      ev.preventDefault();
+      ev.stopPropagation();
+    }}
   }};
 
-  // IMPORTANT: pointer events en lugar de mouse/touch
-  const h = handle || el;
-  h.addEventListener("mousedown", onMouseDown, true);
-  window.addEventListener("mousemove", onMouseMove, true);
-  window.addEventListener("mouseup", onMouseUp, true);
+  const h = handleEl || el;
+
+  // evita selección de texto dentro del handle
+  h.style.userSelect = "none";
+  h.style.webkitUserSelect = "none";
+
+  h.addEventListener("mousedown", onDown, true);
+  window.addEventListener("mousemove", onMove, true);
+  window.addEventListener("mouseup", onUp, true);
+
+  h.addEventListener("touchstart", onDown, {{ passive: false, capture: true }});
+  window.addEventListener("touchmove", onMove, {{ passive: false, capture: true }});
+  window.addEventListener("touchend", onUp, {{ passive: false, capture: true }});
 }}
+
 
 
 
