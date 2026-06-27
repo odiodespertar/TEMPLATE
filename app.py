@@ -3737,7 +3737,7 @@ function enableFleetVerticalDrag(){{
     const maxTop = window.innerHeight - el.offsetHeight - pad;
     newTop = Math.max(minTop, Math.min(maxTop, newTop));
 
-    el.style.top = `${newTop}px`;
+    el.style.top = `${{newTop}}px`;
   }}
 
   function up(e){{
