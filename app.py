@@ -733,7 +733,14 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
     color: #25282b;
 }}
 
+/* Fondo de celdas SOLO cuando la tabla está flotante */
+#fleet-sticky.fleet-floating .meli-table td{{
+  background: #b3b3b3 !important;  /* o el color que quieras */
+}}
 
+#fleet-sticky.fleet-floating .meli-table th{{
+  background: #d9d9d9 !important;
+}}
 
 
 /* ===== PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
