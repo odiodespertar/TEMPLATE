@@ -734,6 +734,48 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 }}
 
 
+
+
+/* ===== PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
+#fleet-sticky.fleet-floating {{
+  position: fixed !important;
+  top: 140px !important;      /* ajusta */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  width: min(1100px, 92vw) !important;   /* ancho centrado */
+  max-height: 360px !important;          /* compacto */
+  overflow: hidden !important;
+
+  z-index: 999999 !important;
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid rgba(0,0,0,0.20) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.30) !important;
+  padding: 10px !important;
+}}
+
+/* scroll interno solo para la tabla activa */
+#fleet-sticky.fleet-floating .t-content {{
+  max-height: 250px !important; /* ajusta */
+  overflow: auto !important;
+}}
+
+/* una barrita para mover (opcional) */
+#fleet-drag-handle {{
+  cursor: move;
+  user-select: none;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 6px 10px;
+  margin: -6px -6px 8px -6px;
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+  color: #0a2e42;
+}}
+
+
+
+
 /* ✅ STICKY para el panel de flota (tabs + botones + tabla) */
 #fleet-sticky{{
   position: sticky;
@@ -1096,7 +1138,15 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </div>
 
 
- <div id="fleet-sticky">
+<div id="fleet-sticky">
+<div id="fleet-drag-handle">
+  MOVER TABLA / FLOTA
+  <button onclick="toggleFleetFloating()"
+          style="float:right; cursor:pointer; border:none; background:#25282b; color:white; padding:3px 8px; border-radius:6px; font-weight:bold;">
+    FLOTAR
+  </button>
+</div>
+
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
@@ -1567,6 +1617,20 @@ USADAS
    }});
 
     recalc();
+}}
+
+
+
+function toggleFleetFloating() {{
+  const panel = document.getElementById("fleet-sticky");
+  if (!panel) return;
+
+  panel.classList.toggle("fleet-floating");
+
+  if (panel.classList.contains("fleet-floating")) {{
+    const handle = document.getElementById("fleet-drag-handle");
+    makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
+  }}
 }}
 
 
@@ -3607,6 +3671,10 @@ actualizarRelojRuteos();
 
 
 
+ // ==============================================================================
+    // FUNCIÓN CONTADOR FLOTANTE
+    // ==============================================================================
+
 function makeDraggableFloatingBox(el, storageKey) {{
     if (!el) return;
 
@@ -3696,6 +3764,99 @@ function makeDraggableFloatingBox(el, storageKey) {{
     window.addEventListener("touchend", onUp);
 }}
 
+
+
+
+ // ==============================================================================
+    // FUNCIÓN TABLA FLOTANTE
+    // ==============================================================================
+
+function makeDraggableWithHandle(el, handleEl, storageKey) {{
+    if (!el) return;
+
+    // candado por llave (para que no se duplique)
+    const key = "dragReady_" + storageKey;
+    if (el.dataset[key] === "1") return;
+    el.dataset[key] = "1";
+
+    // restaurar
+    try {{
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+        if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+            el.style.top = saved.top + "px";
+            el.style.left = saved.left + "px";
+            el.style.right = "auto";
+            el.style.transform = "none"; // importante si antes estaba centrado
+        }}
+    }} catch (e) {{}}
+
+    let isDown = false;
+    let startX = 0, startY = 0;
+    let startTop = 0, startLeft = 0;
+
+    const getPoint = (ev) => {{
+        if (ev.touches && ev.touches[0]) {{
+            return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
+        }}
+        return {{ x: ev.clientX, y: ev.clientY }};
+    }};
+
+    const onDown = (ev) => {{
+        isDown = true;
+
+        // quita el centrado por transform al comenzar a arrastrar
+        el.style.transform = "none";
+
+        const p = getPoint(ev);
+        startX = p.x; startY = p.y;
+
+        const rect = el.getBoundingClientRect();
+        startTop = rect.top;
+        startLeft = rect.left;
+
+        el.style.right = "auto";
+        el.style.left = startLeft + "px";
+        el.style.top = startTop + "px";
+        el.style.userSelect = "none";
+
+        ev.preventDefault();
+    }};
+
+    const onMove = (ev) => {{
+        if (!isDown) return;
+
+        const p = getPoint(ev);
+        const dx = p.x - startX;
+        const dy = p.y - startY;
+
+        const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
+        const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
+
+        el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + "px";
+        el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
+
+        ev.preventDefault();
+    }};
+
+    const onUp = () => {{
+        if (!isDown) return;
+        isDown = false;
+        el.style.userSelect = "";
+
+        const rect = el.getBoundingClientRect();
+        localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
+    }};
+
+    const h = handleEl || el;
+
+    h.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+
+    h.addEventListener("touchstart", onDown, {{ passive: false }});
+    window.addEventListener("touchmove", onMove, {{ passive: false }});
+    window.addEventListener("touchend", onUp);
+}}
 
 
 
