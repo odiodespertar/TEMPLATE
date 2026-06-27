@@ -3678,7 +3678,7 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
     el.style.setProperty("top", startTop + "px", "important");
 
     // captura el puntero aunque el mouse salga del handle
-    try { h.setPointerCapture(e.pointerId); } catch (_) {{}}
+    try {{ h.setPointerCapture(e.pointerId); }} catch (_) {{}}
 
     e.preventDefault();
     e.stopPropagation();
