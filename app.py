@@ -733,14 +733,6 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
     color: #25282b;
 }}
 
-/* Fondo de celdas SOLO cuando la tabla está flotante */
-#fleet-sticky.fleet-floating .meli-table td{{
-  background: #b3b3b3 !important;  /* o el color que quieras */
-}}
-
-#fleet-sticky.fleet-floating .meli-table th{{
-  background: #d9d9d9 !important;
-}}
 
 
 /* ===== PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
@@ -1629,15 +1621,17 @@ USADAS
 
 
 function toggleFleetFloating() {{
-  const panel = document.getElementById("fleet-sticky");
-  if (!panel) return;
-
-  panel.classList.toggle("fleet-floating");
-
-  if (panel.classList.contains("fleet-floating")) {{
+    const panel = document.getElementById("fleet-sticky");
     const handle = document.getElementById("fleet-drag-handle");
-    makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
-  }}
+
+    if (!panel) return;
+
+    panel.classList.toggle("fleet-floating");
+
+    // ✅ Si quedó flotante, hacerlo arrastrable desde el handle
+    if (panel.classList.contains("fleet-floating")) {{
+        makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
+    }}
 }}
 
 
