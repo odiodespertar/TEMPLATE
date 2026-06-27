@@ -738,11 +738,11 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 /* ===== DISEÑO DE PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
 #fleet-sticky.fleet-floating {{
   position: fixed !important;
-  top: 70px !important;
-
-  /* ✅ NO forzar left:50% ni transform */
+  
+  top: 70px;
   left: 20px; 
   right: 20px;
+  
   width: min(1100px, 92vw) !important;
   margin: 0 auto;
 
@@ -767,14 +767,24 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 #fleet-drag-handle {{
   position: relative;
   z-index: 9999999;
-  cursor: move;
+  cursor: grab;
+  
   user-select: none;
+  -webkit-user-select: none;   /* Safari */
+
+  touch-action: none;          /* clave: evita scroll/zoom mientras arrastras */
+  -webkit-touch-callout: none; /* iOS: evita menú de selección */
+
   font-weight: 900;
   font-size: 12px;
   padding: 6px 10px;
   margin: -6px -6px 8px -6px;
   border-bottom: 1px solid rgba(0,0,0,0.10);
   color: #0a2e42;
+}}
+
+#fleet-drag-handle:active {{
+  cursor: grabbing;
 }}
 
 
