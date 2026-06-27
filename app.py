@@ -3691,100 +3691,66 @@ setInterval(actualizarRelojRuteos, 1000);
 actualizarRelojRuteos();
 
 
-
- // ==============================================================================
-    // FUNCIÓN CONTADOR FLOTANTE
+// ==============================================================================
+    // FUNCIÓN MOVER VERTICAL LA TABLA FLOTANTE
     // ==============================================================================
 
-function makeDraggableFloatingBox(el, storageKey) {{
-    if (!el) return;
 
-    // ✅ Candado para no poner listeners muchas veces
-    if (el.dataset.dragReady === "1") return;
-    el.dataset.dragReady = "1";
+function enableFleetVerticalDrag(){{
+  const el = document.querySelector("#fleet-sticky");
+  const handle = document.querySelector("#fleet-drag-handle");
+  if (!el || !handle) return;
 
-    // Restaurar posición guardada
-    try {{
-        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-        if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
-            el.style.top = saved.top + "px";
-            el.style.left = saved.left + "px";
-            el.style.right = "auto";
-        }}
-    }} catch (e) {{}}
+  // guard para no duplicar listeners
+  if (el.dataset.vdragInit === "1") return;
+  el.dataset.vdragInit = "1";
 
-    let isDown = false;
-    let startX = 0, startY = 0;
-    let startTop = 0, startLeft = 0;
+  let dragging = false;
+  let startY = 0;
+  let startTop = 0;
 
-    const getPoint = (ev) => {{
-        if (ev.touches && ev.touches[0]) {{
-            return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
-        }}
-        return {{ x: ev.clientX, y: ev.clientY }};
-    }};
+  function down(e){{
+    if (!el.classList.contains("fleet-floating")) return;
 
-    const onDown = (ev) => {{
-        // No arrastrar si estás tocando controles
-        const tag = (ev.target && ev.target.tagName || "").toLowerCase();
-        if (["select", "option", "input", "textarea", "button", "label"].includes(tag)) return;
+    dragging = true;
+    startY = e.clientY;
+    startTop = el.getBoundingClientRect().top;
 
-        isDown = true;
-        const p = getPoint(ev);
-        startX = p.x; startY = p.y;
+    // asegura que top sea controlable
+    el.style.position = "fixed";
+    el.style.bottom = "auto";
+    el.style.top = `${startTop}px`;
 
-        const rect = el.getBoundingClientRect();
-        startTop = rect.top;
-        startLeft = rect.left;
+    handle.style.cursor = "grabbing";
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+  }}
 
-        el.style.right = "auto";
-        el.style.left = startLeft + "px";
-        el.style.top = startTop + "px";
-        el.style.userSelect = "none";
+  function move(e){{
+    if (!dragging) return;
 
-        ev.preventDefault();
-    }};
+    const dy = e.clientY - startY;
+    let newTop = startTop + dy;
 
-    const onMove = (ev) => {{
-        if (!isDown) return;
+    const pad = 8;
+    const minTop = pad;
+    const maxTop = window.innerHeight - el.offsetHeight - pad;
+    newTop = Math.max(minTop, Math.min(maxTop, newTop));
 
-        const p = getPoint(ev);
-        const dx = p.x - startX;
-        const dy = p.y - startY;
+    el.style.top = `${newTop}px`;
+  }}
 
-        // límites dentro de pantalla
-        const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
-        const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
+  function up(e){{
+    if (!dragging) return;
+    dragging = false;
+    handle.style.cursor = "grab";
+    try { handle.releasePointerCapture(e.pointerId); }} catch {{}}
+  }}
 
-        const newLeft = Math.max(0, Math.min(maxLeft, startLeft + dx));
-        const newTop  = Math.max(0, Math.min(maxTop, startTop + dy));
-
-        el.style.left = newLeft + "px";
-        el.style.top = newTop + "px";
-
-        ev.preventDefault();
-    }};
-
-    const onUp = () => {{
-        if (!isDown) return;
-        isDown = false;
-        el.style.userSelect = "";
-
-        const rect = el.getBoundingClientRect();
-        localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
-    }};
-
-    // Mouse
-    el.addEventListener("mousedown", onDown);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-
-    // Touch
-    el.addEventListener("touchstart", onDown, {{ passive: false }});
-    window.addEventListener("touchmove", onMove, {{ passive: false }});
-    window.addEventListener("touchend", onUp);
+  handle.addEventListener("pointerdown", down, {{ passive: false }});
+  window.addEventListener("pointermove", move, {{ passive: false }});
+  window.addEventListener("pointerup", up, {{ passive: true }});
 }}
-
 
 
 
@@ -3883,7 +3849,7 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
     window.addEventListener("touchend", onUp);
 }}
 
-   
+enableFleetVerticalDrag();   
     
 
 </script>
