@@ -3744,7 +3744,7 @@ function enableFleetVerticalDrag(){{
     if (!dragging) return;
     dragging = false;
     handle.style.cursor = "grab";
-    try { handle.releasePointerCapture(e.pointerId); }} catch {{}}
+    try {{ handle.releasePointerCapture(e.pointerId); }} catch {{}}
   }}
 
   handle.addEventListener("pointerdown", down, {{ passive: false }});
