@@ -733,6 +733,21 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
     color: #25282b;
 }}
 
+
+/* ✅ STICKY para el panel de flota (tabs + botones + tabla) */
+#fleet-sticky{{
+  position: sticky;
+  top: 10px;
+  z-index: 99999;
+  background: rgba(255,255,255,0.98);
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  padding: 10px 10px 6px 10px;
+  box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+  backdrop-filter: blur(2px);
+}}
+
+
 /* El efecto Neomórfico en cada fila */
         .master-row {{ 
             border-radius: 9px;
@@ -1080,6 +1095,8 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         color:#25282b;">
 </div>
 
+
+ <div id="fleet-sticky">
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
@@ -1139,7 +1156,6 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
         <!-- TABLAS CON ENCABEZADOS RESTAURADOS (CORREGIDO AL ORIGINAL) --> 
 
-        
        
      <div id="tab-2" class="t-content">
   
@@ -1350,15 +1366,9 @@ USADAS
         0
     </td>
 </tr>
-
-
-
-
 </tfoot>
     </table>
 </div>
-
-
 
 
 </div>
