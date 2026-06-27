@@ -694,6 +694,7 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 
 /* una barrita para mover (opcional) */
 #fleet-drag-handle {{
+  pointer-events: auto !important;
   position: relative;
   z-index: 9999999;
   cursor: move;
@@ -1562,13 +1563,13 @@ function toggleFleetFloating() {{
   panel.classList.toggle("fleet-floating");
 
   if (panel.classList.contains("fleet-floating")) {{
-    // ✅ fija coordenadas actuales como left/top para que el drag arranque estable
     const r = panel.getBoundingClientRect();
-    panel.style.left = r.left + "px";
-    panel.style.top  = r.top + "px";
-    panel.style.right = "auto";
-    panel.style.transform = "none";
-    panel.style.margin = "0";
+    panel.style.setProperty("position", "fixed", "important");
+    panel.style.setProperty("left", r.left + "px", "important");
+    panel.style.setProperty("top", r.top + "px", "important");
+    panel.style.setProperty("right", "auto", "important");
+    panel.style.setProperty("margin", "0", "important");
+    panel.style.setProperty("transform", "none", "important");
 
     makeDraggableWithHandle(panel, handle, "pos-fleet-panel");
   }}
@@ -3713,95 +3714,100 @@ function makeDraggableFloatingBox(el, storageKey) {{
     // ==============================================================================
 
 function makeDraggableWithHandle(el, handleEl, storageKey) {{
-    if (!el) return;
+  if (!el) return;
 
-    // candado por llave (para que no se duplique)
-    const key = "dragReady_" + storageKey;
-    if (el.dataset[key] === "1") return;
-    el.dataset[key] = "1";
+  const key = "dragReady_" + storageKey;
+  if (el.dataset[key] === "1") return;
+  el.dataset[key] = "1";
 
-    // restaurar
-    try {{
-        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-        if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
-            el.style.top = saved.top + "px";
-            el.style.left = saved.left + "px";
-            el.style.right = "auto";
-            el.style.transform = "none"; // importante si antes estaba centrado
-        }}
-    }} catch (e) {{}}
+  // restaurar
+  try {{
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+      el.style.setProperty("position", "fixed", "important");
+      el.style.setProperty("top", saved.top + "px", "important");
+      el.style.setProperty("left", saved.left + "px", "important");
+      el.style.setProperty("right", "auto", "important");
+      el.style.setProperty("margin", "0", "important");
+      el.style.setProperty("transform", "none", "important");
+    }}
+  }} catch (e) {{}}
 
-    let isDown = false;
-    let startX = 0, startY = 0;
-    let startTop = 0, startLeft = 0;
+  let isDown = false, startX = 0, startY = 0, startTop = 0, startLeft = 0;
 
-    const getPoint = (ev) => {{
-        if (ev.touches && ev.touches[0]) {{
-            return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
-        }}
-        return {{ x: ev.clientX, y: ev.clientY }};
-    }};
+  const getPoint = (ev) => (ev.touches && ev.touches[0])
+    ? {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }}
+    : {{ x: ev.clientX, y: ev.clientY }};
 
-    const onDown = (ev) => {{
-        console.log("DOWN", ev.target);
-        isDown = true;
+  const onDown = (ev) => {{
+    isDown = true;
 
-        // ✅ liberar centrado para que left/top funcionen
-        el.style.right = "auto";
-        el.style.margin = "0";
+    // asegurar que sea movible (gana a CSS)
+    el.style.setProperty("position", "fixed", "important");
+    el.style.setProperty("right", "auto", "important");
+    el.style.setProperty("margin", "0", "important");
+    el.style.setProperty("transform", "none", "important");
 
-        // quita el centrado por transform al comenzar a arrastrar
-        el.style.transform = "none";
+    const p = getPoint(ev);
+    startX = p.x; startY = p.y;
 
-        const p = getPoint(ev);
-        startX = p.x; startY = p.y;
+    const rect = el.getBoundingClientRect();
+    startTop = rect.top;
+    startLeft = rect.left;
 
-        const rect = el.getBoundingClientRect();
-        startTop = rect.top;
-        startLeft = rect.left;
+    el.style.setProperty("top", startTop + "px", "important");
+    el.style.setProperty("left", startLeft + "px", "important");
 
-        el.style.right = "auto";
-        el.style.left = startLeft + "px";
-        el.style.top = startTop + "px";
-        el.style.userSelect = "none";
+    ev.preventDefault();
+    ev.stopPropagation();
+  }};
 
-        ev.preventDefault();
-    }};
+  const onMove = (ev) => {{
+    if (!isDown) return;
 
-    const onMove = (ev) => {{
-        if (!isDown) return;
+    const p = getPoint(ev);
+    const dx = p.x - startX;
+    const dy = p.y - startY;
 
-        const p = getPoint(ev);
-        const dx = p.x - startX;
-        const dy = p.y - startY;
+    const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
+    const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
 
-        const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
-        const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
+    const newLeft = Math.max(0, Math.min(maxLeft, startLeft + dx));
+    const newTop  = Math.max(0, Math.min(maxTop, startTop + dy));
 
-        el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + "px";
-        el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
+    el.style.setProperty("left", newLeft + "px", "important");
+    el.style.setProperty("top", newTop + "px", "important");
 
-        ev.preventDefault();
-    }};
+    ev.preventDefault();
+    ev.stopPropagation();
+  }};
 
-    const onUp = () => {{
-        if (!isDown) return;
-        isDown = false;
-        el.style.userSelect = "";
+  const onUp = (ev) => {{
+    if (!isDown) return;
+    isDown = false;
 
-        const rect = el.getBoundingClientRect();
-        localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
-    }};
+    const rect = el.getBoundingClientRect();
+    localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
 
-    const h = handleEl || el;
+    if (ev) {{
+      ev.preventDefault();
+      ev.stopPropagation();
+    }}
+  }};
 
-    h.addEventListener("mousedown", onDown);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
+  const h = handleEl || el;
 
-    h.addEventListener("touchstart", onDown, {{ passive: false }});
-    window.addEventListener("touchmove", onMove, {{ passive: false }});
-    window.addEventListener("touchend", onUp);
+  // evita selección de texto dentro del handle
+  h.style.userSelect = "none";
+  h.style.webkitUserSelect = "none";
+
+  h.addEventListener("mousedown", onDown, true);
+  window.addEventListener("mousemove", onMove, true);
+  window.addEventListener("mouseup", onUp, true);
+
+  h.addEventListener("touchstart", onDown, {{ passive: false, capture: true }});
+  window.addEventListener("touchmove", onMove, {{ passive: false, capture: true }});
+  window.addEventListener("touchend", onUp, {{ passive: false, capture: true }});
 }}
 
 
