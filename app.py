@@ -738,12 +738,15 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 /* ===== PANEL FLOTANTE PARA TABLA DE FLOTA ===== */
 #fleet-sticky.fleet-floating {{
   position: fixed !important;
-  top: 140px !important;      /* ajusta */
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  top: 140px !important;
 
-  width: min(1100px, 92vw) !important;   /* ancho centrado */
-  max-height: 360px !important;          /* compacto */
+  /* ✅ NO forzar left:50% ni transform */
+  left: 20px; 
+  right: 20px;
+  width: min(1100px, 92vw) !important;
+  margin: 0 auto;
+
+  max-height: 360px !important;
   overflow: hidden !important;
 
   z-index: 999999 !important;
@@ -3811,6 +3814,10 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
 
     const onDown = (ev) => {{
         isDown = true;
+
+        // ✅ liberar centrado para que left/top funcionen
+        el.style.right = "auto";
+        el.style.margin = "0";
 
         // quita el centrado por transform al comenzar a arrastrar
         el.style.transform = "none";
