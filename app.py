@@ -3673,15 +3673,13 @@ function makeDraggableWithHandle(el, handleEl, storageKey) {{
   const dx = p.x - startX;
   const dy = p.y - startY;
 
-  const newLeft = startLeft + dx;
-  const newTop  = startTop + dy;
-
-  el.style.setProperty("left", newLeft + "px", "important");
-  el.style.setProperty("top",  newTop  + "px", "important");
+  el.style.setProperty("left", (startLeft + dx) + "px", "important");
+  el.style.setProperty("top",  (startTop + dy) + "px", "important");
 
   ev.preventDefault();
   ev.stopPropagation();
 }};
+
 
   const onUp = (ev) => {{
     if (!isDown) return;
