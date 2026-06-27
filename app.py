@@ -780,17 +780,18 @@ body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
 
 
 
-/* ✅ STICKY para el panel de flota (tabs + botones + tabla) */
+/* Panel de flota en modo NORMAL (no se pega / no colapsa) */
 #fleet-sticky{{
-  position: sticky;
-  top: 10px;
-  z-index: 99999;
-  background: rgba(255,255,255,0.98);
-  border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 12px;
-  padding: 10px 10px 6px 10px;
-  box-shadow: 0 12px 22px rgba(0,0,0,0.18);
-  backdrop-filter: blur(2px);
+  position: static;
+  top: auto;
+  z-index: auto;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }}
 
 
