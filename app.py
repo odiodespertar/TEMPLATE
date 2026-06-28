@@ -38,23 +38,21 @@ st.markdown("""
 u_C1_SJA1 = { 
     "Small Van MLP foráneo": [110, 120], 
     "Large Van MLP foráneo": [110, 120], 
-    "Extra Large Van MLP H&B": [70, 70],
-    "Rental Electric Large Van": [150, 150],
+    "Large Van MLP Bulk": [70, 70],
     "Rental Large Van": [120, 120],
-    "Rental Replacement": [120, 120],
-    "Truck 3.5 tons MLP": [1, 1], 
-    "Media milla SP": [1, 1], 
+    "Extra Large Van MLP": [120, 120],
+    "Rental Small Van": [1, 1], 
     "Car 8h": [70, 70], 
     "Car Newbie": [70, 70],
-    "Moto 3h": [30, 30],
-    "Small Van 9h": [70, 70],
-    "Small Van 9h Ext": [70, 70],
+    "Car Zona Ext": [30, 30],
+    "Moto 3h": [70, 70],
+    "Moto Newbie": [70, 70],
     "Small Van Newbie": [70, 70]
 }
 
 NOMBRES_PLANES_C1_SJA1 = [
-   "ACTOPAN", "CENTRO 1", "CENTRO 2", "MISANTLA", "NAOLINCO", "PEROTE", "TEZUITLAN", "TLALTETELA", "TRAPICHE",  
-   "TUZAMAPA", "XICO", "PLAN 12", "PLAN 13", "PLAN 14", "PLAN 15", "PLAN 16", "PLAN 17", "PLAN 18", "PLAN 19", "PLAN 20" 
+   "ALAMO", "CAZONES", "CENTRO POZA RICA", "CHICONTEPEC", "COATZ", "GUTIERREZ", "LA UNO", "LECHERIA", "MARTINEZ",  
+   "NAUTLA", "PAPANTLA", "PUEBLA RANCHERIA", "TECOLUTLA", "TIHUATLAN", "TUXPAN", "VEGA", "PLAN 17", "PLAN 18", "PLAN 19", "PLAN 20" 
 ]
 
 
