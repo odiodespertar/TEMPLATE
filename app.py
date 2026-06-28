@@ -32,46 +32,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# --- DATOS BASE ---
-u_SDE = {"Moto Car - 3": [25, 30], "Moto Car Newbie": [25, 25], "Car - 5h": [25, 30], "Car - 5 Extendida": [25, 30], "Car - 3h": [25, 28]}
-
-u_PREC = {      
-    "Car - 8h": [70, 75],
-    "Small 9h Ext Car": [70, 75] 
-}
-
-NOMBRES_PLANES_PREC = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
-
-
-# --- AÑADE ESTO DEBAJO DE U_PREC ---
-u_PREC_SMX2 = {
-    "Car - 8h": [70, 75],
-    "Small 9h Ext Car": [70, 75],
-    "Car Zona Extendida": [65, 65]
-}
-NOMBRES_PLANES_PREG = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
-
-
-NOMBRES_PLANES_C1 = [
-    "ESCÁRCEGA",
-    "CAMPECHE",
-    "ESCÁRCEGA EXT",
-    "MAXCANUN",
-    "CANDELARIA",
-    "SEYBAPLAYA",
-    "CHAMPOTÓN",
-    "HOLPECHEN",
-    "CALKINI",
-    "PLAN 10"
-]
-
-u_C1 = {
-    "Rental Large Van": [100, 100], "Large Van MLP": [100, 100], "Small Van MLP":[100, 100], "Delivery Cell Large Van": [1, 1], "Delivery Cell Small Van": [1, 1]
-}
-
-u_C2 = u_C1.copy()
-u_C2["Large Van Híbrida"] = [100, 100]
-
 
 # --- DATOS NUEVOS PARA C1 SJA1 ---
 u_C1_SJA1 = { 
@@ -92,41 +52,9 @@ u_C1_SJA1 = {
 }
 
 NOMBRES_PLANES_C1_SJA1 = [
-   "ACTOPAN", "CENTRO 1", "CENTRO 2", "MISANTLA", "NAOLINCO", "PEROTE", "TEZUITLAN", "TLALTETELA", "TRAPICHE",  
-   "TUZAMAPA", "XICO", "PLAN 12", "PLAN 13", "PLAN 14", "PLAN 15", "PLAN 16", "PLAN 17", "PLAN 18", "PLAN 19", "PLAN 20" 
+   "ALAMO", "CAZONES", "CENTRO POZA RICA", "CHICONTEPEC", "COATZACOALCO", "GUTIERREZ", "LA UNO", "LECHERIA", "MARTINEZ",  
+   "NAUTLA", "PAPANTLA", "PUEBLA RANCHERIA", "TECOLUTLA", "TIHUATLAN", "TUXPAN", "VEGA", "PLAN 17", "PLAN 18", "PLAN 19", "PLAN 20" 
 ]
-
-
-
-# ================= ORH POR UNIDAD =================
-
-ORH_FIJOS = {
-    "Rental E. Large Van": ["500", "70"],
-    "Rental E. Small Van": ["450", "70"],
-    "Rental Large Van": ["54", "70"],
-    "Rental Small Van": ["480", "70"],
-
-    "Large Van MLP": ["500", "80"],
-    "Small Van MLP": ["487", "70"],
-    "Large Van SDD": ["487", "70"],
-    "Small Van SDD": ["487", "70"],
-
-    "Car MLP": ["300", "66"],
-    "Car Newbie 3h": ["180", "66"],
-    "Car Newbie": ["360", "83"],
-
-    "Car - 8h": ["360", "66"],
-    "Car - 8h E1": ["360", "66"],
-    "Car - 5h": ["300", "66"],
-    "Car - 3h": ["300", "66"],
-
-    "Moto - 3h": ["180", "66"],
-
-    "Small Van SDD": ["487", "70"],
-    "Car Zona Extendida": ["360", "66"],
-    "Car - 5 Extendida": ["330", "66"],
-    "Small 9h Ext Car": ["360", "66"]
-}
 
 
 
@@ -135,8 +63,7 @@ def gen_master_rows(data_dict, table_id):
     items = list(data_dict.items())
     total_items = len(items)
 
-    nombres_prec = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
-    nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
+    
 
     # ✅ Mostrar ORH/OCUPACIÓN solo en C1 y PREC SMX5 (ajusta si tu id real de PREC SMX5 es otro)
     mostrar_orh_ocup = (table_id in [1, 2, 6])
@@ -264,8 +191,7 @@ def gen_poligonos(data_target=None):
     # Botones con dimensiones totalmente congeladas a nivel píxel
     btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;"
     
-    nombres_prec = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
-    nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
+    
     nombres_c1 = ["ESCÁRCEGA", "CAMPECHE", "ESCÁRCEGA EXT", "MAXCANUN", "CANDELARIA", "SEYBAPLAYA", "CHAMPOTÓN", "HOLPECHEN"]  
    
     es_c1 = (data_target == u_C1 or data_target == u_C1_SJA1)
@@ -445,14 +371,7 @@ def gen_poligonos(data_target=None):
     
     for i in range(1, limite_tablas): # <-- Asegúrate de que aquí tenga la "s" al final
 
-        if data_target == u_PREC and (i-1) < len(nombres_prec):
-            nombre_final = nombres_prec[i-1]
-
-        elif data_target == u_PREC_SMX2 and (i-1) < len(nombres_smx2):
-             nombre_final = nombres_smx2[i-1]
-
-        elif data_target == u_C1 and (i-1) < len(NOMBRES_PLANES_C1):
-            nombre_final = NOMBRES_PLANES_C1[i-1]
+    
             
         elif data_target == u_C1_SJA1 and (i-1) < len(NOMBRES_PLANES_C1_SJA1):
             nombre_final = NOMBRES_PLANES_C1_SJA1[i-1]
@@ -571,28 +490,6 @@ app_html = f"""
         }}
 
 
-
-
-/* 📊 CONTADOR EXCLUSIVO PESTAÑA SCP1 */
-        #mi-contador-scp1 {{
-            position: fixed;
-            top: 156px; 
-            right: 20px; 
-            background: rgba(37, 40, 43, 0.98); 
-            color: #ffffff; 
-            padding: 16px; 
-            border-radius: 10px; 
-            z-index: 999999; 
-            font-family: sans-serif;
-            font-size: 14px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-            border: 1.2px solid transparent;
-            width: 300px;
-            max-height: 410px;
-            overflow-y: auto;
-            pointer-events: auto;
-            display: block;
-        }}
 
         /* 📊 CONTADOR EXCLUSIVO PESTAÑA SJA1 */
         #mi-contador-sja1 {{
@@ -1010,79 +907,6 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </style> 
 </head>
 
-<body>
-<div id="panel-prioridades" style="
-        position: fixed; 
-        top: -600px; 
-        left: 0; 
-        width: 100%; 
-        height: 268px; 
-        background: #696969; 
-        border-bottom: 3px solid #FF00FF; 
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-        z-index: 9999999; 
-        transition: top 0.4s ease; 
-        padding: 5px 20px 20px 20px; 
-        box-sizing: border-box;
-        overflow-y: auto;
-        font-family: Arial, sans-serif;
-    ">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF00FF; padding-bottom: 8px; margin-bottom: 12px;">
-        <h3 style="margin: 0; color: #D3D3D3; font-size: 16px; font-weight: bold;">Prioridades de asignación</h3>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        
-        <div>
-            <h4 style="margin: 0 0 10px 0; color: #FF00FF; font-size: 14px; font-weight: bold;">Prioridades SCP1 C1</h4>
-            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: white;">
-                <li>🔴 Campeche ➤ Rental Large Van ➤ NODOS = Delivery Cell-Dedicada.</li>
-                <li>🟢 Resto planes ➤ Large Van MLP (nodo=híbrida).</li>
-            </ul>
-        </div>
-
-
-        <div>
-            <h4 style="margin: 0 0 10px 0; color: #FF00FF; font-size: 14px; font-weight: bold;">Prioridades SMX5</h4>
-            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: white;">
-                <li>🟠 Todos los planes ➤ Car 8h/Car extra 8h E1 Tlalpan Nte, Sur y Xochi</li>
-                <li>👉 Cercanía de SVC ➤ Coyoacán, Iztapalapa, Tláhuac, Tlalpan nte, Tlalpan sur, Xochi, Chalco y Milpa Alta</li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 style="margin: 0 0 10px 0; color: #FF00FF; font-size: 14px; font-weight: bold;">Prioridades SJA1 C1</h4>
-            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: white;">
-                <li>🟢 Locales (Centros) ➤ Rentals, MLP y crowd.</li>
-                <li>👉 Planes foráneos ➤ MLP (nodo=híbrida) ➡️ Solo Xico/Tuzamapa ➤ MLP y Crowd.</li>
-                <li>👉 Cercanía de SVC ➤ 🟢Tuzamapa 🟢Xico 🟡Actopan 🟡Trapiche 🟠Naolinco 🟠Perote 🔴Misantla 🔴Tezuitlan 🔴Tlaltetela</li>
-                <li>🔵 EJA1-SP ➤ Media milla-ruteo fake.</li>
-                <li>🟣 Meganodo ➤ Truck 3.5 MLP.</li>
-                <li>🟤 Alchichica ND ➤ Small Van-AM0.</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-    <button onclick="togglePrioridades()" style="
-        position: fixed; 
-        top: 25px; 
-        right: 25px; 
-        z-index: 99999999; /* Botón en la capa más alta */
-        background: #FF00FF; 
-        color: white; 
-        border: 1px solid #333; 
-        padding: 8px 12px; 
-        font-weight: bold; 
-        cursor: pointer; 
-        border-radius: 4px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-    ">
-    🚦 Prioridades
-</button>
-
-
 
 
 <div id="google-alert">⚠️ <span id="alert-msg"></span> [ENTER para cerrar]</div>
@@ -1106,37 +930,6 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         <div style="background-color: #25282b; color: white; padding: 10px; border-radius: 2px; font-weight: bold; text-align: center; margin-bottom: 10px;">🚚 🚚 DISPONIBILIDAD DE FLOTA 🚛 🚛</div>
     
 
-
-<div id="panel-control-unico" style="display: flex; gap: 20px; background: #25282b; padding: 15px; border-radius: 10px; color: white; justify-content: center; align-items: center; margin: 20px 0;">
-    <div style="text-align: center;">
-        <div id="hora-actual" style="font-size: 22px; font-weight: bold;">00:00:00</div>
-        <div style="font-size: 9px; color: #26d0ff; letter-spacing: 1px;">HORA ACTUAL</div>
-    </div>
-    <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px; min-width: 120px;">
-        <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #ff9b21; line-height: 1.1;">Sin tareas</div>
-        <div id="hora-ruteo" style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 2px;">--</div>
-        <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px; margin-top: 2px;">SIGUIENTE RUTEO</div>
-    </div>
-    <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px;">
-        <div id="cuenta-regresiva" style="font-size: 22px; font-weight: bold; color: #7CFFB2;">00:00</div>
-        <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px;">TIEMPO RESTANTE</div>
-    </div>
-</div>
-
-        <div id="resumen-flota-ruteada" style="display: flex; gap: 15px; margin: 15px 0; justify-content: center;">
-        <div style="background: #d7e5fa; padding: 8px; border-radius: 5px; border: 1px solid #bbdefb; text-align: center; width: 100px;">
-            <div style="font-size: 10px; font-weight: bold; color: #0861c7;">MLP</div>
-            <div id="val-mlp-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
-        </div>
-        <div style="background: #edddea; padding: 8px; border-radius: 5px; border: 1px solid #ffa8ff; text-align: center; width: 100px;">
-            <div style="font-size: 10px; font-weight: bold; color: #d021eb;">RENTAL</div>
-            <div id="val-rental-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
-        </div>
-        <div style="background: #e4f5ce; padding: 8px; border-radius: 5px; border: 1px solid #c8e6c9; text-align: center; width: 100px;">
-            <div style="font-size: 10px; font-weight: bold; color: #209626;">CAR</div>
-            <div id="val-car-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
-        </div>
-    </div>
 
 
 <div id="dos-pct-global"
@@ -1164,13 +957,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
-                <button class="tab-btn active" onclick="showTab(2, this)">C1 SCP1</button>
                 <button class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
-                <button class="tab-btn" onclick="showTab(1, this)">PREC SMX5</button>
-                <!--
-                <button class="tab-btn" onclick="showTab(5, this)">PREC SMX2</button>
-                -->
-                <button class="tab-btn" onclick="showTab(4, this)">SDE</button>
             </div> 
 
             
@@ -1220,42 +1007,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
         <!-- TABLAS CON ENCABEZADOS RESTAURADOS (CORREGIDO AL ORIGINAL) --> 
 
-       
-     <div id="tab-2" class="t-content">
-  
-       <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">
-SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">
-DELTA
-</th>
-
-        </thead>
-        <tbody id="body-2">{gen_master_rows(u_C1, 2)}</tbody>
-<tfoot class="fila-total">
-    <tr class="fila-total">
-        <td style="border:none;"></td>
-        <td colspan="5" style="padding:6px; text-align:right;">TOTAL RUTEADAS</td>
-        <td id="total-ruteadas-2" style="text-align:center; color:#FF0000; font-size:16px; font-weight:bold;">0</td>
-    </tr>
-</tfoot>
-
-
-    </table>
-</div>
-
-
+    
 
 <div id="tab-6" class="t-content" style="display:none;">
 
@@ -1284,156 +1036,6 @@ USADAS
 </tfoot>
     </table>
 </div>
-
-
-       
-        <div id="tab-1" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-  <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-    <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
-
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-
-    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
-   <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
-  </tr>
-</thead>
-
-        <tbody id="body-1">{gen_master_rows(u_PREC, 1)}</tbody>
-          <tfoot class="fila-total">
-
-
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="5" style="padding:6px; text-align:right;">
-        TOTAL CAR RUTEADAS
-    </td>
-    <td id="total-car-real-1"
-        style="text-align:center; color:#FF0000; font-size:16px; font-weight:bold;">
-        0
-    </td>
-</tr>
-
-
-
-
-
-</tfoot>
-    </table>
-</div>
-
-       
-        <div id="tab-5" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:60px;">
-    SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:50px;">
-    DELTA
-</th>
-</tr>
-            
-            </tr>
-        </thead>
-        <tbody id="body-5">{gen_master_rows(u_PREC_SMX2, 5)}</tbody>
-         <tfoot class="fila-total">
-
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="3" style="padding:6px; text-align:right;">
-        TOTAL RUTEADAS
-    </td>
-    <td id="total-ruteadas-5"
-        style="
-            text-align:center;
-            color:#FF0000;
-            font-size:16px;
-            font-weight:bold;
-        ">
-        0
-    </td>
-</tr>
-
-
-
-</tfoot>
-    </table>
-</div>
-
-
-        
-        <div id="tab-4" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:60px;">
-    SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:50px;">
-    DELTA
-</th>
-</tr>
-            
-            </tr>
-        </thead>
-        <tbody id="body-4">{gen_master_rows(u_SDE, 4)}</tbody>
-       <tfoot class="fila-total">
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="3" style="padding:6px; text-align:right;">
-        TOTAL CAR RUTEADAS
-    </td>
-    <td id="total-car-real-4"
-        style="text-align:center; color:#FF4500; font-size:16px; font-weight:bold;">
-        0
-    </td>
-</tr>
-</tfoot>
-    </table>
-</div>
-
 
 </div>
 
@@ -1508,11 +1110,8 @@ USADAS
     📋 PLANIFICACIÓN POR POLÍGONOS
 </div>
         
-        <div id="polys-2" class="p-content">{gen_poligonos(u_C1)}</div>
         <div id="polys-6" class="p-content" style="display:none;">{gen_poligonos(u_C1_SJA1)}</div>
-        <div id="polys-1" class="p-content" style="display:none;">{gen_poligonos(u_PREC)}</div>
-        <div id="polys-5" class="p-content" style="display:none;">{gen_poligonos(u_PREC_SMX2)}</div>
-        <div id="polys-4" class="p-content" style="display:none;">{gen_poligonos(u_SDE)}</div>
+    
 
 
         <div id="excel-polys" style="display:none; margin-top:10px;">
@@ -3864,342 +3463,3 @@ html(app_html, height=1200, scrolling=True)
 
 
 
-
-
-import streamlit as st
-import streamlit.components.v1 as components
-
-# 1. ENLACE DE IMAGEN (Mapa de regiones)
-ID_IMAGEN = "1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ"
-url_final = f"https://drive.google.com/thumbnail?id={ID_IMAGEN}&sz=w1000"
-
-# 2. INFORMACIÓN OPERATIVA 100% COMPLETA
-info_operativa = {
-    "SDE": f"""
-        <div style='text-align: center; margin-bottom: 25px;'>
-            <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-        </div>
-
-        <h3 style='color: #000; margin-bottom: 5px;'>ROL VP04</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
-        
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
-            <p style='margin: 0;'><strong>👉👉 PARA SDE</strong><br>
-            - 🔷 Revisar si SVC agrega blancos<br>
-            - Orígenes (imagen) + onway + despacho de hoy de las 3 pm en adelante + fecha promesa y/o quemada ...validar<br>
-            - SPR 30<br>
-            - ❌ delimitación / ❌ restricción<br>
-            - Quito puntos muy lejanos</p>
-        </div>
-
-        <h3 style='color: #000; margin-top: 25px;'>🟪 SDE 🟪</h3>
-        <hr style='border: 1px solid #FF00FF; margin-bottom: 20px;'>
-        
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX9 PM2 - ⏰ 16:40 - 17:00</strong><br>
-            - 📌 Orígenes: MXCD02, MXCD06<br>
-            - 👉 Vol aprox. 800 / en peak puede aumentar hasta 1600<br>
-            - 👉 fecha promesa</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SGD2 PM2 - ⏰ 17:00 - 17:20</strong><br>
-             - 📌 Orígenes: MXJC01<br>
-             - 👉 Vol aprox. __<br>
-             - 👉 fecha promesa + quemada</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX5 PM2 - ⏰ 17:20 - 17:40</strong><br>
-             - 📌 Orígenes: MXCD02, MXCD06<br>
-             - 👉 Vol aprox. 400<br>
-             - 👉 fecha promesa + quemada</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX4 PM2 - ⏰ 17:40 - 18:00</strong><br>
-            - 📌 Orígenes: MXCD02, MXCD06<br>
-            - 👉 Vol aprox. 550<br>
-            - 🏍️ Motos en donde sea con SPR 25<br>
-            - 👉 fecha promesa + quemada</p> 
-        </div>
-
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX2 PM2 - ⏰ 18:00 - 18:20</strong><br>
-            - 📌 Orígenes: MXCD02, MXCD06<br>
-            - 👉 fecha promesa + quemada</p>
-            - 👉 Vol aprox. 250<br>
-            - 👉 SPR 28</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMT2 PM2 - ⏰ 18:40 - 19:00</strong><br>
-            - 📌 Origen MXNL01<br>
-            - 👉 Despacho hoy después 3 pm<br>
-            - 👉 fecha promesa + quemada<br>
-            - 👉 Vol. 800 aprox.<br>
-            - 👉 SPR 27-28 / se van las 30 unidades<br>
-            - 👉 Pido validación</p>
-        </div>
-
-
-
-        <h3 style='color: #000; margin-top: 25px;'>🟥 CICLO 1 🟥</h3>
-        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
-
-
-        <div style='background: white; border-left: 6px solid #DC143C; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #DC143C;">●</span> SCP1 AM1 - ⏰ 20:00 - 21:00</strong><br>
-             - 📌 Ellos envían el volumen a tomar, por lo que puede tomarse todo o descartarse ciertos despachos y orígenes<br>
-             - 👉 Vieja experiencia<br>
-             - 👉 Archivo de vehículos<br>
-             - 👀 Revisar si se agrega ➕ forms<br>
-             - ✅ Volumen aprox. 3000<br>
-             - 🚛 Large Van MLP resto de planes / Cuando hay vol. normal y Nodos = Híbrida<br>
-             - 🚛 Rental Large Van en Campeche = vol. normal / Delivery Cell (dedicada) = NODOS solo Campeche</p>
-        </div>
-
-
-        <h3 style='color: #000; margin-top: 25px;'>🟧 PRE-CARGA 🟧</h3>
-        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
-
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
-            <p style='margin: 0;'><strong>👉👉 INDICACIONES</strong><br>
-            - 📌 Origen + despachos (playbook - ó indicados por SVC) + onway<br>
-            - 👉 Schedule del día siguiente / apartado en archivo AMO<br>
-            - ➕ Mandan ids a agregar<br>
-            - ✅ delimitación / ✅ dejar restricción</p>
-        </div>
-        
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX5 AM3 - ⏰ 21:30 - 22:10</strong><br>
-             - 📌 Origen 09 + onway<br>
-             - ➕ Agregan ids a ciclo (de origen 10)<br>
-             - ✅  Validan volumen / aprox. 2500-2600<br>
-             - 🚛 Tlalpan norte, sur y Xochimilco con car 8h extra E1 (para no dropear)</p>
-        </div>
-
-
-        <h3 style='color: #000; margin-top: 25px;'>👉 OTROS RUTEOS PM2 (SDE)</h3>
-        <hr style='border: 1px solid #808080; margin-bottom: 20px;'> 
-
-
-        
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX20 (SMX10) PM2 - ⏰ 0:20 pm</strong><br>
-            - 📌 Origen 20 / ❌ SPR / ❌ Ocupación<br>
-            - 👉 Meto ORH de 4 hrs para crowd 5 hrs / solo para dividir paquetes uso SPR 30<br>
-            - 👉 Pido validación ➡️ @Luisa Itzel Perez y @Ibrahim</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX8 PM2 - ⏰ 5:30 pm</strong><br>
-            - 👉 Sin schedule</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX3 PM2 - ⏰ 4:30 pm</strong><br>
-            - 📌 Orígenes: MXCD02, MXCD06<br>
-            - ✅ delimitación (salen planes) / ❌ restricción<br>
-            - SPR 30/Moto y Crowd<br>
-            - 🏍️ MOTOS ➡️ Cuauhtémoc-Polanco</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SBJ1 PM2 - ⏰ A partir de las 5:00 pm</strong><br>
-            - 👉 Pido autorización para iniciar ruteo / SPR 28 / 200-300 pqt aprox</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SHM1 PM2 - ⏰ 7:20 pm</strong><br>
-            - 👉 SPR 21 / crowd 5 hrs</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT1 PM2 - ⏰ 5:10 pm</strong><br>
-            - 📌 Orígen: MXNL01<br>
-            - 👉 SVC manda data (la envían tarde, solo hago el cruce para cotejo)</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT3 PM2 - ⏰ 5:15 pm</strong><br>
-            - 👉 SPR 28 / crowd 5 hrs / 500 pqt aprox</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD1 PM2 - ⏰ 4:50 pm</strong><br>
-             - 📌 Orígen: MXJC01</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD2 PM2 - ⏰ 0:00 pm</strong><br>
-            - 👉 SPR 28</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD3 PM2 - ⏰ 4:50 pm</strong><br>
-            - 👉 SPR 30 / crowd 5 y 3 hrs</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMD2 PM1 - ⏰ 5:30 pm</strong><br>
-            - 📌 Orígen: MXYU01<br>
-            - 👉 Sin schedule / contemplo crowd 5 hrs<br>
-            - 🚛 SVC manda en cuantas unidades y el SPR / entre 5 a 6 crowd 5 hrs con SPR 30<br>
-            - 👉 Espero a que carguen volumen (x lo general lo cargan 10 min. antes de las 6:00 pm)<br>
-            - 👉 Pido validación<br>
-            - 👉 Piden mejor dispersion, indico: "Se publicó de acuerdo a la herramienta team, ya no podemos manipular la dispersión como antes"</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SPB1 PM2 - ⏰ 6:00 pm</strong><br>
-            - 📌 Origen MXPB01<br>
-            - 👉 Sin schedule / ocupo crowd 5 hrs a 30 SPR - depende puede mandarlas a 25 SPR<br>
-            - 👉 Se carga en contingencia, no tiene ciclo normal creado<br>
-            - 👉 Revisan volumen, notifican con palomita<br>
-            - 👉 Pido validación</p>
-        </div>
-
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
-            <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX2 AM3 - ⏰ 22:40 - 23:20</strong><br>
-             - 📌 Orígenes: MXCD02 despacho de hoy hasta 16:00 / MXCD09  despacho de hoy hasta 14:00 / MXCD10  despacho de hoy hasta 21:00<br>
-             - 👉 Todo Onway<br>
-             - 👀 Revisar si se agrega ➕ forms<br>
-             - ✅ Validan volumen / aprox. 1900-2000<br>
-             - 🚛 Extendidas en Texcoco, Pueblos y Chalco</p>
-        </div>
-        
-    """,
-    "SIDE_LINE": """
-        <h3 style='color: #000; margin-bottom: 5px;'>¿CÓMO LO HAGO?</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
-            <p style='margin: 0;'>1️⃣ Descargo query de places (script job de SVC trabajado ▶️ ejecutar)<br>
-            2️⃣ Routing matutino ▶️ busco lista places (sáb / dom)</p>
-        </div>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000;'>
-            <p style='margin: 0;'><strong>PASOS DETALLADOS:</strong><br>
-            ▶️ Docto script job ▶️ BuscarV ▶️ columna U (customer id) ▶️ clic 1a celda<br>
-            ▶️ En archivo places (copio desde place id / 5,0)<br>
-            ▶️ Sale A, B ó C ▶️ copio y pego esos id´s ▶️ nueva pestaña en data (nombro "places")<br>
-            ▶️ En data ▶️ buscarv para buscar en pestaña places<br>
-            ▶️ No deben coincidir todos los id´s<br>
-            ▶️ Lo que salga de cruce = places (no se rutea)<br><br>
-            <strong>- Elijo "pasar al siguiente día"</strong><br>
-            - C1 y C2 es el mismo proceso</p>
-        </div>
-    """,
-    "ENLACES": """
-        <h3 style='color: #000; margin-bottom: 5px;'>ENLACES</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000;'>
-            <div style='display: flex; flex-direction: column; gap: 15px;'>
-                <a href="https://drive.google.com/drive/folders/1VNCUhdFxnV6MltnBFt4sH6AN_FJjL5jj" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📁 SUBIR DATAS</a>
-                <a href="https://docs.google.com/spreadsheets/d/1mj1krN2hXQQ1yFzswDoPscd9tPhguDnB-mAxB4aLPy0/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE METRO</a>
-                <a href="https://docs.google.com/spreadsheets/d/1lcrV9kxqwZB8007DPn4binDfDoD4enX26nISPWkOXDM/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE CENTRO</a>
-                <a href="https://docs.google.com/spreadsheets/d/1Gw1RG4XGfDCyz2lKmoj01OoOHQcaPpVagWCeKj-oCzE/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE NORTE</a>
-                <a href="https://docs.google.com/spreadsheets/d/1irZgPeFGGtJL2rRu2CYK6NHsjoieX-9DEA-rQCrRjKI/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE SUR</a>
-            </div>
-        </div>
-    """,
-    "C1": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información C1 pendiente...</i></div>",
-    "C2": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información C2 pendiente...</i></div>",
-    "PREC": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información PRECARGA pendiente...</i></div>"
-}
-
-# 3. HTML/CSS (DISEÑO FINAL)
-html_notitas = f"""
-<style>
-    body {{ background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }}
-    .main-box {{ background: #25282b; padding: 10px; }}
-    
-    /* CONSOLA UNIFICADA (ARRIBA) */
-    .unified-console {{
-        background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-bottom: 20px; border: 1px solid #25282b; text-align: center;
-    }}
-    .display-screen {{
-        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
-    }}
-    .btn-3d {{
-        background: linear-gradient(145deg, #1e90ff, #1c82e6);
-        color: white; border: none; padding: 12px 25px; border-radius: 10px;
-        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-    }}
-    .btn-3d:active {{ box-shadow: 0 2px #0a56a3; transform: translateY(3px); }}
-
-    .tab-bar {{ display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }}
-    .tab-btn {{
-        background: #333; color: white; border: none; padding: 10px 18px;
-        border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;
-    }}
-    .tab-btn.active {{ background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }}
-
-
-
-body:not(.tab-2) #excel-btn {{
-    display: none !important;
-}}
-
-
-
-    
-    .content-area {{ background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }}
-</style>
-
-<div class="main-box">
-    <div class="unified-console"> 
-        <div class="display-screen">
-            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
-            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
-        </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-            <div>
-                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
-                <input type="number" id="minInput" value="10" 
-                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
-            </div>
-            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
-        </div>
-    </div>
-
-    <h3 style="color: #1E90FF; text-align: center; margin-bottom: 15px;">🍓 NOTITAS OPERATIVAS</h3>
-    <div class="tab-bar">
-        <button class="tab-btn active" onclick="changeTab(event, 'SDE')">SDE</button>
-        <button class="tab-btn" onclick="changeTab(event, 'C1')">C1</button>
-        <button class="tab-btn" onclick="changeTab(event, 'C2')">C2</button>
-        <button class="tab-btn" onclick="changeTab(event, 'PREC')">PREC</button>
-        <button class="tab-btn" onclick="changeTab(event, 'SIDE_LINE')">SIDE LINE</button>
-        <button class="tab-btn" onclick="changeTab(event, 'ENLACES')">ENLACES</button>
-    </div>
-    <div id="visor" class="content-area">
-        {info_operativa['SDE']}
-    </div>
-</div>
-
-<script>
-    const allData = {info_operativa}; 
-
-
-    function changeTab(e, name) {{
-        document.getElementById('visor').innerHTML = allData[name];
-        let btns = document.getElementsByClassName('tab-btn');
-        for (let b of btns) {{ b.classList.remove('active'); }}
-        e.currentTarget.classList.add('active');
-    }}
-    function ejecutarTodo() {{
-        const mins = document.getElementById('minInput').value || 0;
-        const ahora = new Date();
-        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
-        const h = String(nuevaFecha.getHours()).padStart(2, '0');
-        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
-        document.getElementById('horaReal').innerText = h + ":" + m;
-    }}
-    ejecutarTodo();
-</script>
-"""
-
-# 4. RENDERIZADO EN STREAMLIT
-st.markdown("---")
-components.html(html_notitas, height=1200, scrolling=True)
