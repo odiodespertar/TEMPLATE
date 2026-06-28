@@ -96,31 +96,22 @@ def gen_master_rows(data_dict, table_id):
     items = list(data_dict.items())
     total_items = len(items)
 
-    nombres_prec = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
-    nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
+    # ✅ En tu app ya solo quieres C1 SJA1 (tab 6), así que ORH/OCUP se muestran aquí
+    mostrar_orh_ocup = (table_id == 6)
 
-    # ✅ Mostrar ORH/OCUPACIÓN solo en C1 y PREC SMX5 (ajusta si tu id real de PREC SMX5 es otro)
-    mostrar_orh_ocup = (table_id in [1, 2, 6])
-
-    num_filas_objetivo = 45 if table_id == "PREC" else 4
+    # Mantengo tu lógica de “relleno” de filas
+    num_filas_objetivo = 4
     rango_final = max(total_items, num_filas_objetivo)
 
     for i in range(1, rango_final + 1):
-        if (data_dict == u_PREC) and (i-1) < len(nombres_prec):
-            p_name = nombres_prec[i-1]
-        elif (data_dict == u_PREC_SMX2) and (i-1) < len(nombres_smx2):
-            p_name = nombres_smx2[i-1]
-        else:
-            p_name = f"PLAN {i}"
 
-        if (i-1) < total_items:
-            name, spr = items[i-1]
+        if (i - 1) < total_items:
+            name, spr = items[i - 1]
         else:
             name, spr = "", [0, 0]
 
         # Caso A: Encabezado/Divisor
         if "---" in name:
-            # Antes colspaneabas 5; ahora depende si agregamos 2 columnas visibles
             colspan = 7 if mostrar_orh_ocup else 5
 
             rows += f'''
@@ -141,8 +132,7 @@ def gen_master_rows(data_dict, table_id):
         else:
             st_base = "background: #ebebeb; color: #969696;" if not name else ""
 
-            # ✅ Celdas extra visibles SOLO en C1 y PREC SMX5
-            celdas_orh_ocup = ""
+            # ✅ Celdas ORH/OCUP visibles solo en Tab 6
             if mostrar_orh_ocup:
                 celdas_orh_ocup = f'''
                 <td contenteditable="true" class="edit-orh" oninput="recalc()"
@@ -155,7 +145,6 @@ def gen_master_rows(data_dict, table_id):
                 </td>
                 '''
             else:
-                # En tablas donde NO deben verse, se mantienen ocultas (como ya lo tenías)
                 celdas_orh_ocup = '''
                 <td class="edit-orh" style="display:none;">0</td>
                 <td class="edit-ocup" style="display:none;">0</td>
