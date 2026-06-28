@@ -1393,7 +1393,11 @@ window.addEventListener("load", () => {{
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
     }}
+
+
     function hideAlert() {{ document.getElementById('google-alert').classList.remove('show'); }}
+
+
 
     function stepVal(btn, delta, type) {{
     let row = btn.closest('tr');
@@ -1402,11 +1406,11 @@ window.addEventListener("load", () => {{
     // Si no hay unidad seleccionada, no hace nada
     if(sel === "Seleccionar...") return;
 
-    // Buscamos la fila correspondiente en la tabla de Flota para sacar el MAX
+    // Buscamos la fila correspondiente en la tabla de Flota
     let fRows = Array.from(document.querySelectorAll('#body-' + currentTab + ' tr'));
     let fRow = fRows.find(r => r.querySelector('.edit-name').innerText.trim() === sel);
     
-    if (!fRow) return; // Seguridad por si no encuentra la unidad
+    if (!fRow) return;
 
     let left = parseInt(fRow.querySelector('.f-left').innerText) || 0;
     let sprMaxReal = parseFloat(fRow.querySelector('.edit-spr-max').innerText) || 0;
@@ -1415,45 +1419,32 @@ window.addEventListener("load", () => {{
         let span = row.querySelector('.u-manual');
         let val = parseInt(span.innerText) || 0;
 
+        // 🔥 LÓGICA MODIFICADA:
+        // Si intentamos subir (delta > 0) y no hay stock (left <= 0), 
+        // AVISAMOS pero NO bloqueamos (quitamos el return).
+        if (delta > 0 && left <= 0) {{
+            showAlert("⚠️ Aviso: Exceso de unidades. Se registrará como negativo.");
+        }}
 
-// 🔥 SOLO ALGUNOS CAR PUEDEN EXCEDERSE
-let nombreUpper = sel.toUpperCase();
-
-let esFlexible =
-    nombreUpper.includes("CAR - 3H") ||
-    nombreUpper.includes("CAR - 5H") ||
-    nombreUpper.includes("CAR - 8H");
-
-// Si NO es flexible, bloquear cuando ya no hay disponibles
-if (delta > 0 && left <= 0 && !esFlexible) {{
-    showAlert("⚠️ NO PUEDES AGREGAR MÁS UNIDADES.");
-    return;
-}}
-
-// Si SÍ es flexible, permitir negativos pero mostrar alerta
-if (delta > 0 && left <= 0 && esFlexible) {{
-    showAlert("⚠️ EXCESO DE UNIDADES CAR. Se registrará como negativo.");
-}}
+        // Incrementamos siempre, sin importar el stock
         span.innerText = val + delta;
-                }} else {{
+
+    }} else {{
+        // Lógica para SPR (se mantiene igual, esta sí tiene límite físico)
         let span = row.querySelector('.spr-real-val');
         let val = parseFloat(span.innerText) || 0;
         let newVal = Math.round(val + delta);
 
-        // VALIDACIÓN: Solo bloquea si intentas SUBIR (delta > 0) y YA te pasaste del máximo
         if (delta > 0 && newVal > sprMaxReal) {{
             showAlert("⚠️ NO PUEDES SOBREPASAR EL SPR MÁXIMO (" + sprMaxReal + ")");
             return; 
         }}
-        
-        // Si es para bajar o está dentro del rango, permite el cambio
         span.innerText = newVal;
     }}
+
     editedRowsPlan.add(row);
-    recalc();
+    recalc(); // Esto actualizará el Delta negativo en la tabla de arriba automáticamente
 }}
-
-
 
 
 
