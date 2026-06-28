@@ -993,7 +993,11 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
             </div> 
 
             
-           
+          <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
+    <button onclick="distribuirAutomatico()" 
+    style="visibility: hidden; cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 6px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #2d968f; transition: all 0.05s; outline: none;">
+        🧠 AUTO-CALCULAR
+</button>  
     
     
     <button class="filter-btn" onclick="filterRows(true)" 
