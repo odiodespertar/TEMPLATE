@@ -1243,9 +1243,6 @@ USADAS
 
 
 
-
-
-
     function aplicarPerfil() {{
 
     let perfil = perfiles[perfilActual];
@@ -1281,6 +1278,34 @@ USADAS
     recalc();
 }}
 
+
+
+function aumentarManual(btn) {{
+    let row = btn.closest('tr');
+    let spanU = row.querySelector('.u-manual');
+    let spanDelta = row.querySelector('.delta-val'); // Asegúrate que tu celda de delta tenga esta clase
+    let stockOriginal = parseInt(row.querySelector('.f-stock')?.innerText) || 0; // El límite
+
+    // 1. Aumentar el valor actual
+    let unidadesActuales = parseInt(spanU.innerText) || 0;
+    unidadesActuales += 1;
+    spanU.innerText = unidadesActuales;
+
+    // 2. Calcular el Delta (Stock - Asignadas)
+    // Si asignaste 5 y tenías 3, delta será -2.
+    let nuevoDelta = stockOriginal - unidadesActuales;
+    
+    if (spanDelta) {{
+        spanDelta.innerText = nuevoDelta;
+        
+        // 3. (OPCIONAL) Poner en rojo si es negativo para que resalte
+        spanDelta.style.color = (nuevoDelta < 0) ? "red" : "black";
+        spanDelta.style.fontWeight = (nuevoDelta < 0) ? "bold" : "normal";
+    }}
+
+    // 4. Disparar recálculo de totales para que los contadores superiores se actualicen
+    recalc(); 
+}}
 
 
 
