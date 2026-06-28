@@ -3292,48 +3292,43 @@ document.addEventListener("focusin", function(e) {{
 
 
 // ======================================================
-// RELOJ Y RUTEOS
+// RELOJ Y RUTEOS SPZ1
 // ======================================================
 
 const ruteos = [
 
     {{
-        nombre:"SMX9",
-        hora:"16:40"
+        nombre:"SMX20",
+        hora:"16:30"
     }},
 
     {{
-        nombre:"SGD2",
+        nombre:"SMX11",
         hora:"17:00"
     }},
     
     {{
-        nombre:"SMX5",
+        nombre:"SMX7",
         hora:"17:20"
     }},
 
     {{
-        nombre:"SMX4",
-        hora:"17:40"
+        nombre:"SCV1",
+        hora:"17:50"
     }},
 
     {{
-        nombre:"SMX2",
-        hora:"18:05"
+        nombre:"STL1",
+        hora:"18:10"
     }},
     
     {{
-        nombre:"SMT2",
+        nombre:"SCQ1",
         hora:"18:40"
     }},
 
     {{
-        nombre:"SCP1 C1",
-        hora:"20:00"
-    }},
-
-    {{
-        nombre:"SMX5 PREC",
+        nombre:"SMX3 PREC",
         hora:"21:30"
     }},
     
