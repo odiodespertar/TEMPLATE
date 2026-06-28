@@ -3532,7 +3532,7 @@ info_operativa = {
             <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
         </div>
 
-        <h3 style='color: #000; margin-bottom: 5px;'>ROL VP04</h3>
+        <h3 style='color: #000; margin-bottom: 5px;'>EXTENDIDOS</h3>
         <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
         
         <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
