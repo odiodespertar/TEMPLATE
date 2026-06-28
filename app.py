@@ -873,58 +873,6 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </style> 
 </head>
 
-<body>
-<div id="panel-prioridades" style="
-        position: fixed; 
-        top: -600px; 
-        left: 0; 
-        width: 100%; 
-        height: 268px; 
-        background: #EEE8AA; 
-        border-bottom: 3px solid #FFA500; 
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-        z-index: 9999999; 
-        transition: top 0.4s ease; 
-        padding: 5px 20px 20px 20px; 
-        box-sizing: border-box;
-        overflow-y: auto;
-        font-family: Arial, sans-serif;
-    ">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #403f3e; padding-bottom: 8px; margin-bottom: 12px;">
-        <h3 style="margin: 0; color: #000000; font-size: 16px; font-weight: bold;">Prioridades de asignación</h3>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-
-        <div>
-            <h4 style="margin: 0 0 10px 0; color: #000000; font-size: 14px; font-weight: bold;">Prioridades SPZ1 C1</h4>
-            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: black;">
-                <li>🟢 Tus prioridades</li>
-                <li>👉 Tus prioridades</li>
-                <li>👉 Tus prioridades</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-    <button onclick="togglePrioridades()" style="
-        position: fixed; 
-        top: 25px; 
-        right: 25px; 
-        z-index: 99999999; /* Botón en la capa más alta */
-        background: #FFD700; 
-        color: #3c4040; 
-        border: 1px solid #333; 
-        padding: 8px 12px; 
-        font-weight: bold; 
-        cursor: pointer; 
-        border-radius: 4px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-    ">
-    🚦 Prioridades
-</button>
-
 
 
 
