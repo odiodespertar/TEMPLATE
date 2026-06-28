@@ -1196,41 +1196,6 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
         <!-- TABLAS CON ENCABEZADOS RESTAURADOS (CORREGIDO AL ORIGINAL) --> 
 
-       
-     <div id="tab-2" class="t-content">
-  
-       <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">
-SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">
-DELTA
-</th>
-
-        </thead>
-        <tbody id="body-2">{gen_master_rows(u_C1, 2)}</tbody>
-<tfoot class="fila-total">
-    <tr class="fila-total">
-        <td style="border:none;"></td>
-        <td colspan="5" style="padding:6px; text-align:right;">TOTAL RUTEADAS</td>
-        <td id="total-ruteadas-2" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
-    </tr>
-</tfoot>
-
-
-    </table>
-</div>
-
 
 
 <div id="tab-6" class="t-content">
