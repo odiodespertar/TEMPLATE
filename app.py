@@ -998,19 +998,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
     onmouseleave="this.style.transform='translateY(0px)'; this.style.boxShadow='0 3px 0 #1b4b4d';">
 
     
-    🧠 AUTO-CALCULAR
-</button>
-    
-    <button class="filter-btn" onclick="filterRows(true)" 
-        style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1px solid #25282b; font-size: 12px; padding: 6px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #0a3045; transition: all 0.05s; outline: none;">
-        ACTIVAS
-    </button>
 
-    <button class="filter-btn" onclick="filterRows(false)" 
-        style="cursor:pointer; background: #808080; color:white; border:none; font-size:12px; padding:6px 12px; border-radius:4px; font-weight:bold; box-shadow: 0 3px 0 #454545; transition: all 0.05s; outline: none;">
-        TODAS
-    </button>
-</div>``
 
 
 
