@@ -3196,45 +3196,105 @@ document.addEventListener("focusin", function(e) {{
 const ruteos = [
 
     {{
-        nombre:"STJ1-SEN1-SMX3-SMX20-SMX8",
+        nombre:"STJ1 - SEN1 - SMX3 - SMX20 - SMX8",
         hora:"16:30"
     }},
 
     {{
-        nombre:"SMX11",
-        hora:"17:00"
+        nombre:"SMX9",
+        hora:"16:40"
     }},
     
     {{
-        nombre:"SMX7",
-        hora:"17:20"
+        nombre:"SGD2 - SMX11 - SGD1",
+        hora:"17:00"
     }},
 
     {{
-        nombre:"SCV1",
+        nombre:"SMT3 - SQR1",
+        hora:"17:10"
+    }},
+
+    {{
+        nombre:"SMX5 - SMX7",
+        hora:"17:20"
+    }},
+    
+    {{
+        nombre:"SBJ1 - SLW1 - SMT1",
+        hora:"17:30"
+    }},
+
+    {{
+        nombre:"SMX4 PREC",
+        hora:"17:40"
+    }},
+    
+    {{
+        nombre:"SCJ1 - SMD2 - SGD3 - SCV1",
         hora:"17:50"
     }},
 
     {{
-        nombre:"STL1",
+        nombre:"SMX2 - SMX20",
+        hora:"18:00"
+    }},
+
+    {{
+        nombre:"SMX8 - SLE1 - SPB1 - STL1",
         hora:"18:10"
     }},
-    
+
     {{
-        nombre:"SCQ1",
+        nombre:"SHP1",
+        hora:"18:20"
+    }},
+
+    {{
+        nombre:"SMT2 - SCQ1",
         hora:"18:40"
     }},
 
     {{
-        nombre:"SMX3 PREC",
+        nombre:"SMX8",
+        hora:"19:20"
+    }},
+
+    {{
+        nombre:"SHM1",
+        hora:"19:40"
+    }},
+
+    {{
+        nombre:"SCP1",
+        hora:"20:00"
+    }},
+
+    {{
+        nombre:"SMX4 - SMX8 - SMX2 - SMX5 - SMX3 - SMX9 - SMD1",
         hora:"21:30"
     }},
-    
-    {{
-        nombre:"SPZ1 C1",
-        hora:"23:00"
-    }}
 
+    {{
+        nombre:"SLZ1",
+        hora:"22:50"
+    }},
+
+    {{
+        nombre:"SPZ1",
+        hora:"23:00"
+    }},
+
+    {{
+        nombre:"SMX11 - SPB1",
+        hora:"23:10"
+    }},
+
+    {{
+        nombre:"SSL1 - SJA1 - SCH1",
+        hora:"23:30"
+    }}
+ 
 ];
 
 let ultimaAlerta = "";
