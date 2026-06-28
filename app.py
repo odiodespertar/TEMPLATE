@@ -72,8 +72,8 @@ u_C1_SJA1 = {
 }
 
 NOMBRES_PLANES_C1_SJA1 = [
-   "ALAMO", "CAZONES", "CENTRO POZA RICA", "CHICONTEPEC", "COATZ", "GUTIERREZ", "LA UNO", "LECHERIA", "MARTINEZ",  
-   "NAUTLA", "PAPANTLA", "PUEBLA RANCHERIA", "TECOLUTLA", "TIHUATLAN", "TUXPAN", "VEGA", "EPZ1 BULK", "PLAN 18", "PLAN 19", "PLAN 20" 
+   "PLAN 1", "PLAN 2", "PLAN 3", "PLAN 4", "PLAN 5", "PLAN 6", "PLAN 7", "PLAN 8", "PLAN 9",  
+   "PLAN 10", "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14", "PLAN 15", "PLAN 16", "PLAN 17", "PLAN 18", "PLAN 19", "PLAN 20" 
 ]
 
 
@@ -1010,7 +1010,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
-                <button class="tab-btn" onclick="showTab(6, this)">C1 SPZ1</button>
+                <button class="tab-btn" onclick="showTab(6, this)">TU CICLO</button>
             </div> 
 
             
