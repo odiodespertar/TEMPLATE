@@ -3190,13 +3190,13 @@ document.addEventListener("focusin", function(e) {{
 
 
 // ======================================================
-// RELOJ Y RUTEOS SPZ1
+// RELOJ Y RUTEOS VESPERTINO
 // ======================================================
 
 const ruteos = [
 
     {{
-        nombre:"SMX20",
+        nombre:"STJ1-SEN1-SMX3-SMX20-SMX8",
         hora:"16:30"
     }},
 
