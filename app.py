@@ -32,45 +32,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# --- DATOS BASE ---
-u_SDE = {"Moto Car - 3": [25, 30], "Moto Car Newbie": [25, 25], "Car - 5h": [25, 30], "Car - 5 Extendida": [25, 30], "Car - 3h": [25, 28]}
-
-u_PREC = {      
-    "Car - 8h": [70, 75],
-    "Small 9h Ext Car": [70, 75] 
-}
-
-NOMBRES_PLANES_PREC = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
-
-
-# --- AÑADE ESTO DEBAJO DE U_PREC ---
-u_PREC_SMX2 = {
-    "Car - 8h": [70, 75],
-    "Small 9h Ext Car": [70, 75],
-    "Car Zona Extendida": [65, 65]
-}
-NOMBRES_PLANES_PREG = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
-
-
-NOMBRES_PLANES_C1 = [
-    "ESCÁRCEGA",
-    "CAMPECHE",
-    "ESCÁRCEGA EXT",
-    "MAXCANUN",
-    "CANDELARIA",
-    "SEYBAPLAYA",
-    "CHAMPOTÓN",
-    "HOLPECHEN",
-    "CALKINI",
-    "PLAN 10"
-]
-
-u_C1 = {
-    "Rental Large Van": [100, 100], "Large Van MLP": [100, 100], "Small Van MLP":[100, 100], "Delivery Cell Large Van": [1, 1], "Delivery Cell Small Van": [1, 1]
-}
-
-u_C2 = u_C1.copy()
-u_C2["Large Van Híbrida"] = [100, 100]
 
 
 # --- DATOS NUEVOS PARA C1 SJA1 ---
@@ -1144,15 +1105,15 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         <div id="resumen-flota-ruteada" style="display: flex; gap: 15px; margin: 15px 0; justify-content: center;">
         <div style="background: #d7e5fa; padding: 8px; border-radius: 5px; border: 1px solid #bbdefb; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #0861c7;">MLP</div>
-            <div id="val-mlp-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-mlp-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
         <div style="background: #c6f7f3; padding: 8px; border-radius: 5px; border: 1px solid #68b0ac; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #d021eb;">RENTAL</div>
-            <div id="val-rental-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-rental-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
         <div style="background: #d3f5d3; padding: 8px; border-radius: 5px; border: 1px solid #90EE90; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #209626;">CAR</div>
-            <div id="val-car-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-car-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
     </div>
 
@@ -1185,13 +1146,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
-                <button class="tab-btn active" onclick="showTab(2, this)">C1 SCP1</button>
                 <button class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
-                <button class="tab-btn" onclick="showTab(1, this)">PREC SMX5</button>
-                <!--
-                <button class="tab-btn" onclick="showTab(5, this)">PREC SMX2</button>
-                -->
-                <button class="tab-btn" onclick="showTab(4, this)">SDE</button>
             </div> 
 
             
@@ -1278,7 +1233,7 @@ DELTA
 
 
 
-<div id="tab-6" class="t-content" style="display:none;">
+<div id="tab-6" class="t-content">
 
     <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
         <thead>
@@ -1305,156 +1260,6 @@ USADAS
 </tfoot>
     </table>
 </div>
-
-
-       
-        <div id="tab-1" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-  <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-    <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
-
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-
-    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
-   <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
-  </tr>
-</thead>
-
-        <tbody id="body-1">{gen_master_rows(u_PREC, 1)}</tbody>
-          <tfoot class="fila-total">
-
-
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="5" style="padding:6px; text-align:right;">
-        TOTAL CAR RUTEADAS
-    </td>
-    <td id="total-car-real-1"
-        style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">
-        0
-    </td>
-</tr>
-
-
-
-
-
-</tfoot>
-    </table>
-</div>
-
-       
-        <div id="tab-5" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:60px;">
-    SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:50px;">
-    DELTA
-</th>
-</tr>
-            
-            </tr>
-        </thead>
-        <tbody id="body-5">{gen_master_rows(u_PREC_SMX2, 5)}</tbody>
-         <tfoot class="fila-total">
-
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="3" style="padding:6px; text-align:right;">
-        TOTAL RUTEADAS
-    </td>
-    <td id="total-ruteadas-5"
-        style="
-            text-align:center;
-            color:#3CB371;
-            font-size:16px;
-            font-weight:bold;
-        ">
-        0
-    </td>
-</tr>
-
-
-
-</tfoot>
-    </table>
-</div>
-
-
-        
-        <div id="tab-4" class="t-content" style="display:none;">
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
-                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:60px;">
-    SCHEDULE
-</th>
-<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
-USADAS
-</th>
-<th style="
-    border-right:0.5px solid #25282b;
-    padding:4px 8px;
-    font-size:11px;
-    color: #25282b !important;
-    width:50px;">
-    DELTA
-</th>
-</tr>
-            
-            </tr>
-        </thead>
-        <tbody id="body-4">{gen_master_rows(u_SDE, 4)}</tbody>
-       <tfoot class="fila-total">
-<tr class="fila-total">
-    <td style="border:none;"></td>
-    <td colspan="3" style="padding:6px; text-align:right;">
-        TOTAL CAR RUTEADAS
-    </td>
-    <td id="total-car-real-4"
-        style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">
-        0
-    </td>
-</tr>
-</tfoot>
-    </table>
-</div>
-
 
 </div>
 
@@ -1529,11 +1334,8 @@ USADAS
     📋 PLANIFICACIÓN POR POLÍGONOS
 </div>
         
-        <div id="polys-2" class="p-content">{gen_poligonos(u_C1)}</div>
+       
         <div id="polys-6" class="p-content" style="display:none;">{gen_poligonos(u_C1_SJA1)}</div>
-        <div id="polys-1" class="p-content" style="display:none;">{gen_poligonos(u_PREC)}</div>
-        <div id="polys-5" class="p-content" style="display:none;">{gen_poligonos(u_PREC_SMX2)}</div>
-        <div id="polys-4" class="p-content" style="display:none;">{gen_poligonos(u_SDE)}</div>
 
 
         <div id="excel-polys" style="display:none; margin-top:10px;">
@@ -1607,7 +1409,7 @@ USADAS
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
 
-    let currentTab = 2;
+    let currentTab = 6;
     let editedRowsPlan = new Set();
     let curC = "";
     let chronoInterval;
@@ -1705,8 +1507,10 @@ function showTab(n, btn) {{
     document.querySelectorAll('.tab-btn')
         .forEach(b => b.classList.remove('active'));
 
-    document.getElementById('polys-' + n).style.display = 'block';
-    document.getElementById('tab-' + n).style.display = 'block';
+    const p = document.getElementById('polys-' + n);
+    const t = document.getElementById('tab-' + n);
+    if (p) p.style.display = 'block';
+    if (t) t.style.display = 'block';
 
     btn.classList.add('active');
 
@@ -1720,6 +1524,16 @@ function showTab(n, btn) {{
         excelBtn.style.display = (n === 2 || n === 6) ? 'inline-block' : 'none';
     }}
 }}
+
+
+
+// ✅ AQUÍ LO PEGAS
+window.addEventListener("load", () => {{
+  const btn6 = document.querySelector('.tab-btn[onclick*="showTab(6"]');
+  if (btn6) showTab(6, btn6);
+}});
+   
+
 
 
 
@@ -2613,10 +2427,7 @@ function toggleExcelView() {{
 
     // IDs de las filas que quieres ocultar en modo Excel
     const idsAocultar = [
-        "total-no-car-2", "total-car-schedule-2", "total-car-real-2",
-        "total-no-car-6", "total-car-schedule-6", "total-car-real-6",
-        "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
-        "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
+        "total-no-car-6", "total-car-schedule-6", "total-car-real-6"
     ];
 
     if (isExcel) {{
@@ -2625,7 +2436,7 @@ function toggleExcelView() {{
         btn.innerHTML = "🔙 VISTA NORMAL";
         if(excel) excel.style.display = "block";
         
-        ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6"].forEach(id => {{
+        ["polys-6"].forEach(id => {{
             let el = document.getElementById(id);
             if(el) el.style.display = "none";
         }});
@@ -3462,9 +3273,12 @@ function updateFleetFloat() {{
 
 
     // --- ESTAS 3 LÍNEAS ACTUALIZAN TUS CUADRITOS DE LA IMAGEN ---
-    document.getElementById("val-mlp-rute-2").innerText = totalMLPReal;
-    document.getElementById("val-rental-rute-2").innerText = totalRentalReal;
-    document.getElementById("val-car-rute-2").innerText = totalCarReal;
+    const b1 = document.getElementById("val-mlp-rute-6");
+    const b2 = document.getElementById("val-rental-rute-6");
+    const b3 = document.getElementById("val-car-rute-6");
+    if (b1) b1.innerText = totalMLPReal;
+    if (b2) b2.innerText = totalRentalReal;
+    if (b3) b3.innerText = totalCarReal;
 
 
     if (typeof guardarEstado === 'function') {{ guardarEstado(); }}
