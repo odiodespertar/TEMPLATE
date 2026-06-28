@@ -1008,7 +1008,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
-                <button class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
+                <button class="tab-btn" onclick="showTab(6, this)">C1 SPZ1</button>
             </div> 
 
             
@@ -3340,8 +3340,8 @@ const ruteos = [
     }},
     
     {{
-        nombre:"SJA1 C1",
-        hora:"23:30"
+        nombre:"SPZ1 C1",
+        hora:"23:00"
     }}
 
 ];
