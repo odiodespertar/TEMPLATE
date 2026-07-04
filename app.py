@@ -15,7 +15,12 @@ st.markdown("""
     footer, #MainMenu, header {visibility: hidden;}
     body { background-color: #25282b; }
 
-    
+    /* AÑADE AQUÍ EL NUEVO BLOQUE */
+    .poligono-bloque {
+        letter-spacing: -0.2px; 
+        white-space: nowrap;    
+        zoom: 0.95; /* Añade esto si quieres que Windows lo comprima un poquito más */
+    }
 
     #contenedor-padre { display: flex; flex-direction: column; }
     
@@ -407,10 +412,17 @@ app_html = f"""
          
         /* Efecto de iluminación al pasar el mouse por las filas */
         tr.master-row:hover, tr.calc-row:hover {{
-            background-color: #ffffff !important;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            cursor: default;
+            background-color: #fff3cd !important;
+            box-shadow: inset 0 0 2px #ffc107 !important;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
         }}
+
+
+        /* Opcional: Para asegurar que el texto no se pierda al iluminar */
+tr.master-row:hover td, tr.calc-row:hover td {{
+    color: #000 !important; /* Asegura que el texto sea oscuro sobre el fondo amarillo */
+}}
 
 
 
