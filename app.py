@@ -135,7 +135,7 @@ def gen_master_rows(data_dict, table_id):
 
         # Caso A: Encabezado/Divisor
         if "---" in name:
-            colspan = 7 if mostrar_orh_ocup else 5
+            colspan = 8 if mostrar_orh_ocup else 5
 
             rows += f'''
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
@@ -155,19 +155,20 @@ def gen_master_rows(data_dict, table_id):
         else:
             st_base = "background: #ebebeb; color: #969696;" if not name else ""
 
-            # ✅ Celdas ORH/OCUP visibles solo en Tab 6
+            # ✅ Celdas extra visibles SOLO en C1 y PREC SMX5
+            celdas_orh_ocup = ""
             if mostrar_orh_ocup:
                 celdas_orh_ocup = f'''
                 <td contenteditable="true"
                     class="edit-orh"
-                    oninput="actualizarHoraMinuto(this); recalc();"
+                    oninput="recalc()"
                     style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#25282b;">
                     0
                 </td>
 
-                <td class="orh-hm"
-                    style="text-align:center; border:0.2px solid #25282b; width:58px; background:#f7f7f7; color:#25282b;">
-                    0h 0m
+                <td class="orh-hora"
+                    style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#25282b; font-weight:bold;">
+                    00:00
                 </td>
 
                 <td contenteditable="true"
@@ -177,9 +178,14 @@ def gen_master_rows(data_dict, table_id):
                     0
                 </td>
                 '''
+
+
+                
             else:
+                # En tablas donde NO deben verse, se mantienen ocultas (como ya lo tenías)
                 celdas_orh_ocup = '''
                 <td class="edit-orh" style="display:none;">0</td>
+                <td class="orh-hora" style="display:none;">00:00</td>
                 <td class="edit-ocup" style="display:none;">0</td>
                 '''
 
@@ -1034,7 +1040,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
             <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
                 <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
-                <th style="border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:58px;"> H:M </th>
+                <th style=" border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:60px;">H:M</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
@@ -1226,22 +1232,55 @@ USADAS
 
     function actualizarHoraMinuto(celda){{
 
-    let minutos = parseInt(celda.innerText);
+    let valor = celda.innerText.trim().replace(",", ".");
 
-    if(isNaN(minutos))
-        minutos = 0;
+    if(valor === "") valor = "0";
 
-    let horas = Math.floor(minutos/60);
+    let numero = parseFloat(valor);
 
-    let mins = minutos % 60;
+    if(isNaN(numero))
+        numero = 0;
+
+    let minutosTotales;
+
+    // Si tiene decimal, se interpreta como HORAS
+    if(valor.includes(".")){{
+        minutosTotales = Math.round(numero * 60);
+    }}
+    // Si es entero grande (ej. 145), se interpreta como MINUTOS
+    else if(numero >= 24){{
+        minutosTotales = Math.round(numero);
+    }}
+    // Si es entero pequeño (ej. 2), se interpreta como HORAS
+    else{{
+        minutosTotales = Math.round(numero * 60);
+    }}
+
+    let horas = Math.floor(minutosTotales / 60);
+    let mins = minutosTotales % 60;
 
     let fila = celda.closest("tr");
+    let hm = fila.querySelector(".orh-hora");
 
-    let hm = fila.querySelector(".orh-hm");
-
-    if(hm)
-        hm.innerText = horas + "h " + mins + "m";
+    if(hm){{
+        hm.innerText =
+            String(horas).padStart(2,"0") +
+            ":" +
+            String(mins).padStart(2,"0");
+    }}
 }}
+
+document.querySelectorAll(".edit-orh").forEach(function(celda){{
+
+    actualizarHoraMinuto(celda);
+
+    celda.addEventListener("input", function(){{
+
+        actualizarHoraMinuto(this);
+
+    }});
+
+}});
 
 
     function aplicarPerfil() {{
