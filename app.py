@@ -119,22 +119,31 @@ def gen_master_rows(data_dict, table_id):
     items = list(data_dict.items())
     total_items = len(items)
 
-    # ✅ En tu app ya solo quieres C1 SJA1 (tab 6), así que ORH/OCUP se muestran aquí
-    mostrar_orh_ocup = (table_id == 6)
+    nombres_prec = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
+    nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
 
-    # Mantengo tu lógica de “relleno” de filas
-    num_filas_objetivo = 4
+    # ✅ Mostrar ORH/OCUPACIÓN solo en C1 y PREC SMX5 (ajusta si tu id real de PREC SMX5 es otro)
+    mostrar_orh_ocup = (table_id in [1, 2, 6])
+
+    num_filas_objetivo = 45 if table_id == "PREC" else 4
     rango_final = max(total_items, num_filas_objetivo)
 
     for i in range(1, rango_final + 1):
+        if (data_dict == u_PREC) and (i-1) < len(nombres_prec):
+            p_name = nombres_prec[i-1]
+        elif (data_dict == u_PREC_SMX2) and (i-1) < len(nombres_smx2):
+            p_name = nombres_smx2[i-1]
+        else:
+            p_name = f"PLAN {i}"
 
-        if (i - 1) < total_items:
-            name, spr = items[i - 1]
+        if (i-1) < total_items:
+            name, spr = items[i-1]
         else:
             name, spr = "", [0, 0]
 
         # Caso A: Encabezado/Divisor
         if "---" in name:
+            # Antes colspaneabas 5; ahora depende si agregamos 2 columnas visibles
             colspan = 8 if mostrar_orh_ocup else 5
 
             rows += f'''
@@ -228,6 +237,8 @@ def gen_master_rows(data_dict, table_id):
 
 
 
+
+
 def export_c1_csv():
     data = []
     for unidad, spr in u_C1.items():
@@ -248,19 +259,47 @@ def export_c1_csv():
 
 
 def gen_poligonos(data_target=None):
-    """
-    Versión recortada SOLO para C1 SJA1 (TAB 6).
-    No depende de u_C1, u_SDE, u_PREC, u_PREC_SMX2, etc.
-    """
-    polys = ""
-
-    # Botones + estilos (los dejé igual a tu versión)
+    polys = ""  # ✅ NO usar triple comillas aquí
+ 
+    # Botones con dimensiones totalmente congeladas a nivel píxel
     btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;"
+    
+    nombres_prec = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
+    nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
+    nombres_c1 = ["ESCÁRCEGA", "CAMPECHE", "ESCÁRCEGA EXT", "MAXCANUN", "CANDELARIA", "SEYBAPLAYA", "CHAMPOTÓN", "HOLPECHEN"]  
+   
+    es_c1 = (data_target == u_C1 or data_target == u_C1_SJA1)
+    es_sde = (data_target == u_SDE)
+    es_prec = (data_target == u_PREC)
+
+    
+    # Contenedor flex con ancho bloqueado al 100% de la celda
     div_flex = "display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; width: 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;"
+    
+    # Cajas de texto para números (Unidades y SPR)
     span_num_u = "font-weight: bold; display: inline-block; text-align: center; width: 28px; min-width: 28px; max-width: 28px; flex-shrink: 0;"
     span_num_spr = "font-weight: bold; display: inline-block; text-align: center; width: 38px; min-width: 38px; max-width: 43px; flex-shrink: 0;"
+    
+    # 🔥 ESTILO DEL SELECTOR RECALIBRADO (Letra más grande, legible y cómoda para la operación)
     select_style = "width:160px; max-width: 160px; border:none; background:transparent; font-weight:600; font-size:14px; color:#25282b; padding: 4px; cursor: pointer;"
 
+
+    fila_nodos = '''
+<tr class="fila-nodos">
+    <td style="background:#ededed; border:0.5px solid #25282b; text-align:center; font-weight:bold; color:#FF6347;">
+        NODOS
+    </td>
+    <td contenteditable="true"
+        class="nodos-val"
+        style="border:1.0px solid #25282b; text-align:center; font-weight:bold;">
+        0
+    </td>
+    <td colspan="2" style="border:0.5px solid #25282b;"></td>
+</tr>
+'''
+
+
+    
     fila_inner = f'''
     <tr class="calc-row">
         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
@@ -282,13 +321,35 @@ def gen_poligonos(data_target=None):
                 <option value="">Seleccionar...</option>
             </select>
         </td>
-        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;">
-            <input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;">
-        </td>
+        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
     </tr>'''
 
-    # Volumen con Nodos (SJA1)
-    campo_volumen_sja1 = '''
+
+
+    campo_volumen_normal = '''
+<div style="text-align:center;">
+    <span class="v-total-val"
+            contenteditable="true"
+            oninput="recalc()"
+            style="
+            display:inline-block;
+            min-width:55px;
+            padding:2px 8px;
+            border:none;
+            border-radius:4px;
+            background:#ededed;
+            font-size:22px;
+            font-weight:bold;
+            color:#808080;
+            text-align:center;
+          ">
+        0
+    </span>
+</div>
+'''
+
+    
+    campo_volumen_c1 = '''
 <div style="text-align:center;">
     <span class="v-total-val"
           contenteditable="true"
@@ -333,18 +394,115 @@ def gen_poligonos(data_target=None):
 </div>
 '''
 
-    # SOLO SJA1: 20 planes (tu lista) → renderiza 20 bloques (1..20)
-    limite_tablas = 15  # range(1,21) = 20
-    for i in range(1, limite_tablas):
+    campo_campeche = '''
+<div style="text-align:center;">
+    <span class="v-total-val"
+          contenteditable="true"
+          oninput="recalc()"
+          style="
+            display:inline-block;
+            min-width:55px;
+            padding:2px 8px;
+            border:none;
+            border-radius:4px;
+            background:#ededed;
+            font-size:22px;
+            font-weight:bold;
+            color:#808080;
+            text-align:center;
+          ">
+        0
+    </span>
+</div>
 
-        if data_target == u_C1_SJA1 and (i - 1) < len(NOMBRES_PLANES_C1_SJA1):
-            nombre_final = NOMBRES_PLANES_C1_SJA1[i - 1]
+<hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+
+<div style="font-size:13px;font-weight:bold;color:#25282b;">
+    Nodos:
+    <span class="nodos-campeche"
+          contenteditable="true"
+          style="
+            display:inline-block;
+            min-width:28px;
+            text-align:center;
+            border:none;
+            border-radius:4px;
+            background:#ededed;
+            font-size:16px;
+            font-weight:bold;
+            color:#FF6347;
+            padding:0 4px;
+            margin-left:3px;
+          ">
+        0
+    </span>
+</div>
+'''
+
+
+    # Definimos dinámicamente si renderiza 10 o 20 tablas de polígonos
+    if data_target == u_C1_SJA1:
+        limite_tablas = 21
+    elif es_sde:
+        limite_tablas = 5  # 🌟 Renderizará exactamente 4 PLANES (1 al 4)
+    else:
+        limite_tablas = 11
+    
+    for i in range(1, limite_tablas): # <-- Asegúrate de que aquí tenga la "s" al final
+
+        if data_target == u_PREC and (i-1) < len(nombres_prec):
+            nombre_final = nombres_prec[i-1]
+
+        elif data_target == u_PREC_SMX2 and (i-1) < len(nombres_smx2):
+             nombre_final = nombres_smx2[i-1]
+
+        elif data_target == u_C1 and (i-1) < len(NOMBRES_PLANES_C1):
+            nombre_final = NOMBRES_PLANES_C1[i-1]
+            
+        elif data_target == u_C1_SJA1 and (i-1) < len(NOMBRES_PLANES_C1_SJA1):
+            nombre_final = NOMBRES_PLANES_C1_SJA1[i-1]
+
         else:
-            nombre_final = f"PLAN {i}"
+             nombre_final = f"PLAN {i}"
 
-        rowspan_actual = 5  # SJA1 = 5 filas (1 principal + 4 extras)
-        filas_extra = f"{fila_inner}{fila_inner}{fila_inner}{fila_inner}"
+        # ← AGREGAR AQUÍ
+        if nombre_final == "CAMPECHE":
+             contenido_volumen = campo_campeche
 
+        elif es_c1:
+             contenido_volumen = campo_volumen_c1
+
+        else:
+             contenido_volumen = campo_volumen_normal
+
+        # 🌟 DEFINIMOS EL ALTO DE LA CELDA GRIS (ROWSPAN)
+        if es_sde:
+             rowspan_actual = 5
+        elif es_prec:
+             rowspan_actual = 4
+        elif data_target == u_C1_SJA1:
+            if nombre_final == "CENTRO 1":
+                rowspan_actual = 8  # 1 principal + 7 extra
+            else:
+                rowspan_actual = 5  # Cambia a 5 para la celda gris de C1 SJA1
+        else:
+             rowspan_actual = 3
+
+        # 🌟 AGREGAMOS LAS FILAS EXTRA CORRESPONDIENTES
+        if es_sde:
+            filas_extra = f"{fila_inner}{fila_inner}{fila_inner}{fila_inner}"
+        elif es_prec:
+            filas_extra = f"{fila_inner}{fila_inner}{fila_inner}"
+        elif data_target == u_C1_SJA1:
+           if nombre_final == "CENTRO 1":
+               filas_extra = f"{fila_inner}{fila_inner}{fila_inner}{fila_inner}{fila_inner}{fila_inner}{fila_inner}" # 7 filas extra + 1 principal = 5 filas totales
+           else:
+               filas_extra = f"{fila_inner * 4}" # 4 filas extra
+        else:
+            filas_extra = f"{fila_inner}{fila_inner}"
+
+        
+        
         polys += f'''
         <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow: hidden; background: #ededed; border: 1.5px solid #25282b;">           
             <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #25282b;">
@@ -360,16 +518,15 @@ def gen_poligonos(data_target=None):
                 </thead>
                 <tbody>
                     <tr class="calc-row"> 
-                        <td rowspan="{rowspan_actual}" contenteditable="true"
-                            style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">
-                            {nombre_final}
-                        </td>
-
+                        <td rowspan="{rowspan_actual}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">{nombre_final}</td>
                         <td rowspan="{rowspan_actual}"
-                            style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
-                            {campo_volumen_sja1}
+                            style="color:#808080;
+                                   font-weight:bold;
+                                   text-align:center;
+                                   border:1px solid #25282b;
+                                   padding:5px;">
+                            {contenido_volumen}
                         </td>
-
                         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
                             <div style="{div_flex}">
                                 <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button> 
@@ -377,7 +534,6 @@ def gen_poligonos(data_target=None):
                                 <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
                             </div>
                         </td>
-
                         <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
                             <div style="{div_flex}">
                                 <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
@@ -385,32 +541,25 @@ def gen_poligonos(data_target=None):
                                 <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
                             </div>
                         </td>
-
                         <td style="border: 0.5px solid #25282b; padding: 2px;">
                             <select class="s-type" onchange="resetRow(this)" style="{select_style}">
                                 <option>Seleccionar...</option>
                             </select>
                         </td>
-
-                        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;">
-                            <input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;">
-                        </td>
+                        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
                     </tr>
-
                     {filas_extra}
-
+                    {""}
                     <tr style="background:#ededed; height: 32px;">
                         <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
                         <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
-                        <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                      <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
                     </tr>
+                    
                 </tbody>
             </table>
         </div>'''
-
     return polys
-
-
 
 
 # --- PERFILES LIMPIOS (DESACTIVADOS) ---
@@ -438,8 +587,6 @@ app_html = f"""
 tr.master-row:hover td, tr.calc-row:hover td {{
     color: #000 !important; /* Asegura que el texto sea oscuro sobre el fondo amarillo */
 }}
-
-
 
 
 /* 📊 CONTADOR EXCLUSIVO PESTAÑA SCP1 */
@@ -512,9 +659,6 @@ tr.master-row:hover td, tr.calc-row:hover td {{
             text-align: right;
             font-size: 14px;
         }}
-
-
-
 
 
 
@@ -900,6 +1044,79 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </style> 
 </head>
 
+<body>
+<div id="panel-prioridades" style="
+        position: fixed; 
+        top: -600px; 
+        left: 0; 
+        width: 100%; 
+        height: 268px; 
+        background: #EEE8AA; 
+        border-bottom: 3px solid #FFD700; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+        z-index: 9999999; 
+        transition: top 0.4s ease; 
+        padding: 5px 20px 20px 20px; 
+        box-sizing: border-box;
+        overflow-y: auto;
+        font-family: Arial, sans-serif;
+    ">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #403f3e; padding-bottom: 8px; margin-bottom: 12px;">
+        <h3 style="margin: 0; color: #000000; font-size: 16px; font-weight: bold;">Prioridades de asignación</h3>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        
+        <div>
+            <h4 style="margin: 0 0 10px 0; color: #808080; font-size: 14px; font-weight: bold;">Prioridades SCP1 C1</h4>
+            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: black;">
+                <li>🔴 Campeche ➤ Rental Large Van ➤ NODOS = Delivery Cell-Dedicada.</li>
+                <li>🟢 Resto planes ➤ Large Van MLP (nodo=híbrida).</li>
+            </ul>
+        </div>
+
+
+        <div>
+            <h4 style="margin: 0 0 10px 0; color: #808080; font-size: 14px; font-weight: bold;">Prioridades SMX5</h4>
+            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: black;">
+                <li>🟠 Todos los planes ➤ Car 8h/Car extra 8h E1 Tlalpan Nte, Sur y Xochi</li>
+                <li>👉 Cercanía de SVC ➤ Coyoacán, Iztapalapa, Tláhuac, Tlalpan nte, Tlalpan sur, Xochi, Chalco y Milpa Alta</li>
+            </ul>
+        </div>
+
+        <div>
+            <h4 style="margin: 0 0 10px 0; color: #808080; font-size: 14px; font-weight: bold;">Prioridades SJA1 C1</h4>
+            <ul style="padding-left: 20px; margin: 0; line-height: 1.4; font-size: 13px; color: black;">
+                <li>🟢 Local ➤ <b>Rentals Electric = meto todas</b></li> 
+                <li>🟢 Local ➤ <b>Rentals Large = si meto 3.5, delivery y H&B, quito 2)</b></li>
+                <li>🟢 Local ➤ <b>Rentals Large = si meto 3.5 y delivery, quito 1)</b></li>
+                <li>🟢 Local ➤ Truck 3.5 MLP y Delivery Large van (ambas dedicadas-3 paradas), H&B (bulk), MLP y crowd.</li>
+                <li>🟣 Planes foráneos ➤ MLP (nodo=híbrida) ➡️ Solo Xico/Tuzamapa ➤ MLP y Crowd.</li>
+                <li>🔵 EJA1-SP ➤ Media milla-ruteo fake.</li>
+                <li>🟤 Alchichica ND-AM0 ➤ 2 unidades Small Van MLP/330 min = 65 ids.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <button onclick="togglePrioridades()" style="
+        position: fixed; 
+        top: 25px; 
+        right: 25px; 
+        z-index: 99999999; /* Botón en la capa más alta */
+        background: #FFD700; 
+        color: #3c4040; 
+        border: 1px solid #333; 
+        padding: 8px 12px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border-radius: 4px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    ">
+    🚦 Prioridades
+</button>
+
 
 
 
@@ -944,15 +1161,15 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         <div id="resumen-flota-ruteada" style="display: flex; gap: 15px; margin: 15px 0; justify-content: center;">
         <div style="background: #d7e5fa; padding: 8px; border-radius: 5px; border: 1px solid #bbdefb; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #0861c7;">MLP</div>
-            <div id="val-mlp-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-mlp-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
         <div style="background: #c6f7f3; padding: 8px; border-radius: 5px; border: 1px solid #68b0ac; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #d021eb;">RENTAL</div>
-            <div id="val-rental-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-rental-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
         <div style="background: #d3f5d3; padding: 8px; border-radius: 5px; border: 1px solid #90EE90; text-align: center; width: 100px;">
             <div style="font-size: 10px; font-weight: bold; color: #209626;">CAR</div>
-            <div id="val-car-rute-6" style="font-size: 14px; font-weight: bold;">0</div>
+            <div id="val-car-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
         </div>
     </div>
 
@@ -972,29 +1189,40 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
 <div id="fleet-sticky" class="fleet-normal">
   <div id="fleet-drag-handle">
-    
+   
 
     <button id="fleet-toggle-btn"
-      onclick="console.log('CLICK BOTON FLOTAR/NORMAL'); toggleFleetFloating();"
+      onclick="console.log('CLICK BOTON FLOTAR ☁️/NORMAL (enter)'); toggleFleetFloating();"
       style="float:center; cursor:pointer; border:none; background:#25282b; color:white; padding:3px 8px; border-radius:6px; font-weight:bold;">
-      FLOTAR
+      FLOTAR ☁️
     </button>
   </div>
 
 
-        
+
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
             <div>
-                <button class="tab-btn" onclick="showTab(6, this)">TU CICLO</button>
+                <button class="tab-btn" onclick="showTab(4, this)">SDE</button>
+                <button class="tab-btn active" onclick="showTab(2, this)">C1 SCP1</button>
+                <button class="tab-btn" onclick="showTab(1, this)">PREC SMX5</button>
+                <!--
+                <button class="tab-btn" onclick="showTab(5, this)">PREC SMX2</button>
+                -->
+                <button class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
             </div> 
 
+
             
-          <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
+            <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
     <button onclick="distribuirAutomatico()" 
-    style="visibility: hidden; cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 6px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #2d968f; transition: all 0.05s; outline: none;">
-        🧠 AUTO-CALCULAR
-</button>  
+    style="cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 7px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #2d968f; transition: all 0.05s; outline: none;"
+    onmousedown="this.style.transform='translateY(2px)'; this.style.boxShadow='0 1px 0 #1b4b4d';"
+    onmouseup="this.style.transform='translateY(0px)'; this.style.boxShadow='0 3px 0 #1b4b4d';"
+    onmouseleave="this.style.transform='translateY(0px)'; this.style.boxShadow='0 3px 0 #1b4b4d';">
+
     
+    🧠 AUTO-CALCULAR
+</button>
     
     <button class="filter-btn" onclick="filterRows(true)" 
         style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1px solid #25282b; font-size: 12px; padding: 6px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #0a3045; transition: all 0.05s; outline: none;">
@@ -1032,9 +1260,45 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
         <!-- TABLAS CON ENCABEZADOS RESTAURADOS (CORREGIDO AL ORIGINAL) --> 
 
+       
+     <div id="tab-2" class="t-content">
+  
+       <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
+                <th style=" border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:60px;">H:M</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
+<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">
+SCHEDULE
+</th>
+<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
+USADAS
+</th>
+<th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">
+DELTA
+</th>
+
+        </thead>
+        <tbody id="body-2">{gen_master_rows(u_C1, 2)}</tbody>
+<tfoot class="fila-total">
+    <tr class="fila-total">
+        <td style="border:none;"></td>
+        <td colspan="5" style="padding:6px; text-align:right;">TOTAL RUTEADAS</td>
+        <td id="total-ruteadas-2" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+    </tr>
+</tfoot>
 
 
-<div id="tab-6" class="t-content">
+    </table>
+</div>
+
+
+
+<div id="tab-6" class="t-content" style="display:none;">
 
     <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
         <thead>
@@ -1063,7 +1327,189 @@ USADAS
     </table>
 </div>
 
+
+       
+        <div id="tab-1" class="t-content" style="display:none;">
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+  <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+    <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+
+    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
+    <th style=" border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:60px;">H:M</th>
+    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
+
+    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
+    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
+
+    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
+   <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
+USADAS
+</th>
+    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
+  </tr>
+</thead>
+
+        <tbody id="body-1">{gen_master_rows(u_PREC, 1)}</tbody>
+          <tfoot class="fila-total">
+
+
+<tr class="fila-total">
+    <td style="border:none;"></td>
+    <td colspan="5" style="padding:6px; text-align:right;">
+        TOTAL CAR RUTEADAS
+    </td>
+    <td id="total-car-real-1"
+        style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">
+        0
+    </td>
+</tr>
+
+
+
+
+
+</tfoot>
+    </table>
 </div>
+
+       
+        <div id="tab-5" class="t-content" style="display:none;">
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                <th style=" border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:60px;">H:M</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
+<th style="
+    border-right:0.5px solid #25282b;
+    padding:4px 8px;
+    font-size:11px;
+    color: #25282b !important;
+    width:60px;">
+    SCHEDULE
+</th>
+<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
+USADAS
+</th>
+<th style="
+    border-right:0.5px solid #25282b;
+    padding:4px 8px;
+    font-size:11px;
+    color: #25282b !important;
+    width:50px;">
+    DELTA
+</th>
+</tr>
+            
+            </tr>
+        </thead>
+        <tbody id="body-5">{gen_master_rows(u_PREC_SMX2, 5)}</tbody>
+         <tfoot class="fila-total">
+<tr class="fila-total">
+    <td style="border:none;"></td>
+    <td colspan="3" style="padding:6px; text-align:right;">
+        TOTAL CAR RUTEADAS
+    </td>
+    <td id="total-car-real-5"
+        style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">
+        0
+    </td>
+</tr>
+</tfoot>
+    </table>
+</div>
+
+
+        
+        <div id="tab-4" class="t-content" style="display:none;">
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+        <thead>
+            <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
+                <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
+<th style="
+    border-right:0.5px solid #25282b;
+    padding:4px 8px;
+    font-size:11px;
+    color: #25282b !important;
+    width:60px;">
+    SCHEDULE
+</th>
+<th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">
+USADAS
+</th>
+<th style="
+    border-right:0.5px solid #25282b;
+    padding:4px 8px;
+    font-size:11px;
+    color: #25282b !important;
+    width:50px;">
+    DELTA
+</th>
+</tr>
+            
+            </tr>
+        </thead>
+        <tbody id="body-4">{gen_master_rows(u_SDE, 4)}</tbody>
+       <tfoot class="fila-total">
+<tr class="fila-total">
+    <td style="border:none;"></td>
+    <td colspan="3" style="padding:6px; text-align:right;">
+        TOTAL CAR RUTEADAS
+    </td>
+    <td id="total-car-real-4"
+        style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">
+        0
+    </td>
+</tr>
+</tfoot>
+    </table>
+</div>
+
+
+</div>
+
+
+
+<!--
+<div id="tabs-container" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
+
+<div id="contenedor-paquetes-c1" style="display: none; background: #25282b; padding: 15px; border-top: 3px solid #26d4ca; margin: 10px 0; border-radius: 6px; color: white;">
+    <h4 style="margin:0 0 10px 0; color:#26d4ca; font-size: 14px; text-align: center;">RESUMEN DE PAQUETES (C1)</h4>
+    
+    <div style="display: flex; gap: 15px; justify-content: center; align-items: flex-end;">
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="text-align:center;">
+                <label style="font-size:11px; color:#aaa;">VOL A LAS 23:30</label><br>
+                <input type="number" class="sum-input" style="width:130px; text-align:center; padding: 6px 0; font-size: 16px;">
+            </div>
+            <div style="text-align:center;">
+                <label style="font-size:11px; color:#aaa;">VOL DESPUÉS RUTEO</label><br>
+                <input type="number" class="sum-input" style="width:130px; text-align:center; padding: 6px 0; font-size: 16px;">
+            </div>
+        </div>
+
+       
+        <div style="display: flex; gap: 10px; align-items: flex-end;">
+            <div style="text-align:center;"><label style="font-size:11px; color:#ADFF2F;">NO RUT - EJA1</label><br><input type="number" class="sum-input" style="width:70px; text-align:center; padding: 6px 0; font-size: 16px;"></div>
+            <div style="text-align:center;"><label style="font-size:11px; color:#FF7F50;">DROPEO NODOS</label><br><input type="number" class="sum-input" style="width:70px; text-align:center; padding: 6px 0; font-size: 16px;"></div>
+            <div style="text-align:center;"><label style="font-size:11px; color:#FF4500;">DROPEO FINAL</label><br><input type="number" class="sum-input" style="width:70px; text-align:center; padding: 6px 0; font-size: 16px;"></div>
+            <div style="text-align:center;"><label style="font-size:11px; color:#FFD700;">ALCHICHICA ND</label><br><input type="number" class="sum-input" style="width:70px; text-align:center; padding: 6px 0; font-size: 16px;"></div>
+            
+            <div style="background: #333; border-radius: 3px; padding: 4px; min-width: 70px; text-align: center;">
+                <label style="font-size: 11px; color: #26d4ca; font-weight: bold;">TOTAL</label>
+                <input type="number" id="total-final" value="0" readonly style="width: 100%; padding: 6px 0; border: none; text-align: center; background: transparent; color: white; font-weight: bold; font-size: 16px;">
+            </div>
+        </div>
+
+    </div>
+</div>
+-->
+
 
 
         
@@ -1080,46 +1526,34 @@ USADAS
     border-radius: 7px;
             ">
             
-                <button id="toggle-tools-btn" onclick="toggleTools()"
-        style="display:none;
-               cursor:pointer;
-               background:#25282b !important;
-               background-image: none !important;
-               box-shadow: none !important;
-               color: #ffffff !important;
-               border: 1px solid #4682B4;
-               font-size: 11px;
-               padding: 5px 0;
-               border-radius: 3px;
-               font-weight: bold;
-               outline: none;
-               width: 100%;
-               margin-bottom: 15px;">
+                <button id="toggle-tools-btn" onclick="toggleTools()" 
+        style="cursor:pointer; 
+               background:#25282b !important; 
+               background-image: none !important; 
+               box-shadow: none !important; 
+               color: #ffffff !important; 
+               border: 1px solid #4682B4; 
+           font-size: 11px; 
+           padding: 5px 0; 
+           border-radius: 3px; 
+           font-weight: bold; 
+           outline: none; 
+           width: 100%; 
+           margin-bottom: 15px;">
     ❌ OCULTAR UTILERÍAS
 </button>
 
 
 
      
-                <div style="display:none;">
-
-    <div style="font-weight:bold; color:#25282b; margin-bottom:10px; font-size:12px; letter-spacing:1px;">
-        ⏱️ CONVERTIDOR DE TIEMPO
+                <div style="font-weight:bold; color:#25282b; margin-bottom:10px; font-size:12px; letter-spacing:1px;">⏱️ CONVERTIDOR DE TIEMPO</div>
+                <input type="number" id="min-in" placeholder="Minutos" style="width:80px; text-align:center;" oninput="convertTime()">
+                <div style="margin-top:10px;">
+                    <span id="time-res" style="font-size: 24px; font-weight: bold; color: #FF4500;">0h 0m</span>
+                 </div>
+             </div>
+        </div>
     </div>
-
-    <input type="number"
-           id="min-in"
-           placeholder="Minutos"
-           style="width:80px; text-align:center;"
-           oninput="convertTime()">
-
-    <div style="margin-top:10px;">
-        <span id="time-res"
-              style="font-size:24px; font-weight:bold; color:#FF4500;">
-            0h 0m
-        </span>
-    </div>
-
 </div>
 
 
@@ -1148,8 +1582,11 @@ USADAS
     📋 PLANIFICACIÓN POR POLÍGONOS
 </div>
         
-       
+        <div id="polys-2" class="p-content">{gen_poligonos(u_C1)}</div>
         <div id="polys-6" class="p-content" style="display:none;">{gen_poligonos(u_C1_SJA1)}</div>
+        <div id="polys-1" class="p-content" style="display:none;">{gen_poligonos(u_PREC)}</div>
+        <div id="polys-5" class="p-content" style="display:none;">{gen_poligonos(u_PREC_SMX2)}</div>
+        <div id="polys-4" class="p-content" style="display:none;">{gen_poligonos(u_SDE)}</div>
 
 
         <div id="excel-polys" style="display:none; margin-top:10px;">
@@ -1232,57 +1669,7 @@ USADAS
     let estadoPaquetesAntesDeExcel = "none"; // Guarda si el bloque estaba abierto o cerrado
 
 
-    function actualizarHoraMinuto(celda){{
 
-    let valor = celda.innerText.trim().replace(",", ".");
-
-    if(valor === "") valor = "0";
-
-    let numero = parseFloat(valor);
-
-    if(isNaN(numero))
-        numero = 0;
-
-    let minutosTotales;
-
-    // Si tiene decimal, se interpreta como HORAS
-    if(valor.includes(".")){{
-        minutosTotales = Math.round(numero * 60);
-    }}
-    // Si es entero grande (ej. 145), se interpreta como MINUTOS
-    else if(numero >= 24){{
-        minutosTotales = Math.round(numero);
-    }}
-    // Si es entero pequeño (ej. 2), se interpreta como HORAS
-    else{{
-        minutosTotales = Math.round(numero * 60);
-    }}
-
-    let horas = Math.floor(minutosTotales / 60);
-    let mins = minutosTotales % 60;
-
-    let fila = celda.closest("tr");
-    let hm = fila.querySelector(".orh-hora");
-
-    if(hm){{
-        hm.innerText =
-            String(horas).padStart(2,"0") +
-            ":" +
-            String(mins).padStart(2,"0");
-    }}
-}}
-
-document.querySelectorAll(".edit-orh").forEach(function(celda){{
-
-    actualizarHoraMinuto(celda);
-
-    celda.addEventListener("input", function(){{
-
-        actualizarHoraMinuto(this);
-
-    }});
-
-}});
 
 
     function aplicarPerfil() {{
@@ -1321,33 +1708,29 @@ document.querySelectorAll(".edit-orh").forEach(function(celda){{
 }}
 
 
+// --- LÓGICA DE SUMA A PRUEBA DE ERRORES ---
+    (function initSuma() {{
+        console.log("Iniciando lógica de suma...");
+        const inputs = document.querySelectorAll('.sum-input');
+        const totalDisplay = document.getElementById('total-final');
 
-function aumentarManual(btn) {{
-    let row = btn.closest('tr');
-    let spanU = row.querySelector('.u-manual');
-    let spanDelta = row.querySelector('.delta-val'); // Asegúrate que tu celda de delta tenga esta clase
-    let stockOriginal = parseInt(row.querySelector('.f-stock')?.innerText) || 0; // El límite
+        if (inputs.length === 0) {{
+            console.error("ERROR: No se encontraron los inputs con clase .sum-input");
+        }}
 
-    // 1. Aumentar el valor actual
-    let unidadesActuales = parseInt(spanU.innerText) || 0;
-    unidadesActuales += 1;
-    spanU.innerText = unidadesActuales;
-
-    // 2. Calcular el Delta (Stock - Asignadas)
-    // Si asignaste 5 y tenías 3, delta será -2.
-    let nuevoDelta = stockOriginal - unidadesActuales;
-    
-    if (spanDelta) {{
-        spanDelta.innerText = nuevoDelta;
-        
-        // 3. (OPCIONAL) Poner en rojo si es negativo para que resalte
-        spanDelta.style.color = (nuevoDelta < 0) ? "red" : "black";
-        spanDelta.style.fontWeight = (nuevoDelta < 0) ? "bold" : "normal";
-    }}
-
-    // 4. Disparar recálculo de totales para que los contadores superiores se actualicen
-    recalc(); 
-}}
+        inputs.forEach(input => {{
+            input.addEventListener('input', () => {{
+                let sum = 0;
+                inputs.forEach(i => {{
+                    sum += parseFloat(i.value) || 0;
+                }});
+                if (totalDisplay) {{
+                    totalDisplay.value = sum;
+                    console.log("Total actualizado:", sum);
+                }}
+            }});
+        }});
+    }})();
 
 
 
@@ -1372,14 +1755,14 @@ function toggleFleetFloating() {{
     panel.style.bottom = "auto";
     panel.style.margin = "0";
 
-    if (btn) btn.textContent = "NORMAL";
+    if (btn) btn.textContent = "NORMAL (enter)";
   }} else {{
-    // volver a normal
+    // volver a normal 
     panel.classList.remove("fleet-floating");
     panel.classList.add("fleet-normal");
     panel.removeAttribute("style");          // <- clave
 
-    if (btn) btn.textContent = "FLOTAR";
+    if (btn) btn.textContent = "FLOTAR ☁️";
   }}
 
   // DEBUG rápido
@@ -1467,7 +1850,6 @@ function showTab(n, btn) {{
             }}
         }}
     }}
-   
 
 
 
@@ -1478,11 +1860,7 @@ function showTab(n, btn) {{
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
     }}
-
-
     function hideAlert() {{ document.getElementById('google-alert').classList.remove('show'); }}
-
-
 
     function stepVal(btn, delta, type) {{
     let row = btn.closest('tr');
@@ -1491,11 +1869,11 @@ function showTab(n, btn) {{
     // Si no hay unidad seleccionada, no hace nada
     if(sel === "Seleccionar...") return;
 
-    // Buscamos la fila correspondiente en la tabla de Flota
+    // Buscamos la fila correspondiente en la tabla de Flota para sacar el MAX
     let fRows = Array.from(document.querySelectorAll('#body-' + currentTab + ' tr'));
     let fRow = fRows.find(r => r.querySelector('.edit-name').innerText.trim() === sel);
     
-    if (!fRow) return;
+    if (!fRow) return; // Seguridad por si no encuentra la unidad
 
     let left = parseInt(fRow.querySelector('.f-left').innerText) || 0;
     let sprMaxReal = parseFloat(fRow.querySelector('.edit-spr-max').innerText) || 0;
@@ -1504,32 +1882,97 @@ function showTab(n, btn) {{
         let span = row.querySelector('.u-manual');
         let val = parseInt(span.innerText) || 0;
 
-        // 🔥 LÓGICA MODIFICADA:
-        // Si intentamos subir (delta > 0) y no hay stock (left <= 0), 
-        // AVISAMOS pero NO bloqueamos (quitamos el return).
-        if (delta > 0 && left <= 0) {{
-            showAlert("⚠️ Aviso: Exceso de unidades. Se registrará como negativo.");
-        }}
 
-        // Incrementamos siempre, sin importar el stock
+// 🔥 SOLO ALGUNOS CAR PUEDEN EXCEDERSE
+let nombreUpper = sel.toUpperCase();
+
+let esFlexible =
+    nombreUpper.includes("CAR - 3H") ||
+    nombreUpper.includes("CAR - 5H") ||
+    nombreUpper.includes("CAR - 8H");
+
+// Si NO es flexible, bloquear cuando ya no hay disponibles
+if (delta > 0 && left <= 0 && !esFlexible) {{
+    showAlert("⚠️ NO PUEDES AGREGAR MÁS UNIDADES.");
+    return;
+}}
+
+// Si SÍ es flexible, permitir negativos pero mostrar alerta
+if (delta > 0 && left <= 0 && esFlexible) {{
+    showAlert("⚠️ EXCESO DE UNIDADES CAR. Se registrará como negativo.");
+}}
         span.innerText = val + delta;
-
-    }} else {{
-        // Lógica para SPR (se mantiene igual, esta sí tiene límite físico)
+                }} else {{
         let span = row.querySelector('.spr-real-val');
         let val = parseFloat(span.innerText) || 0;
         let newVal = Math.round(val + delta);
 
+        // VALIDACIÓN: Solo bloquea si intentas SUBIR (delta > 0) y YA te pasaste del máximo
         if (delta > 0 && newVal > sprMaxReal) {{
             showAlert("⚠️ NO PUEDES SOBREPASAR EL SPR MÁXIMO (" + sprMaxReal + ")");
             return; 
         }}
+        
+        // Si es para bajar o está dentro del rango, permite el cambio
         span.innerText = newVal;
     }}
-
     editedRowsPlan.add(row);
-    recalc(); // Esto actualizará el Delta negativo en la tabla de arriba automáticamente
+    recalc();
 }}
+
+
+
+function actualizarHoraMinuto(celda){{
+
+    let valor = celda.innerText.trim().replace(",", ".");
+
+    if(valor === "") valor = "0";
+
+    let numero = parseFloat(valor);
+
+    if(isNaN(numero))
+        numero = 0;
+
+    let minutosTotales;
+
+    // Si tiene decimal, se interpreta como HORAS
+    if(valor.includes(".")){{
+        minutosTotales = Math.round(numero * 60);
+    }}
+    // Si es entero grande (ej. 145), se interpreta como MINUTOS
+    else if(numero >= 24){{
+        minutosTotales = Math.round(numero);
+    }}
+    // Si es entero pequeño (ej. 2), se interpreta como HORAS
+    else{{
+        minutosTotales = Math.round(numero * 60);
+    }}
+
+    let horas = Math.floor(minutosTotales / 60);
+    let mins = minutosTotales % 60;
+
+    let fila = celda.closest("tr");
+    let hm = fila.querySelector(".orh-hora");
+
+    if(hm){{
+        hm.innerText =
+            String(horas).padStart(2,"0") +
+            ":" +
+            String(mins).padStart(2,"0");
+    }}
+}}
+
+document.querySelectorAll(".edit-orh").forEach(function(celda){{
+
+    actualizarHoraMinuto(celda);
+
+    celda.addEventListener("input", function(){{
+
+        actualizarHoraMinuto(this);
+
+    }});
+
+}});
 
 
 
@@ -1647,6 +2090,13 @@ document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
 document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
     let vT = parseFloat(bl.querySelector('.v-total-val').innerText) || 0, vA = 0;
     let vCalcEl = bl.querySelector('.v-calculado-total');
+
+    // Obtenemos el nombre del plan aquí para identificar CENTRO 1 y CENTRO 2
+    let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
+    let esCentro = (nombrePlanPadre === "CENTRO 1" || nombrePlanPadre === "CENTRO 2");
+    
+    let celdaNodos = bl.querySelector('.nodos-val');
+    let tieneNodo = (tabId == 6 && celdaNodos && parseInt(celdaNodos.innerText) > 0);
     
     // Obtenemos todas las filas del bloque
     let filas = bl.querySelectorAll('.calc-row');
@@ -1656,15 +2106,35 @@ document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl =>
         let uManual = r.querySelector('.u-manual');
         let sp = r.querySelector('.spr-real-val');
         
-        // Si no se ha seleccionado nada, la cantidad siempre debe ser 0
-        if (!sType.value || sType.value === "Seleccionar...") {{
+        // 🔥 AQUÍ ESTÁ LA MAGIA:
+        // Si NO es Centro Y tiene nodo, aplica la regla (Funciona para todos los demás)
+        // Si ES Centro, esta condición da FALSE y se salta la asignación automática
+        if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {{
+            sType.value = "Large Van MLP foráneo";
+            uManual.innerText = "1";
+        }}
+
+        // Si el usuario cambió la unidad manualmente, aseguramos que si es "Seleccionar...", la cantidad sea 0
+        if (sType.value === "" || sType.value === "Seleccionar...") {{
             uManual.innerText = "0";
         }}
         
         let s = sType.value;
         let u = parseInt(uManual.innerText) || 0;
 
-        // Lógica de flota unificada (sin candados especiales)
+        // 🔥 CANDADO ALCHICHICA
+        let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase() || "";
+        if (nombrePlanPadre.includes("ALCHICHICA")) {{
+            if (s !== "Seleccionar..." && s !== "") {{
+                vA += (u * (parseFloat(sp.innerText) || 0));
+                sp.style.fontWeight = "bold";
+                sp.style.setProperty("background-color", "#edf2f2");
+                sp.style.setProperty("color", "#25282b");
+            }}
+            return; 
+        }}
+
+        // Lógica de flota
         if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
             if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
             fleet[s].used += u; 
@@ -1673,28 +2143,17 @@ document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl =>
             sp.style.setProperty("color", "#25282b");
         }} else {{
             sp.style.setProperty("background-color", "#FFFFFF");
-            sp.style.setProperty("color", "#25282b");
         }}
     }});
 
-    // --- Cálculo de Totales y Diferencia ---
+    // ... (Cálculo de vCalcEl y vT igual que antes) ...
     vCalcEl.innerText = Math.round(vA);
     let d = bl.querySelector('.p-diff');
     let diffVal = Math.round(vA);
-    
-    if (vT === 0) {{
-        d.innerText = "VACÍO";
-        d.style.background = ""; 
-    }} else if (diffVal === Math.round(vT)) {{
-        d.innerText = "OK"; 
-        d.style.background = "#61b888"; 
-    }} else if (vA > vT) {{
-        d.innerText = "EXCESO: " + Math.round(vA - vT); 
-        d.style.background = "#f2bd5c"; 
-    }} else {{
-        d.innerText = "FALTAN: " + Math.round(vT - vA); 
-        d.style.background = "#fc9a88"; 
-    }}
+    if (vT === 0) d.innerText = "VACÍO";
+    else if (diffVal === Math.round(vT)) {{ d.innerText = "OK"; d.style.background = "#61b888"; }}
+    else if (vA > vT) {{ d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }}
+    else {{ d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }}
 }});
 
 
@@ -1821,7 +2280,7 @@ document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
         totals.rentalRute += u;
     }} else if (name.includes("delivery")) {{
         totals.otrosRute += u;
-    }} else if (name.includes("car") || name.includes("moto") || name.includes("van")) {{
+    }} else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {{
         totals.carRute += u;
     }} else {{
         totals.otrosRute += u; 
@@ -1958,8 +2417,8 @@ document.addEventListener('keydown', function(event) {{
     }}
 
 
-            
 
+            
     // ==========================================
 // 🔥 PEGA LA FUNCIÓN TOGGLETOOLS EXACTAMENTE AQUÍ:
 // ==========================================
@@ -2946,34 +3405,38 @@ function distribuirAutomatico() {{
                     if (unidad) break;
                 }}
             }}
-            // 4.2 PRIORIDAD PLANES FORÁNEOS: Con protección si ingresaste una unidad manualmente
-            else if (["ACTOPAN", "MISANTLA", "NAOLINCO", "PEROTE", "TEZUITLÁN", "TEZUITLAN", "TLALTETELA", "TRAPICHE", "TUZAMAPA", "XICO"].includes(nombrePlan)) {{
-                
-                // 👉 CONDICIÓN OPERATIVA: Revisamos si ya hay un vehículo metido a mano en la pantalla
-                let tieneUnidadYaAsignada = filas.some(f => {{
-                    let t = f.querySelector('.s-type')?.value || "";
-                    let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
-                    return t !== "" && t !== "Seleccionar..." && u > 0;
-                }});
-
-                // CASCADA 1: Intentamos vaciar primero las pesadas foráneas
-                unidad = fleet.find(f => f.restante > 0 && f.nombre === "Large Van MLP foráneo");
-                if (!unidad) {{
-                    unidad = fleet.find(f => f.restante > 0 && f.nombre === "Small Van MLP foráneo");
-                }}
-
-                // CASCADA 2: Si ya no hay pesadas, se desborda en las ligeras en el orden de prioridad exacto que solicitaste
-                if (!unidad) {{
-                    const listaLigeras = ["Car 8h", "Small Van 9h", "Small Van 9h Ext", "Moto 3h", "Small Van Newbie"];
-                    for (let nombreCar of listaLigeras) {{
-                        unidad = fleet.find(f => f.restante > 0 && f.nombre === nombreCar);
-                        if (unidad) break;
-                    }}
-                }}
+            
+            // 4.2 PRIORIDAD PLANES FORÁNEOS
+        else if (["ACTOPAN", "MISANTLA", "NAOLINCO", "PEROTE", "TEZUITLÁN", "TEZUITLAN", "TLALTETELA", "TRAPICHE", "TUZAMAPA", "XICO"].includes(nombrePlan)) {{
+            
+            // CASCADA 1: MLP primero
+            unidad = fleet.find(f => f.restante > 0 && f.nombre === "Large Van MLP foráneo");
+            if (!unidad) {{
+                unidad = fleet.find(f => f.restante > 0 && f.nombre === "Small Van MLP foráneo");
             }}
 
-            // Si por volumen total o falta de stock global no halla unidad, frena el ciclo
-            if (!unidad) break;
+            // CASCADA 2: Si no hay MLP, prioridad a las NEWBIE (Car o Small Van)
+            if (!unidad) {{
+                // Definimos la jerarquía: Newbies primero, luego el resto
+                let listaLigeras = [
+                    "Newbie", // Al poner solo "Newbie", capturará "Small Van Newbie" Y "Car Newbie"
+                    "Car 8h", 
+                    "Small Van 9h", 
+                    "Small Van 9h Ext", 
+                    "Moto 3h"
+                ];
+                
+                // Usamos .includes para que si el nombre en la tabla tiene la palabra, la capture
+                for (let palabra of listaLigeras) {{
+                    unidad = fleet.find(f => f.restante > 0 && f.nombre.includes(palabra));
+                    if (unidad) break;
+                }}
+            }}
+        }}
+
+        // Si no se encontró unidad en la jerarquía, frena
+        if (!unidad) break;
+        
 
             // MATEMÁTICA DE ASIGNACIÓN REGULAR PARA SJA1
             let necesarias = Math.ceil(restante / unidad.spr);
@@ -3170,12 +3633,9 @@ function updateFleetFloat() {{
 
 
     // --- ESTAS 3 LÍNEAS ACTUALIZAN TUS CUADRITOS DE LA IMAGEN ---
-    const b1 = document.getElementById("val-mlp-rute-6");
-    const b2 = document.getElementById("val-rental-rute-6");
-    const b3 = document.getElementById("val-car-rute-6");
-    if (b1) b1.innerText = totalMLPReal;
-    if (b2) b2.innerText = totalRentalReal;
-    if (b3) b3.innerText = totalCarReal;
+    document.getElementById("val-mlp-rute-2").innerText = totalMLPReal;
+    document.getElementById("val-rental-rute-2").innerText = totalRentalReal;
+    document.getElementById("val-car-rute-2").innerText = totalCarReal;
 
 
     if (typeof guardarEstado === 'function') {{ guardarEstado(); }}
@@ -3364,111 +3824,56 @@ document.addEventListener("focusin", function(e) {{
 
 
 // ======================================================
-// RELOJ Y RUTEOS VESPERTINO
+// RELOJ Y RUTEOS
 // ======================================================
 
 const ruteos = [
 
     {{
-        nombre:"STJ1 - SEN1 - SMX3 - SMX20 - SMX8",
-        hora:"16:30"
-    }},
-
-    {{
         nombre:"SMX9",
         hora:"16:40"
     }},
-    
+
     {{
-        nombre:"SGD2 - SMX11 - SGD1",
+        nombre:"SGD2",
         hora:"17:00"
     }},
-
+    
     {{
-        nombre:"SMT3 - SQR1",
-        hora:"17:10"
-    }},
-
-    {{
-        nombre:"SMX5 - SMX7",
+        nombre:"SMX5",
         hora:"17:20"
     }},
-    
-    {{
-        nombre:"SBJ1 - SLW1 - SMT1",
-        hora:"17:30"
-    }},
 
     {{
-        nombre:"SMX4 PREC",
+        nombre:"SMX4",
         hora:"17:40"
     }},
+
+    {{
+        nombre:"SMX2",
+        hora:"18:05"
+    }},
     
     {{
-        nombre:"SCJ1 - SMD2 - SGD3 - SCV1",
-        hora:"17:50"
-    }},
-
-    {{
-        nombre:"SMX2 - SMX20",
-        hora:"18:00"
-    }},
-
-    {{
-        nombre:"SMX8 - SLE1 - SPB1 - STL1",
-        hora:"18:10"
-    }},
-
-    {{
-        nombre:"SHP1",
-        hora:"18:20"
-    }},
-
-    {{
-        nombre:"SMT2 - SCQ1",
+        nombre:"SMT2",
         hora:"18:40"
     }},
 
     {{
-        nombre:"SMX8",
-        hora:"19:20"
-    }},
-
-    {{
-        nombre:"SHM1",
-        hora:"19:40"
-    }},
-
-    {{
-        nombre:"SCP1",
+        nombre:"SCP1 C1",
         hora:"20:00"
     }},
 
     {{
-        nombre:"SMX4 - SMX8 - SMX2 - SMX5 - SMX3 - SMX9 - SMD1",
+        nombre:"SMX5 PREC",
         hora:"21:30"
     }},
-
+    
     {{
-        nombre:"SLZ1",
-        hora:"22:50"
-    }},
-
-    {{
-        nombre:"SPZ1",
-        hora:"23:00"
-    }},
-
-    {{
-        nombre:"SMX11 - SPB1",
-        hora:"23:10"
-    }},
-
-    {{
-        nombre:"SSL1 - SJA1 - SCH1",
+        nombre:"SJA1 C1",
         hora:"23:30"
     }}
- 
+
 ];
 
 let ultimaAlerta = "";
@@ -3706,7 +4111,7 @@ info_operativa = {
             <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
         </div>
 
-        <h3 style='color: #000; margin-bottom: 5px;'>EXTENDIDOS</h3>
+        <h3 style='color: #000; margin-bottom: 5px;'>ROL VP04</h3>
         <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
         
         <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
@@ -3718,8 +4123,187 @@ info_operativa = {
             - Quito puntos muy lejanos</p>
         </div>
 
-      
+        <h3 style='color: #000; margin-top: 25px;'>🟪 SDE 🟪</h3>
+        <hr style='border: 1px solid #FF00FF; margin-bottom: 20px;'>
+        
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX9 PM2 - ⏰ 16:40 - 17:00</strong><br>
+            - 📌 Orígenes: MXCD02, MXCD06<br>
+            - 👉 Vol aprox. 800 / en peak puede aumentar hasta 1600<br>
+            - 👉 fecha promesa</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SGD2 PM2 - ⏰ 17:00 - 17:20</strong><br>
+             - 📌 Orígenes: MXJC01<br>
+             - 👉 Vol aprox. __<br>
+             - 👉 fecha promesa + quemada</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX5 PM2 - ⏰ 17:20 - 17:40</strong><br>
+             - 📌 Orígenes: MXCD02, MXCD06<br>
+             - 👉 Vol aprox. 400<br>
+             - 👉 fecha promesa + quemada</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX4 PM2 - ⏰ 17:40 - 18:00</strong><br>
+            - 📌 Orígenes: MXCD02, MXCD06<br>
+            - 👉 Vol aprox. 550<br>
+            - 🏍️ Motos en donde sea con SPR 25<br>
+            - 👉 fecha promesa + quemada</p> 
+        </div>
+
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX2 PM2 - ⏰ 18:00 - 18:20</strong><br>
+            - 📌 Orígenes: MXCD02, MXCD06<br>
+            - 👉 fecha promesa + quemada</p>
+            - 👉 Vol aprox. 250<br>
+            - 👉 SPR 28</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMT2 PM2 - ⏰ 18:40 - 19:00</strong><br>
+            - 📌 Origen MXNL01<br>
+            - 👉 Despacho hoy después 3 pm<br>
+            - 👉 fecha promesa + quemada<br>
+            - 👉 Vol. 800 aprox.<br>
+            - 👉 SPR 27-28 / se van las 30 unidades<br>
+            - 👉 Pido validación</p>
+        </div>
+
+
+
+        <h3 style='color: #000; margin-top: 25px;'>🟥 CICLO 1 🟥</h3>
+        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
+
+
+        <div style='background: white; border-left: 6px solid #DC143C; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #DC143C;">●</span> SCP1 AM1 - ⏰ 20:00 - 21:00</strong><br>
+             - 📌 Ellos envían el volumen a tomar, por lo que puede tomarse todo o descartarse ciertos despachos y orígenes<br>
+             - 👉 Vieja experiencia<br>
+             - 👉 Archivo de vehículos<br>
+             - 👀 Revisar si se agrega ➕ forms<br>
+             - ✅ Volumen aprox. 3000<br>
+             - 🚛 Large Van MLP resto de planes / Cuando hay vol. normal y Nodos = Híbrida<br>
+             - 🚛 Rental Large Van en Campeche = vol. normal / Delivery Cell (dedicada) = NODOS solo Campeche</p>
+        </div>
+
+
+        <h3 style='color: #000; margin-top: 25px;'>🟧 PRE-CARGA 🟧</h3>
+        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
+
+        <div style='background: white; border-left: 6px solid #ff8c00; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
+            <p style='margin: 0;'><strong>👉👉 INDICACIONES</strong><br>
+            - 📌 Origen + despachos (playbook - ó indicados por SVC) + onway<br>
+            - 👉 Schedule del día siguiente / apartado en archivo AMO<br>
+            - ➕ Mandan ids a agregar<br>
+            - ✅ delimitación / ✅ dejar restricción</p>
+        </div>
+        
+        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX5 AM3 - ⏰ 21:30 - 22:10</strong><br>
+             - 📌 Origen 09 + onway<br>
+             - ➕ Agregan ids a ciclo (de origen 10)<br>
+             - ✅  Validan volumen / aprox. 2500-2600<br>
+             - 🚛 Tlalpan norte, sur y Xochimilco con car 8h extra E1 (para no dropear)</p>
+        </div>
+
+
+        <h3 style='color: #000; margin-top: 25px;'>👉 OTROS RUTEOS PM2 (SDE)</h3>
+        <hr style='border: 1px solid #808080; margin-bottom: 20px;'> 
+
+
+        
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX20 (SMX10) PM2 - ⏰ 0:20 pm</strong><br>
+            - 📌 Origen 20 / ❌ SPR / ❌ Ocupación<br>
+            - 👉 Meto ORH de 4 hrs para crowd 5 hrs / solo para dividir paquetes uso SPR 30<br>
+            - 👉 Pido validación ➡️ @Luisa Itzel Perez y @Ibrahim</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX8 PM2 - ⏰ 5:30 pm</strong><br>
+            - 👉 Sin schedule</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX3 PM2 - ⏰ 4:30 pm</strong><br>
+            - 📌 Orígenes: MXCD02, MXCD06<br>
+            - ✅ delimitación (salen planes) / ❌ restricción<br>
+            - SPR 30/Moto y Crowd<br>
+            - 🏍️ MOTOS ➡️ Cuauhtémoc-Polanco</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SBJ1 PM2 - ⏰ A partir de las 5:00 pm</strong><br>
+            - 👉 Pido autorización para iniciar ruteo / SPR 28 / 200-300 pqt aprox</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SHM1 PM2 - ⏰ 7:20 pm</strong><br>
+            - 👉 SPR 21 / crowd 5 hrs</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT1 PM2 - ⏰ 5:10 pm</strong><br>
+            - 📌 Orígen: MXNL01<br>
+            - 👉 SVC manda data (la envían tarde, solo hago el cruce para cotejo)</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT3 PM2 - ⏰ 5:15 pm</strong><br>
+            - 👉 SPR 28 / crowd 5 hrs / 500 pqt aprox</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD1 PM2 - ⏰ 4:50 pm</strong><br>
+             - 📌 Orígen: MXJC01</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD2 PM2 - ⏰ 0:00 pm</strong><br>
+            - 👉 SPR 28</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD3 PM2 - ⏰ 4:50 pm</strong><br>
+            - 👉 SPR 30 / crowd 5 y 3 hrs</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMD2 PM1 - ⏰ 5:30 pm</strong><br>
+            - 📌 Orígen: MXYU01<br>
+            - 👉 Sin schedule / contemplo crowd 5 hrs<br>
+            - 🚛 SVC manda en cuantas unidades y el SPR / entre 5 a 6 crowd 5 hrs con SPR 30<br>
+            - 👉 Espero a que carguen volumen (x lo general lo cargan 10 min. antes de las 6:00 pm)<br>
+            - 👉 Pido validación<br>
+            - 👉 Piden mejor dispersion, indico: "Se publicó de acuerdo a la herramienta team, ya no podemos manipular la dispersión como antes"</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SPB1 PM2 - ⏰ 6:00 pm</strong><br>
+            - 📌 Origen MXPB01<br>
+            - 👉 Sin schedule / ocupo crowd 5 hrs a 30 SPR - depende puede mandarlas a 25 SPR<br>
+            - 👉 Se carga en contingencia, no tiene ciclo normal creado<br>
+            - 👉 Revisan volumen, notifican con palomita<br>
+            - 👉 Pido validación</p>
+        </div>
+
+        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+            <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX2 AM3 - ⏰ 22:40 - 23:20</strong><br>
+             - 📌 Orígenes: MXCD02 despacho de hoy hasta 16:00 / MXCD09  despacho de hoy hasta 14:00 / MXCD10  despacho de hoy hasta 21:00<br>
+             - 👉 Todo Onway<br>
+             - 👀 Revisar si se agrega ➕ forms<br>
+             - ✅ Validan volumen / aprox. 1900-2000<br>
+             - 🚛 Extendidas en Texcoco, Pueblos y Chalco</p>
+        </div>
+        
     """,
+
+    
     "SIDE_LINE": """
         <h3 style='color: #000; margin-bottom: 5px;'>¿CÓMO LO HAGO?</h3>
         <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
@@ -3739,6 +4323,8 @@ info_operativa = {
             - C1 y C2 es el mismo proceso</p>
         </div>
     """,
+
+    
     "ENLACES": """
         <h3 style='color: #000; margin-bottom: 5px;'>ENLACES</h3>
         <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
@@ -3752,7 +4338,95 @@ info_operativa = {
             </div>
         </div>
     """,
-    "C1": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información C1 pendiente...</i></div>",
+    
+    "C1": """
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #25282b; padding: 5px;">
+            
+            <h2 style='color: #008000; margin-top: 10px; margin-bottom: 5px; font-weight: bold;'>👉 *** SJA1 C1 (Nueva exp)***</h2>
+            <hr style='border: 1.5px solid #008000; margin-bottom: 15px;'> 
+
+            <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 14px; line-height: 1.5;">
+                    • SVC indica si será uniciclo o 2 ciclos (mandan orígenes).
+                </p>
+            </div>
+
+            <h4 style="color: #ff8c00; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📦 VOLUMEN</h4>
+            <div style="background: white; border-left: 5px solid #ff8c00; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+                • <strong>NO RUT:</strong> 🚫 Todo lo <em>At station (sorting+buffered) - EJA1</em> (está en id nodo/cluster) se manda a no rut (no sale en Pivot).<br>
+                • <strong>C1:</strong> Orígenes solo lo onway / si piden tomar <em>at station + buffered</em> se toma de toda la data para C1.<br>
+                • <strong>C2:</strong> Orígenes solo lo onway nada más.<br>
+                • <strong>En caso de BULK:</strong> Xalapa 60 ids. Revisar tipo de nodo y vigencia del nodo.<br>
+                • <strong>Fecha ETA:</strong> Fecha a trabajar y solita. 🚫 Prohibido fecha futura.
+            </div>
+
+            <h4 style="color: #1E90FF; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">⚙️ LOGIS</h4>
+            <div style="background: white; border-left: 5px solid #1E90FF; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+                • <strong>👉 PIVOT:</strong> ✅ Subo lo NO ruteado (EJA1-at station + C2-depende si son 2 ciclos).<br>
+                • Identificar voluminosos (si hay BULK).<br>
+                • <strong>UNICICLO:</strong> 🚫 No se permite cherry.<br>
+                • <strong>2 CICLOS:</strong> ✅ Permitido cherry.
+            </div>
+
+            <h4 style="color: #6a1b9a; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🛑 DROPEO NODOS</h4>
+            <div style="background: white; border-left: 5px solid #6a1b9a; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+                • Si dropea nodos de centro se cargan en <strong>AM1 Cont. con crowd</strong>:<br>
+                <span style="padding-left: 15px; display:block;">- Descargo data y se hace cruce con data original (con C1), subo lo ND.</span>
+                • No se quita delimitación.<br>
+                • Sale Alchichica (se borra).<br>
+                • Se publica XPT (no permite editar). ¿EJA1 SP también?
+            </div>
+
+            <h4 style="color: #d32f2f; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🛡️ ALCHICHICA ND (AM0)</h4>
+            <div style="background: white; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+                • Se carga en AM0 con ✅ <strong>2 Small Van MLP</strong>.<br>
+                • Unidades no se descuentan de schedule.<br>
+                • <strong>Procedimiento:</strong> Se vuelve a subir data de no ruteado y se eliminan el resto de planes, solo se deja Alchichica.<br>
+                • Descargo data y se hace cruce con data original (con C1), subo lo ND.
+            </div>
+
+            <h4 style="color: #2e7d32; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🚚 UNIDADES PARA ASIGNAR</h4>
+            <div style="background: white; border-left: 5px solid #2e7d32; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+                <strong>🟢 LOCAL:</strong><br>
+                • ✅ <strong>RENTALS como híbridas</strong> (SPR 150-170).<br>
+                • <strong>CROWD-newbie / 8h / 9h:</strong> (SPR aprox 70).<br>
+                • <strong>MLP:</strong> (SPR aprox 110-120).<br>
+                • Delivery cell y truck 3.5 con 3 paradas (dedicadas).<br>
+                • ⚡ Acabamos primero capacidad MLP y luego CROWD.<br>
+                • 🚫 No apagar reglas de restricción para los DM planeados.<br>
+                • Nodos = 👉 Rental híbrida.<br><br>
+
+                <strong>🟢 FORÁNEOS:</strong><br>
+                • ✅ <strong>Solo MLP</strong> (SPR aprox 110-120).<br>
+                • Nodos = MLP híbrida (large preferencia).<br>
+                • 💡 <strong>Xico y Tuzamapa SÍ pueden</strong> llevar unidades CROWD-newbie / 8h / 9h / 9h ext.<br>
+                • <strong>EJA1 - SP:</strong> ✅ Media milla </div>
+
+            <h4 style="color: #333333; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📢 REGLAS GENERALES </h4>
+            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1.6;">
+                <p style="margin-top:0; font-weight:bold;">Buenas noches, team. Les pido su apoyo considerando los siguientes puntos para el ruteo:</p>
+                • ✅ Contemplar toda la flota disponible en el schedule.<br>
+                • ✅ El polígono de Alchichica deberá operar con AM0 por temas de seguridad.<br>
+                • Procurar que las unidades Small no superen los 65 ID's en SPR o (300min = 5 hrs).<br>
+                • ✅ Utilizar todas las rentals disponibles y configurarlas como híbridas.<br>
+                • ✅ En el polígono Centro, cubrir primero la operación con rentals; si es necesario, complementar con crowd o MLP.<br>
+                • ✅ Considerar el Mega Nodo (TRUCK 3.5), ruteo de newbies y zonas extendidas con crowd, especialmente en Xico y Tuzamapan.<br><br>
+                
+                <div style="background: #fdf2f2; border: 1px solid #fadbd8; padding: 10px; border-radius: 4px; color: #c0392b; font-weight: bold; margin-top: 5px;">
+                    🚫 Las unidades CROWD NO pueden ir a Tezuitlán (zona muy alejada del SVC).<br>
+                    🚫 Las RENTALS NO pueden ir a zonas tan foráneas (Tlaltetela y Perote).
+                </div>
+            </div>
+
+        </div>
+    """,
+
+
+
+
+
+
+
     "C2": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información C2 pendiente...</i></div>",
     "PREC": "<div style='text-align:center; padding-top:100px; color:#666;'><i>Información PRECARGA pendiente...</i></div>"
 }
