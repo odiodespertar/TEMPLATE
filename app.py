@@ -1073,34 +1073,46 @@ USADAS
     border-radius: 7px;
             ">
             
-                <button id="toggle-tools-btn" onclick="toggleTools()" 
-        style="cursor:pointer; 
-               background:#25282b !important; 
-               background-image: none !important; 
-               box-shadow: none !important; 
-               color: #ffffff !important; 
-               border: 1px solid #4682B4; 
-           font-size: 11px; 
-           padding: 5px 0; 
-           border-radius: 3px; 
-           font-weight: bold; 
-           outline: none; 
-           width: 100%; 
-           margin-bottom: 15px;">
+                <button id="toggle-tools-btn" onclick="toggleTools()"
+        style="display:none;
+               cursor:pointer;
+               background:#25282b !important;
+               background-image: none !important;
+               box-shadow: none !important;
+               color: #ffffff !important;
+               border: 1px solid #4682B4;
+               font-size: 11px;
+               padding: 5px 0;
+               border-radius: 3px;
+               font-weight: bold;
+               outline: none;
+               width: 100%;
+               margin-bottom: 15px;">
     ❌ OCULTAR UTILERÍAS
 </button>
 
 
 
      
-                <div style="font-weight:bold; color:#25282b; margin-bottom:10px; font-size:12px; letter-spacing:1px;">⏱️ CONVERTIDOR DE TIEMPO</div>
-                <input type="number" id="min-in" placeholder="Minutos" style="width:80px; text-align:center;" oninput="convertTime()">
-                <div style="margin-top:10px;">
-                    <span id="time-res" style="font-size: 24px; font-weight: bold; color: #FF4500;">0h 0m</span>
-                 </div>
-             </div>
-        </div>
+                <div style="display:none;">
+
+    <div style="font-weight:bold; color:#25282b; margin-bottom:10px; font-size:12px; letter-spacing:1px;">
+        ⏱️ CONVERTIDOR DE TIEMPO
     </div>
+
+    <input type="number"
+           id="min-in"
+           placeholder="Minutos"
+           style="width:80px; text-align:center;"
+           oninput="convertTime()">
+
+    <div style="margin-top:10px;">
+        <span id="time-res"
+              style="font-size:24px; font-weight:bold; color:#FF4500;">
+            0h 0m
+        </span>
+    </div>
+
 </div>
 
 
