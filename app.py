@@ -77,7 +77,7 @@ u_C1_SJA1 = {
 }
 
 NOMBRES_PLANES_C1_SJA1 = [
-   "AEROPUERTO", "CANTERA", "DELICIAS", "GRANJAS", "MEOQUI", "NORTE", "SUR", "CUAUHTEMOC", "PARRAL"
+   "AEROPUERTO", "CANTERA", "DELICIAS", "GRANJAS", "MEOQUI", "NORTE", "SUR", "CUAUHTEMOC", "PARRAL", "ADICIONAL 1", "ADICIONAL 2", "ADICIONAL 3"
 ]
 
 
@@ -318,7 +318,7 @@ def gen_poligonos(data_target=None):
 '''
 
     # SOLO SJA1: 20 planes (tu lista) → renderiza 20 bloques (1..20)
-    limite_tablas = 10  # range(1,21) = 20
+    limite_tablas = 13  # range(1,21) = 20
     for i in range(1, limite_tablas):
 
         if data_target == u_C1_SJA1 and (i - 1) < len(NOMBRES_PLANES_C1_SJA1):
