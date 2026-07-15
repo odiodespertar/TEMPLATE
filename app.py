@@ -1009,8 +1009,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
 
 
-<button id="excel-btn" class="excel-only"
-    onclick="toggleExcelView()"
+<button id="excel-btn" onclick="toggleExcelView()"
     style="
         cursor:pointer;
         background:#228B22;
@@ -1022,7 +1021,9 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
         font-weight:bold;
         box-shadow:0 3px 0 #1c6d1c;
         transition:all 0.05s;
-        outline:none;">
+        outline:none;
+        display: inline-block; /* Controlado dinámicamente */
+    ">
     📸 VISTA EXCEL
 </button>
 
@@ -1222,12 +1223,13 @@ USADAS
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
 
-    let currentTab = 6;
+    let currentTab = 2;
     let editedRowsPlan = new Set();
     let curC = "";
     let chronoInterval;
     let startTime;
     let elapsedTime = 0;
+    let estadoPaquetesAntesDeExcel = "none"; // Guarda si el bloque estaba abierto o cerrado
 
 
     function actualizarHoraMinuto(celda){{
@@ -1389,39 +1391,82 @@ function toggleFleetFloating() {{
 
 function showTab(n, btn) {{
 
-    document.body.classList.remove("excel-view"); 
 
-    currentTab = n;
-    document.querySelectorAll('.p-content, .t-content')
-        .forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.tab-btn')
-        .forEach(b => b.classList.remove('active'));
+    
+        // 1. --- LOGICA NUEVA PARA EL BLOQUE C1 ---
+    const bloqueC1 = document.getElementById('contenedor-paquetes-c1');
+        if (bloqueC1) {{
+            // Asumimos que la pestaña C1 es la que tiene el número 6 (si es otra, cambia el 6)
+           if (n === 6) {{
+            bloqueC1.style.display = 'block';
+           }} else {{
+              bloqueC1.style.display = 'none';
+           }}
+        }}
 
-    const p = document.getElementById('polys-' + n);
-    const t = document.getElementById('tab-' + n);
-    if (p) p.style.display = 'block';
-    if (t) t.style.display = 'block';
 
-    btn.classList.add('active');
+    
+        // 1. Si la Vista Excel estaba activa, la apagamos de forma segura antes de cambiar de pestaña
+        if (document.body.classList.contains("excel-view")) {{
+            document.body.classList.remove("excel-view");
+            
+            // Cambiamos el texto del botón a su estado original
+            let bExcel = document.getElementById("excel-btn");
+            if (bExcel) bExcel.innerHTML = "📸 VISTA EXCEL";
+            
+            // Ocultamos el bloque de la tabla espejo de Excel
+            let excelPanel = document.getElementById("excel-polys");
+            if (excelPanel) excelPanel.style.display = "none";
+            
+            // Restauramos de inmediato TODAS las filas de totales ocultas para que no se pierdan en SMX5/SDE
+            const idsArestaurar = [
+                "total-no-car-2", "total-car-schedule-2", "total-car-real-2",
+                "total-no-car-6", "total-car-schedule-6", "total-car-real-6",
+                "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
+                "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
+            ];
+            idsArestaurar.forEach(id => {{
+                let el = document.getElementById(id);
+                if (el) {{
+                    let fila = el.closest('tr');
+                    if (fila) fila.style.removeProperty('display');
+                }}
+            }});
+            
+            // Aseguramos que los footers de todas las tablas vuelvan a mostrarse normales
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
+                fila.style.setProperty('display', 'table-row', 'important');
+            }});
+        }}
 
-    recalc();
-    actualizarVisibilidadContador();
-    updateFleetFloat();
+        // 2. Lógica nativa de tu aplicación para mover pestañas
+        currentTab = n;
+        document.querySelectorAll('.p-content, .t-content')
+            .forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-btn')
+            .forEach(b => b.classList.remove('active'));
 
-    const excelBtn = document.getElementById('excel-btn');
-    if (excelBtn) {{
-        // Habilitado para C1 (2) y C1 SJA1 (6)
-        excelBtn.style.display = (n === 2 || n === 6) ? 'inline-block' : 'none';
+        document.getElementById('polys-' + n).style.display = 'block';
+        document.getElementById('tab-' + n).style.display = 'block';
+
+        btn.classList.add('active');
+
+        recalc();
+        if (typeof actualizarVisibilidadContador === "function") actualizarVisibilidadContador();
+        updateFleetFloat();
+
+        // ==============================================================================
+        // 🔒 CANDADO DE VISIBILIDAD EXCLUSIVA (GANÁNDOLE AL CSS)
+        // ==============================================================================
+        const excelBtn = document.getElementById('excel-btn');
+        if (excelBtn) {{
+            if (n === 2 || n === 6) {{
+                excelBtn.style.setProperty('display', 'inline-block', 'important');
+            }} else {{
+                excelBtn.style.setProperty('display', 'none', 'important');
+            }}
+        }}
     }}
-}}
-
-
-
-// ✅ AQUÍ LO PEGAS
-window.addEventListener("load", () => {{
-  const btn6 = document.querySelector('.tab-btn[onclick*="showTab(6"]');
-  if (btn6) showTab(6, btn6);
-}});
    
 
 
@@ -2239,23 +2284,30 @@ function toggleExcelView() {{
     
     let btn = document.getElementById("excel-btn");
     let excel = document.getElementById("excel-polys");
-
+    let bPaquetes = document.getElementById("contenedor-paquetes-c1"); // <--- Captura el contenedor
+    
     // IDs de las filas que quieres ocultar en modo Excel
     const idsAocultar = [
-        "total-no-car-6", "total-car-schedule-6", "total-car-real-6"
+        "total-no-car-2", "total-car-schedule-2", "total-car-real-2",
+        "total-no-car-6", "total-car-schedule-6", "total-car-real-6",
+        "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
+        "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
     ];
-
     if (isExcel) {{
         // --- MODO EXCEL: OCULTAR ---
+        if (bPaquetes) {{
+            estadoPaquetesAntesDeExcel = bPaquetes.style.display; // Guarda el estado actual (si era block o none)
+            bPaquetes.style.display = "none"; // 🔥 Oculta el contenedor en Excel
+        }}
+        
         generarExcelPolys();
         btn.innerHTML = "🔙 VISTA NORMAL";
         if(excel) excel.style.display = "block";
         
-        ["polys-6"].forEach(id => {{
+        ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6"].forEach(id => {{
             let el = document.getElementById(id);
             if(el) el.style.display = "none";
         }});
-
         idsAocultar.forEach(id => {{
             let el = document.getElementById(id);
             if(el) {{
@@ -2265,6 +2317,10 @@ function toggleExcelView() {{
         }});
     }} else {{
         // --- MODO NORMAL: RESTAURAR ---
+        if (bPaquetes) {{
+            bPaquetes.style.display = estadoPaquetesAntesDeExcel; // 🔥 Devuelve su estado correcto en Vista Normal
+        }}
+        
         btn.innerHTML = "📸 VISTA EXCEL";
         if(excel) excel.style.display = "none";
         
@@ -2273,6 +2329,20 @@ function toggleExcelView() {{
             let el = document.getElementById(id);
             if(el) el.style.display = (id === "polys-" + currentTab) ? "block" : "none";
         }});
+        
+        // 📊 RESTAURACIÓN INTELIGENTE: Devolvemos la visibilidad al contador que corresponda según la pestaña activa
+        if (contScp1 && contSja1) {{
+            if (currentTab == 2) {{
+                contScp1.style.display = 'block';
+                contSja1.style.display = 'none';
+            }} else if (currentTab == 6) {{
+                contScp1.style.display = 'none';
+                contSja1.style.display = 'block';
+            }} else {{
+                contScp1.style.display = 'none';
+                contSja1.style.display = 'none';
+            }}
+        }}
 
         // RESTAURACIÓN FORZADA:
         // 1. Quitar el 'display: none' de las filas ocultas
@@ -2283,7 +2353,6 @@ function toggleExcelView() {{
                 if(fila) fila.style.removeProperty('display');
             }}
         }});
-        
         // 2. Obligar a las filas del tfoot a mostrarse
         document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
             fila.style.setProperty('display', 'table-row', 'important');
@@ -2291,7 +2360,6 @@ function toggleExcelView() {{
         }});
     }}
 }}
-
 
 
 
@@ -2324,11 +2392,25 @@ function generarExcelPolys() {{
             let fRows = Array.from(document.querySelectorAll('#body-' + tabId + ' tr'));
             let fRow = fRows.find(fr => fr.querySelector('.edit-name')?.innerText.trim() === unidad);
             let valSpr = "-";
-            if (fRow) {{
-                let sMin = fRows[fRows.indexOf(fRow)].querySelectorAll('td')[1]?.innerText.trim() || "0";
-                let sMax = fRows[fRows.indexOf(fRow)].querySelectorAll('td')[2]?.innerText.trim() || "0";
-                valSpr = sMin + " / " + sMax;
-            }}
+
+            
+        if (fRow) {{
+
+            console.log("Fila encontrada:", fRow);
+
+            console.log("ORH:", fRow.querySelector(".edit-orh"));
+            console.log("HORA:", fRow.querySelector(".orh-hora"));
+            console.log("OCUP:", fRow.querySelector(".edit-ocup"));
+
+            let orh  = fRow.querySelector(".edit-orh")?.innerText.trim() || "0";
+            let ocup = fRow.querySelector(".edit-ocup")?.innerText.trim() || "0";
+
+            console.log("Valores:", orh, ocup);
+
+            valSpr = orh + " / " + ocup;
+        }}
+
+
 
             let filaHtml = '<tr>';
             if (index === 0) {{
