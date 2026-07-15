@@ -158,11 +158,21 @@ def gen_master_rows(data_dict, table_id):
             # ✅ Celdas ORH/OCUP visibles solo en Tab 6
             if mostrar_orh_ocup:
                 celdas_orh_ocup = f'''
-                <td contenteditable="true" class="edit-orh" oninput="recalc()"
+                <td contenteditable="true"
+                    class="edit-orh"
+                    oninput="actualizarHoraMinuto(this); recalc();"
                     style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#25282b;">
                     0
                 </td>
-                <td contenteditable="true" class="edit-ocup" oninput="recalc()"
+
+                <td class="orh-hm"
+                    style="text-align:center; border:0.2px solid #25282b; width:58px; background:#f7f7f7; color:#25282b;">
+                    0h 0m
+                </td>
+
+                <td contenteditable="true"
+                    class="edit-ocup"
+                    oninput="recalc()"
                     style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">
                     0
                 </td>
@@ -1024,6 +1034,7 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
             <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
                 <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">ORH</th>
+                <th style="border-right:0.5px solid #25282b; padding:2px; font-size:11px; width:58px;"> H:M </th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 70px;">OCUPACIÓN</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MIN</th>
                 <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR MAX</th>
@@ -1200,6 +1211,25 @@ USADAS
     let startTime;
     let elapsedTime = 0;
 
+
+    function actualizarHoraMinuto(celda){{
+
+    let minutos = parseInt(celda.innerText);
+
+    if(isNaN(minutos))
+        minutos = 0;
+
+    let horas = Math.floor(minutos/60);
+
+    let mins = minutos % 60;
+
+    let fila = celda.closest("tr");
+
+    let hm = fila.querySelector(".orh-hm");
+
+    if(hm)
+        hm.innerText = horas + "h " + mins + "m";
+}}
 
 
     function aplicarPerfil() {{
