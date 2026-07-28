@@ -1463,6 +1463,11 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
           <button id="btn-tab-sch1" class="tab-btn" onclick="showTab(7, this)">C1 SCH1</button>
           <button id="btn-tab-smd1" class="tab-btn" onclick="showTab(8, this)">C1 SMD1</button>
           <button id="btn-tab-sja1" class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
+          <!-- 🔥 BOTÓN PARA CREAR NUEVO RUTEO -->
+          <button onclick="abrirCreadorRuteo()" 
+              style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 7px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8px;">
+              ➕ CREAR NUEVO RUTEO
+          </button>
       </div>
 
       <!-- BOTONES DE ACCIÓN -->
@@ -1781,6 +1786,21 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </div>
 
 
+<!-- 🚀 PEGA EL MODAL AQUÍ (Antes del <script>) -->
+<div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.95); z-index: 9999999; padding: 30px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: #26d4ca; margin: 0; font-size: 22px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
+        <button onclick="cerrarCreadorRuteo()" 
+            style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">
+            ❌ CERRAR
+        </button>
+    </div>
+    <div id="contenido-wizard-ruteo" style="background: #25282b; color: white; padding: 25px; border-radius: 10px; border: 1px solid #454545; max-width: 1000px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <p style="text-align: center; color: #8A2BE2; font-size: 18px; font-weight: bold;">
+            🎉 ¡Pantalla ligada lista para configurar!
+        </p>
+    </div>
+</div>
 
 
 
@@ -2136,7 +2156,20 @@ function showTab(n, btn) {{
 
 
 
+   
+    function abrirCreadorRuteo() {{
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) {
+            modal.style.display = "block";
+        }}
+    }}
 
+    function cerrarCreadorRuteo() {{
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) {{
+            modal.style.display = "none";
+        }}
+    }}
 
 
     function showAlert(msg) {{
