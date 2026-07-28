@@ -1786,19 +1786,86 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 </div>
 
 
-<!-- 🚀 PEGA EL MODAL AQUÍ (Antes del <script>) -->
-<div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.95); z-index: 9999999; padding: 30px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+<!-- ============================================================================== -->
+<!-- 🚀 VENTANA / MODAL: CREADOR DE NUEVO RUTEO -->
+<!-- ============================================================================== -->
+<div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+    
+    <!-- Encabezado -->
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
-        <h2 style="color: #26d4ca; margin: 0; font-size: 22px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
+        <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">
+            🛠️ CREADOR DE NUEVO RUTEO DESDE CERO
+        </h2>
         <button onclick="cerrarCreadorRuteo()" 
             style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">
             ❌ CERRAR
         </button>
     </div>
-    <div id="contenido-wizard-ruteo" style="background: #25282b; color: white; padding: 25px; border-radius: 10px; border: 1px solid #454545; max-width: 1000px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-        <p style="text-align: center; color: #8A2BE2; font-size: 18px; font-weight: bold;">
-            🎉 ¡Pantalla ligada lista para configurar!
-        </p>
+
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- SECCIÓN 1: DATOS GENERALES -->
+        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+            <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">
+                1️⃣ CONFIGURACIÓN GENERAL
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
+                <div>
+                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">
+                        Nombre de la Pestaña / Ruteo:
+                    </label>
+                    <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" 
+                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
+                </div>
+
+                <div>
+                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">
+                        Número de Planes / Polígonos:
+                    </label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="creador-cant-planes" value="5" min="1" max="25" 
+                            style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
+                        <button onclick="generarCamposPlanes()" 
+                            style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">
+                            ⚙️ Generar Campos de Planes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: NOMBRES DE PLANES Y FILAS POR PLAN -->
+        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+            <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">
+                2️⃣ NOMBRES DE POLÍGONOS Y FILAS
+            </h3>
+            
+            <div id="contenedor-lista-planes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                <p style="color: #888; font-style: italic; margin: 0;">Haz clic en "Generar Campos de Planes" para ingresar los nombres.</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: SELECCIÓN DE FLOTA Y SPR MANUAL -->
+        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+            <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px; display: flex; justify-content: space-between;">
+                <span>3️⃣ FLOTA A UTILIZAR Y SPR MANUAL</span>
+                <span style="font-size: 12px; color: #aaa; font-weight: normal;">(Selecciona las unidades habilitadas para este ruteo)</span>
+            </h3>
+
+            <div id="contenedor-lista-flota" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 5px;">
+                <!-- Se llena automáticamente con JavaScript -->
+            </div>
+        </div>
+
+        <!-- BOTÓN DE GUARDADO DEL RUTEO (Estará ligado en el Paso 3) -->
+        <div style="text-align: center; padding-top: 10px;">
+            <button onclick="guardarNuevoRuteo()" 
+                style="cursor: pointer; background: linear-gradient(180deg, #28a745 0%, #1e7e34 100%); color: white; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);">
+                🚀 GUARDAR Y ACTIVAR NUEVO RUTEO
+            </button>
+        </div>
+
     </div>
 </div>
 
@@ -2170,6 +2237,106 @@ function showTab(n, btn) {{
             modal.style.display = "none";
         }}
     }}
+
+
+
+    // Base de datos máster de flotas para elegir en el creador
+    const BASE_FLOTA_MASTER = {{
+        "Car MLP": [110, 120],
+        "Small Van MLP": [110, 120],
+        "Large Van MLP": [110, 120],
+        "Small Van MLP Newbie": [110, 120],
+        "Large Van MLP Newbie": [110, 120],
+        "Extra large Van MLP": [110, 120],
+        "Small Van MLP foráneo": [110, 120],
+        "Large Van MLP foráneo": [110, 120],
+        "Car MLP foráneo": [110, 120],
+        "Extra large Van MLP H&B": [100, 100],
+        "Rental Car": [120, 150],
+        "Rental Electric Large Van": [120, 150],
+        "Rental Large Van": [120, 150],
+        "Rental Replacement": [120, 150],
+        "Rental Small Van Electrica": [120, 150],
+        "Rental Small Van": [120, 150],
+        "Truck 3.5 tons MLP": [1, 1],
+        "Delivery Cell Large Van": [1, 1],
+        "Car 8h": [70, 70],
+        "Car Newbie": [50, 50],
+        "Car Zona Extendida": [60, 60],
+        "Moto 3h": [30, 30],
+        "Small Van 9h": [70, 70],
+        "Small Van 9h Ext": [70, 70],
+        "Small Van Newbie": [70, 70],
+        "Media Milla SP": [1, 1]
+    }};
+
+    // Modificamos abrirCreadorRuteo para que renderice la lista de flota al abrir
+    function abrirCreadorRuteo() {{
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) {{
+            modal.style.display = "block";
+            inicializarCreadorFlota();
+            generarCamposPlanes();
+        }}
+    }}
+
+    function inicializarCreadorFlota() {{
+        let cont = document.getElementById("contenedor-lista-flota");
+        if (!cont) return;
+    
+        let htmlFlota = "";
+        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {{
+            let sprDef = BASE_FLOTA_MASTER[unidad];
+            htmlFlota += `
+                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
+                        <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
+                        ${{unidad}}
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="font-size: 10px; color: #aaa;">MIN:</span>
+                        <input type="number" class="spr-min-${{idx}}" value="${{sprDef[0]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                        <span style="font-size: 10px; color: #aaa;">MAX:</span>
+                        <input type="number" class="spr-max-${{idx}}" value="${{sprDef[1]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                    </div>
+                </div>
+            `;
+        }});
+        cont.innerHTML = htmlFlota;
+}}
+
+function generarCamposPlanes() {{
+    let cant = parseInt(document.getElementById("creador-cant-planes").value) || 1;
+    let cont = document.getElementById("contenedor-lista-planes");
+    if (!cont) return;
+
+    let htmlPlanes = "";
+    for (let i = 1; i <= cant; i++) {{
+        htmlPlanes += `
+            <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
+                <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
+                    style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
+                <span style="font-size: 11px; color: #aaa;">Filas:</span>
+                <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
+                    style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+            </div>
+        `;
+    }}
+    cont.innerHTML = htmlPlanes;
+}}
+
+function guardarNuevoRuteo() {{
+    let nombreRuteo = document.getElementById("creador-nombre-ruteo").value.trim();
+    if (!nombreRuteo) {{
+        showAlert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
+        return;
+    }}
+    
+    showAlert("🎉 ¡Paso 2 completado! Los datos del ruteo '" + nombreRuteo + "' están capturados listos para ser inyectados en el Paso 3.");
+}}
+
+
 
 
     function showAlert(msg) {{
