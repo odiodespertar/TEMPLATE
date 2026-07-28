@@ -2506,6 +2506,14 @@ function guardarNuevoRuteo() {{
 
         htmlPolígonos += `
             <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
+                
+                <!-- ⬆️ BARRA SUPERIOR DE BOTONES Y FILAS -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 4px; background: #ededed; border-bottom: 1px solid #25282b;">
+                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; background: #e0e0e0; color: #25282b; border: 1px solid #777; width: 26px; height: 24px; font-weight: bold; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;">+</button>
+                    <button onclick="quitarFilaPlan(this)" style="cursor:pointer; background: #e0e0e0; color: #25282b; border: 1px solid #777; width: 26px; height: 24px; font-weight: bold; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;">—</button>
+                    <span class="contador-filas" style="margin-left: 6px; font-weight: bold; font-size: 13px; color: #25282b;">Filas: ${{p.filas}}</span>
+                </div>
+
                 <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                     <thead>
                         <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">                        
@@ -2554,11 +2562,6 @@ function guardarNuevoRuteo() {{
                         </tr>
                     </tbody>
                 </table>
-                <div style="text-align:center; padding:5px; background:#ededed;">
-                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
-                    <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
-                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${{p.filas}}</span>
-                </div>     
             </div>
         `;
     }});
