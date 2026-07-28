@@ -2326,14 +2326,255 @@ function generarCamposPlanes() {{
     cont.innerHTML = htmlPlanes;
 }}
 
+
+// Contador global para IDs de pestañas dinámicas (empieza en 900 para evitar choques con 1, 2, 4, 5, 6, 7, 8)
+let contadorPestanaDinamica = 900;
+
 function guardarNuevoRuteo() {{
-    let nombreRuteo = document.getElementById("creador-nombre-ruteo").value.trim();
+    let nombreRuteo = document.getElementById("creador-nombre-ruteo").value.trim().toUpperCase();
     if (!nombreRuteo) {{
         showAlert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
         return;
     }}
+
+    // 1. CAPTURAR FLOTA SELECCIONADA CON SUS SPR
+    let flotaElegida = [];
+    let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
     
-    showAlert("🎉 ¡Paso 2 completado! Los datos del ruteo '" + nombreRuteo + "' están capturados listos para ser inyectados en el Paso 3.");
+    itemsFlota.forEach((div, idx) => {{
+        let chk = div.querySelector(".chk-flota-unidad");
+        if (chk && chk.checked) {{
+            let nombreUnidad = chk.value;
+            let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
+            let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
+            flotaElegida.push({{
+                nombre: nombreUnidad,
+                sprMin: sprMin,
+                sprMax: sprMax
+            }});
+        }}
+    }});
+
+    if (flotaElegida.length === 0) {{
+        showAlert("⚠️ Debes seleccionar al menos una unidad para la flota.");
+        return;
+    }}
+
+    // 2. CAPTURAR PLANES Y FILAS POR PLAN
+    let planesElegidos = [];
+    let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
+    
+    divsPlanes.forEach(div => {{
+        let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
+        let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+        planesElegidos.push({{
+            nombre: nombrePlan,
+            filas: filasPlan
+        }});
+    }});
+
+    if (planesElegidos.length === 0) {{
+        showAlert("⚠️ Ingresa al menos un plan o polígono.");
+        return;
+    }}
+
+    // 3. GENERAR ID ÚNICO Y CREAR EL BOTÓN DE LA NUEVA PESTAÑA
+    contadorPestanaDinamica++;
+    let nuevoId = contadorPestanaDinamica;
+    let tabBtnId = "btn-tab-dyn-" + nuevoId;
+
+    // A) Insertar el botón en la barra principal de pestañas
+    let contBotones = document.querySelector("#fleet-sticky > div > div:first-child");
+    let btnNuevo = document.createElement("button");
+    btnNuevo.id = tabBtnId;
+    btnNuevo.className = "tab-btn";
+    btnNuevo.innerText = nombreRuteo;
+    btnNuevo.onclick = function() {{ showTab(nuevoId, this); }};
+    
+    // Lo colocamos justo antes del botón "➕ CREAR NUEVO RUTEO"
+    let btnCrear = contBotones.querySelector("button[onclick='abrirCreadorRuteo()']");
+    if (btnCrear) {{
+        contBotones.insertBefore(btnNuevo, btnCrear);
+    }} else {{
+        contBotones.appendChild(btnNuevo);
+    }}
+
+    // B) Agregar la casilla al menú flotante de "👁️ Pestañas"
+    let panelMenuPestanas = document.getElementById("panel-selector-pestanas");
+    if (panelMenuPestanas) {{
+        let lbl = document.createElement("label");
+        lbl.style.cssText = "display:block; margin-bottom:6px; cursor:pointer;";
+        lbl.innerHTML = `<input type="checkbox" checked onchange="toggleBtnPestana('${{tabBtnId}}', this.checked)"> ${{nombreRuteo}}`;
+        panelMenuPestanas.appendChild(lbl);
+    }}
+
+    // 4. CONSTRUIR TABLA DE FLOTA DISPONIBLE (#tab-N)
+    let filasFlotaHtml = "";
+    flotaElegida.forEach(f => {{
+        filasFlotaHtml += `
+            <tr class="master-row">
+                <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">${{f.nombre}}</td>
+                <td contenteditable="true" class="edit-orh" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
+                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
+                <td contenteditable="true" class="edit-ocup" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">0</td>
+                <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">${{f.sprMin}}</td>
+                <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">${{f.sprMax}}</td>
+                <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 55px; font-weight: bold; font-size: 13px;">0</td>
+                <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; width: 55px; background-color: #ffffff; font-weight: bold;">0</td>
+                <td class="f-left" style="text-align:center; border:0.2px solid #25282b; width:45px; font-weight:bold; color:#25282b; border-radius:2px;">0</td>
+            </tr>
+        `;
+    }});
+
+    let divTabFlota = document.createElement("div");
+    divTabFlota.id = "tab-" + nuevoId;
+    divTabFlota.className = "t-content";
+    divTabFlota.style.display = "none";
+    divTabFlota.innerHTML = `
+        <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+            <thead>
+                <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                    <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                    <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
+                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
+                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
+                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
+                    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
+                    <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                </tr>
+            </thead>
+            <tbody id="body-${{nuevoId}}">${{filasFlotaHtml}}</tbody>
+            <tfoot class="fila-total">
+                <tr class="fila-total">
+                    <td style="border:none;"></td>
+                    <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                    <td id="total-ruteadas-${{nuevoId}}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                </tr>
+            </tfoot>
+        </table>
+    `;
+    document.getElementById("fleet-sticky").appendChild(divTabFlota);
+
+    // 5. CONSTRUIR SECCIÓN DE POLÍGONOS (#polys-N)
+    let btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;";
+    let div_flex = "display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; width: 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;";
+    let span_num_u = "font-weight: bold; display: inline-block; text-align: center; width: 28px; min-width: 28px; max-width: 28px; flex-shrink: 0;";
+    let span_num_spr = "font-weight: bold; display: inline-block; text-align: center; width: 38px; min-width: 38px; max-width: 43px; flex-shrink: 0;";
+    let select_style = "width:100%; min-width:100%; max-width:100%; border:none; background:transparent; font-weight:600; font-size:14px; color:#25282b; padding:2px; cursor:pointer; box-sizing:border-box;";
+
+    let htmlPolígonos = "";
+    planesElegidos.forEach(p => {{
+        let filasExtraCount = p.filas - 1;
+        
+        let filaInnerHtml = `
+            <tr class="calc-row">
+                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+                    <div style="${{div_flex}}">
+                        <button style="${{btn_s}}" onclick="stepVal(this, -1, 'u')">-</button>
+                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="${{span_num_u}}color: #25282b !important;">0</span>
+                        <button style="${{btn_s}}" onclick="stepVal(this, 1, 'u')">+</button>
+                    </div>
+                </td>
+                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+                    <div style="${{div_flex}}">
+                        <button style="${{btn_s}}" onclick="stepVal(this, -1, 's')">-</button>
+                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="${{span_num_spr}} color: #25282b !important;">0</span>
+                        <button style="${{btn_s}}" onclick="stepVal(this, 1, 's')">+</button>
+                    </div>
+                </td>
+                <td style="border: 0.5px solid #25282b; padding: 2px; width: 180px; min-width: 180px; max-width: 180px; box-sizing: border-box;">
+                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="${{select_style}} color: #808080;"> 
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </td>
+                <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+            </tr>
+        `;
+
+        let filasExtraHtml = "";
+        for (let k = 0; k < filasExtraCount; k++) {{
+            filasExtraHtml += filaInnerHtml;
+        }}
+
+        htmlPolígonos += `
+            <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
+                <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+                    <thead>
+                        <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">                        
+                            <th style="padding: 0 10px; border-right: 1px solid #25282b; min-width: 130px; width: 130px;">PLAN</th>
+                            <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
+                            <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
+                            <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;">SPR</th>
+                            <th style="width: 180px; min-width: 180px; max-width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
+                            <th style="width: 45px; min-width: 45px; max-width: 45px; text-align: center;">OK</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="calc-row"> 
+                            <td class="plan-cell" rowspan="${{p.filas}}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414; min-width: 130px; width: 130px; word-break: break-word;">${{p.nombre}}</td>
+                            <td class="vol-cell" rowspan="${{p.filas}}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
+                                <div style="text-align:center;">
+                                    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border:none; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080; text-align:center;">0</span>
+                                </div>
+                            </td>
+                            <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+                                <div style="${{div_flex}}">
+                                    <button style="${{btn_s}}" onclick="stepVal(this, -1, 'u')">-</button>
+                                    <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="${{span_num_u}} color: #25282b !important;">0</span>
+                                    <button style="${{btn_s}}" onclick="stepVal(this, 1, 'u')">+</button>
+                                </div>
+                            </td>
+                            <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+                                <div style="${{div_flex}}">
+                                    <button style="${{btn_s}}" onclick="stepVal(this, -1, 's')">-</button>
+                                    <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="${{span_num_spr}}">0</span>
+                                    <button style="${{btn_s}}" onclick="stepVal(this, 1, 's')">+</button>
+                                </div>
+                            </td>
+                            <td style="border: 0.5px solid #25282b; padding: 2px;">
+                                <select class="s-type" onchange="resetRow(this)" style="${{select_style}}">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </td>
+                            <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                        </tr>
+                        ${{filasExtraHtml}}
+                        <tr style="background:#ededed; height: 32px;">
+                            <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
+                            <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
+                            <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align:center; padding:5px; background:#ededed;">
+                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                    <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${{p.filas}}</span>
+                </div>     
+            </div>
+        `;
+    }});
+
+    // Inyectar la sección `#polys-N` en la zona de planners
+    let divPolys = document.createElement("div");
+    divPolys.id = "polys-" + nuevoId;
+    divPolys.className = "p-content";
+    divPolys.style.display = "none";
+    divPolys.innerHTML = htmlPolígonos;
+    
+    let excelPolys = document.getElementById("excel-polys");
+    if (excelPolys && excelPolys.parentNode) {{
+        excelPolys.parentNode.insertBefore(divPolys, excelPolys);
+    }} else {{
+        document.querySelector("#visor").appendChild(divPolys);
+    }}
+
+    // 6. CERRAR EL MODAL Y NAVEGAR A LA NUEVA PESTAÑA
+    cerrarCreadorRuteo();
+    showTab(nuevoId, btnNuevo);
+
+    showAlert("🎉 ¡NUEVO RUTEO '" + nombreRuteo + "' CREADO Y ACTIVADO CON ÉXITO!");
 }}
 
 
