@@ -2383,7 +2383,7 @@ function guardarNuevoRuteo() {{
     let nuevoId = contadorPestanaDinamica;
     let tabBtnId = "btn-tab-dyn-" + nuevoId;
 
-    // A) Insertar el botón en la barra principal de pestañas
+    // A) Insertar el botón en la barra principal
     let contBotones = document.querySelector("#fleet-sticky > div > div:first-child");
     let btnNuevo = document.createElement("button");
     btnNuevo.id = tabBtnId;
@@ -2391,7 +2391,6 @@ function guardarNuevoRuteo() {{
     btnNuevo.innerText = nombreRuteo;
     btnNuevo.onclick = function() {{ showTab(nuevoId, this); }};
     
-    // Lo colocamos justo antes del botón "➕ CREAR NUEVO RUTEO"
     let btnCrear = contBotones.querySelector("button[onclick='abrirCreadorRuteo()']");
     if (btnCrear) {{
         contBotones.insertBefore(btnNuevo, btnCrear);
@@ -2455,6 +2454,14 @@ function guardarNuevoRuteo() {{
         </table>
     `;
     document.getElementById("fleet-sticky").appendChild(divTabFlota);
+
+    // 🔥 ACTIVAR ESCUCHADOR DE EVENTOS ORH PARA LA NUEVA PESTAÑA
+    divTabFlota.querySelectorAll(".edit-orh").forEach(celda => {{
+        actualizarHoraMinuto(celda);
+        celda.addEventListener("input", function() {{
+            actualizarHoraMinuto(this);
+        }});
+    }});
 
     // 5. CONSTRUIR SECCIÓN DE POLÍGONOS (#polys-N)
     let btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;";
@@ -2533,7 +2540,7 @@ function guardarNuevoRuteo() {{
                                 </div>
                             </td>
                             <td style="border: 0.5px solid #25282b; padding: 2px;">
-                                <select class="s-type" onchange="resetRow(this)" style="${{select_style}}">
+                                <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="${{select_style}} color: #808080;">
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </td>
@@ -2556,7 +2563,7 @@ function guardarNuevoRuteo() {{
         `;
     }});
 
-    // Inyectar la sección `#polys-N` en la zona de planners
+    // Inyectar la sección `#polys-N`
     let divPolys = document.createElement("div");
     divPolys.id = "polys-" + nuevoId;
     divPolys.className = "p-content";
@@ -2570,13 +2577,14 @@ function guardarNuevoRuteo() {{
         document.querySelector("#visor").appendChild(divPolys);
     }}
 
-    // 6. CERRAR EL MODAL Y NAVEGAR A LA NUEVA PESTAÑA
+    // 6. CERRAR EL MODAL, NAVEGAR A LA NUEVA PESTAÑA Y POBLAR DESPLEGABLES
     cerrarCreadorRuteo();
     showTab(nuevoId, btnNuevo);
+    actualizarSelects();
+    recalc();
 
     showAlert("🎉 ¡NUEVO RUTEO '" + nombreRuteo + "' CREADO Y ACTIVADO CON ÉXITO!");
 }}
-
 
 
 
