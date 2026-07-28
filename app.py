@@ -2159,7 +2159,7 @@ function showTab(n, btn) {{
    
     function abrirCreadorRuteo() {{
         let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {
+        if (modal) {{
             modal.style.display = "block";
         }}
     }}
