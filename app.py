@@ -11,13 +11,16 @@ import gspread
 @st.cache_resource
 def conectar_gsheets():
     try:
-        # Intenta leer desde el diccionario anidado o plano de secrets
         if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
             sec = dict(st.secrets["connections"]["gsheets"])
         elif "gsheets" in st.secrets:
             sec = dict(st.secrets["gsheets"])
         else:
             sec = dict(st.secrets)
+
+        # Si la llave privada viene como una lista (arreglo), la unimos con saltos de línea reales
+        if isinstance(sec.get("private_key"), list):
+            sec["private_key"] = "\n".join(sec["private_key"])
 
         gc = gspread.service_account_from_dict(sec)
         sh = gc.open_by_url(sec["spreadsheet"])
