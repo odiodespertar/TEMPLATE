@@ -2,7 +2,50 @@ import json
 import streamlit as st 
 import pandas as pd
 import io
-from streamlit.components.v1 import html      
+from streamlit.components.v1 import html    
+from streamlit_gsheets import GSheetsConnection
+
+# 1. Conexión con Google Sheets
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+
+# 2. Función para guardar un nuevo ruteo en Google Sheets
+def guardar_ruteo_en_gsheets(
+    nombre_ruteo, cant_planes, lista_planes, lista_flota
+):
+    try:
+        # Leer hojas actuales
+        df_ruteos = conn.read(worksheet="Ruteos")
+        df_planes = conn.read(worksheet="Planes")
+
+        # Nuevo registro de Ruteo Header
+        nuevo_header = pd.DataFrame(
+            [{"nombre_ruteo": nombre_ruteo, "cant_planes": cant_planes}]
+        )
+        df_ruteos_actualizado = pd.concat(
+            [df_ruteos, nuevo_header], ignore_index=True
+        )
+
+        # Nuevos registros de Planes
+        registros_planes = []
+        for p in lista_planes:
+            registros_planes.append({
+                "nombre_ruteo": nombre_ruteo,
+                "nombre_plan": p["nombre"],
+                "filas": p["filas"],
+            })
+        df_planes_nuevos = pd.DataFrame(registros_planes)
+        df_planes_actualizado = pd.concat(
+            [df_planes, df_planes_nuevos], ignore_index=True
+        )
+
+        # Actualizar en la nube
+        conn.update(worksheet="Ruteos", data=df_ruteos_actualizado)
+        conn.update(worksheet="Planes", data=df_planes_actualizado)
+        return True
+    except Exception as e:
+        st.error(f"Error guardando en Google Sheets: {e}")
+        return False
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
@@ -865,6 +908,16 @@ def gen_poligonos(data_target=None):
 # --- PERFILES LIMPIOS (DESACTIVADOS) ---
 PERFILES = {}
 perfil_actual = "LUNES"
+
+
+
+# Cargar ruteos dinámicos desde Google Sheets si existen
+try:
+    df_ruteos_bd = conn.read(worksheet="Ruteos")
+    df_planes_bd = conn.read(worksheet="Planes")
+    ruteos_guardados = df_ruteos_bd.to_dict(orient="records")
+except Exception:
+    ruteos_guardados = []
 
 
 app_html = f"""
@@ -2345,8 +2398,8 @@ function guardarNuevoRuteo() {{
         let chk = div.querySelector(".chk-flota-unidad");
         if (chk && chk.checked) {{
             let nombreUnidad = chk.value;
-            let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
-            let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
+            let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
+            let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
             flotaElegida.push({{
                 nombre: nombreUnidad,
                 sprMin: sprMin,
@@ -2355,7 +2408,7 @@ function guardarNuevoRuteo() {{
         }}
     }});
 
-    if (flotaElegida.length === 0) {{
+    if (flotaElegida.length === 0) {
         showAlert("⚠️ Debes seleccionar al menos una unidad para la flota.");
         return;
     }}
@@ -2378,215 +2431,22 @@ function guardarNuevoRuteo() {{
         return;
     }}
 
-    // 3. GENERAR ID ÚNICO Y CREAR EL BOTÓN DE LA NUEVA PESTAÑA
-    contadorPestanaDinamica++;
-    let nuevoId = contadorPestanaDinamica;
-    let tabBtnId = "btn-tab-dyn-" + nuevoId;
+    // 3. ENVIAR DATOS A PYTHON / STREAMLIT PARA GUARDAR EN GOOGLE SHEETS
+    const payload = {{
+        nombre: nombreRuteo,
+        cant_planes: planesElegidos.length,
+        planes: planesElegidos,
+        flota: flotaElegida
+    }};
 
-    // A) Insertar el botón en la barra principal
-    let contBotones = document.querySelector("#fleet-sticky > div > div:first-child");
-    let btnNuevo = document.createElement("button");
-    btnNuevo.id = tabBtnId;
-    btnNuevo.className = "tab-btn";
-    btnNuevo.innerText = nombreRuteo;
-    btnNuevo.onclick = function() {{ showTab(nuevoId, this); }};
-    
-    let btnCrear = contBotones.querySelector("button[onclick='abrirCreadorRuteo()']");
-    if (btnCrear) {{
-        contBotones.insertBefore(btnNuevo, btnCrear);
-    }} else {{
-        contBotones.appendChild(btnNuevo);
-    }}
+    window.parent.postMessage({{
+        type: "streamlit:setComponentValue",
+        value: JSON.stringify(payload)
+    }}, "*");
 
-    // B) Agregar la casilla al menú flotante de "👁️ Pestañas"
-    let panelMenuPestanas = document.getElementById("panel-selector-pestanas");
-    if (panelMenuPestanas) {{
-        let lbl = document.createElement("label");
-        lbl.style.cssText = "display:block; margin-bottom:6px; cursor:pointer;";
-        lbl.innerHTML = `<input type="checkbox" checked onchange="toggleBtnPestana('${{tabBtnId}}', this.checked)"> ${{nombreRuteo}}`;
-        panelMenuPestanas.appendChild(lbl);
-    }}
-
-    // 4. CONSTRUIR TABLA DE FLOTA DISPONIBLE (#tab-N)
-    let filasFlotaHtml = "";
-    flotaElegida.forEach(f => {{
-        filasFlotaHtml += `
-            <tr class="master-row">
-                <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">${{f.nombre}}</td>
-                <td contenteditable="true" class="edit-orh" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
-                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
-                <td contenteditable="true" class="edit-ocup" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">0</td>
-                <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">${{f.sprMin}}</td>
-                <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">${{f.sprMax}}</td>
-                <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; width: 55px; font-weight: bold; font-size: 13px;">0</td>
-                <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; width: 55px; background-color: #ffffff; font-weight: bold;">0</td>
-                <td class="f-left" style="text-align:center; border:0.2px solid #25282b; width:45px; font-weight:bold; color:#25282b; border-radius:2px;">0</td>
-            </tr>
-        `;
-    }});
-
-    let divTabFlota = document.createElement("div");
-    divTabFlota.id = "tab-" + nuevoId;
-    divTabFlota.className = "t-content";
-    divTabFlota.style.display = "none";
-    divTabFlota.innerHTML = `
-        <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-            <thead>
-                <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                    <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                    <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                    <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                    <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                    <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
-                </tr>
-            </thead>
-            <tbody id="body-${{nuevoId}}">${{filasFlotaHtml}}</tbody>
-            <tfoot class="fila-total">
-                <tr class="fila-total">
-                    <td style="border:none;"></td>
-                    <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                    <td id="total-ruteadas-${{nuevoId}}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
-                </tr>
-            </tfoot>
-        </table>
-    `;
-    document.getElementById("fleet-sticky").appendChild(divTabFlota);
-
-    // 🔥 ACTIVAR ESCUCHADOR DE EVENTOS ORH PARA LA NUEVA PESTAÑA
-    divTabFlota.querySelectorAll(".edit-orh").forEach(celda => {{
-        actualizarHoraMinuto(celda);
-        celda.addEventListener("input", function() {{
-            actualizarHoraMinuto(this);
-        }});
-    }});
-
-    // 5. CONSTRUIR SECCIÓN DE POLÍGONOS (#polys-N)
-    let btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;";
-    let div_flex = "display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; width: 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;";
-    let span_num_u = "font-weight: bold; display: inline-block; text-align: center; width: 28px; min-width: 28px; max-width: 28px; flex-shrink: 0;";
-    let span_num_spr = "font-weight: bold; display: inline-block; text-align: center; width: 38px; min-width: 38px; max-width: 43px; flex-shrink: 0;";
-    let select_style = "width:100%; min-width:100%; max-width:100%; border:none; background:transparent; font-weight:600; font-size:14px; color:#25282b; padding:2px; cursor:pointer; box-sizing:border-box;";
-
-    let htmlPolígonos = "";
-    planesElegidos.forEach(p => {{
-        let filasExtraCount = p.filas - 1;
-        
-        let filaInnerHtml = `
-            <tr class="calc-row">
-                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
-                    <div style="${{div_flex}}">
-                        <button style="${{btn_s}}" onclick="stepVal(this, -1, 'u')">-</button>
-                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="${{span_num_u}}color: #25282b !important;">0</span>
-                        <button style="${{btn_s}}" onclick="stepVal(this, 1, 'u')">+</button>
-                    </div>
-                </td>
-                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
-                    <div style="${{div_flex}}">
-                        <button style="${{btn_s}}" onclick="stepVal(this, -1, 's')">-</button>
-                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="${{span_num_spr}} color: #25282b !important;">0</span>
-                        <button style="${{btn_s}}" onclick="stepVal(this, 1, 's')">+</button>
-                    </div>
-                </td>
-                <td style="border: 0.5px solid #25282b; padding: 2px; width: 180px; min-width: 180px; max-width: 180px; box-sizing: border-box;">
-                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="${{select_style}} color: #808080;"> 
-                        <option value="">Seleccionar...</option>
-                    </select>
-                </td>
-                <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-            </tr>
-        `;
-
-        let filasExtraHtml = "";
-        for (let k = 0; k < filasExtraCount; k++) {{
-            filasExtraHtml += filaInnerHtml;
-        }}
-
-        htmlPolígonos += `
-            <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
-                
-                <!-- ⬆️ BARRA SUPERIOR DE BOTONES Y FILAS -->
-                <div style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 4px; background: #ededed; border-bottom: 1px solid #25282b;">
-                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; background: #e0e0e0; color: #25282b; border: 1px solid #777; width: 26px; height: 24px; font-weight: bold; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;">+</button>
-                    <button onclick="quitarFilaPlan(this)" style="cursor:pointer; background: #e0e0e0; color: #25282b; border: 1px solid #777; width: 26px; height: 24px; font-weight: bold; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;">—</button>
-                    <span class="contador-filas" style="margin-left: 6px; font-weight: bold; font-size: 13px; color: #25282b;">Filas: ${{p.filas}}</span>
-                </div>
-
-                <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
-                    <thead>
-                        <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">                        
-                            <th style="padding: 0 10px; border-right: 1px solid #25282b; min-width: 130px; width: 130px;">PLAN</th>
-                            <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
-                            <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
-                            <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;">SPR</th>
-                            <th style="width: 180px; min-width: 180px; max-width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
-                            <th style="width: 45px; min-width: 45px; max-width: 45px; text-align: center;">OK</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="calc-row"> 
-                            <td class="plan-cell" rowspan="${{p.filas}}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414; min-width: 130px; width: 130px; word-break: break-word;">${{p.nombre}}</td>
-                            <td class="vol-cell" rowspan="${{p.filas}}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
-                                <div style="text-align:center;">
-                                    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border:none; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080; text-align:center;">0</span>
-                                </div>
-                            </td>
-                            <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
-                                <div style="${{div_flex}}">
-                                    <button style="${{btn_s}}" onclick="stepVal(this, -1, 'u')">-</button>
-                                    <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="${{span_num_u}} color: #25282b !important;">0</span>
-                                    <button style="${{btn_s}}" onclick="stepVal(this, 1, 'u')">+</button>
-                                </div>
-                            </td>
-                            <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
-                                <div style="${{div_flex}}">
-                                    <button style="${{btn_s}}" onclick="stepVal(this, -1, 's')">-</button>
-                                    <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="${{span_num_spr}}">0</span>
-                                    <button style="${{btn_s}}" onclick="stepVal(this, 1, 's')">+</button>
-                                </div>
-                            </td>
-                            <td style="border: 0.5px solid #25282b; padding: 2px;">
-                                <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="${{select_style}} color: #808080;">
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </td>
-                            <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-                        </tr>
-                        ${{filasExtraHtml}}
-                        <tr style="background:#ededed; height: 32px;">
-                            <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
-                            <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
-                            <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }});
-
-    // Inyectar la sección `#polys-N`
-    let divPolys = document.createElement("div");
-    divPolys.id = "polys-" + nuevoId;
-    divPolys.className = "p-content";
-    divPolys.style.display = "none";
-    divPolys.innerHTML = htmlPolígonos;
-    
-    let excelPolys = document.getElementById("excel-polys");
-    if (excelPolys && excelPolys.parentNode) {{
-        excelPolys.parentNode.insertBefore(divPolys, excelPolys);
-    }} else {{
-        document.querySelector("#visor").appendChild(divPolys);
-    }}
-
-    // 6. CERRAR EL MODAL, NAVEGAR A LA NUEVA PESTAÑA Y POBLAR DESPLEGABLES
+    // 4. CERRAR MODAL Y NOTIFICAR
     cerrarCreadorRuteo();
-    showTab(nuevoId, btnNuevo);
-    actualizarSelects();
-    recalc();
-
-    showAlert("🎉 ¡NUEVO RUTEO '" + nombreRuteo + "' CREADO Y ACTIVADO CON ÉXITO!");
+    showAlert("🎉 ¡Guardando nuevo ruteo '" + nombreRuteo + "' en Google Sheets!");
 }}
 
 
