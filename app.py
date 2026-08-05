@@ -4,8 +4,7 @@ import pandas as pd
 import io
 from streamlit.components.v1 import html    
 from streamlit_gsheets import GSheetsConnection
-streamlit-gsheets
-st-gsheets-connection
+
 
 # 1. Conexión con Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
