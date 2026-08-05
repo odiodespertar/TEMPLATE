@@ -2421,7 +2421,7 @@ function guardarNuevoRuteoCompleto() {{
                 sprMax: sprMax
             }});
         }}
-    })};
+    }});
 
     if (flotaElegida.length === 0) {{
         alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
