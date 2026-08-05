@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import io
 from streamlit.components.v1 import html    
-from streamlit_gsheets import GSheetsConnection
+from st_gsheets_connection import GSheetsConnection
 
 
 # 1. Conexión con Google Sheets
