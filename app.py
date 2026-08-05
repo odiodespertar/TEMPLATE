@@ -2375,7 +2375,7 @@ function generarPrioridadesPlanes() {{
 
     let htmlPrioridades = "";
     inputsPlanes.forEach((input, index) => {{
-        let nombrePlan = input.value.trim() || `PLAN ${index + 1}`;
+        let nombrePlan = input.value.trim() || `PLAN ${{index + 1}}`;
         htmlPrioridades += `
             <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
                 <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${{nombrePlan}}</span>
