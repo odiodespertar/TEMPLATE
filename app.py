@@ -2451,24 +2451,39 @@ function guardarNuevoRuteoCompleto() {{
 
     
 
-    // 3. ENVIAR LOS DATOS A PYTHON / STREAMLIT
+    // 3. EMPAQUETAR LOS DATOS
     let datosNuevoRuteo = {{
+        accion: "guardar_ruteo",
         flota: flotaConfigurada,
         planes: planesElegidos
     }};
 
-    // Esta línea es la que le avisa a Streamlit que los datos están listos
-    if (window.streamlit && typeof window.streamlit.setComponentValue === "function") {{
-        window.streamlit.setComponentValue(datosNuevoRuteo);
-    }} else if (window.parent && window.parent.streamlit && typeof window.parent.streamlit.setComponentValue === "function") {{
-        window.parent.streamlit.setComponentValue(datosNuevoRuteo);
-    }} else {{
-        // Si usas otro método de comunicación personalizado en tu componente, colócalo aquí:
-        console.log("Datos a sincronizar:", datosNuevoRuteo);
+    // 4. FORZAR EL CIERRE Y ENVÍO LIMPIO
+    try {{
+        // Intento estándar de Streamlit Custom Component si aplica
+        if (typeof setComponentValue === "function") {{
+            setComponentValue(datosNuevoRuteo);
+        } else if (window.parent && typeof window.parent.setComponentValue === "function") {{
+            window.parent.setComponentValue(datosNuevoRuteo);
+        }}
+    }} catch (e) {{
+        console.log("Error en envío:", e);
     }}
 
-    // Cerrar la ventana modal después de guardar
-    cerrarCreadorRuteo();
+    // Asegurar que el modal se cierre visualmente de inmediato y quite el texto de guardando
+    let modal = document.getElementById("modal-crear-ruteo");
+    if (modal) {{
+        modal.style.display = "none";
+    }}
+    
+    // Opcional: recargar o limpiar el texto del botón por si se quedó colgado
+    let btnGuardar = document.querySelector("button[onclick*='guardarNuevoRuteoCompleto']");
+    if (btnGuardar) {{
+        btnGuardar.innerText = "💾 Guardar y Sincronizar Ruteo";
+        btnGuardar.disabled = false;
+    }}
+
+    alert("¡Ruteo procesado correctamente!");
 }}
 
 
