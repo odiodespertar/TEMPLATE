@@ -2303,95 +2303,86 @@ function showTab(n, btn) {{
 
 
    
-    function abrirCreadorRuteo() {{
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
-            modal.style.display = "block";
-        }}
+    // Funciones de apertura y cierre del modal
+function abrirCreadorRuteo() {{
+    let modal = document.getElementById("modal-crear-ruteo");
+    if (modal) {{
+        modal.style.display = "block";
+        inicializarCreadorFlota();
+        generarCamposPlanes();
     }}
-
-    function cerrarCreadorRuteo() {{
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
-            modal.style.display = "none";
-        }}
-    }}
-
-
-
-    // Base de datos máster de flotas para elegir en el creador
-    const BASE_FLOTA_MASTER = {{
-        "Car MLP": [110, 120],
-        "Small Van MLP": [110, 120],
-        "Large Van MLP": [110, 120],
-        "Small Van MLP Newbie": [110, 120],
-        "Large Van MLP Newbie": [110, 120],
-        "Extra large Van MLP": [110, 120],
-        "Small Van MLP foráneo": [110, 120],
-        "Large Van MLP foráneo": [110, 120],
-        "Car MLP foráneo": [110, 120],
-        "Extra large Van MLP H&B": [100, 100],
-        "Rental Car": [120, 150],
-        "Rental Electric Large Van": [120, 150],
-        "Rental Large Van": [120, 150],
-        "Rental Replacement": [120, 150],
-        "Rental Small Van Electrica": [120, 150],
-        "Rental Small Van": [120, 150],
-        "Truck 3.5 tons MLP": [1, 1],
-        "Delivery Cell Large Van": [1, 1],
-        "Car 8h": [70, 70],
-        "Car Newbie": [50, 50],
-        "Car Zona Extendida": [60, 60],
-        "Moto 3h": [30, 30],
-        "Small Van 9h": [70, 70],
-        "Small Van 9h Ext": [70, 70],
-        "Small Van Newbie": [70, 70],
-        "Media Milla SP": [1, 1]
-    }};
-
-    // Modificamos abrirCreadorRuteo para que renderice la lista de flota al abrir
-    function abrirCreadorRuteo() {{
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
-            modal.style.display = "block";
-            inicializarCreadorFlota();
-            generarCamposPlanes();
-        }}
-    }}
-
-    function inicializarCreadorFlota() {{
-        let cont = document.getElementById("contenedor-lista-flota");
-        if (!cont) return;
-    
-        let htmlFlota = "";
-        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {{
-            let sprDef = BASE_FLOTA_MASTER[unidad];
-            htmlFlota += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
-                        <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
-                        ${{unidad}}
-                    </label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="font-size: 10px; color: #aaa;">MIN:</span>
-                        <input type="number" class="spr-min-${{idx}}" value="${{sprDef[0]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
-                        <span style="font-size: 10px; color: #aaa;">MAX:</span>
-                        <input type="number" class="spr-max-${{idx}}" value="${{sprDef[1]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
-                    </div>
-                </div>
-            `;
-        }});
-        cont.innerHTML = htmlFlota;
 }}
 
+function cerrarCreadorRuteo() {{
+    let modal = document.getElementById("modal-crear-ruteo");
+    if (modal) {{
+        modal.style.display = "none";
+    }}
+}}
 
+// Base de datos máster de flotas para elegir en el creador
+const BASE_FLOTA_MASTER = {{
+    "Car MLP": [110, 120],
+    "Small Van MLP": [110, 120],
+    "Large Van MLP": [110, 120],
+    "Small Van MLP Newbie": [110, 120],
+    "Large Van MLP Newbie": [110, 120],
+    "Extra large Van MLP": [110, 120],
+    "Small Van MLP foráneo": [110, 120],
+    "Large Van MLP foráneo": [110, 120],
+    "Car MLP foráneo": [110, 120],
+    "Extra large Van MLP H&B": [100, 100],
+    "Rental Car": [120, 150],
+    "Rental Electric Large Van": [120, 150],
+    "Rental Large Van": [120, 150],
+    "Rental Replacement": [120, 150],
+    "Rental Small Van Electrica": [120, 150],
+    "Rental Small Van": [120, 150],
+    "Truck 3.5 tons MLP": [1, 1],
+    "Delivery Cell Large Van": [1, 1],
+    "Car 8h": [70, 70],
+    "Car Newbie": [50, 50],
+    "Car Zona Extendida": [60, 60],
+    "Moto 3h": [30, 30],
+    "Small Van 9h": [70, 70],
+    "Small Van 9h Ext": [70, 70],
+    "Small Van Newbie": [70, 70],
+    "Media Milla SP": [1, 1]
+}};
 
-function generarCamposPlanes() {{
-    let cant = parseInt(document.getElementById("creador-cant-planes").value) || 1;
-    let cont = document.getElementById("contenedor-lista-planes");
+function inicializarCreadorFlota() {{
+    let cont = document.getElementById("contenedor-lista-flota");
     if (!cont) return;
 
+    let htmlFlota = "";
+    Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {{
+        let sprDef = BASE_FLOTA_MASTER[unidad];
+        htmlFlota += `
+            <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
+                    <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
+                    ${unidad}
+                </label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="font-size: 10px; color: #aaa;">MIN:</span>
+                    <input type="number" class="spr-min-${{idx}}" value="${{sprDef[0]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                    <span style="font-size: 10px; color: #aaa;">MAX:</span>
+                    <input type="number" class="spr-max-${{idx}}" value="${{sprDef[1]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                </div>
+            </div>
+        `;
+    }});
+    cont.innerHTML = htmlFlota;
+}}
+
+function generarCamposPlanes() {{
+    let cantInput = document.getElementById("creador-cant-planes");
+    let cont = document.getElementById("contenedor-lista-planes");
+    if (!cantInput || !cont) return;
+
+    let cant = parseInt(cantInput.value) || 1;
     let htmlPlanes = "";
+    
     for (let i = 1; i <= cant; i++) {{
         htmlPlanes += `
             <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
@@ -2410,7 +2401,10 @@ function generarCamposPlanes() {{
 let contadorPestanaDinamica = 900;
 
 function guardarNuevoRuteo() {{
-    let nombreRuteo = document.getElementById("creador-nombre-ruteo").value.trim().toUpperCase();
+    let inputNombre = document.getElementById("creador-nombre-ruteo");
+    if (!inputNombre) return;
+
+    let nombreRuteo = inputNombre.value.trim().toUpperCase();
     if (!nombreRuteo) {{
         alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
         return;
