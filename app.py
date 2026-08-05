@@ -1886,6 +1886,20 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
 
 
+<!-- SECCIÓN 5: DE PRIORIDADES PARA EL DISTRIBUIDOR AUTOMÁTICO -->
+<div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+    <h3 style="color: #FFD700; margin-top: 0;">⚡ PRIORIDADES DE ASIGNACIÓN POR PLAN</h3>
+    <p style="color: #aaa; font-size: 12px; margin-bottom: 10px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
+    
+    <!-- Contenedor donde se inyectarán las prioridades -->
+    <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8px;">
+        <p style="color: #888;">Genera los planes arriba para configurar sus prioridades aquí.</p>
+    </div>
+</div>
+
+
+
+
 <script>
 
     const perfiles = {json.dumps(PERFILES)};
@@ -2316,9 +2330,6 @@ function inicializarCreadorFlota() {{
 
 
 function generarCamposPlanes() {{
-
-
-    alert("¡El botón funciona!"); // <-- Pon esto temporalmente
     let cantInput = document.getElementById("creador-cant-planes");
     let cont = document.getElementById("contenedor-lista-planes");
     if (!cantInput || !cont) return;
@@ -2329,9 +2340,10 @@ function generarCamposPlanes() {{
     for (let i = 1; i <= cant; i++) {{
         htmlPlanes += `
             <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
-                <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
-                    style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
+                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
+                <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
+                    style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
+                    oninput="generarPrioridadesPlanes()">
                 <span style="font-size: 11px; color: #aaa;">Filas:</span>
                 <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
                     style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
@@ -2339,10 +2351,45 @@ function generarCamposPlanes() {{
         `;
     }}
     cont.innerHTML = htmlPlanes;
+    
+    // Genera automáticamente las prioridades abajo basadas en estos planes
+    generarPrioridadesPlanes();
 }}
+
 
 let contadorPestanaDinamica = 900;
 
+
+
+function generarPrioridadesPlanes() {{
+    let contPrioridades = document.getElementById("contenedor-prioridades-planes");
+    if (!contPrioridades) return;
+
+    // Captura los nombres actuales de los planes escritos arriba
+    let inputsPlanes = document.querySelectorAll("#contenedor-lista-planes .input-nombre-plan");
+    
+    if (inputsPlanes.length === 0) {{
+        contPrioridades.innerHTML = `<p style="color: #888;">Primero genera y nombra los planes arriba.</p>`;
+        return;
+    }}
+
+    let htmlPrioridades = "";
+    inputsPlanes.forEach((input, index) => {{
+        let nombrePlan = input.value.trim() || `PLAN ${index + 1}`;
+        htmlPrioridades += `
+            <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${{nombrePlan}}</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
+                    <input type="number" class="input-prioridad-plan" value="${{index + 1}}" min="1" max="10" 
+                        style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                </div>
+            </div>
+        `;
+    }});
+
+    contPrioridades.innerHTML = htmlPrioridades;
+}}
 
 
 function guardarNuevoRuteo() {{
@@ -2378,16 +2425,20 @@ function guardarNuevoRuteo() {{
         return;
     }}
 
-    // 2. CAPTURAR PLANES Y FILAS POR PLAN
+    // 2. CAPTURAR PLANES, FILAS Y PRIORIDADES POR PLAN
     let planesElegidos = [];
     let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
+    let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
     
-    divsPlanes.forEach(div => {{
+    divsPlanes.forEach((div, idx) => {{
         let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
         let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+        let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
+        
         planesElegidos.push({{
             nombre: nombrePlan,
-            filas: filasPlan
+            filas: filasPlan,
+            prioridad: prioridadPlan
         }});
     }});
 
@@ -2395,6 +2446,8 @@ function guardarNuevoRuteo() {{
         alert("⚠️ Ingresa al menos un plan o polígono.");
         return;
     }}
+
+    
 
     // 3. ENVIAR DATOS A PYTHON / STREAMLIT PARA GUARDAR EN GOOGLE SHEETS
     const payload = {{
