@@ -2301,6 +2301,8 @@ function inicializarCreadorFlota() {{
     cont.innerHTML = htmlFlota;
 }}
 
+
+
 function generarCamposPlanes() {{
     let cantInput = document.getElementById("creador-cant-planes");
     let cont = document.getElementById("contenedor-lista-planes");
@@ -2311,9 +2313,9 @@ function generarCamposPlanes() {{
     
     for (let i = 1; i <= cant; i++) {{
         htmlPlanes += `
-            <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
-                <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
+            <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
+                <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
                     style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
                 <span style="font-size: 11px; color: #aaa;">Filas:</span>
                 <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
@@ -2325,6 +2327,8 @@ function generarCamposPlanes() {{
 }}
 
 let contadorPestanaDinamica = 900;
+
+
 
 function guardarNuevoRuteo() {{
     let inputNombre = document.getElementById("creador-nombre-ruteo");
