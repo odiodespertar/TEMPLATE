@@ -920,7 +920,7 @@ except Exception:
 # ==============================================================================
 # 6. PLANTILLA HTML/JAVASCRIPT COMPLETA (APP_HTML)
 # ==============================================================================
-app_html = f"""
+app_html = """
 <!DOCTYPE html>
 <html>
 <head>
