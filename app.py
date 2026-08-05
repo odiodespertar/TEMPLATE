@@ -11,9 +11,16 @@ import gspread
 @st.cache_resource
 def conectar_gsheets():
     try:
-        # Carga los secrets que configuraste en Streamlit Cloud
-        gc = gspread.service_account_from_dict(dict(st.secrets["connections.gsheets"]))
-        sh = gc.open_by_url(st.secrets["connections.gsheets"]["spreadsheet"])
+        # Intenta leer desde el diccionario anidado o plano de secrets
+        if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+            sec = dict(st.secrets["connections"]["gsheets"])
+        elif "gsheets" in st.secrets:
+            sec = dict(st.secrets["gsheets"])
+        else:
+            sec = dict(st.secrets)
+
+        gc = gspread.service_account_from_dict(sec)
+        sh = gc.open_by_url(sec["spreadsheet"])
         return sh
     except Exception as e:
         st.error(f"Error al conectar con Google Sheets: {e}")
