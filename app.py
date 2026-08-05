@@ -2451,21 +2451,23 @@ function guardarNuevoRuteoCompleto() {{
 
     
 
-    // 3. ENVIAR DATOS A PYTHON / STREAMLIT PARA GUARDAR EN GOOGLE SHEETS
-    const payload = {{
-        nombre: nombreRuteo,
-        cant_planes: planesElegidos.length,
-        planes: planesElegidos,
-        flota: flotaElegida
+    // 3. ENVIAR LOS DATOS A PYTHON / STREAMLIT
+    let datosNuevoRuteo = {{
+        flota: flotaConfigurada,
+        planes: planesElegidos
     }};
 
-    window.parent.postMessage({{
-        isStreamlitMessage: true,
-        type: "streamlit:setComponentValue",
-        value: JSON.stringify(payload)
-    }}, "*");
+    // Esta línea es la que le avisa a Streamlit que los datos están listos
+    if (window.streamlit && typeof window.streamlit.setComponentValue === "function") {{
+        window.streamlit.setComponentValue(datosNuevoRuteo);
+    }} else if (window.parent && window.parent.streamlit && typeof window.parent.streamlit.setComponentValue === "function") {{
+        window.parent.streamlit.setComponentValue(datosNuevoRuteo);
+    }} else {{
+        // Si usas otro método de comunicación personalizado en tu componente, colócalo aquí:
+        console.log("Datos a sincronizar:", datosNuevoRuteo);
+    }}
 
-    // 4. CERRAR MODAL Y NOTIFICAR
+    // Cerrar la ventana modal después de guardar
     cerrarCreadorRuteo();
 }}
 
