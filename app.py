@@ -2304,6 +2304,9 @@ function inicializarCreadorFlota() {{
 
 
 function generarCamposPlanes() {{
+
+
+    alert("¡El botón funciona!"); // <-- Pon esto temporalmente
     let cantInput = document.getElementById("creador-cant-planes");
     let cont = document.getElementById("contenedor-lista-planes");
     if (!cantInput || !cont) return;
