@@ -2425,8 +2425,8 @@ function guardarNuevoRuteo() {{
         let chk = div.querySelector(".chk-flota-unidad");
         if (chk && chk.checked) {{
             let nombreUnidad = chk.value;
-            let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
-            let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
+            let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
+            let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
             flotaElegida.push({{
                 nombre: nombreUnidad,
                 sprMin: sprMin,
