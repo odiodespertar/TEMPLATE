@@ -2463,7 +2463,7 @@ function guardarNuevoRuteoCompleto() {{
         // Intento estándar de Streamlit Custom Component si aplica
         if (typeof setComponentValue === "function") {{
             setComponentValue(datosNuevoRuteo);
-        } else if (window.parent && typeof window.parent.setComponentValue === "function") {{
+        }} else if (window.parent && typeof window.parent.setComponentValue === "function") {{
             window.parent.setComponentValue(datosNuevoRuteo);
         }}
     }} catch (e) {{
