@@ -2392,6 +2392,7 @@ function generarPrioridadesPlanes() {{
 }}
 
 
+
 function guardarNuevoRuteoCompleto() {{
     alert("Iniciando guardado...");
     
@@ -2420,7 +2421,7 @@ function guardarNuevoRuteoCompleto() {{
                 sprMax: sprMax
             }});
         }}
-    }});
+    })};
 
     if (flotaElegida.length === 0) {{
         alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
@@ -2449,18 +2450,16 @@ function guardarNuevoRuteoCompleto() {{
         return;
     }}
 
-    
-
-    // 3. EMPAQUETAR LOS DATOS
+    // 3. EMPAQUETAR LOS DATOS (¡Aquí estaba el error, usaba flotaElegida en vez de flotaConfigurada!)
     let datosNuevoRuteo = {{
         accion: "guardar_ruteo",
-        flota: flotaConfigurada,
+        nombre: nombreRuteo,
+        flota: flotaElegida,
         planes: planesElegidos
     }};
 
     // 4. FORZAR EL CIERRE Y ENVÍO LIMPIO
     try {{
-        // Intento estándar de Streamlit Custom Component si aplica
         if (typeof setComponentValue === "function") {{
             setComponentValue(datosNuevoRuteo);
         }} else if (window.parent && typeof window.parent.setComponentValue === "function") {{
@@ -2470,13 +2469,12 @@ function guardarNuevoRuteoCompleto() {{
         console.log("Error en envío:", e);
     }}
 
-    // Asegurar que el modal se cierre visualmente de inmediato y quite el texto de guardando
+    // Asegurar que el modal se cierre visualmente
     let modal = document.getElementById("modal-crear-ruteo");
     if (modal) {{
         modal.style.display = "none";
     }}
     
-    // Opcional: recargar o limpiar el texto del botón por si se quedó colgado
     let btnGuardar = document.querySelector("button[onclick*='guardarNuevoRuteoCompleto']");
     if (btnGuardar) {{
         btnGuardar.innerText = "💾 Guardar y Sincronizar Ruteo";
