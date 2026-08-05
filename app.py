@@ -2340,8 +2340,8 @@ function generarCamposPlanes() {{
     for (let i = 1; i <= cant; i++) {{
         htmlPlanes += `
             <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
-                <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
+                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
+                <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
                     style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
                     oninput="generarPrioridadesPlanes()">
                 <span style="font-size: 11px; color: #aaa;">Filas:</span>
