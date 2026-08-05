@@ -1921,39 +1921,32 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
             </div>
         </div>
 
-        <!-- SECCIÓN 2: NOMBRES DE PLANES Y FILAS POR PLAN -->
+
+
+        <!-- SECCIÓN 2: NOMBRES DE POLÍGONOS Y FILAS (DINÁMICO) -->
         <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
             <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">
-                2️⃣ NOMBRES DE POLÍGONOS Y FILAS
+                2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES
             </h3>
             
-            <div id="contenedor-lista-planes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
-                <p style="color: #888; font-style: italic; margin: 0;">Haz clic en "Generar Campos de Planes" para ingresar los nombres.</p>
+            <div id="creador-contenedor-dinamico" style="display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                <p style="color: #a0a0a0; font-style: italic; font-size: 13px; text-align: center; margin: 20px 0;">
+                    Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.
+                </p>
             </div>
         </div>
 
-        <!-- SECCIÓN 3: SELECCIÓN DE FLOTA Y SPR MANUAL -->
-        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
-            <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px; display: flex; justify-content: space-between;">
-                <span>3️⃣ FLOTA A UTILIZAR Y SPR MANUAL</span>
-                <span style="font-size: 12px; color: #aaa; font-weight: normal;">(Selecciona las unidades habilitadas para este ruteo)</span>
-            </h3>
-
-            <div id="contenedor-lista-flota" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 5px;">
-                <!-- Se llena automáticamente con JavaScript -->
-            </div>
-        </div>
-
-        <!-- BOTÓN DE GUARDADO DEL RUTEO (Estará ligado en el Paso 3) -->
-        <div style="text-align: center; padding-top: 10px;">
-            <button onclick="guardarNuevoRuteo()" 
-                style="cursor: pointer; background: linear-gradient(180deg, #28a745 0%, #1e7e34 100%); color: white; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);">
-                🚀 GUARDAR Y ACTIVAR NUEVO RUTEO
+        <!-- SECCIÓN 3: ACCIONES DE GUARDADO -->
+        <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
+            <button onclick="cerrarCreadorRuteo()" 
+                style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">
+                Cancelar
+            </button>
+            <button onclick="guardarNuevoRuteoCompleto()" 
+                style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(40,167,69,0.4);">
+                💾 Guardar y Sincronizar Ruteo
             </button>
         </div>
-
-    </div>
-</div>
 
 
 
@@ -2473,6 +2466,7 @@ function guardarNuevoRuteo() {{
     }};
 
     window.parent.postMessage({{
+        isStreamlitMessage: true,
         type: "streamlit:setComponentValue",
         value: JSON.stringify(payload)
     }}, "*");
