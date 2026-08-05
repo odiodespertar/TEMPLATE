@@ -2392,7 +2392,7 @@ function generarPrioridadesPlanes() {{
 }}
 
 
-function guardarNuevoRuteo() {{
+function guardarNuevoRuteoCompleto() {{
     alert("Iniciando guardado...");
     
     let inputNombre = document.getElementById("creador-nombre-ruteo");
