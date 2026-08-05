@@ -2384,6 +2384,8 @@ function showTab(n, btn) {{
         cont.innerHTML = htmlFlota;
 }}
 
+
+
 function generarCamposPlanes() {{
     let cant = parseInt(document.getElementById("creador-cant-planes").value) || 1;
     let cont = document.getElementById("contenedor-lista-planes");
@@ -2405,14 +2407,12 @@ function generarCamposPlanes() {{
     cont.innerHTML = htmlPlanes;
 }}
 
-
-// Contador global para IDs de pestañas dinámicas (empieza en 900 para evitar choques con 1, 2, 4, 5, 6, 7, 8)
 let contadorPestanaDinamica = 900;
 
 function guardarNuevoRuteo() {{
     let nombreRuteo = document.getElementById("creador-nombre-ruteo").value.trim().toUpperCase();
     if (!nombreRuteo) {{
-        showAlert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
+        alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
         return;
     }}
 
@@ -2435,7 +2435,7 @@ function guardarNuevoRuteo() {{
     }});
 
     if (flotaElegida.length === 0) {{
-        showAlert("⚠️ Debes seleccionar al menos una unidad para la flota.");
+        alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
         return;
     }}
 
@@ -2453,7 +2453,7 @@ function guardarNuevoRuteo() {{
     }});
 
     if (planesElegidos.length === 0) {{
-        showAlert("⚠️ Ingresa al menos un plan o polígono.");
+        alert("⚠️ Ingresa al menos un plan o polígono.");
         return;
     }}
 
@@ -2473,7 +2473,6 @@ function guardarNuevoRuteo() {{
 
     // 4. CERRAR MODAL Y NOTIFICAR
     cerrarCreadorRuteo();
-    showAlert("🎉 ¡Guardando nuevo ruteo '" + nombreRuteo + "' en Google Sheets!");
 }}
 
 
