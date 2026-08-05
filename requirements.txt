@@ -2,5 +2,4 @@ streamlit
 pandas
 numpy
 openpyxl
-streamlit-gsheets
 st-gsheets-connection
