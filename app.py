@@ -2,22 +2,43 @@ import json
 import streamlit as st 
 import pandas as pd
 import io
-from streamlit.components.v1 import html    
-from st_gsheets_connection import GSheetsConnection
+from streamlit.components.v1 import html     
+import gspread
 
+# ==========================================
+# 1. CONEXIÓN CON GOOGLE SHEETS (Vía Gspread)
+# ==========================================
+@st.cache_resource
+def conectar_gsheets():
+    try:
+        # Carga los secrets que configuraste en Streamlit Cloud
+        gc = gspread.service_account_from_dict(dict(st.secrets["connections.gsheets"]))
+        sh = gc.open_by_url(st.secrets["connections.gsheets"]["spreadsheet"])
+        return sh
+    except Exception as e:
+        st.error(f"Error al conectar con Google Sheets: {e}")
+        return None
 
-# 1. Conexión con Google Sheets
-conn = st.connection("gsheets", type=GSheetsConnection)
-
+sh = conectar_gsheets()
 
 # 2. Función para guardar un nuevo ruteo en Google Sheets
 def guardar_ruteo_en_gsheets(
     nombre_ruteo, cant_planes, lista_planes, lista_flota
 ):
     try:
-        # Leer hojas actuales
-        df_ruteos = conn.read(worksheet="Ruteos")
-        df_planes = conn.read(worksheet="Planes")
+        if sh is None:
+            st.error("No hay conexión activa con Google Sheets.")
+            return False
+
+        # Leer hojas actuales usando gspread
+        hoja_ruteos = sh.worksheet("Ruteos")
+        hoja_planes = sh.worksheet("Planes")
+
+        data_ruteos = hoja_ruteos.get_all_records()
+        data_planes = hoja_planes.get_all_records()
+
+        df_ruteos = pd.DataFrame(data_ruteos) if data_ruteos else pd.DataFrame(columns=["nombre_ruteo", "cant_planes"])
+        df_planes = pd.DataFrame(data_planes) if data_planes else pd.DataFrame(columns=["nombre_ruteo", "nombre_plan", "filas"])
 
         # Nuevo registro de Ruteo Header
         nuevo_header = pd.DataFrame(
@@ -40,13 +61,18 @@ def guardar_ruteo_en_gsheets(
             [df_planes, df_planes_nuevos], ignore_index=True
         )
 
-        # Actualizar en la nube
-        conn.update(worksheet="Ruteos", data=df_ruteos_actualizado)
-        conn.update(worksheet="Planes", data=df_planes_actualizado)
+        # Actualizar en la nube (limpiando y escribiendo los DataFrames completos)
+        hoja_ruteos.clear()
+        hoja_ruteos.update([df_ruteos_actualizado.columns.values.tolist()] + df_ruteos_actualizado.values.tolist())
+
+        hoja_planes.clear()
+        hoja_planes.update([df_planes_actualizado.columns.values.tolist()] + df_planes_actualizado.values.tolist())
+
         return True
     except Exception as e:
         st.error(f"Error guardando en Google Sheets: {e}")
         return False
+
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
