@@ -1859,7 +1859,20 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
     </div>
 </div>
 
-        <!-- SECCIÓN 3: ACCIONES DE GUARDADO -->
+
+        <!-- SECCIÓN 3: FLOTA Y UNIDADES -->
+<div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+    <h3 style="color: #FFD700; margin-top: 0;">🚐 SELECCIÓN Y CONFIGURACIÓN DE FLOTA</h3>
+    
+    <!-- Este es el contenedor exacto que busca la función de las unidades -->
+    <div id="contenedor-lista-flota" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+        <p style="color: #888;">Cargando unidades de flota...</p>
+    </div>
+</div>
+
+
+
+        <!-- SECCIÓN 4: ACCIONES DE GUARDADO -->
         <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
             <button onclick="cerrarCreadorRuteo()" 
                 style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">
@@ -2231,10 +2244,11 @@ function abrirCreadorRuteo() {{
     let modal = document.getElementById("modal-crear-ruteo");
     if (modal) {{
         modal.style.display = "block";
-        inicializarCreadorFlota();
-        generarCamposPlanes();
+        inicializarCreadorFlota();   // Dibuja la lista de unidades con sus min/max
+        generarCamposPlanes();       // Dibuja los planes de arriba
     }}
 }}
+
 
 function cerrarCreadorRuteo() {{
     let modal = document.getElementById("modal-crear-ruteo");
@@ -2243,7 +2257,6 @@ function cerrarCreadorRuteo() {{
     }}
 }}
 
-// Base de datos máster de flotas para elegir en el creador
 const BASE_FLOTA_MASTER = {{
     "Car MLP": [110, 120],
     "Small Van MLP": [110, 120],
@@ -2272,6 +2285,8 @@ const BASE_FLOTA_MASTER = {{
     "Small Van Newbie": [70, 70],
     "Media Milla SP": [1, 1]
 }};
+
+
 
 function inicializarCreadorFlota() {{
     let cont = document.getElementById("contenedor-lista-flota");
