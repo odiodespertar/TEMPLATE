@@ -1850,17 +1850,14 @@ body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }} /
 
 
         <!-- SECCIÓN 2: NOMBRES DE POLÍGONOS Y FILAS (DINÁMICO) -->
-        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
-            <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">
-                2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES
-            </h3>
-            
-            <div id="creador-contenedor-dinamico" style="display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
-                <p style="color: #a0a0a0; font-style: italic; font-size: 13px; text-align: center; margin: 20px 0;">
-                    Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.
-                </p>
-            </div>
-        </div>
+<div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+    <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
+    
+    <!-- AQUÍ ES DONDE DEBE IR EXACTAMENTE ESTE DIV CON SU ID -->
+    <div id="contenedor-lista-planes">
+        <p style="color: #888;">Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.</p>
+    </div>
+</div>
 
         <!-- SECCIÓN 3: ACCIONES DE GUARDADO -->
         <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
