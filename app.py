@@ -2361,7 +2361,7 @@ function inicializarCreadorFlota() {{
             <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
                     <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
-                    ${unidad}
+                    ${{unidad}}
                 </label>
                 <div style="display: flex; align-items: center; gap: 4px;">
                     <span style="font-size: 10px; color: #aaa;">MIN:</span>
