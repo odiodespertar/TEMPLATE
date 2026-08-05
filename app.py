@@ -2408,7 +2408,7 @@ function guardarNuevoRuteo() {{
         }}
     }});
 
-    if (flotaElegida.length === 0) {
+    if (flotaElegida.length === 0) {{
         showAlert("⚠️ Debes seleccionar al menos una unidad para la flota.");
         return;
     }}
