@@ -4062,35 +4062,38 @@ info_operativa = {
     ),
 }
 
-html_notitas = f"""
+
+
+# ✅ REEMPLAZA EL FINAL CON ESTO:
+html_notitas = """
 <style>
-    body {{ background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }}
-    .main-box {{ background: #25282b; padding: 10px; }}
+    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+    .main-box { background: #25282b; padding: 10px; }
     
-    .unified-console {{
+    .unified-console {
         background: #25282b; border-radius: 15px; padding: 15px; 
         margin-bottom: 20px; border: 1px solid #25282b; text-align: center;
-    }}
-    .display-screen {{
+    }
+    .display-screen {
         background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
-    }}
-    .btn-3d {{
+    }
+    .btn-3d {
         background: linear-gradient(145deg, #1e90ff, #1c82e6);
         color: white; border: none; padding: 12px 25px; border-radius: 10px;
         font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-    }}
-    .btn-3d:active {{ box-shadow: 0 2px #0a56a3; transform: translateY(3px); }}
+    }
+    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
 
-    .tab-bar {{ display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }}
-    .tab-btn {{
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+    .tab-btn {
         background: #333; color: white; border: none; padding: 10px 18px;
         border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;
-    }}
-    .tab-btn.active {{ background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }}
+    }
+    .tab-btn.active { background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }
 
-    body:not(.tab-2) #excel-btn {{ display: none !important; }}
+    body:not(.tab-2) #excel-btn { display: none !important; }
 
-    .content-area {{ background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }}
+    .content-area { background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }
 </style>
 
 <div class="main-box">
@@ -4126,23 +4129,28 @@ html_notitas = f"""
 <script>
     const allData = {info_operativa};  
 
-    function changeTab(e, name) {{
+    function changeTab(e, name) {
         document.getElementById('visor').innerHTML = allData[name];
         let btns = document.getElementsByClassName('tab-btn');
-        for (let b of btns) {{ b.classList.remove('active'); }}
+        for (let b of btns) { b.classList.remove('active'); }
         e.currentTarget.classList.add('active');
-    }}
-    function ejecutarTodo() {{
+    }
+    function ejecutarTodo() {
         const mins = document.getElementById('minInput').value || 0;
         const ahora = new Date();
         const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
         const h = String(nuevaFecha.getHours()).padStart(2, '0');
         const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
         document.getElementById('horaReal').innerText = h + ":" + m;
-    }}
+    }
     ejecutarTodo();
 </script>
 """
 
+# Reemplazo seguro sin f-string
+html_notitas = html_notitas.replace("{info_operativa['SDE']}", info_operativa['SDE'])
+html_notitas = html_notitas.replace("{info_operativa}", json.dumps(info_operativa))
+
 st.markdown("---")
 components.html(html_notitas, height=1200, scrolling=True)
+
