@@ -488,7 +488,7 @@ def gen_master_rows(data_dict, table_id):
 
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
-            rows += """
+            rows += f"""
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
                 <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
                     {name}
@@ -533,7 +533,7 @@ def gen_master_rows(data_dict, table_id):
                 <td class="edit-ocup" style="display:none;">0</td>
                 """
 
-            rows += """
+            rows += f"""
             <tr class="master-row" style="{st_base}">
                 <td contenteditable="true" class="edit-name" oninput="recalc()"
                     style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">
@@ -645,29 +645,36 @@ def gen_poligonos(data_target=None):
         " pointer;"
     )
 
+    # CADENA NORMAL SIN 'f' PARA EVITAR EL SYNTAXERROR EN CSS DE AMBOS BOTONES
     fila_inner = """
     <tr class="calc-row">
         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
-            <div style="{div_flex}">
-                <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button>
-                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="{span_num_u}color: #25282b !important;">0</span>
-                <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
+            <div style="DIV_FLEX_PLACEHOLDER">
+                <button style="BTN_S_PLACEHOLDER" onclick="stepVal(this, -1, 'u')">-</button>
+                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="SPAN_NUM_U_PLACEHOLDER color: #25282b !important;">0</span>
+                <button style="BTN_S_PLACEHOLDER" onclick="stepVal(this, 1, 'u')">+</button>
             </div>
         </td>
         <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
-            <div style="{div_flex}">
-                <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
-                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="{span_num_spr} color: #25282b !important;">0</span>
-                <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
+            <div style="DIV_FLEX_PLACEHOLDER">
+                <button style="BTN_S_PLACEHOLDER" onclick="stepVal(this, -1, 's')">-</button>
+                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="SPAN_NUM_SPR_PLACEHOLDER color: #25282b !important;">0</span>
+                <button style="BTN_S_PLACEHOLDER" onclick="stepVal(this, 1, 's')">+</button>
             </div>
         </td>
         <td style="border: 0.5px solid #25282b; padding: 2px; width: 170px; min-width: 170px; max-width: 170px;">
-            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="{select_style} color: #808080;"> 
+            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="SELECT_STYLE_PLACEHOLDER color: #808080;"> 
                 <option value="">Seleccionar...</option>
             </select>
         </td>
         <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
     </tr>"""
+
+    fila_inner = fila_inner.replace("DIV_FLEX_PLACEHOLDER", div_flex)
+    fila_inner = fila_inner.replace("BTN_S_PLACEHOLDER", btn_s)
+    fila_inner = fila_inner.replace("SPAN_NUM_U_PLACEHOLDER", span_num_u)
+    fila_inner = fila_inner.replace("SPAN_NUM_SPR_PLACEHOLDER", span_num_spr)
+    fila_inner = fila_inner.replace("SELECT_STYLE_PLACEHOLDER", select_style)
 
     campo_volumen_normal = """
 <div style="text-align:center;">
@@ -843,7 +850,7 @@ def gen_poligonos(data_target=None):
         else:
             filas_extra = fila_inner * 2
 
-        polys += """
+        polys += f"""
         <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
             <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                 <thead>
@@ -3740,7 +3747,7 @@ ID_IMAGEN = "1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ"
 url_final = f"https://drive.google.com/thumbnail?id={ID_IMAGEN}&sz=w1000"
 
 info_operativa = {
-    "SDE": """
+    "SDE": f"""
         <div style='text-align: center; margin-bottom: 25px;'>
             <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
         </div>
