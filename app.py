@@ -928,7 +928,7 @@ app_html = """
         tr.master-row:hover, tr.calc-row:hover {
             background-color: #fffecd !important;
             box-shadow: inset #ffc107 !important;
-            transition: background-color ease, box-shadow 0.15s ease;
+            transition: background-color ease, box-shadow 0.15 ease;
             cursor: pointer;
         }
         tr.master-row:hover td, tr.calc-row:hover td { color: #000 !important; }
