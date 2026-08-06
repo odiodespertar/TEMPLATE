@@ -861,10 +861,10 @@ app_html = """
 <html>
 <head>
 
-    <!-- 📦 CDN OFICIAL DE SUPABASE JS -->
+    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
+    
         tr.master-row:hover, tr.calc-row:hover {
             background-color: #fffecd !important;
             outline: 2px solid #ffc107 !important;
@@ -4143,14 +4143,14 @@ ruteos_bd = cargar_ruteos_bd()
 if ruteos_bd:
     # Convertimos los ruteos guardados en un formato JSON seguro para JavaScript
     ruteos_json_str = json.dumps(ruteos_bd)
-    script_cargas = f"""
+    script_cargas = """
     <script>
-        document.addEventListener("DOMContentLoaded", function() {{
+        document.addEventListener("DOMContentLoaded", function() {
             let ruteosCargados = {ruteos_json_str};
-            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {{
+            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {
                 window.restaurarRuteosDesdeBD(ruteosCargados);
-            }}
-        }});
+            }
+        });
     </script>
     </body>
     """
