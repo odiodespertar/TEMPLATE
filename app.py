@@ -586,7 +586,219 @@ def export_c1_csv():
 
 
 def gen_poligonos(data_target=None):
-    return ""
+    polys = ""
+
+    btn_s = (
+        "cursor:pointer; border:none; background:rgba(0,0,0,0.08);"
+        " color:#25282b; font-weight:bold; width:24px; min-width:24px;"
+        " max-width:24px; height:24px; min-height:24px; max-height:24px;"
+        " border-radius:4px; flex-shrink:0; display:inline-flex;"
+        " align-items:center; justify-content:center;"
+    )
+
+    nombres_prec = [
+        "CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA",
+        "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO",
+    ]
+    nombres_smx2 = [
+        "CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1",
+        "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO",
+    ]
+
+    es_c1 = data_target in (u_C1, u_C1_SJA1, u_C1_SCH1, u_C1_SMD1)
+    es_sde = data_target == u_SDE
+    es_prec = data_target == u_PREC
+
+    div_flex = (
+        "display: flex; align-items: center; justify-content: space-between;"
+        " padding: 2px 4px; width: 100%; min-width: 100%; max-width: 100%;"
+        " box-sizing: border-box;"
+    )
+    span_num_u = (
+        "font-weight: bold; display: inline-block; text-align: center; width:"
+        " 28px; min-width: 28px; max-width: 28px; flex-shrink: 0;"
+    )
+    span_num_spr = (
+        "font-weight: bold; display: inline-block; text-align: center; width:"
+        " 38px; min-width: 38px; max-width: 43px; flex-shrink: 0;"
+    )
+    select_style = (
+        "width:160px; max-width: 160px; border:none; background:transparent;"
+        " font-weight:600; font-size:14px; color:#25282b; padding: 4px; cursor:"
+        " pointer;"
+    )
+
+    fila_inner = """
+    <tr class="calc-row">
+        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+            <div style="__DIV_FLEX__">
+                <button style="__BTN_S__" onclick="stepVal(this, -1, 'u')">-</button>
+                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="__SPAN_U__ color: #25282b !important;">0</span>
+                <button style="__BTN_S__" onclick="stepVal(this, 1, 'u')">+</button>
+            </div>
+        </td>
+        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+            <div style="__DIV_FLEX__">
+                <button style="__BTN_S__" onclick="stepVal(this, -1, 's')">-</button>
+                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="__SPAN_SPR__ color: #25282b !important;">0</span>
+                <button style="__BTN_S__" onclick="stepVal(this, 1, 's')">+</button>
+            </div>
+        </td>
+        <td style="border: 0.5px solid #25282b; padding: 2px; width: 170px; min-width: 170px; max-width: 170px;">
+            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="__SELECT_STYLE__ color: #808080;"> 
+                <option value="">Seleccionar...</option>
+            </select>
+        </td>
+        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+    </tr>"""
+
+    fila_inner = fila_inner.replace("__DIV_FLEX__", div_flex)
+    fila_inner = fila_inner.replace("__BTN_S__", btn_s)
+    fila_inner = fila_inner.replace("__SPAN_U__", span_num_u)
+    fila_inner = fila_inner.replace("__SPAN_SPR__", span_num_spr)
+    fila_inner = fila_inner.replace("__SELECT_STYLE__", select_style)
+
+    campo_volumen_normal = """
+<div style="text-align:center;">
+    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border:none; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080; text-align:center;">0</span>
+</div>"""
+
+    campo_volumen_c1 = """
+<div style="text-align:center;">
+    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border:none; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080; text-align:center;">0</span>
+</div>
+<hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+<div style="font-size:13px;font-weight:bold;color:#25282b;">Nodos: <span class="nodos-val" contenteditable="true" style="display:inline-block; min-width:28px; text-align:center; border:none; border-radius:4px; background:#ededed; font-size:16px; font-weight:bold; color:#FF6347; padding:0 4px; margin-left:3px;">0</span></div>"""
+
+    campo_campeche = """
+<div style="text-align:center;">
+    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border:none; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080; text-align:center;">0</span>
+</div>
+<hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+<div style="font-size:13px;font-weight:bold;color:#25282b;">Nodos: <span class="nodos-campeche" contenteditable="true" style="display:inline-block; min-width:28px; text-align:center; border:none; border-radius:4px; background:#ededed; font-size:16px; font-weight:bold; color:#FF6347; padding:0 4px; margin-left:3px;">0</span></div>"""
+
+    if data_target == u_C1_SJA1:
+        limite_tablas = len(NOMBRES_PLANES_C1_SJA1) + 1
+    elif data_target == u_C1_SCH1:
+        limite_tablas = 16
+    elif data_target == u_C1_SMD1:
+        limite_tablas = 20
+    elif es_sde:
+        limite_tablas = 5
+    else:
+        limite_tablas = 20
+
+    for i in range(1, limite_tablas):
+        if data_target == u_PREC and (i - 1) < len(nombres_prec):
+            nombre_final = nombres_prec[i - 1]
+        elif data_target == u_PREC_SMX2 and (i - 1) < len(nombres_smx2):
+            nombre_final = nombres_smx2[i - 1]
+        elif data_target == u_C1 and (i - 1) < len(NOMBRES_PLANES_C1):
+            nombre_final = NOMBRES_PLANES_C1[i - 1]
+        elif data_target == u_C1_SJA1 and (i - 1) < len(NOMBRES_PLANES_C1_SJA1):
+            nombre_final = NOMBRES_PLANES_C1_SJA1[i - 1]
+        elif data_target == u_C1_SCH1 and (i - 1) < len(NOMBRES_PLANES_C1_SCH1):
+            nombre_final = NOMBRES_PLANES_C1_SCH1[i - 1]
+        elif data_target == u_C1_SMD1 and (i - 1) < len(NOMBRES_PLANES_C1_SMD1):
+            nombre_final = NOMBRES_PLANES_C1_SMD1[i - 1]
+        else:
+            nombre_final = f"PLAN {i}"
+
+        if nombre_final == "CAMPECHE":
+            contenido_volumen = campo_campeche
+        elif es_c1:
+            contenido_volumen = campo_volumen_c1
+        else:
+            contenido_volumen = campo_volumen_normal
+
+        if es_sde:
+            rowspan_actual = 5
+        elif es_prec:
+            rowspan_actual = 4
+        elif data_target == u_C1_SJA1:
+            rowspan_actual = 8 if nombre_final == "⚠️ CENTRO 1" else 5
+        elif data_target == u_C1_SMD1:
+            rowspan_actual = 5
+        else:
+            rowspan_actual = 3
+
+        if es_sde:
+            filas_extra = fila_inner * 4
+        elif es_prec:
+            filas_extra = fila_inner * 3
+        elif data_target == u_C1_SJA1:
+            filas_extra = fila_inner * 7 if nombre_final == "⚠️ CENTRO 1" else fila_inner * 4
+        elif data_target == u_C1_SMD1:
+            filas_extra = fila_inner * 4
+        else:
+            filas_extra = fila_inner * 2
+
+        bloque_temp = """
+        <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
+            <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+                <thead>
+                    <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">                        
+                        <th style="padding: 0 10px; border-right: 1px solid #25282b; min-width: 130px; width: 130px;">PLAN</th>
+                        <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
+                        <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
+                        <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;">SPR</th>
+                        <th style="width: 180px; min-width: 180px; max-width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
+                        <th style="width: 45px; min-width: 45px; max-width: 45px; text-align: center;">OK</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="calc-row"> 
+                        <td class="plan-cell" rowspan="__ROWSPAN__" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">__NOMBRE_FINAL__</td>
+                        <td class="vol-cell" rowspan="__ROWSPAN__" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">__CONTENIDO_VOLUMEN__</td>
+                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+                            <div style="__DIV_FLEX__">
+                                <button style="__BTN_S__" onclick="stepVal(this, -1, 'u')">-</button> 
+                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="__SPAN_U__ color: #25282b !important;">0</span>
+                                <button style="__BTN_S__" onclick="stepVal(this, 1, 'u')">+</button>
+                            </div>
+                        </td>
+                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+                            <div style="__DIV_FLEX__">
+                                <button style="__BTN_S__" onclick="stepVal(this, -1, 's')">-</button>
+                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="__SPAN_SPR__">0</span>
+                                <button style="__BTN_S__" onclick="stepVal(this, 1, 's')">+</button>
+                            </div>
+                        </td>
+                        <td style="border: 0.5px solid #25282b; padding: 2px;">
+                            <select class="s-type" onchange="resetRow(this)" style="__SELECT_STYLE__">
+                                <option>Seleccionar...</option>
+                            </select>
+                        </td>
+                        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                    </tr>
+                    __FILAS_EXTRA__
+                    <tr style="background:#ededed; height: 32px;">
+                        <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
+                        <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
+                        <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                    </tr>
+                </tbody>
+                <div style="text-align:center; padding:5px; background:#ededed;">
+                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                    <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: __ROWSPAN__</span>
+                </div>     
+            </table>
+        </div>"""
+
+        bloque_temp = bloque_temp.replace("__ROWSPAN__", str(rowspan_actual))
+        bloque_temp = bloque_temp.replace("__NOMBRE_FINAL__", nombre_final)
+        bloque_temp = bloque_temp.replace("__CONTENIDO_VOLUMEN__", contenido_volumen)
+        bloque_temp = bloque_temp.replace("__FILAS_EXTRA__", filas_extra)
+        bloque_temp = bloque_temp.replace("__DIV_FLEX__", div_flex)
+        bloque_temp = bloque_temp.replace("__BTN_S__", btn_s)
+        bloque_temp = bloque_temp.replace("__SPAN_U__", span_num_u)
+        bloque_temp = bloque_temp.replace("__SPAN_SPR__", span_num_spr)
+        bloque_temp = bloque_temp.replace("__SELECT_STYLE__", select_style)
+
+        polys += bloque_temp
+
+    return polys
 
 PERFILES = {}
 perfil_actual = "LUNES"
