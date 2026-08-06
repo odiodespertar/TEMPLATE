@@ -4,3 +4,4 @@ numpy
 openpyxl
 gspread
 google-auth
+supabase
