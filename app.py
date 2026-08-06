@@ -488,7 +488,7 @@ def gen_master_rows(data_dict, table_id):
 
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
-            rows += f"""
+            rows += """
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
                 <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
                     {name}
@@ -533,7 +533,7 @@ def gen_master_rows(data_dict, table_id):
                 <td class="edit-ocup" style="display:none;">0</td>
                 """
 
-            rows += f"""
+            rows += """
             <tr class="master-row" style="{st_base}">
                 <td contenteditable="true" class="edit-name" oninput="recalc()"
                     style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">
@@ -645,7 +645,7 @@ def gen_poligonos(data_target=None):
         " pointer;"
     )
 
-    fila_inner = f"""
+    fila_inner = """
     <tr class="calc-row">
         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
             <div style="{div_flex}">
@@ -843,7 +843,7 @@ def gen_poligonos(data_target=None):
         else:
             filas_extra = fila_inner * 2
 
-        polys += f"""
+        polys += """
         <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
             <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                 <thead>
@@ -3740,7 +3740,7 @@ ID_IMAGEN = "1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ"
 url_final = f"https://drive.google.com/thumbnail?id={ID_IMAGEN}&sz=w1000"
 
 info_operativa = {
-    "SDE": f"""
+    "SDE": """
         <div style='text-align: center; margin-bottom: 25px;'>
             <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
         </div>
