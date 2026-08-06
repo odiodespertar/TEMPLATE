@@ -2381,30 +2381,37 @@ app_html = """
         let fleet = {};
         let tabId = currentTab;
 
+        // 1. Capturar datos de la flota (Tabla de arriba)
         document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
             let nameCell = row.querySelector('.edit-name');
+            if (!nameCell) return;
             let name = nameCell.innerText.trim();
-            let sch = parseInt(row.querySelector('.f-stock').innerText) || 0;
+            let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
             
             if(sch > 0) {
-                row.style.background = "white"; 
-                fs.style.background = "#fcf8cc"; 
-                mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold";
-                ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold";
-                nameCell.style.color = "#25282b"; nameCell.style.fontWeight = "bold";
+                row.style.background = "white";
+                if (fs) fs.style.background = "#fcf8cc";
+                if (mi) { mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold"; }
+                if (ma) { ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold"; }
+                nameCell.style.color = "#25282b";
+                nameCell.style.fontWeight = "bold";
             } else {
-                row.style.background = "#DCDCDC"; 
-                fs.style.background = "#FFFF00"; 
-                mi.style.background = "#dcdcdc"; mi.style.color = "#969696"; mi.style.fontWeight = "normal";
-                ma.style.background = "#dcdcdc"; ma.style.color = "#969696"; ma.style.fontWeight = "normal";
-                nameCell.style.color = "#969696"; nameCell.style.fontWeight = "normal";
+                row.style.background = "#ffffff"; 
+                if (fs) fs.style.background = "#FFFF00"; 
+                if (mi) { mi.style.background = "#25282b"; mi.style.color = "#ffffff"; mi.style.fontWeight = "bold"; }
+                if (ma) { ma.style.background = "#25282b"; ma.style.color = "#ffffff"; ma.style.fontWeight = "bold"; }
+                nameCell.style.color = "#25282b";
+                nameCell.style.fontWeight = "bold";
             }
             
-            if(name !== "" && name !== "NUEVA UNIDAD") {
-                fleet[name] = { max: parseFloat(ma.innerText)||0, stock: sch, used: 0 };
+            if (name !== "" && name !== "IGNORAR" && name !== "NUEVA UNIDAD") {
+                fleet[name] = { max: parseFloat(ma?.innerText)||0, stock: sch, used: 0 };
             }
         });
+
+
+
 
         let mapeoRuteadas = {};
         document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {
