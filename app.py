@@ -3825,7 +3825,7 @@ app_html = app_html.replace("{gen_poligonos(u_C1_SMD1)}", gen_poligonos(u_C1_SMD
 app_html = app_html.replace("{gen_poligonos(u_PREC)}", gen_poligonos(u_PREC))
 app_html = app_html.replace("{gen_poligonos(u_PREC_SMX2)}", gen_poligonos(u_PREC_SMX2))
 app_html = app_html.replace("{gen_poligonos(u_SDE)}", gen_poligonos(u_SDE))
-
+ 
 # ==============================================================================
 # INYECCIÓN AUTOMÁTICA DE RUTEOS GUARDADOS EN SUPABASE
 # ==============================================================================
