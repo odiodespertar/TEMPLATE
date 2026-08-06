@@ -30,7 +30,7 @@ st.markdown(
     body { background-color: #25282b; }
 
     .poligono-bloque {
-        letter-spacing: -0.2px; 
+        letter-spacing: -0.2  px; 
         white-space: nowrap;    
         zoom: 0.95; 
     }
@@ -39,7 +39,7 @@ st.markdown(
     
     .delta { display: none !important; }
 
-    #visor { padding-right: 210px !important; box-sizing: border-box; }
+    #visor { padding-right: 210  px !important; box-sizing: border-box; }
     
     .tabla-flota-reducida {
         max-width: 80% !important;
@@ -53,9 +53,9 @@ st.markdown(
         word-wrap: break-word;
     }
 
-    @media (max-width: 1200px) {
+    @media (max-width: 1200  px) {
         .calc-row td, .calc-row select, .calc-row span {
-            font-size: 12px !important;
+            font-size: 12  px !important;
         }
     }
 
@@ -68,15 +68,15 @@ st.markdown(
     /* --- VENTANA FLOTANTE (Lila azulado vibrante y moderno) --- */
     div[data-testid="stExpander"] {
         position: fixed !important;
-        bottom: 30px !important;
-        right: 20px !important;
-        width: 480px !important;
-        max-height: 600px !important;
+        bottom: 30  px !important;
+        right: 20  px !important;
+        width: 480  px !important;
+        max-height: 600  px !important;
         z-index: 999999 !important;
         background-color: #D6C2F0 !important;
-        border-radius: 12px !important;
-        border: 2px solid #6A35C9 !important;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.7) !important;
+        border-radius: 12  px !important;
+        border: 2  px solid #6A35C9 !important;
+        box-shadow: 0  px 4  px 20  px rgba(0, 0, 0, 0.7) !important;
     }
     
     div[data-testid="stExpander"] summary p, 
@@ -89,19 +89,19 @@ st.markdown(
     /* --- MENSAJE DEL USUARIO --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="user"]) {
         background-color: #7B42F6 !important;
-        border-radius: 10px !important;
-        padding: 8px !important;
-        margin: 6px 0 !important;
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.2) !important;
+        border-radius: 10  px !important;
+        padding: 8  px !important;
+        margin: 6  px 0 !important;
+        box-shadow: 0  px 2  px 5  px rgba(0,0,0,0.2) !important;
     }
 
     /* --- MENSAJE DEL BOT / ASISTENTE --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="assistant"]) {
         background-color: #FFFFFF !important;
-        border: 2px solid #8F60EC !important;
-        border-radius: 10px !important;
-        padding: 8px !important;
-        margin: 6px 0 !important;
+        border: 2  px solid #8F60EC !important;
+        border-radius: 10  px !important;
+        padding: 8  px !important;
+        margin: 6  px 0 !important;
     }
 
     div[data-testid="stChatMessage"] p {
@@ -114,7 +114,7 @@ st.markdown(
     }
 
     div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
-        max-height: 500px !important;
+        max-height: 500  px !important;
         overflow-y: auto !important;
         display: flex !important;
         flex-direction: column !important;
@@ -489,8 +489,8 @@ def gen_master_rows(data_dict, table_id):
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
             rows += f"""
-            <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
-                <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
+            <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28  px;">
+                <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13  px; letter-spacing: 3 px; border: none; pointer-events: none;"> 
                     {name}
                 </td>
                 <td class="edit-name" style="display:none;">IGNORAR</td>
@@ -510,19 +510,19 @@ def gen_master_rows(data_dict, table_id):
                 <td contenteditable="true"
                     class="edit-orh"
                     oninput="recalc()"
-                    style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">
+                    style="text-align:center; border:0.2  px solid #25282b; width:45  px; background:#ffffff; color:#141414;">
                     0
                 </td>
 
                 <td class="orh-hora"
-                    style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">
+                    style="text-align:center; border:0.2  px solid #25282b; width:60  px; background:#f5f5f5; color:#141414; font-weight:bold;">
                     00:00 hs
                 </td>
 
                 <td contenteditable="true"
                     class="edit-ocup"
                     oninput="recalc()"
-                    style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">
+                    style="text-align:center; border:0.2  px solid #25282b; width:70  px; background:#ffffff; color:#25282b;">
                     0
                 </td>
                 """
@@ -536,34 +536,34 @@ def gen_master_rows(data_dict, table_id):
             rows += f"""
             <tr class="master-row" style="{st_base}">
                 <td contenteditable="true" class="edit-name" oninput="recalc()"
-                    style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">
+                    style="font-weight: bold; text-align: left; padding-left: 10  px; border: 0.2  px solid #25282b; width: 150  px; color: #25282b;">
                     {name}
                 </td>
 
                 {celdas_orh_ocup}
 
                 <td contenteditable="true" class="edit-spr-min" oninput="recalc()"
-                    style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">
+                    style="text-align: center; border: 0.2  px solid #25282b; width: 45  px; background-color: #25282b; color: #ffffff;">
                     {spr[0]}
                 </td>
 
                 <td contenteditable="true" class="edit-spr-max" oninput="recalc()"
-                    style="text-align: center; border: 0.2px solid #25282b; width: 45px; background-color: #25282b; color: #ffffff;">
+                    style="text-align: center; border: 0.2  px solid #25282b; width: 45  px; background-color: #25282b; color: #ffffff;">
                     {spr[1]}
                 </td>
 
                 <td contenteditable="true" class="f-stock" oninput="recalc()"
-                    style="text-align: center; border: 0.2px solid #25282b; width: 55px; font-weight: bold; font-size: 13px;">
+                    style="text-align: center; border: 0.2  px solid #25282b; width: 55  px; font-weight: bold; font-size: 13  px;">
                     0
                 </td>
 
                 <td class="f-ruteadas" 
-                    style="text-align: center; border: 0.2px solid #25282b; width: 55px; background-color: #ffffff; font-weight: bold;">
+                    style="text-align: center; border: 0.2  px solid #25282b; width: 55  px; background-color: #ffffff; font-weight: bold;">
                     0
                 </td>
 
                 <td class="f-left"
-                    style="text-align:center; border:0.2px solid #25282b; width:45px; font-weight:bold; color:#25282b; border-radius:2px;">
+                    style="text-align:center; border:0.2  px solid #25282b; width:45  px; font-weight:bold; color:#25282b; border-radius:2  px;">
                     0
                 </td>
             </tr>"""
@@ -590,9 +590,9 @@ def gen_poligonos(data_target=None):
 
     btn_s = (
         "cursor:pointer; border:none; background:rgba(0,0,0,0.08);"
-        " color:#25282b; font-weight:bold; width:24px; min-width:24px;"
-        " max-width:24px; height:24px; min-height:24px; max-height:24px;"
-        " border-radius:4px; flex-shrink:0; display:inline-flex;"
+        " color:#25282b; font-weight:bold; width:24  px; min-width:24  px;"
+        " max-width:24  px; height:24  px; min-height:24  px; max-height:24  px;"
+        " border-radius:4  px; flex-shrink:0; display:inline-flex;"
         " align-items:center; justify-content:center;"
     )
 
@@ -628,45 +628,45 @@ def gen_poligonos(data_target=None):
 
     div_flex = (
         "display: flex; align-items: center; justify-content: space-between;"
-        " padding: 2px 4px; width: 100%; min-width: 100%; max-width: 100%;"
+        " padding: 2  px 4  px; width: 100%; min-width: 100%; max-width: 100%;"
         " box-sizing: border-box;"
     )
     span_num_u = (
         "font-weight: bold; display: inline-block; text-align: center; width:"
-        " 28px; min-width: 28px; max-width: 28px; flex-shrink: 0;"
+        " 28  px; min-width: 28  px; max-width: 28  px; flex-shrink: 0;"
     )
     span_num_spr = (
         "font-weight: bold; display: inline-block; text-align: center; width:"
-        " 38px; min-width: 38px; max-width: 43px; flex-shrink: 0;"
+        " 38  px; min-width: 38  px; max-width: 43  px; flex-shrink: 0;"
     )
     select_style = (
-        "width:160px; max-width: 160px; border:none; background:transparent;"
-        " font-weight:600; font-size:14px; color:#25282b; padding: 4px; cursor:"
+        "width:160  px; max-width: 160  px; border:none; background:transparent;"
+        " font-weight:600; font-size:14  px; color:#25282b; padding: 4  px; cursor:"
         " pointer;"
     )
 
     fila_inner = f"""
     <tr class="calc-row">
-        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6  px solid #25282b; padding: 2  px; width: 105  px; min-width: 105  px; max-width: 105  px;">
             <div style="{div_flex}">
                 <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button>
                 <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="{span_num_u}color: #25282b !important;">0</span>
                 <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
             </div>
         </td>
-        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6 px solid #25282b; padding: 2 px; width: 90  px; min-width: 90 px; max-width: 90 px;">
             <div style="{div_flex}">
                 <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
                 <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="{span_num_spr} color: #25282b !important;">0</span>
                 <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
             </div>
         </td>
-        <td style="border: 0.5px solid #25282b; padding: 2px; width: 170px; min-width: 170px; max-width: 170px;">
+        <td style="border: 0.5 px solid #25282b; padding: 2 px; width: 170 px; min-width: 170 px; max-width: 170 px;">
             <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="{select_style} color: #808080;"> 
                 <option value="">Seleccionar...</option>
             </select>
         </td>
-        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+        <td style="width: 45 px; min-width: 45 px; max-width: 45 px; text-align: center; border: 0.5 px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
     </tr>"""
 
     campo_volumen_normal = """
@@ -676,12 +676,12 @@ def gen_poligonos(data_target=None):
             oninput="recalc()"
             style="
             display:inline-block;
-            min-width:55px;
-            padding:2px 8px;
+            min-width:55 px;
+            padding:2 px 8 px;
             border:none;
-            border-radius:4px;
+            border-radius:4 px;
             background:#ededed;
-            font-size:22px;
+            font-size:22 px;
             font-weight:bold;
             color:#808080;
             text-align:center;
@@ -698,12 +698,12 @@ def gen_poligonos(data_target=None):
           oninput="recalc()"
           style="
             display:inline-block;
-            min-width:55px;
-            padding:2px 8px;
+            min-width:55 px;
+            padding:2 px 8 px;
             border:none;
-            border-radius:4px;
+            border-radius:4 px;
             background:#ededed;
-            font-size:22px;
+            font-size:22 px;
             font-weight:bold;
             color:#808080;
             text-align:center;
@@ -712,24 +712,24 @@ def gen_poligonos(data_target=None):
     </span>
 </div>
 
-<hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+<hr style="margin:4 px 0; border:none; border-top:2 px solid #999;">
 
-<div style="font-size:13px;font-weight:bold;color:#25282b;">
+<div style="font-size:13 px;font-weight:bold;color:#25282b;">
     Nodos:
     <span class="nodos-val"
       contenteditable="true"
       style="
         display:inline-block;
-        min-width:28px;
+        min-width:28 px;
         text-align:center;
         border:none;
-        border-radius:4px;
+        border-radius:4 px;
         background:#ededed;
-        font-size:16px;
+        font-size:16 px;
         font-weight:bold;
         color:#FF6347;
-        padding:0 4px;
-        margin-left:3px;
+        padding:0 4 px;
+        margin-left:3 px;
       ">
     0
 </span>
@@ -743,12 +743,12 @@ def gen_poligonos(data_target=None):
           oninput="recalc()"
           style="
             display:inline-block;
-            min-width:55px;
-            padding:2px 8px;
+            min-width:55 px;
+            padding:2 px 8 px;
             border:none;
-            border-radius:4px;
+            border-radius:4 px;
             background:#ededed;
-            font-size:22px;
+            font-size:22 px;
             font-weight:bold;
             color:#808080;
             text-align:center;
@@ -757,24 +757,24 @@ def gen_poligonos(data_target=None):
     </span>
 </div>
 
-<hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+<hr style="margin:4 px 0; border:none; border-top:2 px solid #999;">
 
-<div style="font-size:13px;font-weight:bold;color:#25282b;">
+<div style="font-size:13 px;font-weight:bold;color:#25282b;">
     Nodos:
     <span class="nodos-campeche"
           contenteditable="true"
           style="
             display:inline-block;
-            min-width:28px;
+            min-width:28 px;
             text-align:center;
             border:none;
-            border-radius:4px;
+            border-radius:4 px;
             background:#ededed;
-            font-size:16px;
+            font-size:16 px;
             font-weight:bold;
             color:#FF6347;
-            padding:0 4px;
-            margin-left:3px;
+            padding:0 4 px;
+            margin-left:3 px;
           ">
         0
     </span>
@@ -844,62 +844,62 @@ def gen_poligonos(data_target=None):
             filas_extra = fila_inner * 2
 
         polys += f"""
-        <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
-            <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+        <div class="poligono-bloque" style="margin-bottom:12 px; box-shadow: none; border-radius: 0 px; overflow-x: auto; background: #ededed; border: 1.5 px solid #25282b;">           
+            <table style="width: 100%; min-width: 630 px; border-collapse: collapse; border: 1.5 px solid #25282b;">
                 <thead>
-                    <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">                        
-                        <th style="padding: 0 10px; border-right: 1px solid #25282b; min-width: 130px; width: 130px;">PLAN</th>
-                        <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
-                        <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
-                        <th style="width: 105px; min-width: 105px; max-width: 105px; border-right: 1px solid #25282b;">SPR</th>
-                        <th style="width: 180px; min-width: 180px; max-width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
-                        <th style="width: 45px; min-width: 45px; max-width: 45px; text-align: center;">OK</th> 
+                    <tr style="background: #25282b; color: white; font-size: 12 px; height: 28 px;">                        
+                        <th style="padding: 0 10 px; border-right: 1 px solid #25282b; min-width: 130 px; width: 130 px;">PLAN</th>
+                        <th style="border-right: 1 px solid #25282b; width: 85 px;">VOL. TOTAL</th>
+                        <th style="width: 105 px; min-width: 105 px; max-width: 105 px; border-right: 1 px solid #25282b;"># USADAS</th>
+                        <th style="width: 105 px; min-width: 105 px; max-width: 105 px; border-right: 1 px solid #25282b;">SPR</th>
+                        <th style="width: 180 px; min-width: 180 px; max-width: 180 px; border-right: 1 px solid #25282b;">TIPO DE UNIDAD</th>
+                        <th style="width: 45 px; min-width: 45 px; max-width: 45 px; text-align: center;">OK</th> 
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="calc-row"> 
-                        <td class="plan-cell" rowspan="{rowspan_actual}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">{nombre_final}</td>
+                        <td class="plan-cell" rowspan="{rowspan_actual}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1 px solid #25282b; padding: 5 px; color:#141414;">{nombre_final}</td>
                         <td class="vol-cell" rowspan="{rowspan_actual}"
                             style="color:#808080;
                                    font-weight:bold;
                                    text-align:center;
-                                   border:1px solid #25282b;
-                                   padding:5px;">
+                                   border:1 px solid #25282b;
+                                   padding:5 px;">
                             {contenido_volumen}
                         </td>
-                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
+                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5 px solid #25282b; padding: 2 px; width: 105 px; min-width: 105 px; max-width: 105 px;">
                             <div style="{div_flex}">
                                 <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button> 
                                 <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="{span_num_u} color: #25282b !important;">0</span>
                                 <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
                             </div>
                         </td>
-                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
+                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5 px solid #25282b; padding: 2 px; width: 90 px; min-width: 90 px; max-width: 90 px;">
                             <div style="{div_flex}">
                                 <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
                                 <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="{span_num_spr}">0</span>
                                 <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
                             </div>
                         </td>
-                        <td style="border: 0.5px solid #25282b; padding: 2px;">
+                        <td style="border: 0.5 px solid #25282b; padding: 2 px;">
                             <select class="s-type" onchange="resetRow(this)" style="{select_style}">
                                 <option>Seleccionar...</option>
                             </select>
                         </td>
-                        <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                        <td style="width: 45 px; min-width: 45 px; max-width: 45 px; text-align: center; border: 0.5 px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
                     </tr>
                     {filas_extra}
                     {""}
-                    <tr style="background:#ededed; height: 32px;">
-                        <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
-                        <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
-                      <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                    <tr style="background:#ededed; height: 32 px;">
+                        <td colspan="3" style="text-align:center; font-weight:bold; border: 1 px solid #25282b; font-size: 14 px; color:#25282b;">ESTADO:</td>
+                        <td class="v-calculado-total" style="font-weight: bold; font-size: 14 px; color: #d32f2f; border: 1 px solid #25282b; text-align: center;">0</td>
+                      <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1 px solid #25282b; font-size: 14 px; color: #25282b">VACÍO:</td>
                     </tr>
                 </tbody>
-                <div style="text-align:center; padding:5px; background:#ededed;">
-                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                <div style="text-align:center; padding:5 px; background:#ededed;">
+                    <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5 px;">➕</button>
                     <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
-                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: {rowspan_actual}</span>
+                    <span class="contador-filas" style="margin-left:10 px;font-weight:bold;">Filas: {rowspan_actual}</span>
                 </div>     
             </table>
         </div>'''
@@ -934,71 +934,71 @@ app_html = """
         tr.master-row:hover td, tr.calc-row:hover td { color: #000 !important; }
 
         #mi-contador-scp1 {
-            position: fixed; top: 156 px; right: 20px; 
-            background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
-            border-radius: 10px; z-index: 999999; font-family: sans-serif;
-            font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-            border: 1.2px solid transparent; width: 300px; max-height: 410px;
+            position: fixed; top: 156  px; right: 20 px; 
+            background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16 px; 
+            border-radius: 10 px; z-index: 999999; font-family: sans-serif;
+            font-size: 14 px; box-shadow: 0 6 px 18 px rgba(0,0,0,0.6);
+            border: 1.2 px solid transparent; width: 300 px; max-height: 410 px;
             overflow-y: auto; pointer-events: auto; display: block;
         }
 
         #mi-contador-sja1 {
-            position: fixed; top: 156 px; right: 20px; 
-            background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
-            border-radius: 10px; z-index: 999999; font-family: sans-serif;
-            font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-            border: 1.2px solid transparent; width: 350px; max-height: 210px;
+            position: fixed; top: 156  px; right: 20 px; 
+            background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16 px; 
+            border-radius: 10 px; z-index: 999999; font-family: sans-serif;
+            font-size: 14 px; box-shadow: 0 6 px 18 px rgba(0,0,0,0.6);
+            border: 1.2 px solid transparent; width: 350 px; max-height: 210 px;
             overflow-y: auto; pointer-events: auto; display: none;
         }
 
         .cont-item {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.15); padding: 8px 0;
+            border-bottom: 1 px solid rgba(255,255,255,0.15); padding: 8 px 0;
         }
         .cont-item:last-child { border-bottom: none; }
         .cont-name {
             font-weight: normal; color: #D3D3D3; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis; max-width: 150px; font-size: 14px;
+            overflow: hidden; text-overflow: ellipsis; max-width: 150 px; font-size: 14 px;
         }
-        .cont-vals { font-family: monospace; font-weight: bold; text-align: right; font-size: 14px; }
+        .cont-vals { font-family: monospace; font-weight: bold; text-align: right; font-size: 14 px; }
 
-        .poligono-bloque button { box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.1s; }
-        .poligono-bloque button:active { box-shadow: 0 0px 0px transparent; transform: translateY(1px); }
-        .filter-btn:active { transform: translateY(4px); box-shadow: none !important; }  
+        .poligono-bloque button { box-shadow: 0 2 px 4 px rgba(0,0,0,0.1); transition: all 0.1s; }
+        .poligono-bloque button:active { box-shadow: 0 0 px 0 px transparent; transform: translateY(1 px); }
+        .filter-btn:active { transform: translateY(4 px); box-shadow: none !important; }  
 
         tr.fila-ok { background-color: #e8f5e9 !important; transition: background-color 0.3s ease; }
         tr.fila-ok td { color: #1b5e20 !important; }
 
-        body { font-family: sans-serif; background: #ffffff; padding: 14px; }
-        #visor { margin-right: 250px !important; }
+        body { font-family: sans-serif; background: #ffffff; padding: 14 px; }
+        #visor { margin-right: 250 px !important; }
 
         .meli-table {
             width: 100% !important; border-collapse: collapse !important;
             border-spacing: 0 !important; table-layout: fixed; background: white;
-            border: 1px solid #25282b; box-shadow: none !important; border-radius: 0 !important; overflow: hidden;
+            border: 1 px solid #25282b; box-shadow: none !important; border-radius: 0 !important; overflow: hidden;
         }
         .meli-table th {
-            background: #f3f3f3 !important; color: #222 !important; font-size: 14px;
-            font-weight: 600; border: 1px solid #25282b !important; padding: 4px 6px; text-align: center; height: 24px;
+            background: #f3f3f3 !important; color: #222 !important; font-size: 14 px;
+            font-weight: 600; border: 1 px solid #25282b !important; padding: 4 px 6 px; text-align: center; height: 24 px;
         }
         .meli-table th:last-child { border-right: 2 !important; }
-        .meli-table td { border: 1px solid #25282b; padding: 2px 4px; font-size: 14px; height: 24px; background: white; color: #25282b; }
+        .meli-table td { border: 1 px solid #25282b; padding: 2 px 4 px; font-size: 14 px; height: 24 px; background: white; color: #25282b; }
 
         #fleet-sticky.fleet-floating {
-            position: fixed !important; top: 70px; left: 20px; right: 20px;
-            width: min(1100px, 92vw) !important; margin: 0 auto; max-height: 360px !important;
+            position: fixed !important; top: 70 px; left: 20 px; right: 20 px;
+            width: min(1100 px, 92vw) !important; margin: 0 auto; max-height: 360 px !important;
             overflow: hidden !important; z-index: 999999 !important; background: rgba(255,255,255,0.98) !important;
-            border: 4px solid #636363 !important; border-radius: 12px !important;
-            box-shadow: 0 14px 28px rgba(0,0,0,0.30) !important; padding: 10px !important;
+            border: 4 px solid #636363 !important; border-radius: 12 px !important;
+            box-shadow: 0 14 px 28 px rgba(0,0,0,0.30) !important; padding: 10 px !important;
         }
 
-        #fleet-sticky.fleet-floating .t-content { max-height: 200px !important; overflow: auto !important; }
+        #fleet-sticky.fleet-floating .t-content { max-height: 200 px !important; overflow: auto !important; }
 
         #fleet-drag-handle {
             position: relative; z-index: 9999999; cursor: grab; user-select: none;
             -webkit-user-select: none; touch-action: none; -webkit-touch-callout: none;
-            font-weight: 900; font-size: 12px; padding: 6px 10px; margin: -6px -6px 8px -6px;
-            border-bottom: 1px solid rgba(0,0,0,0.10); color: #0a2e42;
+            font-weight: 900; font-size: 12 px; padding: 6 px 10 px; margin: -6 px -6 px 8 px -6 px;
+            border-bottom: 1 px solid rgba(0,0,0,0.10); color: #0a2e42;
         }
         #fleet-drag-handle:active { cursor: grabbing; }
 
@@ -1011,74 +1011,74 @@ app_html = """
             border-radius: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important;
         }
 
-        .master-row { border-radius: 9px; box-shadow: 1px 1px 5px #ededed, -2px -2px 6px #efefef; transition: all 0.2s ease; }
-        .meli-table td:first-child { border-radius: 3px 0 0 3px; }
-        .meli-table td:last-child { border-radius: 0 3px 3px 0; }
+        .master-row { border-radius: 9 px; box-shadow: 1 px 1 px 5 px #ededed, -2 px -2 px 6 px #efefef; transition: all 0.2s ease; }
+        .meli-table td:first-child { border-radius: 3 px 0 0 3 px; }
+        .meli-table td:last-child { border-radius: 0 3 px 3 px 0; }
 
         #google-alert {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            background: #d32f2f; color: white; padding: 15px 25px; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.4s; z-index: 10000;
+            position: fixed; top: -100 px; left: 50%; transform: translateX(-50%);
+            background: #d32f2f; color: white; padding: 15 px 25 px; border-radius: 8 px;
+            box-shadow: 0 4 px 12 px rgba(0,0,0,0.3); transition: 0.4s; z-index: 10000;
         }
-        #google-alert.show { top: 20px; }
+        #google-alert.show { top: 20 px; }
 
         .tab-btn {
-            padding: 10px 12px; cursor: pointer; border: 1px solid #25282b;
+            padding: 10 px 12 px; cursor: pointer; border: 1 px solid #25282b;
             background: linear-gradient(180deg, #f0f0f0 0%, #dcdcdc 100%);
-            border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; color: #25282b;
-            transition: all 0.2s ease; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
-            margin-right: 2px; outline: none;
+            border-radius: 8 px 8 px 0 0; font-weight: bold; font-size: 13 px; color: #25282b;
+            transition: all 0.2s ease; box-shadow: inset 0 1 px 0 rgba(255,255,255,0.8), 0 2 px 4 px rgba(0,0,0,0.1);
+            margin-right: 2 px; outline: none;
         }
         .tab-btn:hover {
             background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-            color: #25282b; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transform: translateY(-2px);
+            color: #25282b; box-shadow: 0 4 px 8 px rgba(0,0,0,0.2); transform: translateY(-2 px);
         }
         .tab-btn.active {
             background: linear-gradient(180deg, #424242 0%, #25282b 100%) !important;
-            color: #ffffff !important; border: 1px solid #061821 !important;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transform: translateY(0);
+            color: #ffffff !important; border: 1 px solid #061821 !important;
+            box-shadow: inset 0 2 px 5 px rgba(0,0,0,0.3); transform: translateY(0);
         }
 
-        .tools-panel { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .tools-panel { display: flex; flex-direction: column; gap: 10 px; margin-top: 15 px; }
         .google-tool {
-            background: linear-gradient(145deg, #ffffff, #DDA0DD); padding: 15px;
-            border-radius: 15px; border: 1px solid #25282b; text-align: center;
-            box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff; transition: transform 0.2s;
+            background: linear-gradient(145deg, #ffffff, #DDA0DD); padding: 15 px;
+            border-radius: 15 px; border: 1 px solid #25282b; text-align: center;
+            box-shadow: 5 px 5 px 15 px #d1d1d1, -5 px -5 px 15 px #ffffff; transition: transform 0.2s;
         }
-        .google-tool:hover { transform: translateY(-3px); }
+        .google-tool:hover { transform: translateY(-3 px); }
         .google-tool input {
-            border-radius: 8px; border: 1px solid #25282b; padding: 5px;
-            font-size: 16px; outline: none; box-shadow: inset 2px 2px 5px #d9dbde;
+            border-radius: 8 px; border: 1 px solid #25282b; padding: 5 px;
+            font-size: 16 px; outline: none; box-shadow: inset 2 px 2 px 5 px #d9dbde;
         }
 
-        #calc_wrapper { background: #22c5bc; border-radius: 20px; padding: 15px; border: transparent; outline: none; transition: 0.3s; }
-        #calc_wrapper:focus { box-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; border: 2px solid #FF00FF; }
-        #calc_display_box { background: #fffacd; border-radius: 10px; padding: 10px; text-align: right; margin-bottom: 10px; min-height: 60px; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        #calc_wrapper { background: #22c5bc; border-radius: 20 px; padding: 15 px; border: transparent; outline: none; transition: 0.3s; }
+        #calc_wrapper:focus { box-shadow: 0 0 20 px #FF00FF, 0 0 40 px #FF00FF; border: 2 px solid #FF00FF; }
+        #calc_display_box { background: #fffacd; border-radius: 10 px; padding: 10 px; text-align: right; margin-bottom: 10 px; min-height: 60 px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5 px; }
         .btn-c {
-            background: #f0f0f0; border: none; font-weight: bold; border-radius: 12px;
-            padding: 12px; cursor: pointer; box-shadow: 3px 3px 6px #1da39b, -2px -2px 5px #27ebd2;
+            background: #f0f0f0; border: none; font-weight: bold; border-radius: 12 px;
+            padding: 12 px; cursor: pointer; box-shadow: 3 px 3 px 6 px #1da39b, -2 px -2 px 5 px #27ebd2;
             transition: transform 0.1s;
         }
-        .btn-c:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px #b1b1b1; }
-        .btn-c-eq { background: #FF00FF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        .crono-card { background: #1c1c1c; border-radius: 12px; padding: 15px; color: white; font-family: sans-serif; text-align: center; }
+        .btn-c:active { transform: scale(0.95); box-shadow: inset 2 px 2 px 5 px #b1b1b1; }
+        .btn-c-eq { background: #FF00FF; color: white; border: none; border-radius: 8 px; cursor: pointer; font-weight: bold; font-size: 14 px; }
+        .crono-card { background: #1c1c1c; border-radius: 12 px; padding: 15 px; color: white; font-family: sans-serif; text-align: center; }
 
         html body .meli-table tbody tr:last-child td {
-            height: 25px !important; min-height: 25px !important; max-height: 20px !important;
-            padding-top: 2px !important; padding-bottom: 3px !important; line-height: 25px !important; font-size: 14px !important;
+            height: 25 px !important; min-height: 25 px !important; max-height: 20 px !important;
+            padding-top: 2 px !important; padding-bottom: 3 px !important; line-height: 25 px !important; font-size: 14 px !important;
         }
-        html body .meli-table tbody tr:last-child { height: 16px !important; }
+        html body .meli-table tbody tr:last-child { height: 16 px !important; }
 
-        .btn-start { background: #28a745; color: white; box-shadow: 0 5px 0 #1e7e34; }
-        .btn-stop  { background: #ffc107; color: #333;  box-shadow: 0 5px 0 #d39e00; }
-        .btn-reset { background: #dc3545; color: white; box-shadow: 0 5px 0 #bd2130; }
+        .btn-start { background: #28a745; color: white; box-shadow: 0 5 px 0 #1e7e34; }
+        .btn-stop  { background: #ffc107; color: #333;  box-shadow: 0 5 px 0 #d39e00; }
+        .btn-reset { background: #dc3545; color: white; box-shadow: 0 5 px 0 #bd2130; }
 
-        .crono-card button:active { transform: translateY(4px); box-shadow: 0 1px 0 #333; }
+        .crono-card button:active { transform: translateY(4 px); box-shadow: 0 1 px 0 #333; }
         .crono-card button:hover { filter: brightness(1.1); }
 
         #body-plan-container th, .meli-table:nth-of-type(2) th {
-            font-size: 22px !important; height: 90px !important; padding: 11px 6px !important; vertical-align: middle !important;
+            font-size: 22 px !important; height: 90 px !important; padding: 11 px 6 px !important; vertical-align: middle !important;
         }
 
         body.excel-view #fleet-float,
@@ -1086,86 +1086,86 @@ app_html = """
         body.excel-view .tools-panel,
         body.excel-view #btn-excel-view { display: none !important; }
 
-        body.excel-view .meli-table td { padding: 2px 3px !important; font-size: 14px !important; }
+        body.excel-view .meli-table td { padding: 2 px 3 px !important; font-size: 14 px !important; }
         body.excel-view .meli-table th {
-            padding: 2px 1px !important; font-size: 11px !important; letter-spacing: -0.3px !important;
+            padding: 2 px 1 px !important; font-size: 11 px !important; letter-spacing: -0.3 px !important;
             overflow: hidden !important; line-height: 1.0 !important; vertical-align: middle !important;
         }
 
-        body.excel-view .meli-table tfoot.fila-total td { font-size: 16px !important; padding: 6px 8px !important; line-height: 18px !important; font-weight: 900 !important; }
-        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] { font-size: 20px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }
+        body.excel-view .meli-table tfoot.fila-total td { font-size: 16 px !important; padding: 6 px 8 px !important; line-height: 18 px !important; font-weight: 900 !important; }
+        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] { font-size: 20 px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }
 
         body.excel-view .poligono-bloque table { border-collapse: collapse !important; width: 120% !important; table-layout: fixed !important; }
         body.excel-view .poligono-bloque td, body.excel-view .poligono-bloque th {
-            padding: 8px 3px !important; height: 60px !important; font-size: 13px !important;
+            padding: 8 px 3 px !important; height: 60 px !important; font-size: 13 px !important;
             overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important;
             text-align: center !important; vertical-align: middle !important;
         }
 
-        body.excel-view .poligono-bloque th:nth-child(5) { width: 90px !important; }
-        body.excel-view .poligono-bloque th:nth-child(6) { width: 55px !important; }
-        body.excel-view .poligono-bloque th:nth-child(7) { width: 45px !important; }
+        body.excel-view .poligono-bloque th:nth-child(5) { width: 90 px !important; }
+        body.excel-view .poligono-bloque th:nth-child(6) { width: 55 px !important; }
+        body.excel-view .poligono-bloque th:nth-child(7) { width: 45 px !important; }
     </style> 
 </head>
 
 <body>
 <div id="google-alert">⚠️ <span id="alert-msg"></span> [ENTER para cerrar]</div>
-<div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+<div style="display:flex; flex-direction:column; gap:20 px; width:100%;">
 
-    <div style="width:100%; padding:0; margin-bottom:10px;">
-        <div style="background-color: #25282b; color: white; padding: 10px; border-radius: 2px; font-weight: bold; text-align: center; margin-bottom: 10px;">🚚 🚚 DISPONIBILIDAD DE FLOTA 🚛 🚛</div>
+    <div style="width:100%; padding:0; margin-bottom:10 px;">
+        <div style="background-color: #25282b; color: white; padding: 10 px; border-radius: 2 px; font-weight: bold; text-align: center; margin-bottom: 10 px;">🚚 🚚 DISPONIBILIDAD DE FLOTA 🚛 🚛</div>
 
-        <div id="panel-control-unico" style="display: flex; gap: 20px; background: #25282b; padding: 15px; border-radius: 10px; color: white; justify-content: center; align-items: center; margin: 20px 0;">
+        <div id="panel-control-unico" style="display: flex; gap: 20 px; background: #25282b; padding: 15 px; border-radius: 10 px; color: white; justify-content: center; align-items: center; margin: 20 px 0;">
             <div style="text-align: center;">
-                <div id="hora-actual" style="font-size: 22px; font-weight: bold;">00:00:00</div>
-                <div style="font-size: 9px; color: #26d0ff; letter-spacing: 1px;">HORA ACTUAL</div>
+                <div id="hora-actual" style="font-size: 22 px; font-weight: bold;">00:00:00</div>
+                <div style="font-size: 9 px; color: #26d0ff; letter-spacing: 1 px;">HORA ACTUAL</div>
             </div>
-            <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px; min-width: 120px;">
-                <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #ff9b21; line-height: 1.1;">Sin tareas</div>
-                <div id="hora-ruteo" style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 2px;">--</div>
-                <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px; margin-top: 2px;">SIGUIENTE RUTEO</div>
+            <div style="text-align: center; border-left: 1 px solid #ffffff; padding-left: 20 px; min-width: 120 px;">
+                <div id="proximo-ruteo" style="font-size: 16 px; font-weight: bold; color: #ff9b21; line-height: 1.1;">Sin tareas</div>
+                <div id="hora-ruteo" style="font-size: 14 px; font-weight: bold; color: #ffffff; margin-top: 2 px;">--</div>
+                <div style="font-size: 9 px; color: #d0d0d0; letter-spacing: 1 px; margin-top: 2 px;">SIGUIENTE RUTEO</div>
             </div>
-            <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px;">
-                <div id="cuenta-regresiva" style="font-size: 22px; font-weight: bold; color: #7CFFB2;">00:00</div>
-                <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px;">TIEMPO RESTANTE</div>
-            </div>
-        </div>
-
-        <div id="resumen-flota-ruteada" style="display: flex; gap: 15px; margin: 15px 0; justify-content: center;">
-            <div style="background: #d7e5fa; padding: 8px; border-radius: 5px; border: 1px solid #bbdefb; text-align: center; width: 100px;">
-                <div style="font-size: 10px; font-weight: bold; color: #0861c7;">MLP</div>
-                <div id="val-mlp-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
-            </div>
-            <div style="background: #c6f7f3; padding: 8px; border-radius: 5px; border: 1px solid #68b0ac; text-align: center; width: 100px;">
-                <div style="font-size: 10px; font-weight: bold; color: #d021eb;">RENTAL</div>
-                <div id="val-rental-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
-            </div>
-            <div style="background: #d3f5d3; padding: 8px; border-radius: 5px; border: 1px solid #90EE90; text-align: center; width: 100px;">
-                <div style="font-size: 10px; font-weight: bold; color: #209626;">CAR</div>
-                <div id="val-car-rute-2" style="font-size: 14px; font-weight: bold;">0</div>
+            <div style="text-align: center; border-left: 1 px solid #ffffff; padding-left: 20 px;">
+                <div id="cuenta-regresiva" style="font-size: 22 px; font-weight: bold; color: #7CFFB2;">00:00</div>
+                <div style="font-size: 9 px; color: #d0d0d0; letter-spacing: 1 px;">TIEMPO RESTANTE</div>
             </div>
         </div>
 
-        <div id="dos-pct-global" style="background:#f5f5f5; border:1px solid #d0d0d0; border-radius:6px; padding:6px; margin-bottom:10px; text-align:center; font-weight:bold; color:#25282b;"></div>
+        <div id="resumen-flota-ruteada" style="display: flex; gap: 15 px; margin: 15 px 0; justify-content: center;">
+            <div style="background: #d7e5fa; padding: 8 px; border-radius: 5 px; border: 1 px solid #bbdefb; text-align: center; width: 100 px;">
+                <div style="font-size: 10 px; font-weight: bold; color: #0861c7;">MLP</div>
+                <div id="val-mlp-rute-2" style="font-size: 14 px; font-weight: bold;">0</div>
+            </div>
+            <div style="background: #c6f7f3; padding: 8 px; border-radius: 5 px; border: 1 px solid #68b0ac; text-align: center; width: 100 px;">
+                <div style="font-size: 10 px; font-weight: bold; color: #d021eb;">RENTAL</div>
+                <div id="val-rental-rute-2" style="font-size: 14 px; font-weight: bold;">0</div>
+            </div>
+            <div style="background: #d3f5d3; padding: 8 px; border-radius: 5 px; border: 1 px solid #90EE90; text-align: center; width: 100 px;">
+                <div style="font-size: 10 px; font-weight: bold; color: #209626;">CAR</div>
+                <div id="val-car-rute-2" style="font-size: 14 px; font-weight: bold;">0</div>
+            </div>
+        </div>
+
+        <div id="dos-pct-global" style="background:#f5f5f5; border:1 px solid #d0d0d0; border-radius:6 px; padding:6 px; margin-bottom:10 px; text-align:center; font-weight:bold; color:#25282b;"></div>
 
         <div id="fleet-sticky" class="fleet-normal">
             <div id="fleet-drag-handle">
-                <button id="fleet-toggle-btn" onclick="toggleFleetFloating();" style="float:center; cursor:pointer; border:none; background:#25282b; color:white; padding:3px 8px; border-radius:6px; font-weight:bold;">FLOTAR ☁️</button>
+                <button id="fleet-toggle-btn" onclick="toggleFleetFloating();" style="float:center; cursor:pointer; border:none; background:#25282b; color:white; padding:3 px 8 px; border-radius:6 px; font-weight:bold;">FLOTAR ☁️</button>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
-                <div style="position: relative; display: inline-flex; align-items: center; gap: 6px;">
-                    <button onclick="toggleMenuPestanas()" style="cursor:pointer; background:#25282b; color:white; border:1px solid #454545; font-weight:bold; font-size:12px; padding:6px 10px; border-radius:6px; margin-right:4px;" title="Configurar visibilidad de pestañas">👁️ Pestañas</button>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5 px;">
+                <div style="position: relative; display: inline-flex; align-items: center; gap: 6 px;">
+                    <button onclick="toggleMenuPestanas()" style="cursor:pointer; background:#25282b; color:white; border:1 px solid #454545; font-weight:bold; font-size:12 px; padding:6 px 10 px; border-radius:6 px; margin-right:4 px;" title="Configurar visibilidad de pestañas">👁️ Pestañas</button>
 
-                    <div id="panel-selector-pestanas" style="display:none; position:absolute; top:38px; left:0; background:#25282b; color:white; border:1px solid #454545; padding:10px 14px; border-radius:8px; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.5); font-size:13px; min-width:140px;">
-                        <div style="font-weight:bold; margin-bottom:8px; border-bottom:1px solid #555; padding-bottom:4px; color:#26d4ca;">Mostrar / Ocultar:</div>
-                        <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sde', this.checked)"> SDE</label>
-                        <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smx5', this.checked)"> PREC SMX5</label>
-                        <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smx2', this.checked)"> PREC SMX2</label>
-                        <label style="display:block; margin-bottom:6px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-scp1', this.checked)"> C1 SCP1</label>
-                        <label style="display:block; margin-bottom:2px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sch1', this.checked)"> C1 SCH1</label>
-                        <label style="display:block; margin-bottom:2px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smd1', this.checked)"> C1 SMD1</label>
-                        <label style="display:block; margin-bottom:2px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sja1', this.checked)"> C1 SJA1</label>
+                    <div id="panel-selector-pestanas" style="display:none; position:absolute; top:38 px; left:0; background:#25282b; color:white; border:1 px solid #454545; padding:10 px 14 px; border-radius:8 px; z-index:99999; box-shadow:0 4 px 12 px rgba(0,0,0,0.5); font-size:13 px; min-width:140 px;">
+                        <div style="font-weight:bold; margin-bottom:8 px; border-bottom:1 px solid #555; padding-bottom:4 px; color:#26d4ca;">Mostrar / Ocultar:</div>
+                        <label style="display:block; margin-bottom:6 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sde', this.checked)"> SDE</label>
+                        <label style="display:block; margin-bottom:6 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smx5', this.checked)"> PREC SMX5</label>
+                        <label style="display:block; margin-bottom:6 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smx2', this.checked)"> PREC SMX2</label>
+                        <label style="display:block; margin-bottom:6 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-scp1', this.checked)"> C1 SCP1</label>
+                        <label style="display:block; margin-bottom:2 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sch1', this.checked)"> C1 SCH1</label>
+                        <label style="display:block; margin-bottom:2 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-smd1', this.checked)"> C1 SMD1</label>
+                        <label style="display:block; margin-bottom:2 px; cursor:pointer;"><input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-sja1', this.checked)"> C1 SJA1</label>
                     </div>
 
                     <button id="btn-tab-sde" class="tab-btn" onclick="showTab(4, this)">SDE</button>
@@ -1175,17 +1175,17 @@ app_html = """
                     <button id="btn-tab-sch1" class="tab-btn" onclick="showTab(7, this)">C1 SCH1</button>
                     <button id="btn-tab-smd1" class="tab-btn" onclick="showTab(8, this)">C1 SMD1</button>
                     <button id="btn-tab-sja1" class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
-                    <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 7px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8px;">➕ CREAR NUEVO RUTEO</button>
+                    <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1 px solid #9932CC; font-size: 12 px; padding: 7 px 12 px; border-radius: 6 px; font-weight: bold; box-shadow: 0 3 px 6 px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8 px;">➕ CREAR NUEVO RUTEO</button>
                 </div>
 
-                <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
-                    <button onclick="distribuirAutomatico()" style="cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 7px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #2d968f; transition: all 0.05s; outline: none;">🧠 AUTO-CALCULAR</button>
-                    <button class="filter-btn" onclick="filterRows(true)" style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1px solid #25282b; font-size: 12px; padding: 6px 12px; border-radius: 4px; font-weight: bold; box-shadow: 0 3px 0 #0a3045; transition: all 0.05s; outline: none;">ACTIVAS</button>
-                    <button class="filter-btn" onclick="filterRows(false)" style="cursor:pointer; background: #808080; color:white; border:none; font-size:12px; padding:6px 12px; border-radius:4px; font-weight:bold; box-shadow: 0 3px 0 #454545; transition: all 0.05s; outline: none;">TODAS</button>
+                <div style="padding-bottom: 5 px; display: flex; gap: 6 px; align-items: center;"> 
+                    <button onclick="distribuirAutomatico()" style="cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12 px; padding: 7 px 12 px; border-radius: 4 px; font-weight: bold; box-shadow: 0 3 px 0 #2d968f; transition: all 0.05s; outline: none;">🧠 AUTO-CALCULAR</button>
+                    <button class="filter-btn" onclick="filterRows(true)" style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1 px solid #25282b; font-size: 12 px; padding: 6 px 12 px; border-radius: 4 px; font-weight: bold; box-shadow: 0 3 px 0 #0a3045; transition: all 0.05s; outline: none;">ACTIVAS</button>
+                    <button class="filter-btn" onclick="filterRows(false)" style="cursor:pointer; background: #808080; color:white; border:none; font-size:12 px; padding:6 px 12 px; border-radius:4 px; font-weight:bold; box-shadow: 0 3 px 0 #454545; transition: all 0.05s; outline: none;">TODAS</button>
                 </div>
 
-                <button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background:#228B22; color:white; border:none; font-size:12px; padding:4px 10px; border-radius:4px; font-weight:bold; box-shadow:0 3px 0 #1c6d1c; transition:all 0.05s; outline:none; display: inline-flex; align-items: center; gap: 6px; transform: translateY(-6px); position: relative;">
-                    <span style="font-size: 16px;">👁️</span>
+                <button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background:#228B22; color:white; border:none; font-size:12 px; padding:4 px 10 px; border-radius:4 px; font-weight:bold; box-shadow:0 3 px 0 #1c6d1c; transition:all 0.05s; outline:none; display: inline-flex; align-items: center; gap: 6 px; transform: translateY(-6 px); position: relative;">
+                    <span style="font-size: 16 px;">👁️</span>
                 </button>
             </div>
 
@@ -1194,22 +1194,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-2">{gen_master_rows(u_C1, 2)}</tbody>
                     <tfoot class="fila-total">
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-ruteadas-2" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-ruteadas-2" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1219,22 +1219,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-6">{gen_master_rows(u_C1_SJA1, 6)}</tbody>
                     <tfoot class="fila-total"> 
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-ruteadas-6" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold !important;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-ruteadas-6" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold !important;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1244,22 +1244,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-7">{gen_master_rows(u_C1_SCH1, 7)}</tbody>
                     <tfoot class="fila-total"> 
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-ruteadas-7" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold !important;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-ruteadas-7" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold !important;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1269,22 +1269,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color:#25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-8">{gen_master_rows(u_C1_SMD1, 8)}</tbody>
                     <tfoot class="fila-total"> 
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-ruteadas-8" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold !important;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-ruteadas-8" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold !important;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1294,22 +1294,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-1">{gen_master_rows(u_PREC, 1)}</tbody>
                     <tfoot class="fila-total">
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-car-real-1" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-car-real-1" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1319,22 +1319,22 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th colspan="2" style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 105 px;">ORH</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">% OCUP</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-5">{gen_master_rows(u_PREC_SMX2, 5)}</tbody>
                     <tfoot class="fila-total">
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="6" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-car-real-5" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                            <td colspan="6" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-car-real-5" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1344,20 +1344,20 @@ app_html = """
                 <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                     <thead>
                         <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                            <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                            <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:60px;">SCHEDULE</th>
-                            <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
-                            <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color: #25282b !important; width:50px;">DELTA</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 4 px 8 px; font-size: 14 px; color: #25282b !important;">UNIDAD</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MIN</th>
+                            <th style="border-right: 0.5 px solid #25282b; padding: 2 px; font-size: 11 px; color: #25282b !important; width: 45 px;">SPR<br>MAX</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:60 px;">SCHEDULE</th>
+                            <th style="border-right:0.7 px solid #25282b; padding:4 px 9 px; font-size:11 px; color:#25282b !important; width:57 px; text-align:center; display:table-cell; vertical-align:middle;">USADAS</th>
+                            <th style="border-right:0.5 px solid #25282b; padding:4 px 8 px; font-size:11 px; color: #25282b !important; width:50 px;">DELTA</th>
                         </tr>
                     </thead>
                     <tbody id="body-4">{gen_master_rows(u_SDE, 4)}</tbody>
                     <tfoot class="fila-total">
                         <tr class="fila-total">
                             <td style="border:none;"></td>
-                            <td colspan="3" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                            <td id="total-car-real-4" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                            <td colspan="3" style="padding:6 px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                            <td id="total-car-real-4" style="text-align:center; color:#3CB371; font-size:16 px; font-weight:bold;">0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -1365,12 +1365,12 @@ app_html = """
         </div>
 
         <button id="toggle-tools-btn" onclick="toggleTools()" 
-            style="display: none !important; background:#25282b !important; background-image: none !important; box-shadow: none !important; color: #ffffff !important; border: 1px solid #4682B4; font-size: 11px; padding: 5px 0; border-radius: 3px; font-weight: bold; outline: none; width: 100%; margin-bottom: 15px;">
+            style="display: none !important; background:#25282b !important; background-image: none !important; box-shadow: none !important; color: #ffffff !important; border: 1 px solid #4682B4; font-size: 11 px; padding: 5 px 0; border-radius: 3 px; font-weight: bold; outline: none; width: 100%; margin-bottom: 15 px;">
             ❌ OCULTAR UTILERÍAS
         </button>
 
         <div style="width:100%; overflow-y:auto; overflow-x:hidden;">
-            <div style="background: #25282b !important; background-image: none !important; box-shadow: none !important; border: none !important; color: #20B2AA; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; margin-top: 50px !important; margin-bottom: 10px !important;">
+            <div style="background: #25282b !important; background-image: none !important; box-shadow: none !important; border: none !important; color: #20B2AA; padding: 10 px; border-radius: 6 px; text-align: center; font-weight: bold; margin-top: 50 px !important; margin-bottom: 10 px !important;">
                 📋 PLANIFICACIÓN POR POLÍGONOS
             </div>
 
@@ -1382,19 +1382,19 @@ app_html = """
             <div id="polys-5" class="p-content" style="display:none;">{gen_poligonos(u_PREC_SMX2)}</div>
             <div id="polys-4" class="p-content" style="display:none;">{gen_poligonos(u_SDE)}</div>
 
-            <div id="excel-polys" style="display:none; margin-top:10px;">
-                <div style="background:#25282b; color:white; font-weight:bold; text-align:center; padding:8px; font-size:18px; border:1px solid #0f5b84;">
+            <div id="excel-polys" style="display:none; margin-top:10 px;">
+                <div style="background:#25282b; color:white; font-weight:bold; text-align:center; padding:8 px; font-size:18 px; border:1 px solid #0f5b84;">
                     📋 RESUMEN DE POLÍGONOS
                 </div>
-                <table style="width:100%; border-collapse:collapse; background:white; font-size:16px; table-layout:fixed;">
+                <table style="width:100%; border-collapse:collapse; background:white; font-size:16 px; table-layout:fixed;">
                     <thead>
-                        <tr style="background:#25282b; color:white; height:28px;">
-                            <th style="border:1px solid #c0c0c0;">PLAN</th>
-                            <th style="border:1px solid #c0c0c0;">VOL</th>
-                            <th style="border:1px solid #c0c0c0;">UNIDAD</th>
-                            <th style="border:1px solid #c0c0c0; width:55px;">ASIG</th>
-                            <th style="border:1px solid #c0c0c0;">ORH / % OCUP</th>
-                            <th style="border:1px solid #c0c0c0;">NODO</th>
+                        <tr style="background:#25282b; color:white; height:28 px;">
+                            <th style="border:1 px solid #c0c0c0;">PLAN</th>
+                            <th style="border:1 px solid #c0c0c0;">VOL</th>
+                            <th style="border:1 px solid #c0c0c0;">UNIDAD</th>
+                            <th style="border:1 px solid #c0c0c0; width:55 px;">ASIG</th>
+                            <th style="border:1 px solid #c0c0c0;">ORH / % OCUP</th>
+                            <th style="border:1 px solid #c0c0c0;">NODO</th>
                         </tr>
                     </thead>
                     <tbody id="excel-polys-body"></tbody>
@@ -1403,58 +1403,58 @@ app_html = """
         </div>
 
         <div id="fleet-float" hidden>
-            <div style="font-weight:bold; margin-bottom:8px;">🚛 DISPONIBLE</div>
+            <div style="font-weight:bold; margin-bottom:8 px;">🚛 DISPONIBLE</div>
             <div id="fleet-float-body">Cargando...</div>
         </div>
 
         <!-- MODAL CREADOR DE RUTEO -->
-        <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
-                <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
-                <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">❌ CERRAR</button>
+        <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25 px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2 px solid #8A2BE2; padding-bottom: 12 px; margin-bottom: 20 px;">
+                <h2 style="color: #26d4ca; margin: 0; font-size: 22 px; display: flex; align-items: center; gap: 8 px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
+                <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8 px 16 px; font-weight: bold; border-radius: 6 px; font-size: 14 px;">❌ CERRAR</button>
             </div>
 
-            <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
-                    <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
+            <div style="max-width: 1100 px; margin: 0 auto; display: flex; flex-direction: column; gap: 20 px;">
+                <div style="background: #25282b; border: 1 px solid #454545; border-radius: 10 px; padding: 18 px;">
+                    <h3 style="color: #FFD700; margin-top: 0; font-size: 16 px; border-bottom: 1 px solid #444; padding-bottom: 8 px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20 px; align-items: center;">
                         <div>
-                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Pestaña / Ruteo:</label>
-                            <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
+                            <label style="color: #d0d0d0; font-size: 13 px; font-weight: bold; display: block; margin-bottom: 5 px;">Nombre de la Pestaña / Ruteo:</label>
+                            <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8 px; border-radius: 6 px; border: 1 px solid #555; background: #1a1c1e; color: white; font-size: 14 px; font-weight: bold;">
                         </div>
                         <div>
-                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
-                                <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">⚙️ Generar Campos de Planes</button>
+                            <label style="color: #d0d0d0; font-size: 13 px; font-weight: bold; display: block; margin-bottom: 5 px;">Número de Planes / Polígonos:</label>
+                            <div style="display: flex; gap: 10 px;">
+                                <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100 px; padding: 8 px; border-radius: 6 px; border: 1 px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16 px; font-weight: bold; text-align: center;">
+                                <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8 px 15 px; font-weight: bold; border-radius: 6 px; font-size: 13 px;">⚙️ Generar Campos de Planes</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+                <div style="background: #25282b; border: 1 px solid #454545; border-radius: 10 px; padding: 18 px;">
                     <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
                     <div id="contenedor-lista-planes">
                         <p style="color: #888;">Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.</p>
                     </div>
                 </div>
 
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+                <div style="background: #25282b; border: 1 px solid #454545; border-radius: 10 px; padding: 18 px; margin-top: 15 px;">
                     <h3 style="color: #FFD700; margin-top: 0;">🚐 SELECCIÓN Y CONFIGURACIÓN DE FLOTA</h3>
-                    <div id="contenedor-lista-flota" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+                    <div id="contenedor-lista-flota" style="display: flex; flex-direction: column; gap: 8 px; max-height: 250 px; overflow-y: auto;">
                         <p style="color: #888;">Cargando unidades de flota...</p>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
-                    <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">Cancelar</button>
-                    <button onclick="guardarNuevoRuteoCompleto()" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(40,167,69,0.4);">💾 Guardar y Sincronizar Ruteo</button>
+                <div style="display: flex; justify-content: flex-end; gap: 12 px; padding-top: 10 px;">
+                    <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10 px 20 px; font-weight: bold; border-radius: 6 px; font-size: 14 px;">Cancelar</button>
+                    <button onclick="guardarNuevoRuteoCompleto()" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10 px 25 px; font-weight: bold; border-radius: 6 px; font-size: 14 px; box-shadow: 0 4 px 10 px rgba(40,167,69,0.4);">💾 Guardar y Sincronizar Ruteo</button>
                 </div>
 
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+                <div style="background: #25282b; border: 1 px solid #454545; border-radius: 10 px; padding: 18 px; margin-top: 15 px;">
                     <h3 style="color: #FFD700; margin-top: 0;">⚡ PRIORIDADES DE ASIGNACIÓN POR PLAN</h3>
-                    <p style="color: #aaa; font-size: 12px; margin-bottom: 10px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
-                    <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8px;">
+                    <p style="color: #aaa; font-size: 12 px; margin-bottom: 10 px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
+                    <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8 px;">
                         <p style="color: #888;">Genera los planes arriba para configurar sus prioridades aquí.</p>
                     </div>
                 </div>
@@ -1603,8 +1603,8 @@ app_html = """
 
             const rect = panel.getBoundingClientRect();
             panel.style.transform = "none";
-            panel.style.left = rect.left + "px";
-            panel.style.top  = rect.top + "px";
+            panel.style.left = rect.left + " px";
+            panel.style.top  = rect.top + " px";
             panel.style.right = "auto";
             panel.style.bottom = "auto";
             panel.style.margin = "0";
@@ -1734,16 +1734,16 @@ app_html = """
         Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {
             let sprDef = BASE_FLOTA_MASTER[unidad];
             htmlFlota += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
+                <div style="background: #1a1c1e; border: 1 px solid #3f4347; padding: 8 px 12 px; border-radius: 6 px; display: flex; align-items: center; justify-content: space-between; gap: 8 px;">
+                    <label style="display: flex; align-items: center; gap: 8 px; font-size: 13 px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
                         <input type="checkbox" class="chk-flota-unidad" value="${unidad}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
                         ${unidad}
                     </label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="font-size: 10px; color: #aaa;">MIN:</span>
-                        <input type="number" class="spr-min-${idx}" value="${sprDef[0]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
-                        <span style="font-size: 10px; color: #aaa;">MAX:</span>
-                        <input type="number" class="spr-max-${idx}" value="${sprDef[1]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                    <div style="display: flex; align-items: center; gap: 4 px;">
+                        <span style="font-size: 10 px; color: #aaa;">MIN:</span>
+                        <input type="number" class="spr-min-${idx}" value="${sprDef[0]}" style="width: 45 px; text-align: center; background: #25282b; color: white; border: 1 px solid #555; border-radius: 4 px; font-size: 12 px;">
+                        <span style="font-size: 10 px; color: #aaa;">MAX:</span>
+                        <input type="number" class="spr-max-${idx}" value="${sprDef[1]}" style="width: 45 px; text-align: center; background: #25282b; color: white; border: 1 px solid #555; border-radius: 4 px; font-size: 12 px;">
                     </div>
                 </div>
             `;
@@ -1761,14 +1761,14 @@ app_html = """
         
         for (let i = 1; i <= cant; i++) {
             htmlPlanes += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
+                <div style="background: #1a1c1e; border: 1 px solid #3f4347; padding: 8 px 12 px; border-radius: 6 px; display: flex; align-items: center; gap: 10 px; margin-bottom: 6 px;">
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12 px; width: 60 px;">PLAN ${i}:</span>
                     <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
-                        style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
+                        style="flex: 1; padding: 6 px; border-radius: 4 px; border: 1 px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13 px;"
                         oninput="generarPrioridadesPlanes()">
-                    <span style="font-size: 11px; color: #aaa;">Filas:</span>
+                    <span style="font-size: 11 px; color: #aaa;">Filas:</span>
                     <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
-                        style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                        style="width: 45 px; text-align: center; background: #25282b; color: #FFD700; border: 1 px solid #555; border-radius: 4 px; font-size: 12 px; font-weight: bold;">
                 </div>
             `;
         }
@@ -1793,12 +1793,12 @@ app_html = """
         inputsPlanes.forEach((input, index) => {
             let nombrePlan = input.value.trim() || `PLAN ${index + 1}`;
             htmlPrioridades += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${nombrePlan}</span>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
+                <div style="background: #1a1c1e; border: 1 px solid #3f4347; padding: 8 px 12 px; border-radius: 6 px; display: flex; align-items: center; justify-content: space-between; gap: 10 px;">
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12 px; flex: 1;">${nombrePlan}</span>
+                    <div style="display: flex; align-items: center; gap: 6 px;">
+                        <span style="font-size: 11 px; color: #aaa;">Prioridad (1 es más alto):</span>
                         <input type="number" class="input-prioridad-plan" value="${index + 1}" min="1" max="10" 
-                            style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                            style="width: 50 px; text-align: center; background: #25282b; color: #FFD700; border: 1 px solid #555; border-radius: 4 px; font-size: 12 px; font-weight: bold;">
                     </div>
                 </div>
             `;
@@ -2162,7 +2162,7 @@ app_html = """
                     if (!badge) {
                         badge = document.createElement('span');
                         badge.className = 'badge-adicional';
-                        badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
+                        badge.style.cssText = 'font-size: 10 px; background: #d32f2f; color: white; padding: 1 px 4 px; border-radius: 3 px; font-weight: bold; margin-left: 2 px;';
                         if (spanU) spanU.after(badge);
                     }
                     badge.innerText = `+${excesoFila}`;
@@ -2315,8 +2315,8 @@ app_html = """
         }
 
         let panel = document.getElementById('panel-prioridades');
-        if (panel && panel.style.top === "0px") {
-            panel.style.top = "-600px";
+        if (panel && panel.style.top === "0 px") {
+            panel.style.top = "-600 px";
             if (document.activeElement) document.activeElement.blur();
         }
 
@@ -2725,17 +2725,17 @@ app_html = """
                 let filaHtml = '<tr>';
                 if (index === 0) {
                     filaHtml += `
-                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${plan}</td>
-                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${vol}</td>
+                        <td rowspan="${filasValidas.length}" style="border:1 px solid #808080; padding:3 px; text-align:center; font-weight:bold; vertical-align:middle;">${plan}</td>
+                        <td rowspan="${filasValidas.length}" style="border:1 px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${vol}</td>
                     `;
                 }
                 filaHtml += `
-                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${unidad}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${asignadas}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle;">${valSpr}</td>
+                    <td style="border:1 px solid #808080; padding-left:6 px; vertical-align:middle;">${unidad}</td>
+                    <td style="border:1 px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${asignadas}</td>
+                    <td style="border:1 px solid #808080; text-align:center; vertical-align:middle;">${valSpr}</td>
                 `;
                 if (index === 0) {
-                    filaHtml += `<td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${nodoTxt}</td>`;
+                    filaHtml += `<td rowspan="${filasValidas.length}" style="border:1 px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${nodoTxt}</td>`;
                 }
                 filaHtml += '</tr>';
                 body.innerHTML += filaHtml;
@@ -3348,7 +3348,7 @@ app_html = """
                 let leftDisplay = row.querySelector('.f-left')?.innerText || "0";
 
                 htmlLeft += `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px;"> 
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4 px; font-size:14 px;"> 
                         <span style="color:#0a2745;">${name}</span>
                         <span style="color:${colorCategoria}; font-weight:bold;">${leftDisplay}/${stock}</span>
                     </div>
@@ -3357,38 +3357,38 @@ app_html = """
         });
 
         htmlRight = `
-            <div style="margin-top: 5px; padding-top: 5px;"> 
-                <div style="display:flex; justify-content:space-between; color: #D2691E; font-weight: 800; font-size: 14px;">
+            <div style="margin-top: 5 px; padding-top: 5 px;"> 
+                <div style="display:flex; justify-content:space-between; color: #D2691E; font-weight: 800; font-size: 14 px;">
                     <span>TOTAL CAR (sched):</span> <span>${totalCarSchedule}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; color: #FF4500; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
+                <div style="display:flex; justify-content:space-between; color: #FF4500; font-weight: 800; font-size: 14 px; margin-bottom: 8 px;">
                     <span>TOTAL CAR (real):</span> <span>${totalCarReal}</span>
                 </div>
 
-                <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
+                <div style="border-top: 1 px solid #25282b; padding-top: 4 px;"></div>
 
-                <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px;">
+                <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14 px;">
                     <span>TOTAL MLP (decl):</span> <span>${totalMLPStock}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
+                <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14 px; margin-bottom: 8 px;">
                     <span>TOTAL MLP (rute):</span> <span>${totalMLPReal}</span>
                 </div>
 
-                <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
+                <div style="border-top: 1 px solid #25282b; padding-top: 4 px;"></div>
 
-                <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
+                <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14 px;">
                     <span>TOTAL RENTAL (decl):</span> <span>${totalRentalStock}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
+                <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14 px;">
                     <span>TOTAL RENTAL (rute):</span> <span>${totalRentalReal}</span>
                 </div>
             </div>
         `;
 
         let html = `
-        <div style="display:flex; gap:15px; align-items:flex-start;">
-            <div style="flex:1; min-width:180px;">${htmlLeft}</div>
-            <div style="width:190px; border-left:2px solid #25282b; padding-left:12px;">${htmlRight}</div>
+        <div style="display:flex; gap:15 px; align-items:flex-start;">
+            <div style="flex:1; min-width:180 px;">${htmlLeft}</div>
+            <div style="width:190 px; border-left:2 px solid #25282b; padding-left:12 px;">${htmlRight}</div>
         </div>
         `;
 
@@ -3419,10 +3419,10 @@ app_html = """
 
     function togglePrioridades() {
         const panel = document.getElementById('panel-prioridades');
-        if (panel.style.top === '0px') {
-            panel.style.top = '-600px';
+        if (panel.style.top === '0 px') {
+            panel.style.top = '-600 px';
         } else {
-            panel.style.top = '0px';
+            panel.style.top = '0 px';
         }
     }
 
@@ -3593,7 +3593,7 @@ app_html = """
 
             el.style.position = "fixed";
             el.style.bottom = "auto";
-            el.style.top = `${startTop}px`;
+            el.style.top = `${startTop} px`;
 
             handle.style.cursor = "grabbing";
             e.preventDefault();
@@ -3611,7 +3611,7 @@ app_html = """
             const maxTop = window.innerHeight - el.offsetHeight - pad;
             newTop = Math.max(minTop, Math.min(maxTop, newTop));
 
-            el.style.top = `${newTop}px`;
+            el.style.top = `${newTop} px`;
         }
 
         function up(e){
@@ -3636,8 +3636,8 @@ app_html = """
         try {
             const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
             if (saved && typeof saved.top === "number" && typeof saved.left === "number") {
-                el.style.top = saved.top + "px";
-                el.style.left = saved.left + "px";
+                el.style.top = saved.top + " px";
+                el.style.left = saved.left + " px";
                 el.style.right = "auto";
                 el.style.transform = "none";
             }
@@ -3668,8 +3668,8 @@ app_html = """
             startLeft = rect.left;
 
             el.style.right = "auto";
-            el.style.left = startLeft + "px";
-            el.style.top = startTop + "px";
+            el.style.left = startLeft + " px";
+            el.style.top = startTop + " px";
             el.style.userSelect = "none";
 
             ev.preventDefault();
@@ -3685,8 +3685,8 @@ app_html = """
             const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
             const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
 
-            el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + "px";
-            el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
+            el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + " px";
+            el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + " px";
 
             ev.preventDefault();
         };
@@ -3748,14 +3748,14 @@ url_final = f"https://drive.google.com/thumbnail?id={ID_IMAGEN}&sz=w1000"
 
 info_operativa = {
     "SDE": f"""
-        <div style='text-align: center; margin-bottom: 25px;'>
-            <img src="{url_final}" style="width: 100%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <div style='text-align: center; margin-bottom: 25 px;'>
+            <img src="{url_final}" style="width: 100%; max-width: 800 px; border-radius: 10 px; box-shadow: 0 4 px 8 px rgba(0,0,0,0.2);">
         </div>
 
-        <h3 style='color: #000; margin-bottom: 5px;'>ROL VP04</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
+        <h3 style='color: #000; margin-bottom: 5 px;'>ROL VP04</h3>
+        <hr style='border: 1 px solid #1E90FF; margin-bottom: 20 px;'>
         
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
+        <div style='background: white; border-left: 6 px solid #1E90FF; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 20 px;'>
             <p style='margin: 0;'><strong>👉👉 PARA SDE</strong><br>
             - 🔷 Revisar si SVC agrega blancos<br>
             - Orígenes (imagen) + onway + despacho de hoy de las 3 pm en adelante + fecha promesa y/o quemada ...validar<br>
@@ -3764,17 +3764,17 @@ info_operativa = {
             - Quito puntos muy lejanos</p>
         </div>
 
-        <h3 style='color: #000; margin-top: 25px;'>🟪 SDE 🟪</h3>
-        <hr style='border: 1px solid #FF00FF; margin-bottom: 20px;'>
+        <h3 style='color: #000; margin-top: 25 px;'>🟪 SDE 🟪</h3>
+        <hr style='border: 1 px solid #FF00FF; margin-bottom: 20 px;'>
         
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX9 PM2 - ⏰ 16:40 - 17:00</strong><br>
             - 📌 Orígenes: MXCD02, MXCD06<br>
             - 👉 Vol aprox. 800 / en peak puede aumentar hasta 1600<br>
             - 👉 fecha promesa</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SGD2 PM2 - ⏰ 17:00 - 17:20</strong><br>
              - 📌 Orígenes: MXJC01 para SD3 y MXJC02 para SD2 (en caso de que no hayan ruteado sd2 en la mañana)<br>
              - 👉 MXJC01 último despacho de hoy + fecha promesa y quemada + onway<br>
@@ -3783,14 +3783,14 @@ info_operativa = {
              - 👉 prefijo SD3 siempre</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX5 PM2 - ⏰ 17:20 - 17:40</strong><br>
              - 📌 Orígenes: MXCD02, MXCD06<br>
              - 👉 Vol aprox. 400<br>
              - 👉 fecha promesa + quemada</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX4 PM2 - ⏰ 17:40 - 18:00</strong><br>
             - 📌 Orígenes: MXCD02, MXCD06<br>
             - 👉 Vol aprox. 550<br>
@@ -3799,7 +3799,7 @@ info_operativa = {
             - 👉 fecha promesa + quemada</p> 
         </div>
 
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMX2 PM2 - ⏰ 18:00 - 18:20</strong><br>
             - 📌 Orígenes: MXCD02, MXCD06<br>
             - 👉 fecha promesa + quemada</br>
@@ -3807,7 +3807,7 @@ info_operativa = {
             - 👉 Parámetros ORH=210 OCUP=66%</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #FF00FF; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #FF00FF; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #FF00FF;">●</span> SMT2 PM2 - ⏰ 18:40 - 19:00</strong><br>
             - 📌 Origen MXNL01<br>
             - 👉 Despacho hoy después 3 pm<br>
@@ -3817,10 +3817,10 @@ info_operativa = {
             - 👉 Pido validación</p>
         </div>
 
-        <h3 style='color: #000; margin-top: 25px;'>🟥 CICLO 1 🟥</h3>
-        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
+        <h3 style='color: #000; margin-top: 25 px;'>🟥 CICLO 1 🟥</h3>
+        <hr style='border: 1 px solid #ff8c00; margin-bottom: 20 px;'>
 
-        <div style='background: white; border-left: 6px solid #DC143C; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #DC143C; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #DC143C;">●</span> SCP1 AM1 - ⏰ 20:00 - 21:00</strong><br>
              - 📌 Ellos envían el volumen a tomar<br>
              - ✅ Poco volumen = polígonos que no salen en logis porque se pegan a otros que están cerca<br>
@@ -3828,7 +3828,7 @@ info_operativa = {
              - 🚛 CAMPECHE = Rental Large Van (local)= excluír/ Delivery Cell (dedicada/ORH de large van) = NODOS con paradas según # nodos</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #DC143C; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #DC143C; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #DC143C;">●</span> SJA1 AM1 - ⏰ 23:30 - 00:30</strong><br>
              - 📌 Ellos envían el volumen a tomar /Apagado CP<br>
              - 🚛 FORÁNEOS = Large Van MLP / Con Nodos = Híbrida<br>
@@ -3837,10 +3837,10 @@ info_operativa = {
              - 🚛 CENTRO (local) = Rental Large Van = híbridas/ Delivery Cell (3 paradas) / 3.5 tons (2 paradas)</p>
         </div>
 
-        <h3 style='color: #000; margin-top: 25px;'>🟧 PRE-CARGA 🟧</h3>
-        <hr style='border: 1px solid #ff8c00; margin-bottom: 20px;'>
+        <h3 style='color: #000; margin-top: 25 px;'>🟧 PRE-CARGA 🟧</h3>
+        <hr style='border: 1 px solid #ff8c00; margin-bottom: 20 px;'>
 
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
+        <div style='background: white; border-left: 6 px solid #ff8c00; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 20 px;'>
             <p style='margin: 0;'><strong>👉👉 INDICACIONES</strong><br>
             - 📌 Origen + despachos (playbook - ó indicados por SVC) + onway<br>
             - 👉 Schedule del día siguiente / apartado en archivo AMO<br>
@@ -3848,29 +3848,29 @@ info_operativa = {
             - ✅ delimitación / ✅ dejar restricción</p>
         </div>
         
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #ff8c00; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX5 AM3 - ⏰ 21:30 - 22:10</strong><br>
              - 📌 Origen 09 + onway<br>
              - ➕ Agregan ids a ciclo (de origen 10)<br>
              - 🚛 Small van 9h en Iztapalapa, Coyoacán y si sobra en Tláhuac</p>
         </div>
 
-        <h3 style='color: #000; margin-top: 25px;'>👉 OTROS RUTEOS PM2 (SDE)</h3>
-        <hr style='border: 1px solid #808080; margin-bottom: 20px;'> 
+        <h3 style='color: #000; margin-top: 25 px;'>👉 OTROS RUTEOS PM2 (SDE)</h3>
+        <hr style='border: 1 px solid #808080; margin-bottom: 20 px;'> 
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX20 (SMX10) PM2 - ⏰ 0:20 pm</strong><br>
             - 📌 Origen 20 / ❌ SPR / ❌ Ocupación<br>
             - 👉 Meto ORH de 4 hrs para crowd 5 hrs / solo para dividir paquetes uso SPR 30<br>
             - 👉 Pido validación ➡️ @Luisa Itzel Perez y @Ibrahim</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX8 PM2 - ⏰ 5:30 pm</strong><br>
             - 👉 Sin schedule</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMX3 PM2 - ⏰ 4:30 pm</strong><br>
             - 📌 Orígenes: MXCD02, MXCD06<br>
             - ✅ delimitación (salen planes) / ❌ restricción<br>
@@ -3878,43 +3878,43 @@ info_operativa = {
             - 🏍️ MOTOS ➡️ Cuauhtémoc-Polanco</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SBJ1 PM2 - ⏰ A partir de las 5:00 pm</strong><br>
             - 👉 Pido autorización para iniciar ruteo / SPR 28 / 200-300 pqt aprox</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SHM1 PM2 - ⏰ 7:20 pm</strong><br>
             - 👉 SPR 21 / crowd 5 hrs</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT1 PM2 - ⏰ 5:10 pm</strong><br>
             - 📌 Orígen: MXNL01<br>
             - 👉 SVC manda data (la envían tarde, solo hago el cruce para cotejo)</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMT3 PM2 - ⏰ 5:15 pm</strong><br>
             - 👉 SPR 28 / crowd 5 hrs / 500 pqt aprox</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD1 PM2 - ⏰ 4:50 pm</strong><br>
              - 📌 Orígen: MXJC01</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD2 PM2 - ⏰ 0:00 pm</strong><br>
             - 👉 SPR 28</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SGD3 PM2 - ⏰ 4:50 pm</strong><br>
             - 👉 SPR 30 / crowd 5 y 3 hrs</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SMD2 PM1 - ⏰ 5:30 pm</strong><br>
             - 📌 Orígen: MXYU01<br>
             - 👉 Sin schedule / contemplo crowd 5 hrs<br>
@@ -3924,7 +3924,7 @@ info_operativa = {
             - 👉 Piden mejor dispersion, indico: "Se publicó de acuerdo a la herramienta team, ya no podemos manipular la dispersión como antes"</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #808080; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #808080;">●</span> SPB1 PM2 - ⏰ 6:00 pm</strong><br>
             - 📌 Origen MXPB01<br>
             - 👉 Sin schedule / ocupo crowd 5 hrs a 30 SPR - depende puede mandarlas a 25 SPR<br>
@@ -3933,7 +3933,7 @@ info_operativa = {
             - 👉 Pido validación</p>
         </div>
 
-        <div style='background: white; border-left: 6px solid #ff8c00; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
+        <div style='background: white; border-left: 6 px solid #ff8c00; padding: 12 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 12 px;'>
             <p style='margin: 0;'><strong><span style="color: #ff8c00;">●</span> SMX2 AM3 - ⏰ 22:40 - 23:20</strong><br>
              - 📌 Orígenes: MXCD02 despacho de hoy hasta 16:00 / MXCD09  despacho de hoy hasta 14:00 / MXCD10  despacho de hoy hasta 21:00<br>
              - 👉 Todo Onway<br>
@@ -3943,13 +3943,13 @@ info_operativa = {
         </div>
     """,
     "SIDE_LINE": """
-        <h3 style='color: #000; margin-bottom: 5px;'>¿CÓMO LO HAGO?</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 20px;'>
+        <h3 style='color: #000; margin-bottom: 5 px;'>¿CÓMO LO HAGO?</h3>
+        <hr style='border: 1 px solid #1E90FF; margin-bottom: 20 px;'>
+        <div style='background: white; border-left: 6 px solid #1E90FF; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000; margin-bottom: 20 px;'>
             <p style='margin: 0;'>1️⃣ Descargo query de places (script job de SVC trabajado ▶️ ejecutar)<br>
             2️⃣ Routing matutino ▶️ busco lista places (sáb / dom)</p>
         </div>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000;'>
+        <div style='background: white; border-left: 6 px solid #1E90FF; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000;'>
             <p style='margin: 0;'><strong>PASOS DETALLADOS:</strong><br>
             ▶️ Docto script job ▶️ BuscarV ▶️ columna U (customer id) ▶️ clic 1a celda<br>
             ▶️ En archivo places (copio desde place id / 5,0)<br>
@@ -3962,10 +3962,10 @@ info_operativa = {
         </div>
     """,
     "ENLACES": """
-        <h3 style='color: #000; margin-bottom: 5px;'>ENLACES</h3>
-        <hr style='border: 1px solid #1E90FF; margin-bottom: 20px;'>
-        <div style='background: white; border-left: 6px solid #1E90FF; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000;'>
-            <div style='display: flex; flex-direction: column; gap: 15px;'>
+        <h3 style='color: #000; margin-bottom: 5 px;'>ENLACES</h3>
+        <hr style='border: 1 px solid #1E90FF; margin-bottom: 20 px;'>
+        <div style='background: white; border-left: 6 px solid #1E90FF; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.1); color: #000;'>
+            <div style='display: flex; flex-direction: column; gap: 15 px;'>
                 <a href="https://drive.google.com/drive/folders/1VNCUhdFxnV6MltnBFt4sH6AN_FJjL5jj" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📁 SUBIR DATAS</a>
                 <a href="https://docs.google.com/spreadsheets/d/1mj1krN2hXQQ1yFzswDoPscd9tPhguDnB-mAxB4aLPy0/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE METRO</a>
                 <a href="https://docs.google.com/spreadsheets/d/1mj1krN2hXQQ1yFzswDoPscd9tPhguDnB-mAxB4aLPy0/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE CENTRO</a>
@@ -3975,16 +3975,16 @@ info_operativa = {
         </div>
     """,
     "C1": """
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #25282b; padding: 5px;">
-            <h2 style='color: #008000; margin-top: 10px; margin-bottom: 5px; font-weight: bold;'>👉 *** SJA1 C1 (Nueva exp)***</h2>
-            <hr style='border: 1.5px solid #008000; margin-bottom: 15px;'> 
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #25282b; padding: 5 px;">
+            <h2 style='color: #008000; margin-top: 10 px; margin-bottom: 5 px; font-weight: bold;'>👉 *** SJA1 C1 (Nueva exp)***</h2>
+            <hr style='border: 1.5 px solid #008000; margin-bottom: 15 px;'> 
 
-            <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px;">
-                <p style="margin: 0; font-size: 14px; line-height: 1.5;">• SVC indica si será uniciclo o 2 ciclos (mandan orígenes).</p>
+            <div style="background: #ffffff; padding: 15 px; border-radius: 8 px; box-shadow: 2 px 2 px 5 px rgba(0,0,0,0.05); margin-bottom: 15 px;">
+                <p style="margin: 0; font-size: 14 px; line-height: 1.5;">• SVC indica si será uniciclo o 2 ciclos (mandan orígenes).</p>
             </div>
 
-            <h4 style="color: #ff8c00; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📦 VOLUMEN</h4>
-            <div style="background: white; border-left: 5px solid #ff8c00; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #ff8c00; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">📦 VOLUMEN</h4>
+            <div style="background: white; border-left: 5 px solid #ff8c00; padding: 12 px; border-radius: 4 px; margin-bottom: 15 px; font-size: 13.5 px; line-height: 1.6;">
                 • <strong>NO RUT:</strong> 🚫 Todo lo <em>At station (sorting+buffered) - EJA1</em> (está en id nodo/cluster) se manda a no rut (no sale en Pivot).<br>
                 • <strong>C1:</strong> Orígenes solo lo onway / si piden tomar <em>at station + buffered</em> se toma de toda la data para C1.<br>
                 • <strong>C2:</strong> Orígenes solo lo onway nada más.<br>
@@ -3992,33 +3992,33 @@ info_operativa = {
                 • <strong>Fecha ETA:</strong> Fecha a trabajar y solita. 🚫 Prohibido fecha futura.
             </div>
 
-            <h4 style="color: #1E90FF; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">⚙️ LOGIS</h4>
-            <div style="background: white; border-left: 5px solid #1E90FF; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #1E90FF; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">⚙️ LOGIS</h4>
+            <div style="background: white; border-left: 5 px solid #1E90FF; padding: 12 px; border-radius: 4 px; margin-bottom: 15 px; font-size: 13.5 px; line-height: 1.6;">
                 • <strong>👉 PIVOT:</strong> ✅ Subo lo NO ruteado (EJA1-at station + C2-depende si son 2 ciclos).<br>
                 • Identificar voluminosos (si hay BULK).<br>
                 • <strong>UNICICLO:</strong> 🚫 No se permite cherry.<br>
                 • <strong>2 CICLOS:</strong> ✅ Permitido cherry.
             </div>
 
-            <h4 style="color: #6a1b9a; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🛑 DROPEO NODOS</h4>
-            <div style="background: white; border-left: 5px solid #6a1b9a; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #6a1b9a; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">🛑 DROPEO NODOS</h4>
+            <div style="background: white; border-left: 5 px solid #6a1b9a; padding: 12 px; border-radius: 4 px; margin-bottom: 15 px; font-size: 13.5 px; line-height: 1.6;">
                 • Si dropea nodos de centro se cargan en <strong>AM1 Cont. con crowd</strong>:<br>
-                <span style="padding-left: 15px; display:block;">- Descargo data y se hace cruce con data original (con C1), subo lo ND.</span>
+                <span style="padding-left: 15 px; display:block;">- Descargo data y se hace cruce con data original (con C1), subo lo ND.</span>
                 • No se quita delimitación.<br>
                 • Sale Alchichica (se borra).<br>
                 • Se publica XPT (no permite editar). ¿EJA1 SP también?
             </div>
 
-            <h4 style="color: #d32f2f; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🛡️ ALCHICHICA ND (AM0)</h4>
-            <div style="background: white; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #d32f2f; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">🛡️ ALCHICHICA ND (AM0)</h4>
+            <div style="background: white; border-left: 5 px solid #d32f2f; padding: 12 px; border-radius: 4 px; margin-bottom: 15 px; font-size: 13.5 px; line-height: 1.6;">
                 • Se carga en AM0 con ✅ <strong>2 Small Van MLP</strong>.<br>
                 • Unidades no se descuentan de schedule.<br>
                 • <strong>Procedimiento:</strong> Se vuelve a subir data de no ruteado y se eliminan el resto de planes, solo se deja Alchichica.<br>
                 • Descargo data y se hace cruce con data original (con C1), subo lo ND.
             </div>
 
-            <h4 style="color: #2e7d32; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">🚚 UNIDADES PARA ASIGNAR</h4>
-            <div style="background: white; border-left: 5px solid #2e7d32; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #2e7d32; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">🚚 UNIDADES PARA ASIGNAR</h4>
+            <div style="background: white; border-left: 5 px solid #2e7d32; padding: 12 px; border-radius: 4 px; margin-bottom: 15 px; font-size: 13.5 px; line-height: 1.6;">
                 <strong>🟢 LOCAL:</strong><br>
                 • ✅ <strong>RENTALS como híbridas</strong> (SPR 150-170).<br>
                 • <strong>CROWD-newbie / 8h / 9h:</strong> (SPR aprox 70).<br>
@@ -4035,8 +4035,8 @@ info_operativa = {
                 • <strong>EJA1 - SP:</strong> ✅ Media milla
             </div>
 
-            <h4 style="color: #333333; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📢 REGLAS GENERALES </h4>
-            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1.6;">
+            <h4 style="color: #333333; margin: 15 px 0 5 px 0; font-weight: bold; font-size: 15 px;">📢 REGLAS GENERALES </h4>
+            <div style="background: #fdfefe; border: 1 px solid #d0d3d4; padding: 15 px; border-radius: 6 px; font-size: 13.5 px; line-height: 1.6;">
                 <p style="margin-top:0; font-weight:bold;">Buenas noches, team. Les pido su apoyo considerando los siguientes puntos para el ruteo:</p>
                 • ✅ Contemplar toda la flota disponible en el schedule.<br>
                 • ✅ El polígono de Alchichica deberá operar con AM0 por temas de seguridad.<br>
@@ -4045,7 +4045,7 @@ info_operativa = {
                 • ✅ En el polígono Centro, cubrir primero la operación con rentals; si es necesario, complementar con crowd o MLP.<br>
                 • ✅ Considerar el Mega Nodo (TRUCK 3.5), ruteo de newbies y zonas extendidas con crowd, especialmente en Xico y Tuzamapan.<br><br>
                 
-                <div style="background: #fdf2f2; border: 1px solid #fadbd8; padding: 10px; border-radius: 4px; color: #c0392b; font-weight: bold; margin-top: 5px;">
+                <div style="background: #fdf2f2; border: 1 px solid #fadbd8; padding: 10 px; border-radius: 4 px; color: #c0392b; font-weight: bold; margin-top: 5 px;">
                     🚫 Las unidades CROWD NO pueden ir a Tezuitlán (zona muy alejada del SVC).<br>
                     🚫 Las RENTALS NO pueden ir a zonas tan foráneas (Tlaltetela y Perote).
                 </div>
@@ -4053,11 +4053,11 @@ info_operativa = {
         </div>
     """,
     "C2": (
-        "<div style='text-align:center; padding-top:100px;"
+        "<div style='text-align:center; padding-top:100 px;"
         " color:#666;'><i>Información C2 pendiente...</i></div>"
     ),
     "PREC": (
-        "<div style='text-align:center; padding-top:100px;"
+        "<div style='text-align:center; padding-top:100 px;"
         " color:#666;'><i>Información PRECARGA pendiente...</i></div>"
     ),
 }
@@ -4067,51 +4067,51 @@ info_operativa = {
 html_notitas = """
 <style>
     body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
-    .main-box { background: #25282b; padding: 10px; }
+    .main-box { background: #25282b; padding: 10 px; }
     
     .unified-console {
-        background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-bottom: 20px; border: 1px solid #25282b; text-align: center;
+        background: #25282b; border-radius: 15 px; padding: 15 px; 
+        margin-bottom: 20 px; border: 1 px solid #25282b; text-align: center;
     }
     .display-screen {
-        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
+        background: #25282b; border-radius: 10 px; padding: 10 px; margin-bottom: 15 px; border: 2 px solid #25282b;
     }
     .btn-3d {
         background: linear-gradient(145deg, #1e90ff, #1c82e6);
-        color: white; border: none; padding: 12px 25px; border-radius: 10px;
-        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
+        color: white; border: none; padding: 12 px 25 px; border-radius: 10 px;
+        font-weight: bold; cursor: pointer; box-shadow: 0 5 px #0a56a3; transition: 0.1s;
     }
-    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
+    .btn-3d:active { box-shadow: 0 2 px #0a56a3; transform: translateY(3 px); }
 
-    .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+    .tab-bar { display: flex; gap: 8 px; margin-bottom: 15 px; overflow-x: auto; }
     .tab-btn {
-        background: #333; color: white; border: none; padding: 10px 18px;
-        border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;
+        background: #333; color: white; border: none; padding: 10 px 18 px;
+        border-radius: 8 px; cursor: pointer; font-weight: bold; font-size: 12 px; white-space: nowrap;
     }
-    .tab-btn.active { background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }
+    .tab-btn.active { background: #add8e6; color: black; box-shadow: 0 0 12 px #add8e6; }
 
     body:not(.tab-2) #excel-btn { display: none !important; }
 
-    .content-area { background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }
+    .content-area { background: #c8dee0; border-radius: 12 px; padding: 20 px; min-height: 600 px; color: #000; }
 </style>
 
 <div class="main-box">
     <div class="unified-console"> 
         <div class="display-screen">
-            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
-            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
+            <div style="color: #ffffff; font-size: 10 px; margin-bottom: 5 px;">HORA / RESTADOR / CONVERTIDOR</div>
+            <div id="horaReal" style="font-size: 38 px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
         </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15 px;">
             <div>
-                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
+                <span style="color: #add8e6; font-size: 11 px; display: block;">MINUTOS</span>
                 <input type="number" id="minInput" value="10" 
-                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
+                    style="background: #222; color: #FFE4E1; border: none; padding: 8 px; border-radius: 5 px; width: 70 px; text-align: center; font-size: 20 px; font-weight: bold;">
             </div>
             <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
         </div>
     </div>
 
-    <h3 style="color: #1E90FF; text-align: center; margin-bottom: 15px;">🍓 NOTITAS OPERATIVAS</h3>
+    <h3 style="color: #1E90FF; text-align: center; margin-bottom: 15 px;">🍓 NOTITAS OPERATIVAS</h3>
     <div class="tab-bar">
         <button class="tab-btn active" onclick="changeTab(event, 'SDE')">SDE</button>
         <button class="tab-btn" onclick="changeTab(event, 'C1')">C1</button>
