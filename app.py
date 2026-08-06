@@ -948,7 +948,8 @@ app_html = """
             border-radius: 10 px; z-index: 999999; font-family: sans-serif;
             font-size: 14 px; box-shadow: 0 6 px 18 px rgba(0,0,0,0.6);
             border: 1.2 px solid transparent; width: 350 px; max-height: 210 px;
-            overflow-y: auto; pointer-events: auto; display: none;}
+            overflow-y: auto; pointer-events: auto; display: none;
+        }
 
         .cont-item {
             display: flex; justify-content: space-between; align-items: center;
