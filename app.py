@@ -934,7 +934,7 @@ app_html = """
         tr.master-row:hover td, tr.calc-row:hover td { color: #000 !important; }
 
         #mi-contador-scp1 {
-            position: fixed; top: 156px; right: 20px; 
+            position: fixed; top: 156 px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
@@ -943,7 +943,7 @@ app_html = """
         }
 
         #mi-contador-sja1 {
-            position: fixed; top: 156px; right: 20px; 
+            position: fixed; top: 156 px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
