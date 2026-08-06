@@ -860,6 +860,10 @@ app_html = """
 <!DOCTYPE html>
 <html>
 <head>
+
+    <!-- 📦 CDN OFICIAL DE SUPABASE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         tr.master-row:hover, tr.calc-row:hover {
             background-color: #fffecd !important;
@@ -1406,6 +1410,304 @@ app_html = """
     let startTime;
     let elapsedTime = 0;
     let estadoPaquetesAntesDeExcel = "none";
+
+
+    // ==============================================================================
+    // 🔌 CONFIGURACIÓN E INICIALIZACIÓN DE SUPABASE EN JS
+    // ==============================================================================
+    const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
+    
+    const supabaseClient = (window.supabase && window.supabase.createClient) 
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+        : null;
+
+    let contadorPestanaDinamica = 100;
+
+    // ==============================================================================
+    // 💾 GUARDAR RUTEO EN SUPABASE
+    // ==============================================================================
+    async function guardarNuevoRuteoCompleto() {
+        let inputNombre = document.getElementById("creador-nombre-ruteo");
+        if (!inputNombre) return;
+
+        let nombreRuteo = inputNombre.value.trim().toUpperCase();
+        if (!nombreRuteo) {
+            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
+            return;
+        }
+
+        let flotaElegida = [];
+        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
+        
+        itemsFlota.forEach((div, idx) => {
+            let chk = div.querySelector(".chk-flota-unidad");
+            if (chk && chk.checked) {
+                let nombreUnidad = chk.value;
+                let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
+                let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
+                flotaElegida.push({ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax });
+            }
+        });
+
+        if (flotaElegida.length === 0) {
+            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
+            return;
+        }
+
+        let planesElegidos = [];
+        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
+        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
+        
+        divsPlanes.forEach((div, idx) => {
+            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
+            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
+            
+            planesElegidos.push({ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan });
+        });
+
+        if (planesElegidos.length === 0) {
+            alert("⚠️ Ingresa al menos un plan o polígono.");
+            return;
+        }
+
+        let datosEstructura = {
+            flota: flotaElegida,
+            planes: planesElegidos
+        };
+
+        // Enviar inserción a Supabase
+        if (supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{ nombre: nombreRuteo, datos: datosEstructura }]);
+
+                if (error) {
+                    console.error("Error en Supabase:", error);
+                    alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
+                    return;
+                }
+            } catch (err) {
+                console.error("Error al conectar con Supabase:", err);
+            }
+        }
+
+        // Renderizar pestaña localmente en el navegador
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos);
+
+        if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
+        alert(`¡Ruteo "${nombreRuteo}" guardado exitosamente en la base de datos!`);
+    }
+
+    // ==============================================================================
+    // 📂 CARGAR RUTEOS AL ABRIR LA APP DESDE SUPABASE
+    // ==============================================================================
+    async function cargarRuteosDesdeSupabase() {
+        if (!supabaseClient) return;
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('ruteos_guardados')
+                .select('*')
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                console.error("Error cargando de Supabase:", error);
+                return;
+            }
+
+            if (data && data.length > 0) {
+                data.forEach(ruteo => {
+                    let nombre = ruteo.nombre;
+                    let flota = ruteo.datos.flota || [];
+                    let planes = ruteo.datos.planes || [];
+                    
+                    crearTabYContenidoEnPantalla(nombre, flota, planes);
+                });
+            }
+        } catch (err) {
+            console.error("Error de conexión:", err);
+        }
+    }
+
+    // ==============================================================================
+    // 🛠️ RENDERIZADOR AUXILIAR DE PESTAÑAS Y TABLAS
+    // ==============================================================================
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos) {
+        contadorPestanaDinamica++;
+        let tabId = contadorPestanaDinamica;
+
+        // 1. Agregar opción al menú desplegable de ciclos
+        let selectorCiclos = document.getElementById("ciclo-selector");
+        if (selectorCiclos) {
+            let opt = document.createElement("option");
+            opt.value = tabId;
+            opt.innerText = `🔹 ${nombreRuteo}`;
+            selectorCiclos.appendChild(opt);
+        }
+
+        // 2. Crear tabla de Flota
+        let fleetSticky = document.getElementById("fleet-sticky");
+        let nuevoContentFlota = document.createElement("div");
+        nuevoContentFlota.id = `tab-${tabId}`;
+        nuevoContentFlota.className = "t-content";
+        nuevoContentFlota.style.display = "none";
+
+        let htmlFlota = `
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                        <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
+                        <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center;">USADAS</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                    </tr>
+                </thead>
+                <tbody id="body-${tabId}">`;
+
+        flotaElegida.forEach(f => {
+            htmlFlota += `
+                <tr class="master-row">
+                    <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${f.nombre}</td>
+                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMin}</td>
+                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMax}</td>
+                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
+                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
+                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
+                </tr>`;
+        });
+
+        htmlFlota += `
+                </tbody>
+                <tfoot class="fila-total">
+                    <tr class="fila-total">
+                        <td style="border:none;"></td>
+                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                        <td id="total-ruteadas-${tabId}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                    </tr>
+                </tfoot>
+            </table>`;
+
+        nuevoContentFlota.innerHTML = htmlFlota;
+        if (fleetSticky) fleetSticky.appendChild(nuevoContentFlota);
+
+        // 3. Crear bloque de Polígonos
+        let contenedorPolysPadre = document.getElementById("polys-4")?.parentNode;
+        let nuevoContentPolys = document.createElement("div");
+        nuevoContentPolys.id = `polys-${tabId}`;
+        nuevoContentPolys.className = "p-content";
+        nuevoContentPolys.style.display = "none";
+
+        let htmlPolys = "";
+        planesElegidos.forEach(p => {
+            let filasExtra = "";
+            for (let i = 1; i < p.filas; i++) {
+                filasExtra += `
+                    <tr class="calc-row">
+                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                            </div>
+                        </td>
+                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                            </div>
+                        </td>
+                        <td style="border: 0.5px solid #25282b; padding: 2px;">
+                            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </td>
+                        <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                    </tr>`;
+            }
+
+            htmlPolys += `
+                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                    <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+                        <thead>
+                            <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
+                                <th style="padding: 0 10px; border-right: 1px solid #25282b; width: 130px;">PLAN</th>
+                                <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;">SPR</th>
+                                <th style="width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
+                                <th style="width: 45px; text-align: center;">OK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="calc-row">
+                                <td class="plan-cell" rowspan="${p.filas}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${p.nombre}</td>
+                                <td class="vol-cell" rowspan="${p.filas}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
+                                    <div style="text-align:center;">
+                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
+                                    </div>
+                                </td>
+                                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                                    </div>
+                                </td>
+                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                                    </div>
+                                </td>
+                                <td style="border: 0.5px solid #25282b; padding: 2px;">
+                                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </td>
+                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                            </tr>
+                            ${filasExtra}
+                            <tr style="background:#ededed; height: 32px;">
+                                <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
+                                <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
+                                <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                            </tr>
+                        </tbody>
+                        <div style="text-align:center; padding:5px; background:#ededed;">
+                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                            <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${p.filas}</span>
+                        </div>
+                    </table>
+                </div>`;
+        });
+
+        nuevoContentPolys.innerHTML = htmlPolys;
+        if (contenedorPolysPadre) contenedorPolysPadre.appendChild(nuevoContentPolys);
+
+        // Cambiar a la pestaña recién creada
+        if (selectorCiclos) {
+            selectorCiclos.value = tabId;
+            cambiarCiclo(tabId);
+        }
+    }
+
+    // Ejecutar carga automática al abrir la página
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(cargarRuteosDesdeSupabase, 600);
+    });
+
+
+
+
+    
 
     function aplicarPerfil() {
         let perfil = perfiles[perfilActual];
