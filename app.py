@@ -4063,7 +4063,6 @@ info_operativa = {
 }
 
 
-
 # ✅ REEMPLAZA EL FINAL CON ESTO:
 html_notitas = """
 <style>
@@ -4153,4 +4152,5 @@ html_notitas = html_notitas.replace("{info_operativa}", json.dumps(info_operativ
 
 st.markdown("---")
 components.html(html_notitas, height=1200, scrolling=True)
+
 
