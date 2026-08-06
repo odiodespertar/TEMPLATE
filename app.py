@@ -927,7 +927,7 @@ app_html = """
     <style>
         tr.master-row:hover, tr.calc-row:hover {
             background-color: #fffecd !important;
-            box-shadow: inset 0 0 2px #ffc107 !important;
+            box-shadow: inset 0px 0px 2px rgb(255, 193, 7) !important;
             transition: background-color 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
         }
@@ -937,7 +937,7 @@ app_html = """
             position: fixed; top: 156px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
-            font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            font-size: 14px; box-shadow: 0px 6px 18px rgba(0,0,0,0.6);
             border: 1.2px solid transparent; width: 300px; max-height: 410px;
             overflow-y: auto; pointer-events: auto; display: block;
         }
