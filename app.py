@@ -925,186 +925,186 @@ app_html = """
 <html>
 <head>
     <style>
-        tr.master-row:hover, tr.calc-row:hover {{
+        tr.master-row:hover, tr.calc-row:hover {
             background-color: #fffecd !important;
             box-shadow: inset 0 0 2px #ffc107 !important;
             transition: background-color 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
-        }}
-        tr.master-row:hover td, tr.calc-row:hover td {{ color: #000 !important; }}
+        }
+        tr.master-row:hover td, tr.calc-row:hover td { color: #000 !important; }
 
-        #mi-contador-scp1 {{
+        #mi-contador-scp1 {
             position: fixed; top: 156px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
             border: 1.2px solid transparent; width: 300px; max-height: 410px;
             overflow-y: auto; pointer-events: auto; display: block;
-        }}
+        }
 
-        #mi-contador-sja1 {{
+        #mi-contador-sja1 {
             position: fixed; top: 156px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
             border: 1.2px solid transparent; width: 350px; max-height: 210px;
             overflow-y: auto; pointer-events: auto; display: none;
-        }}
+        }
 
-        .cont-item {{
+        .cont-item {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.15); padding: 8px 0;
-        }}
-        .cont-item:last-child {{ border-bottom: none; }}
-        .cont-name {{
+        }
+        .cont-item:last-child { border-bottom: none; }
+        .cont-name {
             font-weight: normal; color: #D3D3D3; white-space: nowrap;
             overflow: hidden; text-overflow: ellipsis; max-width: 150px; font-size: 14px;
-        }}
-        .cont-vals {{ font-family: monospace; font-weight: bold; text-align: right; font-size: 14px; }}
+        }
+        .cont-vals { font-family: monospace; font-weight: bold; text-align: right; font-size: 14px; }
 
-        .poligono-bloque button {{ box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.1s; }}
-        .poligono-bloque button:active {{ box-shadow: 0 0px 0px transparent; transform: translateY(1px); }}
-        .filter-btn:active {{ transform: translateY(4px); box-shadow: none !important; }}  
+        .poligono-bloque button { box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.1s; }
+        .poligono-bloque button:active { box-shadow: 0 0px 0px transparent; transform: translateY(1px); }
+        .filter-btn:active { transform: translateY(4px); box-shadow: none !important; }  
 
-        tr.fila-ok {{ background-color: #e8f5e9 !important; transition: background-color 0.3s ease; }}
-        tr.fila-ok td {{ color: #1b5e20 !important; }}
+        tr.fila-ok { background-color: #e8f5e9 !important; transition: background-color 0.3s ease; }
+        tr.fila-ok td { color: #1b5e20 !important; }
 
-        body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
-        #visor {{ margin-right: 250px !important; }}
+        body { font-family: sans-serif; background: #ffffff; padding: 14px; }
+        #visor { margin-right: 250px !important; }
 
-        .meli-table {{
+        .meli-table {
             width: 100% !important; border-collapse: collapse !important;
             border-spacing: 0 !important; table-layout: fixed; background: white;
             border: 1px solid #25282b; box-shadow: none !important; border-radius: 0 !important; overflow: hidden;
-        }}
-        .meli-table th {{
+        }
+        .meli-table th {
             background: #f3f3f3 !important; color: #222 !important; font-size: 14px;
             font-weight: 600; border: 1px solid #25282b !important; padding: 4px 6px; text-align: center; height: 24px;
-        }}
-        .meli-table th:last-child {{ border-right: 2 !important; }}
-        .meli-table td {{ border: 1px solid #25282b; padding: 2px 4px; font-size: 14px; height: 24px; background: white; color: #25282b; }}
+        }
+        .meli-table th:last-child { border-right: 2 !important; }
+        .meli-table td { border: 1px solid #25282b; padding: 2px 4px; font-size: 14px; height: 24px; background: white; color: #25282b; }
 
-        #fleet-sticky.fleet-floating {{
+        #fleet-sticky.fleet-floating {
             position: fixed !important; top: 70px; left: 20px; right: 20px;
             width: min(1100px, 92vw) !important; margin: 0 auto; max-height: 360px !important;
             overflow: hidden !important; z-index: 999999 !important; background: rgba(255,255,255,0.98) !important;
             border: 4px solid #636363 !important; border-radius: 12px !important;
             box-shadow: 0 14px 28px rgba(0,0,0,0.30) !important; padding: 10px !important;
-        }}
+        }
 
-        #fleet-sticky.fleet-floating .t-content {{ max-height: 200px !important; overflow: auto !important; }}
+        #fleet-sticky.fleet-floating .t-content { max-height: 200px !important; overflow: auto !important; }
 
-        #fleet-drag-handle {{
+        #fleet-drag-handle {
             position: relative; z-index: 9999999; cursor: grab; user-select: none;
             -webkit-user-select: none; touch-action: none; -webkit-touch-callout: none;
             font-weight: 900; font-size: 12px; padding: 6px 10px; margin: -6px -6px 8px -6px;
             border-bottom: 1px solid rgba(0,0,0,0.10); color: #0a2e42;
-        }}
-        #fleet-drag-handle:active {{ cursor: grabbing; }}
+        }
+        #fleet-drag-handle:active { cursor: grabbing; }
 
-        #fleet-sticky {{ position: static; top: auto; z-index: auto; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; backdrop-filter: none; }}
+        #fleet-sticky { position: static; top: auto; z-index: auto; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; backdrop-filter: none; }
 
-        #fleet-sticky.fleet-normal {{
+        #fleet-sticky.fleet-normal {
             position: static !important; top: auto !important; left: auto !important;
             right: auto !important; bottom: auto !important; transform: none !important;
             z-index: auto !important; background: transparent !important; border: none !important;
             border-radius: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important;
-        }}
+        }
 
-        .master-row {{ border-radius: 9px; box-shadow: 1px 1px 5px #ededed, -2px -2px 6px #efefef; transition: all 0.2s ease; }}
-        .meli-table td:first-child {{ border-radius: 3px 0 0 3px; }}
-        .meli-table td:last-child {{ border-radius: 0 3px 3px 0; }}
+        .master-row { border-radius: 9px; box-shadow: 1px 1px 5px #ededed, -2px -2px 6px #efefef; transition: all 0.2s ease; }
+        .meli-table td:first-child { border-radius: 3px 0 0 3px; }
+        .meli-table td:last-child { border-radius: 0 3px 3px 0; }
 
-        #google-alert {{
+        #google-alert {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: #d32f2f; color: white; padding: 15px 25px; border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.4s; z-index: 10000;
-        }}
-        #google-alert.show {{ top: 20px; }}
+        }
+        #google-alert.show { top: 20px; }
 
-        .tab-btn {{
+        .tab-btn {
             padding: 10px 12px; cursor: pointer; border: 1px solid #25282b;
             background: linear-gradient(180deg, #f0f0f0 0%, #dcdcdc 100%);
             border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; color: #25282b;
             transition: all 0.2s ease; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
             margin-right: 2px; outline: none;
-        }}
-        .tab-btn:hover {{
+        }
+        .tab-btn:hover {
             background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
             color: #25282b; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transform: translateY(-2px);
-        }}
-        .tab-btn.active {{
+        }
+        .tab-btn.active {
             background: linear-gradient(180deg, #424242 0%, #25282b 100%) !important;
             color: #ffffff !important; border: 1px solid #061821 !important;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transform: translateY(0);
-        }}
+        }
 
-        .tools-panel {{ display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }}
-        .google-tool {{
+        .tools-panel { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .google-tool {
             background: linear-gradient(145deg, #ffffff, #DDA0DD); padding: 15px;
             border-radius: 15px; border: 1px solid #25282b; text-align: center;
             box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff; transition: transform 0.2s;
-        }}
-        .google-tool:hover {{ transform: translateY(-3px); }}
-        .google-tool input {{
+        }
+        .google-tool:hover { transform: translateY(-3px); }
+        .google-tool input {
             border-radius: 8px; border: 1px solid #25282b; padding: 5px;
             font-size: 16px; outline: none; box-shadow: inset 2px 2px 5px #d9dbde;
-        }}
+        }
 
-        #calc_wrapper {{ background: #22c5bc; border-radius: 20px; padding: 15px; border: transparent; outline: none; transition: 0.3s; }}
-        #calc_wrapper:focus {{ box-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; border: 2px solid #FF00FF; }}
-        #calc_display_box {{ background: #fffacd; border-radius: 10px; padding: 10px; text-align: right; margin-bottom: 10px; min-height: 60px; }}
-        .calc-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }}
-        .btn-c {{
+        #calc_wrapper { background: #22c5bc; border-radius: 20px; padding: 15px; border: transparent; outline: none; transition: 0.3s; }
+        #calc_wrapper:focus { box-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; border: 2px solid #FF00FF; }
+        #calc_display_box { background: #fffacd; border-radius: 10px; padding: 10px; text-align: right; margin-bottom: 10px; min-height: 60px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .btn-c {
             background: #f0f0f0; border: none; font-weight: bold; border-radius: 12px;
             padding: 12px; cursor: pointer; box-shadow: 3px 3px 6px #1da39b, -2px -2px 5px #27ebd2;
             transition: transform 0.1s;
-        }}
-        .btn-c:active {{ transform: scale(0.95); box-shadow: inset 2px 2px 5px #b1b1b1; }}
-        .btn-c-eq {{ background: #FF00FF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }}
-        .crono-card {{ background: #1c1c1c; border-radius: 12px; padding: 15px; color: white; font-family: sans-serif; text-align: center; }}
+        }
+        .btn-c:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px #b1b1b1; }
+        .btn-c-eq { background: #FF00FF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .crono-card { background: #1c1c1c; border-radius: 12px; padding: 15px; color: white; font-family: sans-serif; text-align: center; }
 
-        html body .meli-table tbody tr:last-child td {{
+        html body .meli-table tbody tr:last-child td {
             height: 25px !important; min-height: 25px !important; max-height: 20px !important;
             padding-top: 2px !important; padding-bottom: 3px !important; line-height: 25px !important; font-size: 14px !important;
-        }}
-        html body .meli-table tbody tr:last-child {{ height: 16px !important; }}
+        }
+        html body .meli-table tbody tr:last-child { height: 16px !important; }
 
-        .btn-start {{ background: #28a745; color: white; box-shadow: 0 5px 0 #1e7e34; }}
-        .btn-stop  {{ background: #ffc107; color: #333;  box-shadow: 0 5px 0 #d39e00; }}
-        .btn-reset {{ background: #dc3545; color: white; box-shadow: 0 5px 0 #bd2130; }}
+        .btn-start { background: #28a745; color: white; box-shadow: 0 5px 0 #1e7e34; }
+        .btn-stop  { background: #ffc107; color: #333;  box-shadow: 0 5px 0 #d39e00; }
+        .btn-reset { background: #dc3545; color: white; box-shadow: 0 5px 0 #bd2130; }
 
-        .crono-card button:active {{ transform: translateY(4px); box-shadow: 0 1px 0 #333; }}
-        .crono-card button:hover {{ filter: brightness(1.1); }}
+        .crono-card button:active { transform: translateY(4px); box-shadow: 0 1px 0 #333; }
+        .crono-card button:hover { filter: brightness(1.1); }
 
-        #body-plan-container th, .meli-table:nth-of-type(2) th {{
+        #body-plan-container th, .meli-table:nth-of-type(2) th {
             font-size: 22px !important; height: 90px !important; padding: 11px 6px !important; vertical-align: middle !important;
-        }}
+        }
 
         body.excel-view #fleet-float,
         body.excel-view #ruteo-float,
         body.excel-view .tools-panel,
-        body.excel-view #btn-excel-view {{ display: none !important; }}
+        body.excel-view #btn-excel-view { display: none !important; }
 
-        body.excel-view .meli-table td {{ padding: 2px 3px !important; font-size: 14px !important; }}
-        body.excel-view .meli-table th {{
+        body.excel-view .meli-table td { padding: 2px 3px !important; font-size: 14px !important; }
+        body.excel-view .meli-table th {
             padding: 2px 1px !important; font-size: 11px !important; letter-spacing: -0.3px !important;
             overflow: hidden !important; line-height: 1.0 !important; vertical-align: middle !important;
-        }}
+        }
 
-        body.excel-view .meli-table tfoot.fila-total td {{ font-size: 16px !important; padding: 6px 8px !important; line-height: 18px !important; font-weight: 900 !important; }}
-        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] {{ font-size: 20px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }}
+        body.excel-view .meli-table tfoot.fila-total td { font-size: 16px !important; padding: 6px 8px !important; line-height: 18px !important; font-weight: 900 !important; }
+        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] { font-size: 20px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }
 
-        body.excel-view .poligono-bloque table {{ border-collapse: collapse !important; width: 120% !important; table-layout: fixed !important; }}
-        body.excel-view .poligono-bloque td, body.excel-view .poligono-bloque th {{
+        body.excel-view .poligono-bloque table { border-collapse: collapse !important; width: 120% !important; table-layout: fixed !important; }
+        body.excel-view .poligono-bloque td, body.excel-view .poligono-bloque th {
             padding: 8px 3px !important; height: 60px !important; font-size: 13px !important;
             overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important;
             text-align: center !important; vertical-align: middle !important;
-        }}
+        }
 
-        body.excel-view .poligono-bloque th:nth-child(5) {{ width: 90px !important; }}
-        body.excel-view .poligono-bloque th:nth-child(6) {{ width: 55px !important; }}
-        body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }}
+        body.excel-view .poligono-bloque th:nth-child(5) { width: 90px !important; }
+        body.excel-view .poligono-bloque th:nth-child(6) { width: 55px !important; }
+        body.excel-view .poligono-bloque th:nth-child(7) { width: 45px !important; }
     </style> 
 </head>
 
@@ -1471,54 +1471,54 @@ app_html = """
     let elapsedTime = 0;
     let estadoPaquetesAntesDeExcel = "none";
 
-    function aplicarPerfil() {{
+    function aplicarPerfil() {
         let perfil = perfiles[perfilActual];
         if(!perfil) return;
 
-        Object.keys(perfil).forEach(tabId => {{
-            document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        Object.keys(perfil).forEach(tabId => {
+            document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
                 let unidad = row.querySelector('.edit-name')?.innerText.trim(); 
-                if(perfil[tabId][unidad]) {{
+                if(perfil[tabId][unidad]) {
                     let data = perfil[tabId][unidad];
                     let orh = row.querySelector('.edit-orh');
                     let disp = row.querySelector('.edit-ocup');
                     if(orh) orh.innerText = data.orh;
                     if(disp) disp.innerText = data.disp;
-                }}
-            }});
-        }});
+                }
+            });
+        });
         recalc();
-    }}
+    }
 
-    (function initSuma() {{
+    (function initSuma() {
         console.log("Iniciando lógica de suma...");
         const inputs = document.querySelectorAll('.sum-input');
         const totalDisplay = document.getElementById('total-final');
 
-        if (inputs.length === 0) {{
+        if (inputs.length === 0) {
             console.error("ERROR: No se encontraron los inputs con clase .sum-input");
-        }}
+        }
 
-        inputs.forEach(input => {{
-            input.addEventListener('input', () => {{
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
                 let sum = 0;
-                inputs.forEach(i => {{ sum += parseFloat(i.value) || 0; }});
-                if (totalDisplay) {{
+                inputs.forEach(i => { sum += parseFloat(i.value) || 0; });
+                if (totalDisplay) {
                     totalDisplay.value = sum;
                     console.log("Total actualizado:", sum);
-                }}
-            }});
-        }});
-    }})();
+                }
+            });
+        });
+    })();
 
-    function agregarFilaPlan(btn){{
+    function agregarFilaPlan(btn){
         const bloque = btn.closest(".poligono-bloque");
         const tbody = bloque.querySelector("tbody");
         const filas = tbody.querySelectorAll(".calc-row");
         const filaBase = filas[0];
         const nuevaFila = filaBase.cloneNode(true);
 
-        nuevaFila.querySelectorAll("[rowspan]").forEach(td => {{ td.remove(); }});
+        nuevaFila.querySelectorAll("[rowspan]").forEach(td => { td.remove(); });
 
         const u = nuevaFila.querySelector(".u-manual");
         if(u) u.innerText = "0";
@@ -1537,9 +1537,9 @@ app_html = """
 
         actualizarRowspan(bloque);
         recalc();
-    }}
+    }
 
-    function quitarFilaPlan(btn){{
+    function quitarFilaPlan(btn){
         const bloque = btn.closest(".poligono-bloque");
         const tbody = bloque.querySelector("tbody");
         const filas = tbody.querySelectorAll(".calc-row");
@@ -1550,22 +1550,22 @@ app_html = """
         actualizarRowspan(bloque);
 
         const tabla = bloque.querySelector("table");
-        if(tabla){{
+        if(tabla){
             tabla.style.width = "100%";
             tabla.style.tableLayout = "fixed";
             void tabla.offsetWidth;
-            setTimeout(() => {{ tabla.style.tableLayout = "fixed"; }}, 50);
-        }}
+            setTimeout(() => { tabla.style.tableLayout = "fixed"; }, 50);
+        }
         recalc();
-    }}
+    }
 
-    function actualizarContador(bloque){{
+    function actualizarContador(bloque){
         const filas = bloque.querySelectorAll(".calc-row");
         const contador = bloque.querySelector(".contador-filas");
         if(contador) contador.innerText = "Filas: " + filas.length;
-    }}
+    }
 
-    function actualizarRowspan(bloque){{
+    function actualizarRowspan(bloque){
         const filas = bloque.querySelectorAll(".calc-row").length;
         const plan = bloque.querySelector("td.plan-cell");
         const volumen = bloque.querySelector("td.vol-cell");
@@ -1575,28 +1575,28 @@ app_html = """
 
         const contador = bloque.querySelector(".contador-filas");
         if(contador) contador.innerText = "Filas: " + filas;
-    }}
+    }
 
-    function toggleMenuPestanas() {{
+    function toggleMenuPestanas() {
         let panel = document.getElementById("panel-selector-pestanas");
-        if (panel) {{
+        if (panel) {
             panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
-        }}
-    }}
+        }
+    }
 
-    function toggleBtnPestana(btnId, visible) {{
+    function toggleBtnPestana(btnId, visible) {
         let btn = document.getElementById(btnId);
         if (btn) btn.style.display = visible ? "inline-block" : "none";
-    }}
+    }
 
-    function toggleFleetFloating() {{
+    function toggleFleetFloating() {
         const panel = document.getElementById("fleet-sticky");
         const btn = document.querySelector("#fleet-drag-handle button");
         if (!panel) return;
 
         const goingToFloat = !panel.classList.contains("fleet-floating");
 
-        if (goingToFloat) {{
+        if (goingToFloat) {
             panel.removeAttribute("style");
             panel.classList.remove("fleet-normal");
             panel.classList.add("fleet-floating");
@@ -1610,27 +1610,27 @@ app_html = """
             panel.style.margin = "0";
 
             if (btn) btn.textContent = "NORMAL (enter)";
-        }} else {{
+        } else {
             panel.classList.remove("fleet-floating");
             panel.classList.add("fleet-normal");
             panel.removeAttribute("style");
 
             if (btn) btn.textContent = "FLOTAR ☁️";
-        }}
+        }
         console.log("toggle ->", panel.className, "style=", panel.getAttribute("style"));
-    }}
+    }
 
-    function showTab(n, btn) {{
+    function showTab(n, btn) {
         const bloqueC1 = document.getElementById('contenedor-paquetes-c1');
-        if (bloqueC1) {{
-            if (n === 6) {{
+        if (bloqueC1) {
+            if (n === 6) {
                 bloqueC1.style.display = 'block';
-            }} else {{
+            } else {
                 bloqueC1.style.display = 'none';
-            }}
-        }}
+            }
+        }
 
-        if (document.body.classList.contains("excel-view")) {{
+        if (document.body.classList.contains("excel-view")) {
             document.body.classList.remove("excel-view");
             let bExcel = document.getElementById("excel-btn");
             if (bExcel) bExcel.innerHTML = "👁️";
@@ -1645,18 +1645,18 @@ app_html = """
                 "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
                 "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
             ];
-            idsArestaurar.forEach(id => {{
+            idsArestaurar.forEach(id => {
                 let el = document.getElementById(id);
-                if (el) {{
+                if (el) {
                     let fila = el.closest('tr');
                     if (fila) fila.style.removeProperty('display');
-                }}
-            }});
+                }
+            });
 
-            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {
                 fila.style.setProperty('display', 'table-row', 'important');
-            }});
-        }}
+            });
+        }
 
         currentTab = n;
         document.querySelectorAll('.p-content, .t-content').forEach(el => el.style.display = 'none');
@@ -1672,32 +1672,32 @@ app_html = """
         updateFleetFloat();
 
         const excelBtn = document.getElementById('excel-btn');
-        if (excelBtn) {{
-            if (n === 2 || n === 6 || n === 7 || n === 8) {{
+        if (excelBtn) {
+            if (n === 2 || n === 6 || n === 7 || n === 8) {
                 excelBtn.style.setProperty('display', 'inline-block', 'important');
-            }} else {{
+            } else {
                 excelBtn.style.setProperty('display', 'none', 'important');
-            }}
-        }}
-    }}
+            }
+        }
+    }
 
-    function abrirCreadorRuteo() {{
+    function abrirCreadorRuteo() {
         let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
+        if (modal) {
             modal.style.display = "block";
             inicializarCreadorFlota();
             generarCamposPlanes();
-        }}
-    }}
+        }
+    }
 
-    function cerrarCreadorRuteo() {{
+    function cerrarCreadorRuteo() {
         let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
+        if (modal) {
             modal.style.display = "none";
-        }}
-    }}
+        }
+    }
 
-    const BASE_FLOTA_MASTER = {{
+    const BASE_FLOTA_MASTER = {
         "Car MLP": [110, 120],
         "Small Van MLP": [110, 120],
         "Large Van MLP": [110, 120],
@@ -1724,34 +1724,34 @@ app_html = """
         "Small Van 9h Ext": [70, 70],
         "Small Van Newbie": [70, 70],
         "Media Milla SP": [1, 1]
-    }};
+    };
 
-    function inicializarCreadorFlota() {{
+    function inicializarCreadorFlota() {
         let cont = document.getElementById("contenedor-lista-flota");
         if (!cont) return;
 
         let htmlFlota = "";
-        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {{
+        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {
             let sprDef = BASE_FLOTA_MASTER[unidad];
             htmlFlota += `
                 <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
-                        <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
-                        ${{unidad}}
+                        <input type="checkbox" class="chk-flota-unidad" value="${unidad}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
+                        ${unidad}
                     </label>
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <span style="font-size: 10px; color: #aaa;">MIN:</span>
-                        <input type="number" class="spr-min-${{idx}}" value="${{sprDef[0]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                        <input type="number" class="spr-min-${idx}" value="${sprDef[0]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
                         <span style="font-size: 10px; color: #aaa;">MAX:</span>
-                        <input type="number" class="spr-max-${{idx}}" value="${{sprDef[1]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                        <input type="number" class="spr-max-${idx}" value="${sprDef[1]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
                     </div>
                 </div>
             `;
-        }});
+        });
         cont.innerHTML = htmlFlota;
-    }}
+    }
 
-    function generarCamposPlanes() {{
+    function generarCamposPlanes() {
         let cantInput = document.getElementById("creador-cant-planes");
         let cont = document.getElementById("contenedor-lista-planes");
         if (!cantInput || !cont) return;
@@ -1759,11 +1759,11 @@ app_html = """
         let cant = parseInt(cantInput.value) || 1;
         let htmlPlanes = "";
         
-        for (let i = 1; i <= cant; i++) {{
+        for (let i = 1; i <= cant; i++) {
             htmlPlanes += `
                 <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
-                    <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
+                    <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
                         style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
                         oninput="generarPrioridadesPlanes()">
                     <span style="font-size: 11px; color: #aaa;">Filas:</span>
@@ -1771,134 +1771,134 @@ app_html = """
                         style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
                 </div>
             `;
-        }}
+        }
         cont.innerHTML = htmlPlanes;
         generarPrioridadesPlanes();
-    }}
+    }
 
     let contadorPestanaDinamica = 900;
 
-    function generarPrioridadesPlanes() {{
+    function generarPrioridadesPlanes() {
         let contPrioridades = document.getElementById("contenedor-prioridades-planes");
         if (!contPrioridades) return;
 
         let inputsPlanes = document.querySelectorAll("#contenedor-lista-planes .input-nombre-plan");
         
-        if (inputsPlanes.length === 0) {{
+        if (inputsPlanes.length === 0) {
             contPrioridades.innerHTML = `<p style="color: #888;">Primero genera y nombra los planes arriba.</p>`;
             return;
-        }}
+        }
 
         let htmlPrioridades = "";
-        inputsPlanes.forEach((input, index) => {{
-            let nombrePlan = input.value.trim() || `PLAN ${{index + 1}}`;
+        inputsPlanes.forEach((input, index) => {
+            let nombrePlan = input.value.trim() || `PLAN ${index + 1}`;
             htmlPrioridades += `
                 <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${{nombrePlan}}</span>
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${nombrePlan}</span>
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
-                        <input type="number" class="input-prioridad-plan" value="${{index + 1}}" min="1" max="10" 
+                        <input type="number" class="input-prioridad-plan" value="${index + 1}" min="1" max="10" 
                             style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
                     </div>
                 </div>
             `;
-        }});
+        });
         contPrioridades.innerHTML = htmlPrioridades;
-    }}
+    }
 
-    function guardarNuevoRuteoCompleto() {{
+    function guardarNuevoRuteoCompleto() {
         alert("Iniciando guardado...");
         
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
 
         let nombreRuteo = inputNombre.value.trim().toUpperCase();
-        if (!nombreRuteo) {{
+        if (!nombreRuteo) {
             alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
             return;
-        }}
+        }
 
         let flotaElegida = [];
         let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
         
-        itemsFlota.forEach((div, idx) => {{
+        itemsFlota.forEach((div, idx) => {
             let chk = div.querySelector(".chk-flota-unidad");
-            if (chk && chk.checked) {{
+            if (chk && chk.checked) {
                 let nombreUnidad = chk.value;
-                let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
-                let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
-                flotaElegida.push({{
+                let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
+                let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
+                flotaElegida.push({
                     nombre: nombreUnidad,
                     sprMin: sprMin,
                     sprMax: sprMax
-                }});
-            }}
-        }});
+                });
+            }
+        });
 
-        if (flotaElegida.length === 0) {{
+        if (flotaElegida.length === 0) {
             alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
             return;
-        }}
+        }
 
         let planesElegidos = [];
         let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
         let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
         
-        divsPlanes.forEach((div, idx) => {{
+        divsPlanes.forEach((div, idx) => {
             let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
             let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
             let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
             
-            planesElegidos.push({{
+            planesElegidos.push({
                 nombre: nombrePlan,
                 filas: filasPlan,
                 prioridad: prioridadPlan
-            }});
-        }});
+            });
+        });
 
-        if (planesElegidos.length === 0) {{
+        if (planesElegidos.length === 0) {
             alert("⚠️ Ingresa al menos un plan o polígono.");
             return;
-        }}
+        }
 
-        let datosNuevoRuteo = {{
+        let datosNuevoRuteo = {
             accion: "guardar_ruteo",
             nombre: nombreRuteo,
             flota: flotaElegida,
             planes: planesElegidos
-        }};
+        };
 
-        try {{
-            if (typeof setComponentValue === "function") {{
+        try {
+            if (typeof setComponentValue === "function") {
                 setComponentValue(datosNuevoRuteo);
-            }} else if (window.parent && typeof window.parent.setComponentValue === "function") {{
+            } else if (window.parent && typeof window.parent.setComponentValue === "function") {
                 window.parent.setComponentValue(datosNuevoRuteo);
-            }}
-        }} catch (e) {{
+            }
+        } catch (e) {
             console.log("Error en envío:", e);
-        }}
+        }
 
         let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {{
+        if (modal) {
             modal.style.display = "none";
-        }}
+        }
         
         let btnGuardar = document.querySelector("button[onclick*='guardarNuevoRuteoCompleto']");
-        if (btnGuardar) {{
+        if (btnGuardar) {
             btnGuardar.innerText = "💾 Guardar y Sincronizar Ruteo";
             btnGuardar.disabled = false;
-        }}
+        }
 
         alert("¡Ruteo procesado correctamente!");
-    }}
+    }
 
-    function showAlert(msg) {{
+    function showAlert(msg) {
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
-    }}
-    function hideAlert() {{ document.getElementById('google-alert').classList.remove('show'); }}
+    }
+    function hideAlert() { document.getElementById('google-alert').classList.remove('show'); }
 
-    function stepVal(btn, delta, type) {{
+    function stepVal(btn, delta, type) {
         let row = btn.closest('tr');
         let sel = row.querySelector('.s-type').value;
         
@@ -1912,32 +1912,32 @@ app_html = """
         let left = parseInt(fRow.querySelector('.f-left').innerText) || 0;
         let sprMaxReal = parseFloat(fRow.querySelector('.edit-spr-max').innerText) || 0;
 
-        if(type === 'u') {{
+        if(type === 'u') {
             let span = row.querySelector('.u-manual');
             let val = parseInt(span.innerText) || 0;
             let newVal = val + delta;
             if (newVal < 0) newVal = 0;
 
-            if (delta > 0 && left <= 0) {{
+            if (delta > 0 && left <= 0) {
                 showAlert("⚠️ UNIDAD ADICIONAL. Se registrará como exceso en Delta.");
-            }}
+            }
             span.innerText = newVal;
-        }} else {{
+        } else {
             let span = row.querySelector('.spr-real-val');
             let val = parseFloat(span.innerText) || 0;
             let newVal = Math.round(val + delta);
 
-            if (delta > 0 && newVal > sprMaxReal) {{
+            if (delta > 0 && newVal > sprMaxReal) {
                 showAlert("⚠️ NO PUEDES SOBREPASAR EL SPR MÁXIMO (" + sprMaxReal + ")");
                 return; 
-            }}
+            }
             span.innerText = newVal;
-        }}
+        }
         editedRowsPlan.add(row);
         recalc();
-    }}
+    }
 
-    function actualizarHoraMinuto(celda){{
+    function actualizarHoraMinuto(celda){
         let valor = celda.innerText.trim().replace(",", ".");
         if(valor === "") valor = "0";
 
@@ -1945,13 +1945,13 @@ app_html = """
         if(isNaN(numero)) numero = 0;
 
         let minutosTotales;
-        if(valor.includes(".")){{
+        if(valor.includes(".")){
             minutosTotales = Math.round(numero * 60);
-        }} else if(numero >= 24){{
+        } else if(numero >= 24){
             minutosTotales = Math.round(numero);
-        }} else{{
+        } else{
             minutosTotales = Math.round(numero * 60);
-        }}
+        }
 
         let horas = Math.floor(minutosTotales / 60);
         let mins = minutosTotales % 60;
@@ -1959,81 +1959,81 @@ app_html = """
         let fila = celda.closest("tr");
         let hm = fila.querySelector(".orh-hora");
 
-        if(hm){{
+        if(hm){
             hm.style.color = "#141414";
             hm.innerText = String(horas).padStart(2,"0") + ":" + String(mins).padStart(2,"0");
-        }}
-    }}
+        }
+    }
 
-    document.querySelectorAll(".edit-orh").forEach(function(celda){{
+    document.querySelectorAll(".edit-orh").forEach(function(celda){
         actualizarHoraMinuto(celda);
-        celda.addEventListener("input", function(){{
+        celda.addEventListener("input", function(){
             actualizarHoraMinuto(this);
-        }});
-    }});
+        });
+    });
 
-    function actualizarDosPorciento() {{
+    function actualizarDosPorciento() {
         let volumenTotal = 0;
-        document.querySelectorAll('#polys-' + currentTab + ' .v-total-val').forEach(el => {{
+        document.querySelectorAll('#polys-' + currentTab + ' .v-total-val').forEach(el => {
             volumenTotal += parseFloat(el.innerText) || 0;
-        }});
+        });
 
         let permitido = Math.round(volumenTotal * 0.02);
         let div = document.getElementById('dos-pct-global');
 
-        if (div) {{
-            div.innerHTML = `<b>2% PERMITIDO:</b> ${{permitido.toLocaleString()}}`;
-        }}
-    }}
+        if (div) {
+            div.innerHTML = `<b>2% PERMITIDO:</b> ${permitido.toLocaleString()}`;
+        }
+    }
 
-    function recalc() {{
-        let fleet = {{}};
+    function recalc() {
+        let fleet = {};
         let tabId = currentTab;
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
             let nameCell = row.querySelector('.edit-name');
             let name = nameCell.innerText.trim();
             let sch = parseInt(row.querySelector('.f-stock').innerText) || 0;
             let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
             
-            if(sch > 0) {{
+            if(sch > 0) {
                 row.style.background = "white"; 
                 fs.style.background = "#fcf8cc"; 
                 mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold";
                 ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold";
                 nameCell.style.color = "#25282b"; nameCell.style.fontWeight = "bold";
-            }} else {{
+            } else {
                 row.style.background = "#DCDCDC"; 
                 fs.style.background = "#FFFF00"; 
                 mi.style.background = "#dcdcdc"; mi.style.color = "#969696"; mi.style.fontWeight = "normal";
                 ma.style.background = "#dcdcdc"; ma.style.color = "#969696"; ma.style.fontWeight = "normal";
                 nameCell.style.color = "#969696"; nameCell.style.fontWeight = "normal";
-            }}
+            }
             
-            if(name !== "" && name !== "NUEVA UNIDAD") {{
-                fleet[name] = {{ max: parseFloat(ma.innerText)||0, stock: sch, used: 0 }};
-            }}
-        }});
+            if(name !== "" && name !== "NUEVA UNIDAD") {
+                fleet[name] = { max: parseFloat(ma.innerText)||0, stock: sch, used: 0 };
+            }
+        });
 
-        let mapeoRuteadas = {{}};
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
+        let mapeoRuteadas = {};
+        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {
             let s = row.querySelector('.s-type').value;
             let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
-            if (s && s !== "Seleccionar...") {{
+            if (s && s !== "Seleccionar...") {
                 mapeoRuteadas[s] = (mapeoRuteadas[s] || 0) + u;
-            }}
-        }});
+            }
+        });
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
             let nameCell = row.querySelector('.edit-name');
             let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (nameCell && ruteadaCell) {{
+            if (nameCell && ruteadaCell) {
                 let name = nameCell.innerText.trim();
                 ruteadaCell.innerText = mapeoRuteadas[name] || 0;
-            }}
-        }});
+            }
+        });
 
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
             let vT = parseFloat(bl.querySelector('.v-total-val').innerText) || 0, vA = 0;
             let vCalcEl = bl.querySelector('.v-calculado-total');
 
@@ -2044,55 +2044,55 @@ app_html = """
             let tieneNodo = (tabId == 6 && celdaNodos && parseInt(celdaNodos.innerText) > 0);
             let filas = bl.querySelectorAll('.calc-row');
 
-            filas.forEach((r, index) => {{
+            filas.forEach((r, index) => {
                 let sType = r.querySelector('.s-type');
                 let uManual = r.querySelector('.u-manual');
                 let sp = r.querySelector('.spr-real-val');
 
-                if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {{
+                if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {
                     sType.value = "Large Van MLP foráneo";
                     uManual.innerText = "1";
-                }}
+                }
 
-                if (sType.value === "" || sType.value === "Seleccionar...") {{
+                if (sType.value === "" || sType.value === "Seleccionar...") {
                     uManual.innerText = "0";
-                }}
+                }
                 
                 let s = sType.value;
                 let u = parseInt(uManual.innerText) || 0;
 
                 let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase() || "";
-                if (nombrePlanPadre.includes("ALCHICHICA")) {{
-                    if (s !== "Seleccionar..." && s !== "") {{
+                if (nombrePlanPadre.includes("ALCHICHICA")) {
+                    if (s !== "Seleccionar..." && s !== "") {
                         vA += (u * (parseFloat(sp.innerText) || 0));
                         sp.style.fontWeight = "bold";
                         sp.style.setProperty("background-color", "#edf2f2");
                         sp.style.setProperty("color", "#25282b");
-                    }}
+                    }
                     return; 
-                }}
+                }
 
-                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
+                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {
                     if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
                     fleet[s].used += u; 
                     vA += (u * (parseFloat(sp.innerText) || 0));
                     sp.style.setProperty("background-color", "#edf2f2");
                     sp.style.setProperty("color", "#25282b");
-                }} else {{
+                } else {
                     sp.style.setProperty("background-color", "#FFFFFF");
-                }}
-            }});
+                }
+            });
 
             vCalcEl.innerText = Math.round(vA);
             let d = bl.querySelector('.p-diff');
             let diffVal = Math.round(vA);
             if (vT === 0) d.innerText = "VACÍO";
-            else if (diffVal === Math.round(vT)) {{ d.innerText = "OK"; d.style.background = "#61b888"; }}
-            else if (vA > vT) {{ d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }}
-            else {{ d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }}
-        }});
+            else if (diffVal === Math.round(vT)) { d.innerText = "OK"; d.style.background = "#61b888"; }
+            else if (vA > vT) { d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }
+            else { d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }
+        });
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
             
@@ -2102,43 +2102,43 @@ app_html = """
             let cL = row.querySelector('.f-left');
             
             let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (ruteadaCell) {{
-                if (ruteadasManuales > 0) {{
+            if (ruteadaCell) {
+                if (ruteadasManuales > 0) {
                     ruteadaCell.style.backgroundColor = "#d3f0e5";
                     ruteadaCell.style.color = "#008B8B";
                     ruteadaCell.style.fontWeight = "bold";
-                }} else {{
+                } else {
                     ruteadaCell.style.backgroundColor = "#dcdcdc";
                     ruteadaCell.style.color = "";
                     ruteadaCell.style.fontWeight = "bold";
-                }}
-            }}
+                }
+            }
 
-            if (cL) {{
+            if (cL) {
                 let exceso = ruteadasManuales - stock;
-                if (exceso > 0) {{
+                if (exceso > 0) {
                     cL.innerText = "+" + exceso;
                     cL.style.color = "red"; 
                     cL.style.fontWeight = "bold"; 
                     cL.style.background = "transparent";
-                }} else if (ruteadasManuales === stock && stock > 0) {{
+                } else if (ruteadasManuales === stock && stock > 0) {
                     cL.innerText = "0";
                     cL.style.color = "white"; 
                     cL.style.background = "#fc765d";
                     cL.style.fontWeight = "bold";
-                }} else {{
+                } else {
                     let restantes = stock - ruteadasManuales;
                     cL.innerText = restantes;
                     cL.style.color = "#17191a"; 
                     cL.style.background = "transparent"; 
                     cL.style.fontWeight = "normal";
-                }}
-            }}
-        }});
+                }
+            }
+        });
 
-        let contadorAcumulado = {{}};
+        let contadorAcumulado = {};
 
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {{
+        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {
             let sel = r.querySelector('.s-type')?.value;
             let uCell = r.querySelector('.u-manual-cell');
             let divFlex = uCell ? uCell.querySelector('div') : null;
@@ -2149,7 +2149,7 @@ app_html = """
 
             let badge = divFlex.querySelector('.badge-adicional');
 
-            if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {{
+            if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {
                 let stockInicial = fleet[sel].stock;
                 let usadasPrevias = contadorAcumulado[sel] || 0;
 
@@ -2158,35 +2158,35 @@ app_html = """
 
                 contadorAcumulado[sel] = usadasPrevias + uManual;
 
-                if (excesoFila > 0) {{
-                    if (!badge) {{
+                if (excesoFila > 0) {
+                    if (!badge) {
                         badge = document.createElement('span');
                         badge.className = 'badge-adicional';
                         badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
                         if (spanU) spanU.after(badge);
-                    }}
-                    badge.innerText = `+${{excesoFila}}`;
+                    }
+                    badge.innerText = `+${excesoFila}`;
                     badge.style.display = 'inline-block';
-                    badge.title = `${{cubiertasPorSchedule}} de Schedule + ${{excesoFila}} adicionales en este plan`;
+                    badge.title = `${cubiertasPorSchedule} de Schedule + ${excesoFila} adicionales en este plan`;
                     uCell.style.backgroundColor = "#d3f0e5";
-                }} else {{
+                } else {
                     if (badge) badge.style.display = 'none';
                     uCell.style.backgroundColor = "#d3f0e5";
-                }}
-            }} else {{
+                }
+            } else {
                 if (badge) badge.style.display = 'none';
                 if (uCell) uCell.style.backgroundColor = "#d3f0e5";
-            }}
-        }});
+            }
+        });
 
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
             const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h"];
 
-            bl.querySelectorAll('.s-type').forEach(s => {{ 
+            bl.querySelectorAll('.s-type').forEach(s => { 
                 let cur = s.value; 
                 let opt = '<option value="">Seleccionar...</option>';
                 
-                Object.keys(fleet).forEach(k => {{
+                Object.keys(fleet).forEach(k => {
                     let nameLower = k.toLowerCase().trim();
                     let stock = fleet[k].stock;
                     let used = fleet[k].used;
@@ -2194,33 +2194,33 @@ app_html = """
                     let esPermitida = permitidasSinStock.some(u => nameLower.includes(u));
                     let tieneCapacidad = (stock - used > 0);
 
-                    if (tieneCapacidad || esPermitida || k === cur) {{
-                        opt += `<option value="${{k}}">${{k}}</option>`;
-                    }}
-                }});
+                    if (tieneCapacidad || esPermitida || k === cur) {
+                        opt += `<option value="${k}">${k}</option>`;
+                    }
+                });
                 
                 s.innerHTML = opt;
                 s.value = cur;
                 updateSelectColor(s);
-            }});
-        }});
+            });
+        });
 
-        let totals = {{
+        let totals = {
             mlpDecl: 0, mlpRute: 0,
             rentalDecl: 0, rentalRute: 0,
             carDecl: 0, carRute: 0,
             otrosRute: 0,
             totalRuteadas: 0
-        }};
+        };
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
             let name = row.querySelector('.edit-name')?.innerText.toLowerCase().trim() || "";
             let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             
             if (name.includes("mlp")) totals.mlpDecl += sch;
             else if (name.includes("rental")) totals.rentalDecl += sch;
             else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) totals.carDecl += sch;
-        }});
+        });
 
         totals.totalRuteadas = 0;
         totals.mlpRute = 0;
@@ -2228,7 +2228,7 @@ app_html = """
         totals.carRute = 0;
         totals.otrosRute = 0; 
 
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
+        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {
             let s = row.querySelector('.s-type').value; 
             let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
 
@@ -2236,35 +2236,35 @@ app_html = """
 
             let name = s.toLowerCase().trim();
 
-            if (name.includes("mlp")) {{
+            if (name.includes("mlp")) {
                 totals.mlpRute += u;
-            }} else if (name.includes("rental")) {{
+            } else if (name.includes("rental")) {
                 totals.rentalRute += u;
-            }} else if (name.includes("delivery")) {{
+            } else if (name.includes("delivery")) {
                 totals.otrosRute += u;
-            }} else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {{
+            } else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {
                 totals.carRute += u;
-            }} else {{
+            } else {
                 totals.otrosRute += u; 
-            }}
+            }
 
             totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-        }});
+        });
 
         totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
 
         console.log("DEBUG: MLP=" + totals.mlpRute + ", Rental=" + totals.rentalRute + ", Car=" + totals.carRute + ", Otros=" + totals.otrosRute + ", TOTAL=" + totals.totalRuteadas);
 
-        function setT(id, val) {{
+        function setT(id, val) {
             let finalId = id + '-' + tabId;
             let el = document.getElementById(finalId);
-            if (el) {{
+            if (el) {
                 el.innerText = Math.round(val);
                 console.log("ÉXITO: Se actualizó el ID " + finalId + " con valor " + val);
-            }} else {{
+            } else {
                 console.error("¡ERROR! No encontré el ID: " + finalId);
-            }}
-        }}
+            }
+        }
 
         totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
 
@@ -2276,15 +2276,15 @@ app_html = """
         setT('total-car-real', totals.carRute);
         setT('total-otros', totals.otrosRute); 
 
-        setTimeout(() => {{
+        setTimeout(() => {
             let valorCorrecto = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
             let el = document.getElementById('total-ruteadas-' + tabId);
-            if (el) {{
+            if (el) {
                 el.innerText = Math.round(valorCorrecto);
                 el.style.color = "#66CDAA";
                 console.log("FORZADO: El total ahora es " + valorCorrecto);
-            }}
-        }}, 500);
+            }
+        }, 500);
 
         updateFleetFloat();
         actualizarTotales();
@@ -2297,9 +2297,9 @@ app_html = """
         if(elMlp) elMlp.innerText = Math.round(totals.mlpRute);
         if(elRental) elRental.innerText = Math.round(totals.rentalRute);
         if(elCar) elCar.innerText = Math.round(totals.carRute);
-    }}
+    }
 
-    document.addEventListener('keydown', function(event) {{
+    document.addEventListener('keydown', function(event) {
         if (event.key !== 'Enter') return;
 
         const ae = document.activeElement;
@@ -2308,39 +2308,39 @@ app_html = """
         if (ae && ae.isContentEditable) return;
 
         const fleet = document.getElementById("fleet-sticky");
-        if (fleet && fleet.classList.contains("fleet-floating")) {{
+        if (fleet && fleet.classList.contains("fleet-floating")) {
             event.preventDefault();
             if (typeof toggleFleetFloating === "function") toggleFleetFloating();
             return;
-        }}
+        }
 
         let panel = document.getElementById('panel-prioridades');
-        if (panel && panel.style.top === "0px") {{
+        if (panel && panel.style.top === "0px") {
             panel.style.top = "-600px";
             if (document.activeElement) document.activeElement.blur();
-        }}
+        }
 
         let alerta = document.querySelector('.alerta-roja, .p-diff');
-        if (alerta && alerta.innerText.includes('EXCESO')) {{
+        if (alerta && alerta.innerText.includes('EXCESO')) {
             if (document.activeElement) document.activeElement.blur();
-        }}
-    }});
+        }
+    });
 
-    function focusCalc() {{
+    function focusCalc() {
         document.getElementById('calc_wrapper').focus();
-    }}
+    }
 
-    function filterRows(onlyActive) {{
+    function filterRows(onlyActive) {
         const rows = document.querySelectorAll('#body-' + currentTab + ' .master-row');
-        rows.forEach(row => {{
+        rows.forEach(row => {
             const stock = parseInt(row.querySelector('.f-stock').innerText) || 0;
             row.style.display = (onlyActive && stock === 0) ? 'none' : '';
-        }});
-    }}
+        });
+    }
 
     let herramientasVisibles = true;
 
-    function toggleTools() {{
+    function toggleTools() {
         const crono = document.querySelector('.crono-card');
         const convertidorContenido = document.querySelectorAll('.google-tool > *:not(#toggle-tools-btn)');
         const boton = document.getElementById('toggle-tools-btn');
@@ -2349,48 +2349,48 @@ app_html = """
 
         if (crono) crono.style.display = herramientasVisibles ? '' : 'none';
 
-        convertidorContenido.forEach(elemento => {{
+        convertidorContenido.forEach(elemento => {
             elemento.style.display = herramientasVisibles ? '' : 'none';
-        }});
+        });
 
-        if (!herramientasVisibles) {{
+        if (!herramientasVisibles) {
             boton.innerHTML = '🛠️ MOSTRAR UTILERÍAS';
             boton.className = 'btn-mostrar';
-        }} else {{
+        } else {
             boton.innerHTML = '❌ OCULTAR UTILERÍAS';
             boton.className = 'btn-ocultar';
-        }}
-    }}
+        }
+    }
 
-    function convertTime() {{
+    function convertTime() {
         let m = parseInt(document.getElementById('min-in').value) || 0;
         document.getElementById('time-res').innerText = Math.floor(m/60) + "h " + (m%60) + "m";
-    }}
-    function an(n) {{ curC += n; updateCalc(); }}
-    function ao(o) {{ curC += " " + o + " "; updateCalc(); }}
-    function cl() {{ curC = ""; updateCalc(); document.getElementById('calc_h').innerText = ""; }}
-    function del() {{ curC = curC.trim().slice(0, -1); updateCalc(); }}
-    function updateCalc() {{ document.getElementById('calc_r').innerText = curC || "0"; }}
-    function calc_eq() {{ try {{ let res = eval(curC); document.getElementById('calc_h').innerText = curC + " ="; curC = res.toString(); updateCalc(); }} catch {{ }} }}
+    }
+    function an(n) { curC += n; updateCalc(); }
+    function ao(o) { curC += " " + o + " "; updateCalc(); }
+    function cl() { curC = ""; updateCalc(); document.getElementById('calc_h').innerText = ""; }
+    function del() { curC = curC.trim().slice(0, -1); updateCalc(); }
+    function updateCalc() { document.getElementById('calc_r').innerText = curC || "0"; }
+    function calc_eq() { try { let res = eval(curC); document.getElementById('calc_h').innerText = curC + " ="; curC = res.toString(); updateCalc(); } catch { } }
 
-    function updateReloj() {{ document.getElementById('reloj-actual').innerText = new Date().toLocaleTimeString('en-GB'); }}
+    function updateReloj() { document.getElementById('reloj-actual').innerText = new Date().toLocaleTimeString('en-GB'); }
     setInterval(updateReloj, 1000);
 
-    function startC() {{ if(!chronoInterval) {{ startTime = Date.now() - elapsedTime; chronoInterval = setInterval(()=>{{ elapsedTime = Date.now() - startTime; updateCDisplay(); }}, 100); }} }}
-    function stopC() {{ clearInterval(chronoInterval); chronoInterval = null; }}
-    function resetC() {{ stopC(); elapsedTime = 0; updateCDisplay(); }}
-    function updateCDisplay() {{ 
+    function startC() { if(!chronoInterval) { startTime = Date.now() - elapsedTime; chronoInterval = setInterval(()=>{ elapsedTime = Date.now() - startTime; updateCDisplay(); }, 100); } }
+    function stopC() { clearInterval(chronoInterval); chronoInterval = null; }
+    function resetC() { stopC(); elapsedTime = 0; updateCDisplay(); }
+    function updateCDisplay() { 
         let d = new Date(elapsedTime);
         let h = String(Math.floor(elapsedTime/3600000)).padStart(2,'0');
         let m = String(d.getUTCMinutes()).padStart(2,'0');
         let s = String(d.getUTCSeconds()).padStart(2,'0');
         let ms = Math.floor(d.getUTCMilliseconds()/100);
-        document.getElementById('crono-main').innerText = `${{h}}:${{m}}:${{s}}.${{ms}}`;
-    }}
+        document.getElementById('crono-main').innerText = `${h}:${m}:${s}.${ms}`;
+    }
 
-    function manualEdit(el) {{ 
+    function manualEdit(el) { 
         let r = el.closest('tr');
-        if (r) {{
+        if (r) {
             editedRowsPlan.add(r);
             let table = r.closest('table');
             let tbody = table ? table.querySelector('tbody') : null;
@@ -2401,29 +2401,29 @@ app_html = """
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
 
             let activeTabBtn = document.querySelector('.tab-btn.active');
-            if (activeTabBtn) {{
+            if (activeTabBtn) {
                 let tabId = activeTabBtn.textContent.trim();
                 
-                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
+                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {
                     permiteInfinito = true;
-                }} else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
+                } else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
                     permiteInfinito = true;
-                }} else if ((tabId === "SDE" || tabId === "PREC") && esUnidadCar) {{
+                } else if ((tabId === "SDE" || tabId === "PREC") && esUnidadCar) {
                     permiteInfinito = true;
-                }}
-            }}
+                }
+            }
 
-            if (permiteInfinito && tbody) {{
+            if (permiteInfinito && tbody) {
                 let filasCalculo = tbody.querySelectorAll('tr.calc-row');
                 let ultimaFila = filasCalculo[filasCalculo.length - 1];
                 
-                if (r === ultimaFila) {{
+                if (r === ultimaFila) {
                     let nuevaFila = r.cloneNode(true);
                     let nuevoSelect = nuevaFila.querySelector('.s-type');
-                    if (nuevoSelect) {{
+                    if (nuevoSelect) {
                         nuevoSelect.value = "";
                         nuevoSelect.style.color = "#808080";
-                    }}
+                    }
                     let nuevoSpanU = nuevaFila.querySelector('.u-manual');
                     if (nuevoSpanU) nuevoSpanU.innerText = "0";
                     let nuevoSpanS = nuevaFila.querySelector('.spr-real-val');
@@ -2432,13 +2432,13 @@ app_html = """
                     if (nuevoCheck) nuevoCheck.checked = false;
 
                     tbody.appendChild(nuevaFila);
-                }}
-            }}
-        }}
+                }
+            }
+        }
         recalc(); 
-    }}
+    }
 
-    function resetRow(sel) {{ 
+    function resetRow(sel) { 
         let r = sel.closest('tr');
         if (!r) return;
         let table = sel.closest('table');
@@ -2447,13 +2447,13 @@ app_html = """
         let tbody = table.querySelector('tbody');
         let unidadSeleccionada = sel.value;
 
-        if (unidadSeleccionada === "") {{
+        if (unidadSeleccionada === "") {
             r.querySelector('.u-manual').innerText = "0";
             r.querySelector('.spr-real-val').innerText = "0";
             editedRowsPlan.delete(r);
             recalc();
             return;
-        }}
+        }
 
         let volTotalSpan = table.querySelector('.v-total-val');
         let volumenTotal = volTotalSpan ? parseFloat(volTotalSpan.textContent) || 0 : 0;
@@ -2463,17 +2463,17 @@ app_html = """
         let totalUnidadesUsadasEnEstaPestana = 0;
         
         let filasFlota = document.querySelectorAll('#body-' + currentTab + ' .master-row');
-        for (let filaFlota of filasFlota) {{
+        for (let filaFlota of filasFlota) {
             let celdaNombre = filaFlota.querySelector('.edit-name');
-            if (celdaNombre && celdaNombre.innerText.trim() === unidadSeleccionada.trim()) {{
+            if (celdaNombre && celdaNombre.innerText.trim() === unidadSeleccionada.trim()) {
                 let celdaSprMax = filaFlota.querySelector('.edit-spr-max');
                 let celdaStock = filaFlota.querySelector('.f-stock');
                 
                 if (celdaSprMax) sprEncontrado = parseFloat(celdaSprMax.innerText) || 0;
                 if (celdaStock) stockInicialFlota = parseInt(celdaStock.innerText) || 0;
                 break;
-            }}
-        }}
+            }
+        }
 
         let spanS = r.querySelector('.spr-real-val');
         if (spanS) spanS.innerText = sprEncontrado;
@@ -2481,63 +2481,63 @@ app_html = """
         let volumenYaCubierto = 0;
         let todasLasFilasPlan = tbody.querySelectorAll('tr.calc-row');
         
-        todasLasFilasPlan.forEach(filaPlan => {{
-            if (filaPlan !== r) {{
+        todasLasFilasPlan.forEach(filaPlan => {
+            if (filaPlan !== r) {
                 let u = parseInt(filaPlan.querySelector('.u-manual').innerText) || 0;
                 let spr = parseFloat(filaPlan.querySelector('.spr-real-val').innerText) || 0;
                 volumenYaCubierto += (u * spr);
-            }}
-        }});
+            }
+        });
 
         let volumenRestantePlan = volumenTotal - volumenYaCubierto;
         if (volumenRestantePlan < 0) volumenRestantePlan = 0;
 
-        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(fGlobal => {{
-            if (fGlobal !== r) {{
+        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(fGlobal => {
+            if (fGlobal !== r) {
                 let t = fGlobal.querySelector('.s-type')?.value || "";
-                if (t.trim() === unidadSeleccionada.trim()) {{
+                if (t.trim() === unidadSeleccionada.trim()) {
                     totalUnidadesUsadasEnEstaPestana += parseInt(fGlobal.querySelector('.u-manual').innerText) || 0;
-                }}
-            }}
-        }});
+                }
+            }
+        });
 
         let inventarioDisponibleReal = stockInicialFlota - totalUnidadesUsadasEnEstaPestana;
         if (inventarioDisponibleReal < 0) inventarioDisponibleReal = 0;
 
         let unidadesCalculadas = 0;
         
-        if (unidadSeleccionada.trim() === "Delivery Cell Large Van") {{
+        if (unidadSeleccionada.trim() === "Delivery Cell Large Van") {
             unidadesCalculadas = 1;
-        }} else if (volumenRestantePlan > 0 && sprEncontrado > 0) {{
+        } else if (volumenRestantePlan > 0 && sprEncontrado > 0) {
             unidadesCalculadas = Math.ceil(volumenRestantePlan / sprEncontrado);
             let permiteInfinito = false;
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
             let activeTabBtn = document.querySelector('.tab-btn.active');
             
-            if (activeTabBtn) {{
+            if (activeTabBtn) {
                 let tabId = activeTabBtn.textContent.trim();
-                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
+                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {
                     permiteInfinito = true;
-                }} else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
+                } else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
                     permiteInfinito = true;
-                }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {{
-                    if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
+                } else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {
+                    if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {
                         permiteInfinito = true;
-                    }}
-                }}
-            }}
+                    }
+                }
+            }
 
-            if (!permiteInfinito) {{
-                if (unidadesCalculadas > inventarioDisponibleReal) {{
+            if (!permiteInfinito) {
+                if (unidadesCalculadas > inventarioDisponibleReal) {
                     unidadesCalculadas = inventarioDisponibleReal;
-                    if (unidadesCalculadas === 0) {{
+                    if (unidadesCalculadas === 0) {
                         showAlert("⚠️ FLOTA AGOTADA. No quedan unidades disponibles de: " + unidadSeleccionada);
-                    }} else {{
+                    } else {
                         showAlert("⚠️ FLOTA INSUFICIENTE. Se asignaron las últimas " + unidadesCalculadas + " unidades para amortiguar el volumen.");
-                    }}
-                }}
-            }}
-        }}
+                    }
+                }
+            }
+        }
 
         let spanU = r.querySelector('.u-manual');
         if (spanU) spanU.innerText = unidadesCalculadas;
@@ -2546,28 +2546,28 @@ app_html = """
         let esUnidadCarFila = unidadSeleccionada.toLowerCase().includes("car");
         let activeTabBtnFila = document.querySelector('.tab-btn.active');
         
-        if (activeTabBtnFila) {{
+        if (activeTabBtnFila) {
             let tabId = activeTabBtnFila.textContent.trim();
-            if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
+            if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
                 permiteInfinitoFila = true;
-            }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {{
-                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
+            } else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {
+                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {
                     permiteInfinitoFila = true;
-                }}
-            }}
-        }}
+                }
+            }
+        }
 
-        if (permiteInfinitoFila && tbody) {{
+        if (permiteInfinitoFila && tbody) {
             let filasCalculo = tbody.querySelectorAll('tr.calc-row');
             let ultimaFila = filasCalculo[filasCalculo.length - 1];
             
-            if (r === ultimaFila) {{
+            if (r === ultimaFila) {
                 let nuevaFila = r.cloneNode(true);
                 let nuevoSelect = nuevaFila.querySelector('.s-type');
-                if (nuevoSelect) {{
+                if (nuevoSelect) {
                     nuevoSelect.value = "";
                     nuevoSelect.style.color = "#808080";
-                }}
+                }
                 let nuevoSpanU = nuevaFila.querySelector('.u-manual');
                 if (nuevoSpanU) nuevoSpanU.innerText = "0";
                 let nuevoSpanS = nuevaFila.querySelector('.spr-real-val');
@@ -2576,40 +2576,40 @@ app_html = """
                 if (nuevoCheck) nuevoCheck.checked = false;
 
                 tbody.appendChild(nuevaFila);
-            }}
-        }}
+            }
+        }
 
-        if (typeof manualEdit === 'function' && spanU) {{
+        if (typeof manualEdit === 'function' && spanU) {
             manualEdit(spanU);
-        }} else {{
+        } else {
             recalc();
-        }}
-    }}
+        }
+    }
 
-    document.addEventListener('keydown', (e) => {{
+    document.addEventListener('keydown', (e) => {
         const calc = document.getElementById('calc_wrapper');
         const alerta = document.getElementById('google-alert');
 
-        if (e.key === 'Enter' && alerta.classList.contains('show')) {{
+        if (e.key === 'Enter' && alerta.classList.contains('show')) {
             e.preventDefault();
             e.stopPropagation();
             hideAlert();
             return;
-        }}
+        }
 
-        if (document.activeElement === calc) {{
+        if (document.activeElement === calc) {
             if (e.key >= '0' && e.key <= '9') an(e.key);
             if (e.key === '+') ao('+');
             if (e.key === '-') ao('-');
             if (e.key === '*') ao('*');
-            if (e.key === '/') {{ e.preventDefault(); ao('/'); }}
-            if (e.key === 'Enter') {{ e.preventDefault(); calc_eq(); }}
+            if (e.key === '/') { e.preventDefault(); ao('/'); }
+            if (e.key === 'Enter') { e.preventDefault(); calc_eq(); }
             if (e.key === 'Escape') cl();
             if (e.key === 'Backspace') del();
-        }}
-    }});
+        }
+    });
 
-    function toggleExcelView() {{
+    function toggleExcelView() {
         const isExcel = !document.body.classList.contains("excel-view");
         document.body.classList.toggle("excel-view", isExcel);
         
@@ -2625,74 +2625,74 @@ app_html = """
             "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
             "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
         ];
-        if (isExcel) {{
-            if (bPaquetes) {{
+        if (isExcel) {
+            if (bPaquetes) {
                 estadoPaquetesAntesDeExcel = bPaquetes.style.display;
                 bPaquetes.style.display = "none";
-            }}
+            }
             
             generarExcelPolys();
             btn.innerHTML = "N";
             if(excel) excel.style.display = "block";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
+            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.style.display = "none";
-            }});
-            idsAocultar.forEach(id => {{
+            });
+            idsAocultar.forEach(id => {
                 let el = document.getElementById(id);
-                if(el) {{
+                if(el) {
                     let fila = el.closest('tr');
                     if(fila) fila.style.display = 'none';
-                }}
-            }});
-        }} else {{
-            if (bPaquetes) {{
+                }
+            });
+        } else {
+            if (bPaquetes) {
                 bPaquetes.style.display = estadoPaquetesAntesDeExcel;
-            }}
+            }
             
             btn.innerHTML = "👁️";
             if(excel) excel.style.display = "none";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
+            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.style.display = (id === "polys-" + currentTab) ? "block" : "none";
-            }});
+            });
             
-            if (contScp1 && contSja1) {{
-                if (currentTab == 2) {{
+            if (contScp1 && contSja1) {
+                if (currentTab == 2) {
                     contScp1.style.display = 'block';
                     contSja1.style.display = 'none';
-                }} else if (currentTab == 6) {{
+                } else if (currentTab == 6) {
                     contScp1.style.display = 'none';
                     contSja1.style.display = 'block';
-                }} else {{
+                } else {
                     contScp1.style.display = 'none';
                     contSja1.style.display = 'none';
-                }}
-            }}
+                }
+            }
 
-            idsAocultar.forEach(id => {{
+            idsAocultar.forEach(id => {
                 let el = document.getElementById(id);
-                if(el) {{
+                if(el) {
                     let fila = el.closest('tr');
                     if(fila) fila.style.removeProperty('display');
-                }}
-            }});
-            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
+                }
+            });
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {
                 fila.style.setProperty('display', 'table-row', 'important');
                 actualizarVisibilidadContador();
-            }});
-        }}
-    }}
+            });
+        }
+    }
 
-    function generarExcelPolys() {{
+    function generarExcelPolys() {
         let body = document.getElementById("excel-polys-body");
         if(!body) return;
 
         body.innerHTML = "";
         let tabId = currentTab;
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
             let plan = bl.querySelector('tbody tr td')?.innerText.trim() || "";
             let vol = bl.querySelector('.v-total-val')?.innerText.trim() || "0";
 
@@ -2701,14 +2701,14 @@ app_html = """
             let nodoTxt = (parseInt(nodoExcel) || 0) > 0 ? nodoExcel : "-";
 
             let filasCalc = Array.from(bl.querySelectorAll('.calc-row'));
-            let filasValidas = filasCalc.filter(r => {{
+            let filasValidas = filasCalc.filter(r => {
                 let u = r.querySelector('.s-type')?.value || "";
                 return u !== "" && u !== "Seleccionar...";
-            }});
+            });
 
             if (filasValidas.length === 0) return;
 
-            filasValidas.forEach((r, index) => {{
+            filasValidas.forEach((r, index) => {
                 let unidad = r.querySelector('.s-type')?.value || "";
                 let asignadas = r.querySelector('.u-manual')?.innerText.trim() || "0";
 
@@ -2716,84 +2716,84 @@ app_html = """
                 let fRow = fRows.find(fr => fr.querySelector('.edit-name')?.innerText.trim() === unidad);
                 let valSpr = "-";
 
-                if (fRow) {{
+                if (fRow) {
                     let orh  = fRow.querySelector(".edit-orh")?.innerText.trim() || "0";
                     let ocup = fRow.querySelector(".edit-ocup")?.innerText.trim() || "0";
                     valSpr = orh + " / " + ocup;
-                }}
+                }
 
                 let filaHtml = '<tr>';
-                if (index === 0) {{
+                if (index === 0) {
                     filaHtml += `
-                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${{plan}}</td>
-                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{vol}}</td>
+                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${plan}</td>
+                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${vol}</td>
                     `;
-                }}
+                }
                 filaHtml += `
-                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${{unidad}}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${{asignadas}}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle;">${{valSpr}}</td>
+                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${unidad}</td>
+                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${asignadas}</td>
+                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle;">${valSpr}</td>
                 `;
-                if (index === 0) {{
-                    filaHtml += `<td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{nodoTxt}}</td>`;
-                }}
+                if (index === 0) {
+                    filaHtml += `<td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${nodoTxt}</td>`;
+                }
                 filaHtml += '</tr>';
                 body.innerHTML += filaHtml;
-            }});
-        }});
+            });
+        });
 
         let valRuteadasNormal = document.getElementById('total-ruteadas-' + tabId)?.innerText || "0";
         let celdaTotalExcel = document.getElementById('excel-total-ruteadas-naranja');
         if(celdaTotalExcel) celdaTotalExcel.innerText = valRuteadasNormal;
 
         let tablaActual = document.querySelector('#tab-' + tabId + ' table');
-        if (tablaActual) {{
+        if (tablaActual) {
             let filasFooter = tablaActual.querySelectorAll('tfoot tr');
-            filasFooter.forEach(fila => {{
-                if (!fila.innerText.includes("TOTAL RUTEADAS")) {{
+            filasFooter.forEach(fila => {
+                if (!fila.innerText.includes("TOTAL RUTEADAS")) {
                     fila.style.display = 'none';
-                }}
-            }});
-        }}
-    }}
+                }
+            });
+        }
+    }
 
-    function obtenerCarFlexible() {{
+    function obtenerCarFlexible() {
         const opciones = ["Car - 8h", "Car - 5h", "Car - 3h"];
-        for (let nombre of opciones) {{
+        for (let nombre of opciones) {
             let unidad = fleet.find(f => f.nombre === nombre && f.stock > 0);
             if (unidad) return unidad;
-        }}
+        }
         return null;
-    }}
+    }
 
-    function distribuirAutomatico() {{
+    function distribuirAutomatico() {
         let fleet = [];
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
             let nombre = row.querySelector('.edit-name')?.innerText.trim();
             let sprMax = parseFloat(row.querySelector('.edit-spr-max')?.innerText) || 0;
             let stock = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
 
-            if (nombre && nombre !== "IGNORAR" && stock > 0) {{
-                fleet.push({{
+            if (nombre && nombre !== "IGNORAR" && stock > 0) {
+                fleet.push({
                     nombre: nombre,
                     spr: sprMax,
                     stock: stock,
                     restante: stock
-                }});
-            }}
-        }});
+                });
+            }
+        });
 
-        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
+        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
 
-            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {{
+            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {
                 let unidadReal = fleet.find(f => f.nombre === tipo);
-                if (unidadReal) {{
+                if (unidadReal) {
                     unidadReal.restante -= unidades;
-                }}
-            }}
-        }});
+                }
+            }
+        });
 
         console.log("FLEET DISPONIBLE EN PESTAÑA ACTIVA:", fleet.map(f => f.nombre));
         fleet.sort((a, b) => b.spr - a.spr);
@@ -2801,29 +2801,29 @@ app_html = """
         let bloques = Array.from(document.querySelectorAll('#polys-' + currentTab + ' .poligono-bloque'));
         let polys = [];
 
-        bloques.forEach(bl => {{
+        bloques.forEach(bl => {
             let volumen = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0;
-            if (volumen > 0) {{
-                polys.push({{
+            if (volumen > 0) {
+                polys.push({
                     bloque: bl,
                     volumen: volumen
-                }});
-            }}
-        }});
+                });
+            }
+        });
 
-        if (currentTab == 1) {{
+        if (currentTab == 1) {
             let small9h = fleet.find(f => f.nombre === "Small 9h Ext Car");
-            if (small9h && small9h.restante > 0) {{
+            if (small9h && small9h.restante > 0) {
                 let planesPrioridad = ["IZTAPALAPA", "COYOACÁN"];
-                planesPrioridad.forEach(nombreBuscado => {{
+                planesPrioridad.forEach(nombreBuscado => {
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    }});
+                    });
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -2831,32 +2831,32 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / small9h.spr), small9h.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    }});
+                    });
 
-                    if (filaLibre) {{
+                    if (filaLibre) {
                         filaLibre.querySelector('.s-type').value = small9h.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = small9h.spr;
                         editedRowsPlan.add(filaLibre);
                         small9h.restante -= usar;
-                    }}
-                }});
+                    }
+                });
 
-                if (small9h.restante > 0) {{
-                    polys.forEach(polyPlan => {{
+                if (small9h.restante > 0) {
+                    polys.forEach(polyPlan => {
                         if (small9h.restante <= 0) return;
                         let nombrePlan = polyPlan.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "";
                         if (nombrePlan !== "TLAHUAC") return;
 
                         let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                         let yaAsignado = 0;
-                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                             yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                        }});
+                        });
 
                         let restante = objetivo - yaAsignado;
                         if (restante <= 0) return;
@@ -2864,37 +2864,37 @@ app_html = """
                         let usar = Math.min(Math.ceil(restante / small9h.spr), small9h.restante);
                         if (usar <= 0) return;
 
-                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        }});
+                        });
 
-                        if (filaLibre) {{
+                        if (filaLibre) {
                             filaLibre.querySelector('.s-type').value = small9h.nombre;
                             filaLibre.querySelector('.u-manual').innerText = usar;
                             filaLibre.querySelector('.spr-real-val').innerText = small9h.spr;
                             editedRowsPlan.add(filaLibre);
                             small9h.restante -= usar;
-                        }}
-                    }});
-                }}
-            }}
-        }}
+                        }
+                    });
+                }
+            }
+        }
 
-        if (currentTab == 5) {{
+        if (currentTab == 5) {
             let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
-            if (smallVan && smallVan.restante > 0) {{
+            if (smallVan && smallVan.restante > 0) {
                 let planesPrioridad = ["IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ"];
-                planesPrioridad.forEach(nombreBuscado => {{
+                planesPrioridad.forEach(nombreBuscado => {
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    }});
+                    });
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -2902,32 +2902,32 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / smallVan.spr), smallVan.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    }});
+                    });
 
-                    if (filaLibre) {{
+                    if (filaLibre) {
                         filaLibre.querySelector('.s-type').value = smallVan.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = smallVan.spr;
                         editedRowsPlan.add(filaLibre);
                         smallVan.restante -= usar;
-                    }}
-                }});
+                    }
+                });
 
-                if (smallVan.restante > 0) {{
-                    polys.forEach(polyPlan => {{
+                if (smallVan.restante > 0) {
+                    polys.forEach(polyPlan => {
                         if (smallVan.restante <= 0) return;
                         let nombrePlan = polyPlan.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "";
                         if (!nombrePlan.includes("CHIMAS")) return;
 
                         let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                         let yaAsignado = 0;
-                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                             yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                        }});
+                        });
 
                         let restante = objetivo - yaAsignado;
                         if (restante <= 0) return;
@@ -2935,35 +2935,35 @@ app_html = """
                         let usar = Math.min(Math.ceil(restante / smallVan.spr), smallVan.restante);
                         if (usar <= 0) return;
 
-                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        }});
+                        });
 
-                        if (filaLibre) {{
+                        if (filaLibre) {
                             filaLibre.querySelector('.s-type').value = smallVan.nombre;
                             filaLibre.querySelector('.u-manual').innerText = usar;
                             filaLibre.querySelector('.spr-real-val').innerText = smallVan.spr;
                             editedRowsPlan.add(filaLibre);
                             smallVan.restante -= usar;
-                        }}
-                    }});
-                }}
-            }}
+                        }
+                    });
+                }
+            }
 
             let CarZonaExtendida = fleet.find(f => f.nombre === "Car Zona Extendida");
-            if (CarZonaExtendida && CarZonaExtendida.restante > 0) {{
+            if (CarZonaExtendida && CarZonaExtendida.restante > 0) {
                 let planesPrioridad = ["PUEBLOS", "TEXCOCO"];
-                planesPrioridad.forEach(nombreBuscado => {{
+                planesPrioridad.forEach(nombreBuscado => {
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    }});
+                    });
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -2971,54 +2971,54 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / CarZonaExtendida.spr), CarZonaExtendida.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    }});
+                    });
 
-                    if (filaLibre) {{
+                    if (filaLibre) {
                         filaLibre.querySelector('.s-type').value = CarZonaExtendida.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = CarZonaExtendida.spr;
                         editedRowsPlan.add(filaLibre);
                         CarZonaExtendida.restante -= usar;
-                    }}
-                }});
+                    }
+                });
 
-                if (CarZonaExtendida.restante > 0) {{
+                if (CarZonaExtendida.restante > 0) {
                     let chalco = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CHALCO");
-                    if (chalco) {{
-                        let filaLibre = Array.from(chalco.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    if (chalco) {
+                        let filaLibre = Array.from(chalco.bloque.querySelectorAll('.calc-row')).find(f => {
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        }});
-                        if (filaLibre) {{
+                        });
+                        if (filaLibre) {
                             filaLibre.querySelector('.s-type').value = CarZonaExtendida.nombre;
                             filaLibre.querySelector('.u-manual').innerText = CarZonaExtendida.restante;
                             filaLibre.querySelector('.spr-real-val').innerText = CarZonaExtendida.spr;
                             editedRowsPlan.add(filaLibre);
                             CarZonaExtendida.restante = 0;
-                        }}
-                    }}
-                }}
-            }}
-        }}
+                        }
+                    }
+                }
+            }
+        }
 
-        if (currentTab == 2) {{
+        if (currentTab == 2) {
             let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
-            if (largeVanMLP && largeVanMLP.restante > 0) {{
+            if (largeVanMLP && largeVanMLP.restante > 0) {
                 let planesPrioridad = ["ESCÁRCEGA", "ESCÁRCEGA EXT", "MAXCANUN", "CANDELARIA", "SEYBAPLAYA", "CHAMPOTÓN", "HOLPECHEN"];
-                planesPrioridad.forEach(nombreBuscado => {{
+                planesPrioridad.forEach(nombreBuscado => {
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    }});
+                    });
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -3026,65 +3026,65 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / largeVanMLP.spr), largeVanMLP.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    }});
+                    });
 
-                    if (filaLibre) {{
+                    if (filaLibre) {
                         filaLibre.querySelector('.s-type').value = largeVanMLP.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = largeVanMLP.spr;
                         editedRowsPlan.add(filaLibre);
                         largeVanMLP.restante -= usar;
-                    }}
-                }});
-            }}
+                    }
+                });
+            }
 
             let deliveryCell = fleet.find(f => f.nombre === "Delivery Cell Large Van");
-            if (deliveryCell && deliveryCell.restante > 0) {{
+            if (deliveryCell && deliveryCell.restante > 0) {
                 let campeche = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CAMPECHE");
-                if (campeche) {{
+                if (campeche) {
                     let nodos = parseInt(campeche.bloque.querySelector('.nodos-campeche')?.innerText) || 0;
-                    if (nodos > 0) {{
-                        let filaLibre = Array.from(campeche.bloque.querySelectorAll('.calc-row')).find(f => {{
+                    if (nodos > 0) {
+                        let filaLibre = Array.from(campeche.bloque.querySelectorAll('.calc-row')).find(f => {
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        }});
-                        if (filaLibre) {{
+                        });
+                        if (filaLibre) {
                             filaLibre.querySelector('.s-type').value = deliveryCell.nombre;
                             filaLibre.querySelector('.u-manual').innerText = 1;
                             filaLibre.querySelector('.spr-real-val').innerText = deliveryCell.spr;
                             editedRowsPlan.add(filaLibre);
                             deliveryCell.restante -= 1;
-                        }}
-                    }}
-                }}
-            }}
-        }}
+                        }
+                    }
+                }
+            }
+        }
 
-        if (currentTab == 6) {{
-            polys.forEach(poly => {{
+        if (currentTab == 6) {
+            polys.forEach(poly => {
                 procesarAsignacionUnidadSJA1(poly);
-            }});
-        }} else {{
-            polys.forEach(poly => {{
+            });
+        } else {
+            polys.forEach(poly => {
                 let bloque = poly.bloque;
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                 let yaAsignado = 0;
-                bloque.querySelectorAll('.calc-row').forEach(r => {{
+                bloque.querySelectorAll('.calc-row').forEach(r => {
                     yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                }});
+                });
 
                 let restante = objetivo - yaAsignado;
                 if (restante <= 0) return;
 
                 let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-                for (let fila of filas) {{
+                for (let fila of filas) {
                     let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
                     let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
                     let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
@@ -3094,101 +3094,101 @@ app_html = """
 
                     let unidad = null;
 
-                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
+                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {
                         unidad = fleet.find(f => f.nombre === "Rental Large Van");
-                    }} else if (currentTab == 2) {{
+                    } else if (currentTab == 2) {
                         unidad = fleet.find(f => f.restante > 0 && f.nombre !== "Rental Large Van");
-                    }} else {{
+                    } else {
                         unidad = fleet.find(f => f.restante > 0);
-                    }}
+                    }
 
-                    if (!unidad) {{
-                        if (currentTab == 4) {{
+                    if (!unidad) {
+                        if (currentTab == 4) {
                             let options = ["Car - 5h", "Car - 3h"];
-                            for (let opt of options) {{
+                            for (let opt of options) {
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }}
-                        }} else if (currentTab == 7) {{
+                            }
+                        } else if (currentTab == 7) {
                             let options = ["Car - 8h"];
-                            for (let opt of options) {{
+                            for (let opt of options) {
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }}
-                        }} else if (currentTab == 8) {{
+                            }
+                        } else if (currentTab == 8) {
                             let options = ["Car - 8h"];
-                            for (let opt of options) {{
+                            for (let opt of options) {
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }}
-                        }} else if (currentTab == 2) {{
+                            }
+                        } else if (currentTab == 2) {
                             let options = ["Large Van MLP", "Car - 8h", "Car - 5h"];
-                            for (let opt of options) {{
+                            for (let opt of options) {
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }}
-                        }} else if (currentTab == 1 || currentTab == 5) {{
+                            }
+                        } else if (currentTab == 1 || currentTab == 5) {
                             let options = ["Car - 8h", "Car - 5h"];
-                            for (let opt of options) {{
+                            for (let opt of options) {
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }}
-                        }}
+                            }
+                        }
                         if (!unidad) break;
-                    }}
+                    }
 
                     let necesarias = Math.ceil(restante / unidad.spr);
                     let usar;
 
                     let permiteNegativo = unidad.nombre === "Car - 8h" || unidad.nombre === "Car - 5h" || unidad.nombre === "Car - 3h" || (currentTab == 2 && unidad.nombre === "Large Van MLP");
-                    if (unidad.restante > 0) {{
+                    if (unidad.restante > 0) {
                         usar = Math.min(necesarias, unidad.restante);
-                    }} else if (permiteNegativo) {{
+                    } else if (permiteNegativo) {
                         usar = necesarias;
-                    }} else {{
+                    } else {
                         usar = 0;
-                    }}
+                    }
 
                     if (usar <= 0) continue;
 
                     let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-                    if (filaExistente) {{
+                    if (filaExistente) {
                         let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
                         filaExistente.querySelector('.u-manual').innerText = actual + usar;
                         filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
                         editedRowsPlan.add(filaExistente);
-                    }} else {{
+                    } else {
                         fila.querySelector('.s-type').value = unidad.nombre;
                         fila.querySelector('.u-manual').innerText = usar;
                         fila.querySelector('.spr-real-val').innerText = unidad.spr;
                         editedRowsPlan.add(fila);
-                    }}
+                    }
 
                     unidad.restante -= usar;
                     restante -= (usar * unidad.spr);
-                }}
-            }});
-        }}
+                }
+            });
+        }
         recalc();
-    }}
+    }
 
-    function procesarAsignacionUnidadSJA1(poly) {{
+    function procesarAsignacionUnidadSJA1(poly) {
         let bloque = poly.bloque;
         let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
         let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
         let yaAsignado = 0;
-        bloque.querySelectorAll('.calc-row').forEach(r => {{
+        bloque.querySelectorAll('.calc-row').forEach(r => {
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
             let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
             yaAsignado += (unidades * spr);
-        }});
+        });
 
         let restante = objetivo - yaAsignado;
         if (restante <= 0) return;
 
         let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-        for (let fila of filas) {{
+        for (let fila of filas) {
             let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
             let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
             let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
@@ -3198,43 +3198,43 @@ app_html = """
 
             let unidad = null;
 
-            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
-                if (nombrePlan === "⚠️ CENTRO 1") {{
+            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {
+                if (nombrePlan === "⚠️ CENTRO 1") {
                     const listaEspecialesC1 = [
                         "Extra Large Van MLP H&B", 
                         "Truck 3.5 tons MLP", 
                         "Delivery Cell Large Van"
                     ];
                     
-                    for (let nombre of listaEspecialesC1) {{
+                    for (let nombre of listaEspecialesC1) {
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombre.toLowerCase());
                         if (unidad) break;
-                    }}
+                    }
 
-                    if (!unidad) {{
+                    if (!unidad) {
                         const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                        for (let nombre of listaRental) {{
+                        for (let nombre of listaRental) {
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                             if (unidad) break;
-                        }}
-                    }}
-                }} else if (nombrePlan === "⚠️ CENTRO 2") {{
+                        }
+                    }
+                } else if (nombrePlan === "⚠️ CENTRO 2") {
                     const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                    for (let nombre of listaRental) {{
+                    for (let nombre of listaRental) {
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                         if (unidad) break;
-                    }}
-                }}
-            }} else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
+                    }
+                }
+            } else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {
                 unidad = fleet.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
-            }} else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {{
+            } else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {
                 unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
 
-                if (!unidad) {{
+                if (!unidad) {
                     unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-                }}
+                }
 
-                if (!unidad) {{
+                if (!unidad) {
                     let listaSustitutas = [
                         "car 8h", 
                         "car newbie", 
@@ -3244,18 +3244,18 @@ app_html = """
                         "small van newbie", 
                         "moto 3h"
                     ];
-                    for (let palabra of listaSustitutas) {{
+                    for (let palabra of listaSustitutas) {
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(palabra));
                         if (unidad) break;
-                    }}
-                }}
-            }} else {{
+                    }
+                }
+            } else {
                 unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
                 
-                if (!unidad) {{
+                if (!unidad) {
                     unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-                }}
-            }}
+                }
+            }
 
             if (!unidad) break;
 
@@ -3265,34 +3265,34 @@ app_html = """
             if (usar <= 0) continue;
 
             let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-            if (filaExistente) {{
+            if (filaExistente) {
                 let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
                 filaExistente.querySelector('.u-manual').innerText = actual + usar;
                 filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
                 editedRowsPlan.add(filaExistente);
-            }} else {{
+            } else {
                 fila.querySelector('.s-type').value = unidad.nombre;
                 fila.querySelector('.u-manual').innerText = usar;
                 fila.querySelector('.spr-real-val').innerText = unidad.spr;
                 editedRowsPlan.add(fila);
-            }}
+            }
 
             unidad.restante -= usar;
             restante -= (usar * unidad.spr);
-        }}
-    }}
+        }
+    }
 
-    function actualizarTotales() {{ return; }}
+    function actualizarTotales() { return; }
 
-    function updateSelectColor(selectElement) {{
-        if (selectElement.value === "") {{
+    function updateSelectColor(selectElement) {
+        if (selectElement.value === "") {
             selectElement.style.color = "#A9A9A9";
-        }} else {{
+        } else {
             selectElement.style.color = "#25282b";
-        }}
-    }}
+        }
+    }
 
-    function updateFleetFloat() {{
+    function updateFleetFloat() {
         let htmlLeft = "";
         let htmlRight = "";
 
@@ -3304,12 +3304,12 @@ app_html = """
         let totalCarSchedule = 0;
         let totalNoCar = 0;
 
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
             let name = row.querySelector('.edit-name')?.innerText.trim();
             let stock = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             let asignado = parseInt(row.querySelector('.f-ruteadas')?.innerText) || 0;
 
-            if(name && (stock > 0 || asignado > 0)) {{
+            if(name && (stock > 0 || asignado > 0)) {
                 let nameLower = name.toLowerCase();
 
                 let esExtraLargeMLP = nameLower.includes("extra large van mlp h&b") || nameLower.includes("extra large van mlp h & b");
@@ -3321,74 +3321,74 @@ app_html = """
                     !nameLower.includes("mlp") && !nameLower.includes("van grande") && !nameLower.includes("large van")
                 );
 
-                if (esCarStrict) {{
+                if (esCarStrict) {
                     totalCarSchedule += stock;
-                }}
+                }
 
-                if (name.includes("MLP") && !debeExcluirMLP) {{
+                if (name.includes("MLP") && !debeExcluirMLP) {
                     totalMLPStock += stock;
                     totalMLPReal += asignado;
-                }}
+                }
 
-                if (nameLower.includes("rental")) {{
+                if (nameLower.includes("rental")) {
                     totalRentalStock += stock;
                     totalRentalReal += asignado;
-                }}
+                }
 
                 let colorCategoria = esCarStrict ? "#FF4500" : "#0000CD";
 
-                if (esCarStrict) {{
+                if (esCarStrict) {
                     totalCarReal += asignado;
-                }} else {{
-                    if (!debeExcluirMLP && (name === "Large Van MLP" || name === "Small Van MLP" || name.includes("foráneo"))) {{
+                } else {
+                    if (!debeExcluirMLP && (name === "Large Van MLP" || name === "Small Van MLP" || name.includes("foráneo"))) {
                         totalNoCar += asignado;
-                    }}
-                }}
+                    }
+                }
 
                 let leftDisplay = row.querySelector('.f-left')?.innerText || "0";
 
                 htmlLeft += `
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px;"> 
-                        <span style="color:#0a2745;">${{name}}</span>
-                        <span style="color:${{colorCategoria}}; font-weight:bold;">${{leftDisplay}}/${{stock}}</span>
+                        <span style="color:#0a2745;">${name}</span>
+                        <span style="color:${colorCategoria}; font-weight:bold;">${leftDisplay}/${stock}</span>
                     </div>
                 `;
-            }}
-        }});
+            }
+        });
 
         htmlRight = `
             <div style="margin-top: 5px; padding-top: 5px;"> 
                 <div style="display:flex; justify-content:space-between; color: #D2691E; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL CAR (sched):</span> <span>${{totalCarSchedule}}</span>
+                    <span>TOTAL CAR (sched):</span> <span>${totalCarSchedule}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #FF4500; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
-                    <span>TOTAL CAR (real):</span> <span>${{totalCarReal}}</span>
+                    <span>TOTAL CAR (real):</span> <span>${totalCarReal}</span>
                 </div>
 
                 <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
 
                 <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL MLP (decl):</span> <span>${{totalMLPStock}}</span>
+                    <span>TOTAL MLP (decl):</span> <span>${totalMLPStock}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
-                    <span>TOTAL MLP (rute):</span> <span>${{totalMLPReal}}</span>
+                    <span>TOTAL MLP (rute):</span> <span>${totalMLPReal}</span>
                 </div>
 
                 <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
 
                 <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL RENTAL (decl):</span> <span>${{totalRentalStock}}</span>
+                    <span>TOTAL RENTAL (decl):</span> <span>${totalRentalStock}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL RENTAL (rute):</span> <span>${{totalRentalReal}}</span>
+                    <span>TOTAL RENTAL (rute):</span> <span>${totalRentalReal}</span>
                 </div>
             </div>
         `;
 
         let html = `
         <div style="display:flex; gap:15px; align-items:flex-start;">
-            <div style="flex:1; min-width:180px;">${{htmlLeft}}</div>
-            <div style="width:190px; border-left:2px solid #25282b; padding-left:12px;">${{htmlRight}}</div>
+            <div style="flex:1; min-width:180px;">${htmlLeft}</div>
+            <div style="width:190px; border-left:2px solid #25282b; padding-left:12px;">${htmlRight}</div>
         </div>
         `;
 
@@ -3411,29 +3411,29 @@ app_html = """
         document.getElementById("val-rental-rute-2").innerText = totalRentalReal;
         document.getElementById("val-car-rute-2").innerText = totalCarReal;
 
-        if (typeof guardarEstado === 'function') {{ guardarEstado(); }}
-    }}
+        if (typeof guardarEstado === 'function') { guardarEstado(); }
+    }
 
     aplicarPerfil();
     recalc();
 
-    function togglePrioridades() {{
+    function togglePrioridades() {
         const panel = document.getElementById('panel-prioridades');
-        if (panel.style.top === '0px') {{
+        if (panel.style.top === '0px') {
             panel.style.top = '-600px';
-        }} else {{
+        } else {
             panel.style.top = '0px';
-        }}
-    }}
+        }
+    }
 
-    function actualizarSelects() {{
+    function actualizarSelects() {
         const listaPermitidas = ["Small Van MLP foráneo", "Car 8h", "Car - 8h"];
 
-        document.querySelectorAll('.s-type').forEach(select => {{
+        document.querySelectorAll('.s-type').forEach(select => {
             let valorActual = select.value;
             select.innerHTML = '<option value="">Seleccionar...</option>';
             
-            document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
+            document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
                 let name = row.querySelector('.edit-name')?.innerText.trim();
                 if (!name || name === "IGNORAR") return;
                 
@@ -3443,31 +3443,31 @@ app_html = """
 
                 let permiteSinStock = listaPermitidas.some(u => nameLower.includes(u));
                 
-                if (permiteSinStock || left > 0 || stock > 0) {{
+                if (permiteSinStock || left > 0 || stock > 0) {
                     let opt = document.createElement('option');
                     opt.value = name;
                     opt.textContent = name;
                     select.appendChild(opt);
-                }}
-            }});
+                }
+            });
             select.value = valorActual;
-        }});
-    }}
+        });
+    }
 
-    document.addEventListener('input', (e) => {{
-        if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual')) {{
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual')) {
             recalc(); 
-        }}
-    }});
+        }
+    });
 
-    window.addEventListener('load', () => {{
+    window.addEventListener('load', () => {
         actualizarSelects();
         agregarIndicadorSchedule();
-    }});
+    });
 
     actualizarDosPorciento();
 
-    document.addEventListener("keydown", function(e){{
+    document.addEventListener("keydown", function(e){
         const celda = document.activeElement;
         if (!celda || !celda.hasAttribute("contenteditable")) return;
 
@@ -3482,82 +3482,82 @@ app_html = """
         const celdasFila = Array.from(fila.querySelectorAll('[contenteditable="true"]'));
         const colIdx = celdasFila.indexOf(celda);
 
-        if(e.key === "ArrowDown"){{
+        if(e.key === "ArrowDown"){
             e.preventDefault();
             const sigFila = filas[filaIdx + 1];
-            if(sigFila){{
+            if(sigFila){
                 const celdas = sigFila.querySelectorAll('[contenteditable="true"]');
                 if(celdas[colIdx]) celdas[colIdx].focus();
-            }}
-        }}
+            }
+        }
 
-        if(e.key === "ArrowUp"){{
+        if(e.key === "ArrowUp"){
             e.preventDefault();
             const antFila = filas[filaIdx - 1];
-            if(antFila){{
+            if(antFila){
                 const celdas = antFila.querySelectorAll('[contenteditable="true"]');
                 if(celdas[colIdx]) celdas[colIdx].focus();
-            }}
-        }}
+            }
+        }
 
-        if(e.key === "ArrowRight"){{
+        if(e.key === "ArrowRight"){
             e.preventDefault();
             if(celdasFila[colIdx + 1]) celdasFila[colIdx + 1].focus();
-        }}
+        }
 
-        if(e.key === "ArrowLeft"){{
+        if(e.key === "ArrowLeft"){
             e.preventDefault();
             if(celdasFila[colIdx - 1]) celdasFila[colIdx - 1].focus();
-        }}
-    }});
+        }
+    });
 
-    document.addEventListener("focusin", function(e) {{
+    document.addEventListener("focusin", function(e) {
         const celda = e.target;
         if (!celda.hasAttribute("contenteditable")) return;
 
-        setTimeout(() => {{
+        setTimeout(() => {
             const rango = document.createRange();
             rango.selectNodeContents(celda);
             const seleccion = window.getSelection();
             seleccion.removeAllRanges();
             seleccion.addRange(rango);
-        }}, 0);
-    }});
+        }, 0);
+    });
 
     const ruteos = [
-        {{ nombre:"SMX9", hora:"16:40" }},
-        {{ nombre:"SMX5", hora:"17:20" }},
-        {{ nombre:"SMX2", hora:"18:05" }},
-        {{ nombre:"SMT2", hora:"18:40" }},
-        {{ nombre:"SJA1 C1", hora:"23:30" }}
+        { nombre:"SMX9", hora:"16:40" },
+        { nombre:"SMX5", hora:"17:20" },
+        { nombre:"SMX2", hora:"18:05" },
+        { nombre:"SMT2", hora:"18:40" },
+        { nombre:"SJA1 C1", hora:"23:30" }
     ];
 
     let ultimaAlerta = "";
 
-    function actualizarRelojRuteos() {{
+    function actualizarRelojRuteos() {
         const ahora = new Date();
         document.getElementById("hora-actual").innerText = ahora.toLocaleTimeString();
         
         let siguiente = null;
-        for (let tarea of ruteos) {{
+        for (let tarea of ruteos) {
             let partes = tarea.hora.split(":");
             let fechaTarea = new Date();
             fechaTarea.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
-            if (fechaTarea > ahora) {{
-                siguiente = {{ tarea, fechaTarea }};
+            if (fechaTarea > ahora) {
+                siguiente = { tarea, fechaTarea };
                 break;
-            }}
-        }}
+            }
+        }
 
         const elProximo = document.getElementById("proximo-ruteo");
         const elCuenta = document.getElementById("cuenta-regresiva");
         const elHora = document.getElementById("hora-ruteo");
 
-        if (!siguiente) {{
+        if (!siguiente) {
             elProximo.innerText = "Fin del turno";
             if (elHora) elHora.innerText = "--";
             elCuenta.innerText = "--:--";
-        }} else {{
+        } else {
             elProximo.innerText = siguiente.tarea.nombre;
             if (elHora) elHora.innerText = "A LAS " + siguiente.tarea.hora;
             
@@ -3567,12 +3567,12 @@ app_html = """
             
             elCuenta.innerText = String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
             elCuenta.style.color = mins < 5 ? "#FF0000" : "#7CFFB2";
-        }}
-    }}
+        }
+    }
     setInterval(actualizarRelojRuteos, 1000);
     actualizarRelojRuteos();
 
-    function enableFleetVerticalDrag(){{
+    function enableFleetVerticalDrag(){
         const el = document.querySelector("#fleet-sticky");
         const handle = document.querySelector("#fleet-drag-handle");
         if (!el || !handle) return;
@@ -3584,7 +3584,7 @@ app_html = """
         let startY = 0;
         let startTop = 0;
 
-        function down(e){{
+        function down(e){
             if (!el.classList.contains("fleet-floating")) return;
 
             dragging = true;
@@ -3593,14 +3593,14 @@ app_html = """
 
             el.style.position = "fixed";
             el.style.bottom = "auto";
-            el.style.top = `${{startTop}}px`;
+            el.style.top = `${startTop}px`;
 
             handle.style.cursor = "grabbing";
             e.preventDefault();
             handle.setPointerCapture(e.pointerId);
-        }}
+        }
 
-        function move(e){{
+        function move(e){
             if (!dragging) return;
 
             const dy = e.clientY - startY;
@@ -3611,50 +3611,50 @@ app_html = """
             const maxTop = window.innerHeight - el.offsetHeight - pad;
             newTop = Math.max(minTop, Math.min(maxTop, newTop));
 
-            el.style.top = `${{newTop}}px`;
-        }}
+            el.style.top = `${newTop}px`;
+        }
 
-        function up(e){{
+        function up(e){
             if (!dragging) return;
             dragging = false;
             handle.style.cursor = "grab";
-            try {{ handle.releasePointerCapture(e.pointerId); }} catch {{}}
-        }}
+            try { handle.releasePointerCapture(e.pointerId); } catch {}
+        }
 
-        handle.addEventListener("pointerdown", down, {{ passive: false }});
-        window.addEventListener("pointermove", move, {{ passive: false }});
-        window.addEventListener("pointerup", up, {{ passive: true }});
-    }}
+        handle.addEventListener("pointerdown", down, { passive: false });
+        window.addEventListener("pointermove", move, { passive: false });
+        window.addEventListener("pointerup", up, { passive: true });
+    }
 
-    function makeDraggableWithHandle(el, handleEl, storageKey) {{
+    function makeDraggableWithHandle(el, handleEl, storageKey) {
         if (!el) return;
 
         const key = "dragReady_" + storageKey;
         if (el.dataset[key] === "1") return;
         el.dataset[key] = "1";
 
-        try {{
+        try {
             const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-            if (saved && typeof saved.top === "number" && typeof saved.left === "number") {{
+            if (saved && typeof saved.top === "number" && typeof saved.left === "number") {
                 el.style.top = saved.top + "px";
                 el.style.left = saved.left + "px";
                 el.style.right = "auto";
                 el.style.transform = "none";
-            }}
-        }} catch (e) {{}}
+            }
+        } catch (e) {}
 
         let isDown = false;
         let startX = 0, startY = 0;
         let startTop = 0, startLeft = 0;
 
-        const getPoint = (ev) => {{
-            if (ev.touches && ev.touches[0]) {{
-                return {{ x: ev.touches[0].clientX, y: ev.touches[0].clientY }};
-            }}
-            return {{ x: ev.clientX, y: ev.clientY }};
-        }};
+        const getPoint = (ev) => {
+            if (ev.touches && ev.touches[0]) {
+                return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+            }
+            return { x: ev.clientX, y: ev.clientY };
+        };
 
-        const onDown = (ev) => {{
+        const onDown = (ev) => {
             isDown = true;
             el.style.right = "auto";
             el.style.margin = "0";
@@ -3673,9 +3673,9 @@ app_html = """
             el.style.userSelect = "none";
 
             ev.preventDefault();
-        }};
+        };
 
-        const onMove = (ev) => {{
+        const onMove = (ev) => {
             if (!isDown) return;
 
             const p = getPoint(ev);
@@ -3689,16 +3689,16 @@ app_html = """
             el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
 
             ev.preventDefault();
-        }};
+        };
 
-        const onUp = () => {{
+        const onUp = () => {
             if (!isDown) return;
             isDown = false;
             el.style.userSelect = "";
 
             const rect = el.getBoundingClientRect();
-            localStorage.setItem(storageKey, JSON.stringify({{ top: rect.top, left: rect.left }}));
-        }};
+            localStorage.setItem(storageKey, JSON.stringify({ top: rect.top, left: rect.left }));
+        };
 
         const h = handleEl || el;
 
@@ -3706,16 +3706,36 @@ app_html = """
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onUp);
 
-        h.addEventListener("touchstart", onDown, {{ passive: false }});
-        window.addEventListener("touchmove", onMove, {{ passive: false }});
+        h.addEventListener("touchstart", onDown, { passive: false });
+        window.addEventListener("touchmove", onMove, { passive: false });
         window.addEventListener("touchend", onUp);
-    }}
+    }
 
     enableFleetVerticalDrag();   
 </script>
 </body>
 </html>
 """
+
+# Reemplazos dinámicos antes de renderizar la vista HTML
+app_html = app_html.replace("{json.dumps(PERFILES)}", json.dumps(PERFILES))
+app_html = app_html.replace("{perfil_actual}", perfil_actual)
+
+app_html = app_html.replace("{gen_master_rows(u_C1, 2)}", gen_master_rows(u_C1, 2))
+app_html = app_html.replace("{gen_master_rows(u_C1_SJA1, 6)}", gen_master_rows(u_C1_SJA1, 6))
+app_html = app_html.replace("{gen_master_rows(u_C1_SCH1, 7)}", gen_master_rows(u_C1_SCH1, 7))
+app_html = app_html.replace("{gen_master_rows(u_C1_SMD1, 8)}", gen_master_rows(u_C1_SMD1, 8))
+app_html = app_html.replace("{gen_master_rows(u_PREC, 1)}", gen_master_rows(u_PREC, 1))
+app_html = app_html.replace("{gen_master_rows(u_PREC_SMX2, 5)}", gen_master_rows(u_PREC_SMX2, 5))
+app_html = app_html.replace("{gen_master_rows(u_SDE, 4)}", gen_master_rows(u_SDE, 4))
+
+app_html = app_html.replace("{gen_poligonos(u_C1)}", gen_poligonos(u_C1))
+app_html = app_html.replace("{gen_poligonos(u_C1_SJA1)}", gen_poligonos(u_C1_SJA1))
+app_html = app_html.replace("{gen_poligonos(u_C1_SCH1)}", gen_poligonos(u_C1_SCH1))
+app_html = app_html.replace("{gen_poligonos(u_C1_SMD1)}", gen_poligonos(u_C1_SMD1))
+app_html = app_html.replace("{gen_poligonos(u_PREC)}", gen_poligonos(u_PREC))
+app_html = app_html.replace("{gen_poligonos(u_PREC_SMX2)}", gen_poligonos(u_PREC_SMX2))
+app_html = app_html.replace("{gen_poligonos(u_SDE)}", gen_poligonos(u_SDE))
 
 html(app_html, height=1200, scrolling=True)
 
@@ -3948,7 +3968,7 @@ info_operativa = {
             <div style='display: flex; flex-direction: column; gap: 15px;'>
                 <a href="https://drive.google.com/drive/folders/1VNCUhdFxnV6MltnBFt4sH6AN_FJjL5jj" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📁 SUBIR DATAS</a>
                 <a href="https://docs.google.com/spreadsheets/d/1mj1krN2hXQQ1yFzswDoPscd9tPhguDnB-mAxB4aLPy0/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE METRO</a>
-                <a href="https://docs.google.com/spreadsheets/d/1lcrV9kxqwZB8007DPn4binDfDoD4enX26nISPWkOXDM/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE CENTRO</a>
+                <a href="https://docs.google.com/spreadsheets/d/1mj1krN2hXQQ1yFzswDoPscd9tPhguDnB-mAxB4aLPy0/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE CENTRO</a>
                 <a href="https://docs.google.com/spreadsheets/d/1Gw1RG4XGfDCyz2lKmoj01OoOHQcaPpVagWCeKj-oCzE/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE NORTE</a>
                 <a href="https://docs.google.com/spreadsheets/d/1irZgPeFGGtJL2rRu2CYK6NHsjoieX-9DEA-rQCrRjKI/edit" target="_blank" style="color: #1E90FF; text-decoration: none; font-weight: bold;">📅 SCHEDULE SUR</a>
             </div>
