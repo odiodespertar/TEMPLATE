@@ -586,6 +586,7 @@ def export_c1_csv():
 
 
 def gen_poligonos(data_target=None):
+    return ""
 
 PERFILES = {}
 perfil_actual = "LUNES"
