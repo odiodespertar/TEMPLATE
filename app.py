@@ -1693,9 +1693,9 @@ app_html = """
         contPrioridades.innerHTML = htmlPrioridades;
     }
 
+
+
     function guardarNuevoRuteoCompleto() {
-        alert("Iniciando guardado...");
-        
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
 
@@ -1748,37 +1748,190 @@ app_html = """
             return;
         }
 
-        let datosNuevoRuteo = {
-            accion: "guardar_ruteo",
-            nombre: nombreRuteo,
-            flota: flotaElegida,
-            planes: planesElegidos
-        };
+        // ==============================================================================
+        // CREACIÓN DINÁMICA DE LA PESTAÑA EN PANTALLA (JS)
+        // ==============================================================================
+        contadorPestanaDinamica++;
+        let nuevoTabId = contadorPestanaDinamica;
 
-        try {
-            if (typeof setComponentValue === "function") {
-                setComponentValue(datosNuevoRuteo);
-            } else if (window.parent && typeof window.parent.setComponentValue === "function") {
-                window.parent.setComponentValue(datosNuevoRuteo);
-            }
-        } catch (e) {
-            console.log("Error en envío:", e);
-        }
-
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {
-            modal.style.display = "none";
-        }
+        // 1. Crear el botón de la nueva pestaña
+        let contenedorBotones = document.querySelector("#fleet-sticky .position-relative") || document.querySelector("#fleet-sticky > div > div");
+        let btnCrear = document.querySelector("button[onclick*='abrirCreadorRuteo']");
         
-        let btnGuardar = document.querySelector("button[onclick*='guardarNuevoRuteoCompleto']");
-        if (btnGuardar) {
-            btnGuardar.innerText = "💾 Guardar y Sincronizar Ruteo";
-            btnGuardar.disabled = false;
+        let nuevoBtnTab = document.createElement("button");
+        nuevoBtnTab.className = "tab-btn";
+        nuevoBtnTab.innerText = nombreRuteo;
+        nuevoBtnTab.onclick = function() { showTab(nuevoTabId, this); };
+
+        if (btnCrear && btnCrear.parentNode) {
+            btnCrear.parentNode.insertBefore(nuevoBtnTab, btnCrear);
         }
 
-        alert("¡Ruteo procesado correctamente!");
-    }
+        // 2. Agregar opción al menú selector de pestañas
+        let panelSelector = document.getElementById("panel-selector-pestanas");
+        if (panelSelector) {
+            let lbl = document.createElement("label");
+            lbl.style.cssText = "display:block; margin-bottom:4px; cursor:pointer;";
+            lbl.innerHTML = `<input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-dyn-${nuevoTabId}', this.checked)"> ${nombreRuteo}`;
+            nuevoBtnTab.id = `btn-tab-dyn-${nuevoTabId}`;
+            panelSelector.appendChild(lbl);
+        }
 
+        // 3. Crear contenedor de flota para la nueva pestaña
+        let fleetSticky = document.getElementById("fleet-sticky");
+        let nuevoContentFlota = document.createElement("div");
+        nuevoContentFlota.id = `tab-${nuevoTabId}`;
+        nuevoContentFlota.className = "t-content";
+        nuevoContentFlota.style.display = "none";
+
+        let htmlFlota = `
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                        <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
+                        <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center;">USADAS</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                    </tr>
+                </thead>
+                <tbody id="body-${nuevoTabId}">`;
+
+        flotaElegida.forEach(f => {
+            htmlFlota += `
+                <tr class="master-row">
+                    <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${f.nombre}</td>
+                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMin}</td>
+                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMax}</td>
+                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
+                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
+                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
+                </tr>`;
+        });
+
+        htmlFlota += `
+                </tbody>
+                <tfoot class="fila-total">
+                    <tr class="fila-total">
+                        <td style="border:none;"></td>
+                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                        <td id="total-ruteadas-${nuevoTabId}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                    </tr>
+                </tfoot>
+            </table>`;
+
+        nuevoContentFlota.innerHTML = htmlFlota;
+        fleetSticky.appendChild(nuevoContentFlota);
+
+        // 4. Crear contenedor de polígonos para la nueva pestaña
+        let contenedorPolysPadre = document.getElementById("polys-2")?.parentNode;
+        let nuevoContentPolys = document.createElement("div");
+        nuevoContentPolys.id = `polys-${nuevoTabId}`;
+        nuevoContentPolys.className = "p-content";
+        nuevoContentPolys.style.display = "none";
+
+        let htmlPolys = "";
+        planesElegidos.forEach(p => {
+            let filasExtra = "";
+            for (let i = 1; i < p.filas; i++) {
+                filasExtra += `
+                    <tr class="calc-row">
+                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                            </div>
+                        </td>
+                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                            </div>
+                        </td>
+                        <td style="border: 0.5px solid #25282b; padding: 2px;">
+                            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </td>
+                        <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                    </tr>`;
+            }
+
+            htmlPolys += `
+                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                    <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+                        <thead>
+                            <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
+                                <th style="padding: 0 10px; border-right: 1px solid #25282b; width: 130px;">PLAN</th>
+                                <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;">SPR</th>
+                                <th style="width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
+                                <th style="width: 45px; text-align: center;">OK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="calc-row">
+                                <td class="plan-cell" rowspan="${p.filas}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${p.nombre}</td>
+                                <td class="vol-cell" rowspan="${p.filas}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
+                                    <div style="text-align:center;">
+                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
+                                    </div>
+                                </td>
+                                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                                    </div>
+                                </td>
+                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                                    </div>
+                                </td>
+                                <td style="border: 0.5px solid #25282b; padding: 2px;">
+                                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </td>
+                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                            </tr>
+                            ${filasExtra}
+                            <tr style="background:#ededed; height: 32px;">
+                                <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
+                                <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
+                                <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                            </tr>
+                        </tbody>
+                        <div style="text-align:center; padding:5px; background:#ededed;">
+                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                            <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${p.filas}</span>
+                        </div>
+                    </table>
+                </div>`;
+        });
+
+        nuevoContentPolys.innerHTML = htmlPolys;
+        if (contenedorPolysPadre) {
+            contenedorPolysPadre.appendChild(nuevoContentPolys);
+        }
+
+        // 5. Cerrar modal y cambiar a la nueva pestaña inmediatamente
+        cerrarCreadorRuteo();
+        showTab(nuevoTabId, nuevoBtnTab);
+
+        alert(`¡Ruteo "${nombreRuteo}" creado y mostrado con éxito!`);
+    }
+    
+
+    
     function showAlert(msg) {
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
