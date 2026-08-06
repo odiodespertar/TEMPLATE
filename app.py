@@ -537,7 +537,7 @@ def gen_master_rows(data_dict, table_id):
 
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
-            rows += f"""
+            rows += """
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
                 <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
                     {name}
@@ -582,7 +582,7 @@ def gen_master_rows(data_dict, table_id):
                 <td class="edit-ocup" style="display:none;">0</td>
                 """
 
-            rows += f"""
+            rows += """
             <tr class="master-row" style="{st_base}">
                 <td contenteditable="true" class="edit-name" oninput="recalc()"
                     style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">
