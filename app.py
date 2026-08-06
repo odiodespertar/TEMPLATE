@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit.components.v1 import html
+from supabase import Client, create_client
 
 st.set_page_config(
     page_title="Monitor Logístico - Liliana García",
@@ -17,6 +18,54 @@ st.set_page_config(
 # Inicializador de ruteos dinámicos en session_state
 if "ruteos_dinamicos" not in st.session_state:
     st.session_state["ruteos_dinamicos"] = {}
+
+
+import json
+import streamlit as st
+from supabase import Client, create_client
+
+
+# Inicializar cliente de Supabase
+@st.cache_resource
+def init_supabase():
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+
+try:
+    supabase = init_supabase()
+except Exception as e:
+    supabase = None
+
+
+# Función para GUARDAR un ruteo en la base de datos
+def guardar_ruteo_bd(nombre, datos_dict):
+    if supabase:
+        try:
+            supabase.table("ruteos_guardados").insert(
+                {"nombre": nombre, "datos": datos_dict}
+            ).execute()
+            return True
+        except Exception as err:
+            st.error(f"Error al guardar en BD: {err}")
+    return False
+
+
+# Función para CARGAR todos los ruteos de la base de datos
+def cargar_ruteos_bd():
+    if supabase:
+        try:
+            res = (
+                supabase.table("ruteos_guardados")
+                .select("*")
+                .order("created_at")
+                .execute()
+            )
+            return res.data
+        except Exception as err:
+            st.error(f"Error al cargar BD: {err}")
+    return []
 
 
 # ==============================================================================
@@ -3776,6 +3825,31 @@ app_html = app_html.replace("{gen_poligonos(u_C1_SMD1)}", gen_poligonos(u_C1_SMD
 app_html = app_html.replace("{gen_poligonos(u_PREC)}", gen_poligonos(u_PREC))
 app_html = app_html.replace("{gen_poligonos(u_PREC_SMX2)}", gen_poligonos(u_PREC_SMX2))
 app_html = app_html.replace("{gen_poligonos(u_SDE)}", gen_poligonos(u_SDE))
+
+# ==============================================================================
+# INYECCIÓN AUTOMÁTICA DE RUTEOS GUARDADOS EN SUPABASE
+# ==============================================================================
+ruteos_bd = cargar_ruteos_bd()
+
+if ruteos_bd:
+    # Convertimos los ruteos guardados en un formato JSON seguro para JavaScript
+    ruteos_json_str = json.dumps(ruteos_bd)
+    script_cargas = f"""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {{
+            let ruteosCargados = {ruteos_json_str};
+            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {{
+                window.restaurarRuteosDesdeBD(ruteosCargados);
+            }}
+        }});
+    </script>
+    </body>
+    """
+    app_html = app_html.replace("</body>", script_cargas)
+
+# ==============================================================================
+# RENDERIZADO EN STREAMLIT
+# ==============================================================================
 
 html(app_html, height=1200, scrolling=True)
 
