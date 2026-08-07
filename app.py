@@ -2394,7 +2394,7 @@ app_html = f"""
                 }}
             }});
             
-            planesElegidos.push({ {
+            planesElegidos.push({{
                 nombre: nombrePlan, 
                 filas: filasPlan, 
                 unidadesPrioritarias: unidadesPrioritarias // Array de unidades en orden
