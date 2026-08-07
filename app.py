@@ -2291,7 +2291,7 @@ app_html = f"""
 
         let opcionesUnidades = `<option value="">-- Sin prioridad (Usar Flota Estándar) --</option>`;
         Object.keys(BASE_FLOTA_MASTER).forEach(u => {{
-            opcionesUnidades += `<option value="${u}">${{u}}</option>`;
+            opcionesUnidades += `<option value="${{u}}">${{u}}</option>`;
         }});
 
         for (let i = 1; i <= cant; i++) {{
