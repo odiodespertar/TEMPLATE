@@ -3870,7 +3870,7 @@ app_html = f"""
                 }}
             }}
 
-            if (currentTab == 5) { // PREC SMX2
+            if (currentTab == 5) {{ // PREC SMX2
                 let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
                 if (smallVan && smallVan.restante > 0) {{
                     let planesPrioridad = ["IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ"];
