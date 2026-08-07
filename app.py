@@ -3990,7 +3990,7 @@ app_html = f"""
                     unidad.restante -= usar;
                     restante -= (usar * unidad.spr);
                 }}
-            });
+            }});
         }}
         recalc();
     }}
