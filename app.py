@@ -2697,6 +2697,175 @@ app_html = f"""
         }}
     }}
 
+
+
+    // ==============================================================================
+    // 💾 SISTEMA DE PERSISTENCIA EN TIEMPO REAL (LOCALSTORAGE)
+    // ==============================================================================
+    
+    function guardarEstadoEnVivo() {{
+        try {{
+            let estado = {{}};
+
+            // 1. Guardar Volúmenes Totales y Nodos por Polígono
+            document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
+                let volEl = bloque.querySelector('.v-total-val');
+                let nodoEl = bloque.querySelector('.nodos-val') || bloque.querySelector('.nodos-campeche');
+                
+                estado[`poly_vol_${{idx}}`] = volEl ? volEl.innerText.trim() : "0";
+                if (nodoEl) {{
+                    estado[`poly_nodo_${{idx}}`] = nodoEl.innerText.trim();
+                }}
+
+                // Guardar las filas calculadas dentro del polígono
+                let filasData = [];
+                bloque.querySelectorAll('.calc-row').forEach(row => {{
+                    let uVal = row.querySelector('.u-manual')?.innerText.trim() || "0";
+                    let sprVal = row.querySelector('.spr-real-val')?.innerText.trim() || "0";
+                    let sType = row.querySelector('.s-type')?.value || "";
+                    let okCheck = row.querySelector('.ok-check')?.checked || false;
+
+                    filasData.push({{ u: uVal, spr: sprVal, type: sType, ok: okCheck }});
+                }});
+                estado[`poly_filas_${{idx}}`] = filasData;
+            }});
+
+            // 2. Guardar ORH, % Ocupación y Schedule en la Tabla de Flota
+            document.querySelectorAll('.master-row').forEach((row, idx) => {{
+                let stockEl = row.querySelector('.f-stock');
+                let orhEl = row.querySelector('.edit-orh');
+                let ocupEl = row.querySelector('.edit-ocup');
+
+                if (stockEl) estado[`flota_stock_${{idx}}`] = stockEl.innerText.trim();
+                if (orhEl) estado[`flota_orh_${{idx}}`] = orhEl.innerText.trim();
+                if (ocupEl) estado[`flota_ocup_${{idx}}`] = ocupEl.innerText.trim();
+            }});
+
+            // Guardar pestaña/ciclo activo
+            estado['currentTabActive'] = currentTab;
+
+            localStorage.setItem('monitor_logistico_estado_vivo', JSON.stringify(estado));
+        }} catch (e) {{
+            console.error("Error al guardar estado local:", e);
+        }}
+    }}
+
+    function restaurarEstadoEnVivo() {{
+        try {{
+            let dataRaw = localStorage.getItem('monitor_logistico_estado_vivo');
+            if (!dataRaw) return;
+
+            let estado = JSON.parse(dataRaw);
+
+            // 1. Restaurar Volúmenes y Filas de Polígonos
+            document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
+                let volEl = bloque.querySelector('.v-total-val');
+                let nodoEl = bloque.querySelector('.nodos-val') || bloque.querySelector('.nodos-campeche');
+
+                if (volEl && estado[`poly_vol_${{idx}}`] !== undefined) {{
+                    volEl.innerText = estado[`poly_vol_${{idx}}`];
+                }}
+                if (nodoEl && estado[`poly_nodo_${{idx}}`] !== undefined) {{
+                    nodoEl.innerText = estado[`poly_nodo_${{idx}}`];
+                }}
+
+                // Restaurar filas calculadas
+                let filasData = estado[`poly_filas_${{idx}}`];
+                if (Array.isArray(filasData)) {{
+                    let filasHTML = bloque.querySelectorAll('.calc-row');
+                    
+                    // Si el usuario tenía más filas agregadas que las por defecto, creamos las que falten
+                    while (filasHTML.length < filasData.length) {{
+                        let btnAgregar = bloque.querySelector('button[onclick*="agregarFilaPlan"]');
+                        if (btnAgregar) agregarFilaPlan(btnAgregar);
+                        filasHTML = bloque.querySelectorAll('.calc-row');
+                    }}
+
+                    filasData.forEach((fData, fIdx) => {{
+                        let row = filasHTML[fIdx];
+                        if (row) {{
+                            let uSpan = row.querySelector('.u-manual');
+                            let sprSpan = row.querySelector('.spr-real-val');
+                            let selectType = row.querySelector('.s-type');
+                            let checkOk = row.querySelector('.ok-check');
+
+                            if (uSpan) uSpan.innerText = fData.u;
+                            if (sprSpan) sprSpan.innerText = fData.spr;
+                            if (selectType && fData.type) {{
+                                selectType.value = fData.type;
+                                updateSelectColor(selectType);
+                            }}
+                            if (checkOk) checkOk.checked = fData.ok;
+                        }}
+                    }});
+                }}
+            }});
+
+            // 2. Restaurar Tabla de Flota (Stock, ORH, Ocupación)
+            document.querySelectorAll('.master-row').forEach((row, idx) => {{
+                let stockEl = row.querySelector('.f-stock');
+                let orhEl = row.querySelector('.edit-orh');
+                let ocupEl = row.querySelector('.edit-ocup');
+
+                if (stockEl && estado[`flota_stock_${{idx}}`] !== undefined) stockEl.innerText = estado[`flota_stock_${{idx}}`];
+                if (orhEl && estado[`flota_orh_${{idx}}`] !== undefined) {{
+                    orhEl.innerText = estado[`flota_orh_${{idx}}`];
+                    actualizarHoraMinuto(orhEl);
+                }}
+                if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
+            }});
+
+            if (typeof recalc === 'function') recalc();
+        }} catch (e) {{
+            console.error("Error al restaurar estado local:", e);
+        }}
+    }}
+
+    function limpiarPantallaCompleta() {{
+        if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
+        
+        localStorage.removeItem('monitor_logistico_estado_vivo');
+
+        // Resetear volúmenes a 0
+        document.querySelectorAll('.v-total-val, .nodos-val, .nodos-campeche').forEach(el => el.innerText = "0");
+        
+        // Resetear filas
+        document.querySelectorAll('.calc-row').forEach(row => {{
+            let uSpan = row.querySelector('.u-manual');
+            let sprSpan = row.querySelector('.spr-real-val');
+            let selectType = row.querySelector('.s-type');
+            let checkOk = row.querySelector('.ok-check');
+
+            if (uSpan) uSpan.innerText = "0";
+            if (sprSpan) sprSpan.innerText = "0";
+            if (selectType) {{
+                selectType.value = "";
+                updateSelectColor(selectType);
+            }}
+            if (checkOk) checkOk.checked = false;
+        }});
+
+        // Resetear stock de flota
+        document.querySelectorAll('.f-stock').forEach(el => el.innerText = "0");
+
+        if (typeof recalc === 'function') recalc();
+    }}
+
+    // LISTENERS DE GUARDA Y RESTAURACIÓN AUTOMÁTICA
+    document.addEventListener('input', function(e) {{
+        guardarEstadoEnVivo();
+    }});
+
+    document.addEventListener('change', function(e) {{
+        guardarEstadoEnVivo();
+    }});
+
+    window.addEventListener('load', function() {{
+        restaurarEstadoEnVivo();
+    }});
+
+
+
     function aplicarPerfil() {{
         let perfil = perfiles[perfilActual];
         if(!perfil) return;
