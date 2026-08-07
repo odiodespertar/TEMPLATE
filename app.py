@@ -8,6 +8,13 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
+# Identificador de usuario o estación
+usuario_activo = st.sidebar.text_input("👤 Usuario / Estación:", value="Usuario_1").strip().replace(" ", "_")
+
+# Se pasa esta variable al bloque donde generas el HTML/JS
+st.session_state["usuario_activo"] = usuario_activo
+
+
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
 # ==========================================
@@ -2036,6 +2043,13 @@ app_html = f"""
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
+    
+    const usuarioActivo = "{usuario_activo}"; 
+    
+    function obtenerClaveUsuario(tabNombre) {
+        return tabNombre + "_" + usuarioActivo;
+    }
+
 
     let currentTab = 2;
     let editedRowsPlan = new Set();
@@ -2749,15 +2763,19 @@ app_html = f"""
             // Guardar pestaña/ciclo activo
             estado['currentTabActive'] = currentTab;
 
-            localStorage.setItem('monitor_logistico_estado_vivo', JSON.stringify(estado));
+            // 🟢 CLAVE ÚNICA POR USUARIO:
+            let claveLocal = 'monitor_logistico_estado_' + usuarioActivo;
+            localStorage.setItem(claveLocal, JSON.stringify(estado));
         }} catch (e) {{
             console.error("Error al guardar estado local:", e);
         }}
-    }}
+        }}
 
     function restaurarEstadoEnVivo() {{
         try {{
-            let dataRaw = localStorage.getItem('monitor_logistico_estado_vivo');
+            // 🟢 LEER CLAVE ÚNICA DEL USUARIO:
+            let claveLocal = 'monitor_logistico_estado_' + usuarioActivo;
+            let dataRaw = localStorage.getItem(claveLocal);
             if (!dataRaw) return;
 
             let estado = JSON.parse(dataRaw);
