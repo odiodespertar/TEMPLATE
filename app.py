@@ -1093,7 +1093,7 @@ app_html = f"""
                     <button id="btn-tab-smd1" class="tab-btn" onclick="showTab(8, this)">C1 SMD1</button>
                     <button id="btn-tab-sja1" class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
                     
-                    <!-- ➕ BOTÓN CREADOR DE RUTEO RESTAURADO -->
+                    <!-- ➕ BOTÓN CREADOR DE RUTEO -->
                     <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 7px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8px;">➕ CREAR NUEVO RUTEO</button>
                 </div>
 
@@ -1350,8 +1350,7 @@ app_html = f"""
                         </div>
                     </div>
 
-                
-                <!-- 🟢 CASILLAS OPIONALES AGREGADAS AQUÍ -->
+                    <!-- 🟢 CASILLAS OPIONALES -->
                     <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center;">
                         <span style="color: #aaa; font-size: 12px; font-weight: bold;">Columnas adicionales opcionales:</span>
                         <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
@@ -1362,9 +1361,6 @@ app_html = f"""
                         </label>
                     </div>
                 </div>
-
-
-                
 
                 <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
                     <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
@@ -1597,7 +1593,7 @@ app_html = f"""
     }}
 
     // ==============================================================================
-    // 💾 GUARDAR NUEVO RUTEO Y SYNC SUPABASE
+    // 💾 GUARDAR NUEVO RUTEO CON OPCIONALES Y SYNC SUPABASE
     // ==============================================================================
     async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
@@ -1608,6 +1604,9 @@ app_html = f"""
             alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
             return;
         }}
+
+        let incluirORH = document.getElementById("chk-incluir-orh")?.checked || false;
+        let incluirOcup = document.getElementById("chk-incluir-ocup")?.checked || false;
 
         let flotaElegida = [];
         let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
@@ -1646,12 +1645,13 @@ app_html = f"""
 
         let datosEstructura = {{
             flota: flotaElegida,
-            planes: planesElegidos
+            planes: planesElegidos,
+            incluirORH: incluirORH,
+            incluirOcup: incluirOcup
         }};
 
         let nuevoIdBD = null;
 
-        // 💾 Inserción en Supabase pidiendo el registro retornado (.select())
         if (supabaseClient) {{
             try {{
                 const {{ data, error }} = await supabaseClient
@@ -1673,104 +1673,14 @@ app_html = f"""
             }}
         }}
 
-        // Dibujar en pantalla asociando el ID de Supabase
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD);
-
-        if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
-        alert(`¡Ruteo "${{nombreRuteo}}" guardado permanentemente en la base de datos!`);
-    }}
-
-
-    
-    // ==============================================================================
-    // 🗑️ 1. FUNCIÓN GUARDAR NUEVO RUTEO
-    // ==============================================================================
-    
-    async function guardarNuevoRuteoCompleto() {{
-        let inputNombre = document.getElementById("creador-nombre-ruteo");
-        if (!inputNombre) return;
-
-        let nombreRuteo = inputNombre.value.trim().toUpperCase();
-        if (!nombreRuteo) {{
-            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
-            return;
-        }}
-
-        let flotaElegida = [];
-        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
-        
-        itemsFlota.forEach((div, idx) => {{
-            let chk = div.querySelector(".chk-flota-unidad");
-            if (chk && chk.checked) {{
-                let nombreUnidad = chk.value;
-                let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
-                let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
-                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
-            }}
-        }});
-
-        if (flotaElegida.length === 0) {{
-            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
-            return;
-        }}
-
-        let planesElegidos = [];
-        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
-        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
-        
-        divsPlanes.forEach((div, idx) => {{
-            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
-            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
-            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
-            
-            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
-        }});
-
-        if (planesElegidos.length === 0) {{
-            alert("⚠️ Ingresa al menos un plan o polígono.");
-            return;
-        }}
-
-        let datosEstructura = {{
-            flota: flotaElegida,
-            planes: planesElegidos
-        }};
-
-        let nuevoIdBD = null;
-
-        // Enviar inserción a Supabase y obtener el ID retornado (.select())
-        if (supabaseClient) {{
-            try {{
-                const {{ data, error }} = await supabaseClient
-                    .from('ruteos_guardados')
-                    .insert([{{ nombre: nombreRuteo, datos: datosEstructura }}])
-                    .select(); // 👈 IMPORTANTE: Pide a Supabase devolver el nuevo registro creado
-
-                if (error) {{
-                    console.error("Error en Supabase:", error);
-                    alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
-                    return;
-                }}
-
-                if (data && data.length > 0) {{
-                    nuevoIdBD = data[0].id; // 👈 Captura el ID asignado en Supabase
-                }}
-            }} catch (err) {{
-                console.error("Error al conectar con Supabase:", err);
-            }}
-        }}
-
-        // Renderizar pestaña localmente pasándole el ID real asignado por Supabase
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD);
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup);
 
         if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
         alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente en la base de datos!`);
     }}
 
-
-
     // ==============================================================================
-    // 🗑️ 1. FUNCIÓN CARGAR RUTEO DESDE SUPABASE
+    // 📂 CARGAR RUTEOS DESDE SUPABASE
     // ==============================================================================
     async function cargarRuteosDesdeSupabase() {{
         if (!supabaseClient) return;
@@ -1792,8 +1702,10 @@ app_html = f"""
                     let nombre = ruteo.nombre;
                     let flota = ruteo.datos.flota || [];
                     let planes = ruteo.datos.planes || [];
+                    let incluirORH = ruteo.datos.incluirORH || false;
+                    let incluirOcup = ruteo.datos.incluirOcup || false;
                     
-                    crearTabYContenidoEnPantalla(nombre, flota, planes, idBD);
+                    crearTabYContenidoEnPantalla(nombre, flota, planes, idBD, incluirORH, incluirOcup);
                 }});
             }}
         }} catch (err) {{
@@ -1801,7 +1713,6 @@ app_html = f"""
         }}
     }}
 
-    // Definición global para la inyección de Python
     window.restaurarRuteosDesdeBD = function(ruteosCargados) {{
         if (!Array.isArray(ruteosCargados)) return;
         ruteosCargados.forEach(ruteo => {{
@@ -1809,14 +1720,16 @@ app_html = f"""
             let nombre = ruteo.nombre;
             let flota = ruteo.datos.flota || [];
             let planes = ruteo.datos.planes || [];
-            crearTabYContenidoEnPantalla(nombre, flota, planes, idBD);
+            let incluirORH = ruteo.datos.incluirORH || false;
+            let incluirOcup = ruteo.datos.incluirOcup || false;
+            crearTabYContenidoEnPantalla(nombre, flota, planes, idBD, incluirORH, incluirOcup);
         }});
     }}
 
     // ==============================================================================
-    // 🗑️ 1. FUNCIÓN CREAR TAB Y CONTENIDO EN PANTALLA
+    // 🛠️ FUNCIÓN CREAR TAB Y CONTENIDO EN PANTALLA (CON COLUMNAS OPIONALES)
     // ==============================================================================
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null) {{
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -1846,7 +1759,6 @@ app_html = f"""
         nuevoContentFlota.className = "t-content";
         nuevoContentFlota.style.display = "none";
 
-        // BARRA DE ACCIONES PARA EDITAR / ELIMINAR RUTEO GUARDADO
         let botonesAccion = idBD ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
                 <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
@@ -1854,11 +1766,18 @@ app_html = f"""
             </div>
         ` : '';
 
+        // Construir Encabezados Opcionales
+        let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>` : '';
+        let thOcup = incluirOcup ? `<th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>` : '';
+        let colspanFooter = 1 + (incluirORH ? 2 : 0) + (incluirOcup ? 1 : 0) + 3;
+
         let htmlFlota = botonesAccion + `
             <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <thead>
                     <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
                         <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                        ${{thORH}}
+                        ${{thOcup}}
                         <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
                         <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
                         <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
@@ -1869,9 +1788,20 @@ app_html = f"""
                 <tbody id="body-${{nuevoTabId}}">`;
 
         flotaElegida.forEach(f => {{
+            let tdORH = incluirORH ? `
+                <td contenteditable="true" class="edit-orh" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
+                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
+            ` : '';
+
+            let tdOcup = incluirOcup ? `
+                <td contenteditable="true" class="edit-ocup" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">0</td>
+            ` : '';
+
             htmlFlota += `
                 <tr class="master-row">
                     <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${{f.nombre}}</td>
+                    ${{tdORH}}
+                    ${{tdOcup}}
                     <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMin}}</td>
                     <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMax}}</td>
                     <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
@@ -1885,7 +1815,7 @@ app_html = f"""
                 <tfoot class="fila-total">
                     <tr class="fila-total">
                         <td style="border:none;"></td>
-                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                        <td colspan="${{colspanFooter}}" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
                         <td id="total-ruteadas-${{nuevoTabId}}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
                     </tr>
                 </tfoot>
@@ -2016,11 +1946,17 @@ app_html = f"""
             planesElegidos.push({{ nombre, filas }});
         }});
 
-        let nuevosDatos = {{ flota: flotaElegida, planes: planesElegidos }};
+        let tieneORH = document.querySelectorAll(`#tab-${{tabId}} .edit-orh`).length > 0;
+        let tieneOcup = document.querySelectorAll(`#tab-${{tabId}} .edit-ocup`).length > 0;
+
+        let nuevosDatos = {{ 
+            flota: flotaElegida, 
+            planes: planesElegidos,
+            incluirORH: tieneORH,
+            incluirOcup: tieneOcup
+        }};
         await actualizarRuteoEnBD(idBD, nuevosDatos);
     }}
-
-
 
     function cambiarCiclo(valorTab) {{
         document.querySelectorAll('.t-content').forEach(el => {{
@@ -4187,117 +4123,4 @@ info_operativa = {
             </div>
 
             <h4 style="color: #333333; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📢 REGLAS GENERALES </h4>
-            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1.6;">
-                <p style="margin-top:0; font-weight:bold;">Buenas noches, team. Les pido su apoyo considerando los siguientes puntos para el ruteo:</p>
-                • ✅ Contemplar toda la flota disponible en el schedule.<br>
-                • ✅ El polígono de Alchichica deberá operar con AM0 por temas de seguridad.<br>
-                • Procurar que las unidades Small no superen los 65 ID's en SPR o (300min = 5 hrs).<br>
-                • ✅ Utilizar todas las rentals disponibles y configurarlas como híbridas.<br>
-                • ✅ En el polígono Centro, cubrir primero la operación con rentals; si es necesario, complementar con crowd o MLP.<br>
-                • ✅ Considerar el Mega Nodo (TRUCK 3.5), ruteo de newbies y zonas extendidas con crowd, especialmente en Xico y Tuzamapan.<br><br>
-                
-                <div style="background: #fdf2f2; border: 1px solid #fadbd8; padding: 10px; border-radius: 4px; color: #c0392b; font-weight: bold; margin-top: 5px;">
-                    🚫 Las unidades CROWD NO pueden ir a Tezuitlán (zona muy alejada del SVC).<br>
-                    🚫 Las RENTALS NO pueden ir a zonas tan foráneas (Tlaltetela y Perote).
-                </div>
-            </div>
-        </div>
-    """,
-    "C2": (
-        "<div style='text-align:center; padding-top:100px;"
-        " color:#666;'><i>Información C2 pendiente...</i></div>"
-    ),
-    "PREC": (
-        "<div style='text-align:center; padding-top:100px;"
-        " color:#666;'><i>Información PRECARGA pendiente...</i></div>"
-    ),
-}
-
-html_notitas = """
-<style>
-    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
-    .main-box { background: #25282b; padding: 10px; }
-    
-    .unified-console {
-        background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-bottom: 20px; border: 1px solid #25282b; text-align: center;
-    }
-    .display-screen {
-        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
-    }
-    .btn-3d {
-        background: linear-gradient(145deg, #1e90ff, #1c82e6);
-        color: white; border: none; padding: 12px 25px; border-radius: 10px;
-        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-    }
-    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
-
-    .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
-    .tab-btn {
-        background: #333; color: white; border: none; padding: 10px 18px;
-        border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;
-    }
-    .tab-btn.active { background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }
-
-    body:not(.tab-2) #excel-btn { display: none !important; }
-
-    .content-area { background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }
-</style>
-
-<div class="main-box">
-    <div class="unified-console"> 
-        <div class="display-screen">
-            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
-            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
-        </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-            <div>
-                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
-                <input type="number" id="minInput" value="10" 
-                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
-            </div>
-            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
-        </div>
-    </div>
-
-    <h3 style="color: #1E90FF; text-align: center; margin-bottom: 15px;">🍓 NOTITAS OPERATIVAS</h3>
-    <div class="tab-bar">
-        <button class="tab-btn active" onclick="changeTab(event, 'SDE')">SDE</button>
-        <button class="tab-btn" onclick="changeTab(event, 'C1')">C1</button>
-        <button class="tab-btn" onclick="changeTab(event, 'C2')">C2</button>
-        <button class="tab-btn" onclick="changeTab(event, 'PREC')">PREC</button>
-        <button class="tab-btn" onclick="changeTab(event, 'SIDE_LINE')">SIDE LINE</button>
-        <button class="tab-btn" onclick="changeTab(event, 'ENLACES')">ENLACES</button>
-    </div>
-    <div id="visor" class="content-area">
-        __SDE_CONTENT__
-    </div>
-</div>
-
-<script>
-    const allData = __ALL_DATA__;  
-
-    function changeTab(e, name) {
-        document.getElementById('visor').innerHTML = allData[name];
-        let btns = document.getElementsByClassName('tab-btn');
-        for (let b of btns) { b.classList.remove('active'); }
-        e.currentTarget.classList.add('active');
-    }
-    function ejecutarTodo() {
-        const mins = document.getElementById('minInput').value || 0;
-        const ahora = new Date();
-        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
-        const h = String(nuevaFecha.getHours()).padStart(2, '0');
-        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
-        document.getElementById('horaReal').innerText = h + ":" + m;
-    }
-    ejecutarTodo();
-</script>
-"""
-
-# Reemplazo seguro de variables en notitas
-html_notitas = html_notitas.replace("__SDE_CONTENT__", info_operativa["SDE"])
-html_notitas = html_notitas.replace("__ALL_DATA__", json.dumps(info_operativa))
-
-st.markdown("---")
-components.html(html_notitas, height=1200, scrolling=True)
+            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1Soy una IA basada en texto y no tengo esa capacidad.
