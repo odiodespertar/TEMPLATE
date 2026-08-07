@@ -2126,7 +2126,7 @@ app_html = f"""
                 // Remover en tiempo real de la pantalla y selector sin reiniciar
                 idsAEliminar.forEach(id => removerRuteoDePantallaPorId(id));
 
-                alert(`✅ Se eliminaron ${seleccionados.length} ruteo(s) correctamente.`);
+                alert(`✅ Se eliminaron ${{seleccionados.length}} ruteo(s) correctamente.`);
                 abrirGestorEliminacionMasiva(); // Refrescar modal
             }} catch (err) {{
                 console.error("Error al eliminar masivamente:", err);
