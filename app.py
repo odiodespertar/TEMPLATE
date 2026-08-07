@@ -3526,7 +3526,7 @@ function distribuirAutomatico() {{
         let bloques = Array.from(document.querySelectorAll('#polys-' + currentTab + ' .poligono-bloque'));
         let polys = [];
 
-        bloques.forEach(bl => {
+        bloques.forEach(bl => {{
             let volumen = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0;
             if (volumen > 0) {{
                 polys.push({{
