@@ -2376,7 +2376,7 @@ app_html = f"""
             }}
         }});
 
-        if (flotaElegida.length === 0) { alert("⚠️ Debes seleccionar al menos una unidad para la flota."); return; }}
+        if (flotaElegida.length === 0) {{ alert("⚠️ Debes seleccionar al menos una unidad para la flota."); return; }}
 
         let planesElegidos = [];
         let bloquesPlanes = document.querySelectorAll("#contenedor-lista-planes .bloque-config-plan");
