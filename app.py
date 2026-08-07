@@ -2231,7 +2231,7 @@ app_html = f"""
         if (modal) modal.style.display = 'flex';
     }};
 
-    function agregarSelectorPrioridadEdit(valSeleccionado) {
+    function agregarSelectorPrioridadEdit(valSeleccionado) {{
         if (valSeleccionado === undefined) valSeleccionado = "";
         var contenedor = document.getElementById('contenedorPrioridadesEdit');
         if (!contenedor) return;
