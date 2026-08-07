@@ -193,6 +193,28 @@ st.markdown("""
     .fleet-floating .pestanas-container {
         display: none !important;
     }
+
+    <style>
+    /* Forzar a que el contenedor principal sea flexible al 100% */
+    .main .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Evitar desbordamiento de tablas y paneles */
+    table, div[data-testid="stHorizontalBlock"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Permitir scroll interno en las tablas en lugar de mover toda la página */
+    .tabla-contenedor {
+        overflow-x: auto !important;
+        width: 100% !important;
+    }
+</style>
+    
     </style>
 """, unsafe_allow_html=True)
 
