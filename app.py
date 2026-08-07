@@ -224,7 +224,6 @@ st.markdown("""
 # ==============================================================================
 with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
-    # Estilos CSS específicos dentro del Expander
     st.markdown("""
     <style>
         div[data-testid="stExpander"] button {
@@ -247,7 +246,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
     st.write("👉 Consulta un SVC para indicaciones 🔍")
 
-    # Inicialización de estados para la sesión del chat
     if "main_chat_messages" not in st.session_state:
         st.session_state.main_chat_messages = []
     if "esperando_subtipo_smx5" not in st.session_state:
@@ -262,16 +260,13 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
         st.session_state.data_resumen = {}
 
     with st.container(height=480):
-        # 4.1. MOSTRAR HISTORIAL DE MENSAJES DEL CHAT
         for idx, msg in enumerate(st.session_state.main_chat_messages):
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"], unsafe_allow_html=True)
                 
-                # Cuestionario interactivo guiado
                 if st.session_state.flujo_resumen and idx == len(st.session_state.main_chat_messages) - 1:
                     paso = st.session_state.paso_resumen
 
-                    # PASO 1: Selección de Ciclo
                     if paso == 1:
                         st.write("👇 **¿Qué tipo de ciclo fue?:**")
                         col1, col2 = st.columns(2)
@@ -286,18 +281,14 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 2
                             st.rerun()
 
-                    # PASO 2: Unidades Dedicadas para Nodos
                     elif paso == 2:
                         st.write("👇 **Unidades dedicadas para nodos (selecciona la casilla):**")
-                        
                         u1 = st.checkbox("3.5 tons", key="chk_35")
                         u2 = st.checkbox("Delivery Cell", key="chk_del")
                         
                         unidades_elegidas = []
-                        if u1:
-                            unidades_elegidas.append("3.5 tons")
-                        if u2:
-                            unidades_elegidas.append("Delivery Cell")
+                        if u1: unidades_elegidas.append("3.5 tons")
+                        if u2: unidades_elegidas.append("Delivery Cell")
                         
                         st.write("¿Logis tomó todas?")
                         col_s, col_n = st.columns(2)
@@ -314,11 +305,9 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 2.2
                             st.rerun()
 
-                    # PASO 2.2: Detalle de unidades excluidas
                     elif paso == 2.2:
                         st.write("👇 **¿Cuál o cuáles unidades dejó fuera Logis?**")
                         unis_pre = st.session_state.data_resumen.get("unidades_centro", [])
-                        
                         fuera_elegidas = []
                         for i_idx, u in enumerate(unis_pre):
                             if st.checkbox(f"Dejó fuera: {u}", key=f"chk_fuera_{i_idx}"):
@@ -330,7 +319,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 2.5
                             st.rerun()
 
-                    # PASO 2.5: Volumen Bulk (H&B)
                     elif paso == 2.5:
                         st.write("👇 **¿Hubo Bulk (H&B)?**")
                         c1, c2 = st.columns(2)
@@ -345,7 +333,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 3
                             st.rerun()
 
-                    # PASO 3: Dropeo de Nodos
                     elif paso == 3:
                         st.write("👇 **¿Hubo dropeo de nodos?**")
                         c1, c2 = st.columns(2)
@@ -361,7 +348,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 4
                             st.rerun()
 
-                    # PASO 3.5: Restricción de IDs
                     elif paso == 3.5:
                         st.write("👇 **¿En la contingencia hubo dropeo de IDs por restricción?**")
                         c1, c2 = st.columns(2)
@@ -376,7 +362,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 4
                             st.rerun()
 
-                    # PASO 4: Carga Alchichica AM0
                     elif paso == 4:
                         st.write("👇 **¿Se cargó Alchichica ND en AM0?**")
                         c1, c2 = st.columns(2)
@@ -391,7 +376,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 5
                             st.rerun()
 
-                    # PASO 4.5: Configuración de unidades Alchichica
                     elif paso == 4.5:
                         st.write("👇 **¿Fue con 2 Small Van MLP?**")
                         c1, c2 = st.columns(2)
@@ -406,7 +390,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = 5
                             st.rerun()
 
-                    # PASO 5: Selección de Día y Generación de Resumen Final
                     elif paso == 5:
                         st.write("👇 **Día del ruteo:**")
                         dia_sel = st.selectbox(
@@ -423,7 +406,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             logis_tomo_todas = d.get("logis_tomo_todas", True)
                             unis_fuera = d.get("unidades_fuera", [])
 
-                            # Lógica del mensaje de unidades
                             if logis_tomo_todas or not unis_fuera:
                                 texto_unidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis tomó ambas."
                             elif len(unis_fuera) == len(unis):
@@ -432,7 +414,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                                 fuera_str = " y ".join([", ".join(unis_fuera[:-1]), unis_fuera[-1]]) if len(unis_fuera) > 1 else unis_fuera[0]
                                 texto_unidades = f"👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera la {fuera_str}."
 
-                            # Lógica del mensaje de dropeo
                             if d.get("dropeo_nodos", False):
                                 if d.get("dropeo_restriccion", False):
                                     texto_dropeo = "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción)."
@@ -441,7 +422,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                             else:
                                 texto_dropeo = "👉 No hubo dropeo de nodo."
 
-                            # Lógica del mensaje de Alchichica
                             if d.get("alchichica", False):
                                 if d.get("alchichica_2sv", True):
                                     texto_alchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0 con 2 unidades Small Van MLP."
@@ -452,7 +432,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
                             texto_bulk = "📦 Se asignó H&B para el volumen Bulk." if d.get("hubo_bulk", False) else ""
 
-                            # Compilación del HTML final
                             lineas_html = [
                                 f"**Queda publicado {ciclo_txt} team**:<br><br>",
                                 '<span style="font-weight: normal;">',
@@ -476,21 +455,18 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
                             resumen_final = "".join(lineas_html)
 
-                            # Reseteo del flujo del cuestionario
                             st.session_state.flujo_resumen = False
                             st.session_state.paso_resumen = 0
                             st.session_state.paso_historial = []
                             st.session_state.main_chat_messages.append({"role": "assistant", "content": resumen_final})
                             st.rerun()
 
-                    # Botón de regreso / corrección
                     if len(st.session_state.paso_historial) > 0 and paso > 1:
                         st.markdown("---")
                         if st.button("↩️ Volver al paso anterior / Corregir", key="btn_atras_resumen"):
                             st.session_state.paso_resumen = st.session_state.paso_historial.pop()
                             st.rerun()
 
-        # 4.2. OPCIONES INTERACTIVAS PARA SMX5
         if st.session_state.esperando_subtipo_smx5:
             with st.chat_message("assistant"):
                 st.write("👇 **Selecciona una opción o escribe 1 ó 2:**")
@@ -513,12 +489,10 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                         st.session_state.main_chat_messages.append({"role": "assistant", "content": reglas_ruteo["smx5_precarga"]})
                     st.rerun()
 
-        # 4.3. ENTRADA DEL CHAT DE CONSULTA Y PROCESAMIENTO INTELIGENTE
         if query_main := st.chat_input("✏️ Escribe tu consulta...", key="main_chat_input"):
             st.session_state.main_chat_messages.append({"role": "user", "content": query_main})
             query_lower = query_main.lower().strip()
 
-            # A) Activación de flujo de resumen
             if "resumen" in query_lower or "cierre" in query_lower or "ciere" in query_lower:
                 st.session_state.flujo_resumen = True
                 st.session_state.paso_resumen = 1
@@ -530,7 +504,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                 })
                 st.rerun()
 
-            # B) Procesamiento de respuesta SMX5
             elif st.session_state.esperando_subtipo_smx5:
                 st.session_state.esperando_subtipo_smx5 = False
                 if "extendido" in query_lower or "1" in query_lower:
@@ -540,16 +513,13 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                 else:
                     respuesta_main = "⚠️ Opción no válida. Consulta escribiendo **SMX5** nuevamente."
 
-            # C) Detección directa de SMX5
             elif query_lower == "smx5":
                 st.session_state.esperando_subtipo_smx5 = True
                 respuesta_main = "🔍 Detecté **SMX5**. ¿De cuál requieres las prioridades?\n\n1️⃣ **Extendido**\n2️⃣ **Precarga**\n\n*(Elige dando clic en los botones superiores o escribe 1 ó 2)*"
 
-            # D) Búsqueda en mapas operativos, FAQs y reglas tradicionales
             else:
                 partes_respuesta = []
 
-                # Búsqueda en mapa operativo
                 svc_mapa = None
                 for key in MAPA_ORIGENES.keys():
                     if key in query_lower:
@@ -569,7 +539,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                     )
                     partes_respuesta.append(bloque_mapa)
 
-                # Búsqueda en FAQs
                 coincidencias_faq = []
                 
                 if any(w in query_lower for w in ["large van sdd", "sdd"]):
@@ -606,7 +575,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                 if coincidencias_faq:
                     partes_respuesta.append("\n\n---\n\n".join(coincidencias_faq))
 
-                # Búsqueda en reglas tradicionales
                 if not coincidencias_faq:
                     mapeo_centros = {
                         "smx9": "smx9_extendido", "sgd2": "sgd2_extendido", "smx4": "smx4_extendido",
@@ -654,7 +622,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                         if lineas and not (svc_mapa and busqueda_origen):
                             partes_respuesta.append(bloque_regla)
 
-                # Compilación final
                 if partes_respuesta:
                     respuesta_main = "\n\n---\n\n".join(partes_respuesta)
                 else:
@@ -2428,14 +2395,9 @@ app_html = f"""
             if (!existe) {{
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
-                opt.innerText = `🟣 ${I18n_Nombre(nombreRuteo)}`;
+                opt.innerText = `🟣 ${{nombreRuteo.toUpperCase()}}`;
                 selectorCiclos.appendChild(opt);
             }}
-        }}
-
-        // Helper para dar formato uniforme al nombre
-        function I18n_Nombre(rawName) {{
-            return rawName.toUpperCase();
         }}
 
         // 2. Crear Tabla de Disponibilidad de Flota
@@ -2452,7 +2414,6 @@ app_html = f"""
             </div>
         ` : '';
 
-        // Encabezados Opcionales
         let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important;">ORH</th>` : '';
         let thOcup = incluirOcup ? `<th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>` : '';
         let colspanFooter = 1 + (incluirORH ? 2 : 0) + (incluirOcup ? 1 : 0) + 3;
@@ -2510,7 +2471,6 @@ app_html = f"""
         nuevoContentFlota.innerHTML = htmlFlota;
         if (fleetSticky) fleetSticky.appendChild(nuevoContentFlota);
 
-        // Inicializar convertidor de horas ORH si está activado
         if (incluirORH) {{
             nuevoContentFlota.querySelectorAll(".edit-orh").forEach(function(celda) {{
                 actualizarHoraMinuto(celda);
@@ -2620,7 +2580,6 @@ app_html = f"""
             contenedorPolysPadre.appendChild(nuevoContentPolys);
         }}
 
-        // Cambiar automáticamente a la nueva vista seleccionada
         if (selectorCiclos) {{
             selectorCiclos.value = nuevoTabId;
             cambiarCiclo(nuevoTabId);
@@ -2793,20 +2752,6 @@ app_html = f"""
         const contador = bloque.querySelector(".contador-filas");
         if(contador){{
             contador.innerText = "Filas: " + filas;
-        }}
-    }}
-
-    function toggleMenuPestanas() {{
-        let panel = document.getElementById("panel-selector-pestanas");
-        if (panel) {{
-            panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
-        }}
-    }}
-
-    function toggleBtnPestana(btnId, visible) {{
-        let btn = document.getElementById(btnId);
-        if (btn) {{
-            btn.style.display = visible ? "inline-block" : "none";
         }}
     }}
 
@@ -3260,17 +3205,17 @@ app_html = f"""
             let permiteInfinito = false;
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
 
-            let activeTabBtn = document.querySelector('.tab-btn.active');
-            if (activeTabBtn) {{
-                let tabId = activeTabBtn.textContent.trim();
+            let selectorCiclos = document.getElementById("ciclo-selector");
+            if (selectorCiclos) {{
+                let optText = selectorCiclos.options[selectorCiclos.selectedIndex]?.text || "";
                 
                 if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
                     permiteInfinito = true;
                 }}
-                else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
+                else if (optText.includes("C1 SCP1") && unidadSeleccionada.trim() === "Large Van MLP") {{
                     permiteInfinito = true;
                 }} 
-                else if ((tabId === "SDE" || tabId === "PREC") && esUnidadCar) {{
+                else if ((optText.includes("EXTENDIDO") || optText.includes("PREC")) && esUnidadCar) {{
                     permiteInfinito = true;
                 }}
             }}
@@ -3381,21 +3326,18 @@ app_html = f"""
             
             let permiteInfinito = false;
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
-            let activeTabBtn = document.querySelector('.tab-btn.active');
-            
-            if (activeTabBtn) {{
-                let tabId = activeTabBtn.textContent.trim();
+            let selectorCiclos = document.getElementById("ciclo-selector");
+            let optText = selectorCiclos ? selectorCiclos.options[selectorCiclos.selectedIndex]?.text || "" : "";
 
-                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
+            if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
+                permiteInfinito = true;
+            }}
+            else if (optText.includes("C1 SCP1") && unidadSeleccionada.trim() === "Large Van MLP") {{
+                permiteInfinito = true;
+            }} 
+            else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {{
+                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
                     permiteInfinito = true;
-                }}
-                else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
-                    permiteInfinito = true;
-                }} 
-                else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {{
-                    if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
-                        permiteInfinito = true;
-                    }}
                 }}
             }}
 
@@ -3419,16 +3361,14 @@ app_html = f"""
 
         let permiteInfinitoFila = false;
         let esUnidadCarFila = unidadSeleccionada.toLowerCase().includes("car");
-        let activeTabBtnFila = document.querySelector('.tab-btn.active');
-        
-        if (activeTabBtnFila) {{
-            let tabId = activeTabBtnFila.textContent.trim();
-            if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
+        let selectorCiclosFila = document.getElementById("ciclo-selector");
+        let optTextFila = selectorCiclosFila ? selectorCiclosFila.options[selectorCiclosFila.selectedIndex]?.text || "" : "";
+
+        if (optTextFila.includes("C1 SCP1") && unidadSeleccionada.trim() === "Large Van MLP") {{
+            permiteInfinitoFila = true;
+        }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {{
+            if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
                 permiteInfinitoFila = true;
-            }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {{
-                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
-                    permiteInfinitoFila = true;
-                }}
             }}
         }}
 
@@ -3512,6 +3452,7 @@ app_html = f"""
             "total-no-car-9", "total-car-schedule-9", "total-car-real-9",
             "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
         ];
+
         if (isExcel) {{
             if (bPaquetes) {{
                 estadoPaquetesAntesDeExcel = bPaquetes.style.display;
@@ -3552,6 +3493,7 @@ app_html = f"""
                     if(fila) fila.style.removeProperty('display');
                 }}
             }});
+
             document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
                 fila.style.setProperty('display', 'table-row', 'important');
                 if (typeof actualizarVisibilidadContador === "function") actualizarVisibilidadContador();
@@ -4567,4 +4509,41 @@ html_limpio = f"""
         background: linear-gradient(145deg, #1e90ff, #1c82e6);
         color: white; border: none; padding: 12px 25px; border-radius: 10px;
         font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-Lo que me pides está fuera de mis capacidades programadas. Solo genero texto.
+    }}
+    .btn-3d:active {{ box-shadow: 0 2px #0a56a3; transform: translateY(3px); }}
+    
+    .map-container {{
+        background: #1e1e1e; border-radius: 12px; padding: 15px; 
+        width: 100%; max-width: 900px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }}
+    .map-container img {{
+        max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #444;
+    }}
+</style>
+
+<div class="main-box">
+    <!-- Reloj Restador / Consola -->
+    <div class="unified-console"> 
+        <div class="display-screen">
+            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
+            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+            <div>
+                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
+                <input type="number" id="minInput" value="10" 
+                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
+            </div>
+            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
+        </div>
+    </div>
+
+    <!-- Imagen del Mapa Operativo -->
+    <div class="map-container">
+        <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
+        <img src="{url_final}" alt="Mapa de regiones">
+    </div>
+</div>
+
+<script>
+    functionI seem to be encountering an error. Can I try something else for you?
