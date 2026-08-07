@@ -2591,7 +2591,7 @@ app_html = f"""
             }}
 
             htmlPolys += `
-                <div class="poligono-bloque" data-unidad-prioritaria="${{p.unidadPrioritaria || ''}}" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                <div class="poligono-bloque" data-unidad-prioritaria="${{p.unidadPrioritaria || ''}}" data-prioridades="${{p.unidadPrioritaria || ''}}" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
                     <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                         <thead>
                             <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
@@ -2606,8 +2606,8 @@ app_html = f"""
                         <tbody>
                             <tr class="calc-row">
                                 <td class="plan-cell" rowspan="${{p.filas}}" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414; padding: 4px;">
-                                    <div style="margin-bottom: 4px;">${{p.nombre}}</div>
-                                    <button type="button" onclick="window.abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: normal; display: block; margin: 0 auto;">
+                                    <div style="margin-bottom: 5px; font-size: 13px; font-weight: bold; text-transform: uppercase;">${{p.nombre}}</div>
+                                    <button type="button" onclick="window.abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: normal; display: block; margin: 0 auto; outline: none;">
                                         ✏️ Editar
                                     </button>
                                 </td>
@@ -2616,16 +2616,16 @@ app_html = f"""
                                 </td>
                                 <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                        <button type="button" style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
                                         <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                                        <button type="button" style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
                                     </div>
                                 </td>
                                 <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                        <button type="button" style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
                                         <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                                        <button type="button" style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
                                     </div>
                                 </td>
                                 <td style="border: 0.5px solid #25282b; padding: 2px;">
@@ -2633,7 +2633,9 @@ app_html = f"""
                                         <option value="">Seleccionar...</option>
                                     </select>
                                 </td>
-                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;">
+                                    <input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;">
+                                </td>
                             </tr>
                             ${{filasExtra}}
                             <tr style="background:#ededed; height: 32px;">
@@ -2643,8 +2645,8 @@ app_html = f"""
                             </tr>
                         </tbody>
                         <div style="text-align:center; padding:5px; background:#ededed;">
-                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
-                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                            <button type="button" onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                            <button type="button" onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
                             <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${{p.filas}}</span>
                         </div>
                     </table>
