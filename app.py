@@ -2181,7 +2181,7 @@ app_html = f"""
         // 2. Remover tabla de flota del DOM
         let divsFlota = document.querySelectorAll(`.t-content`);
         divsFlota.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || el.id == `tab-${tabIdARemover}`) {{
+            if (el.getAttribute("data-id-bd") == idBD || el.id == `tab-${{tabIdARemover}}`) {{
                 el.remove();
             }}
         }});
@@ -2189,7 +2189,7 @@ app_html = f"""
         // 3. Remover bloque de polígonos del DOM
         let divsPoly = document.querySelectorAll(`.p-content`);
         divsPoly.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || el.id == `polys-${tabIdARemover}`) {{
+            if (el.getAttribute("data-id-bd") == idBD || el.id == `polys-${{tabIdARemover}}`) {{
                 el.remove();
             }}
         }});
