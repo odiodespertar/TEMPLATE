@@ -2621,28 +2621,30 @@ app_html = f"""
     }}
 
     function cambiarCiclo(valorTab) {{
-        document.querySelectorAll('.t-content').forEach(el => {{
-            el.style.display = 'none';
-        }});
-        const tablaActiva = document.getElementById('tab-' + valorTab);
-        if (tablaActiva) {{
-            tablaActiva.style.display = 'block';
-        }}
+        let idNum = parseInt(valorTab);
+        currentTab = idNum;
 
-        document.querySelectorAll('.p-content').forEach(el => {{
-            el.style.display = 'none';
-        }});
-        const polyActivo = document.getElementById('polys-' + valorTab);
-        if (polyActivo) {{
-            polyActivo.style.display = 'block';
-        }}
+        // Ocultar todas las tablas de flota y polígonos
+        document.querySelectorAll('.t-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.p-content').forEach(el => el.style.display = 'none');
 
-        currentTab = parseInt(valorTab);
-        
+        // Mostrar la tabla y polígonos del ciclo/ruteo seleccionado
+        const tablaActiva = document.getElementById('tab-' + idNum);
+        if (tablaActiva) tablaActiva.style.display = 'block';
+
+        const polyActivo = document.getElementById('polys-' + idNum);
+        if (polyActivo) polyActivo.style.display = 'block';
+
+        // Recalcular totales y actualizar las listas desplegables inferiores
         if (typeof recalc === 'function') {{
             recalc();
         }}
+        if (typeof actualizarSelects === 'function') {{
+            actualizarSelects();
+        }}
     }}
+
+
 
     function aplicarPerfil() {{
         let perfil = perfiles[perfilActual];
