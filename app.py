@@ -1664,6 +1664,12 @@ app_html = f"""
         </button>
     </div>
 
+        <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
+        <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
+            🗑️ GESTIONAR / BORRAR RUTEOS
+        </button>
+    </div>
+
     <!-- CONTENEDOR PRINCIPAL FLOTANTE DE TABLAS -->
     <div id="fleet-sticky" class="fleet-normal">
         <div id="handle-moverse-flotante" onpointerdown="iniciarArrastreFlotante(event)" style="display:none; width:100%; height:28px; background:#343a40; color:#ffffff; font-size:11px; font-weight:bold; line-height:28px; border-radius:6px 6px 0 0; margin:-6px -6px 6px -6px; cursor:grab; user-select:none; z-index:9999999; position:relative; padding:0 8px; box-sizing:border-box; touch-action:none;">
@@ -1999,6 +2005,29 @@ app_html = f"""
         </div>
     </div>
 </div>
+
+
+        <!-- 🗑️ MODAL BORRADO MASIVO -->
+        <div id="modal-eliminar-masivo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+    <div style="max-width: 800px; margin: 0 auto; background: #25282b; border: 2px solid #dc3545; border-radius: 12px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="color: #FF7F7F; margin: 0; font-size: 20px;">🗑️ ELIMINACIÓN MASIVA DE RUTEOS PERSONALIZADOS</h2>
+            <button onclick="cerrarGestorEliminacionMasiva()" style="cursor: pointer; background: #555; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;">✕ CERRAR</button>
+        </div>
+
+        <p style="color: #d0d0d0; font-size: 13px;">Marca la casilla de los ruteos repetidos o no deseados y presiona <b>"Eliminar Seleccionados"</b> para borrarlos todos de la base de datos y la pantalla en tiempo real:</p>
+
+        <div id="lista-ruteos-eliminar" style="max-height: 350px; overflow-y: auto; margin: 15px 0; padding-right: 5px;"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 15px;">
+            <button onclick="ejecutarEliminacionMasiva()" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(220,53,69,0.4);">
+                🗑️ ELIMINAR SELECCIONADOS
+            </button>
+            <button onclick="cerrarGestorEliminacionMasiva()" style="cursor: pointer; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold;">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 
 <script>
     const perfiles = {json.dumps(PERFILES)};
