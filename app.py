@@ -2156,12 +2156,11 @@ app_html = f"""
     }}
 
 
-    // 🛠️ FUNCIÓN PARA ELIMINAR EL RUTEO DE LA PANTALLA EN TIEMPO REAL SIN RECARGAR
     function removerRuteoDePantallaPorId(idBD) {{
         let selectorCiclos = document.getElementById("ciclo-selector");
         let tabIdARemover = null;
 
-        // 1. Remover del selector desplegable buscando por ID de Supabase o por el Valor del Tab
+        // 1. Quitar la opción del menú desplegable
         if (selectorCiclos) {{
             Array.from(selectorCiclos.options).forEach(opt => {{
                 if (opt.getAttribute("data-id-bd") == idBD || opt.value == idBD) {{
@@ -2170,6 +2169,7 @@ app_html = f"""
                 }}
             }});
 
+            // Si el ruteo eliminado era el seleccionado actualmente, cambiar de vista
             if (selectorCiclos.value == tabIdARemover || !selectorCiclos.value) {{
                 if (selectorCiclos.options.length > 0) {{
                     selectorCiclos.selectedIndex = 0;
@@ -2178,18 +2178,18 @@ app_html = f"""
             }}
         }}
 
-        // 2. Remover tabla de flota del DOM
-        let divsFlota = document.querySelectorAll(`.t-content`);
+        // 2. Remover la tabla de flota de la pantalla en tiempo real
+        let divsFlota = document.querySelectorAll(".t-content");
         divsFlota.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || el.id == `tab-${{tabIdARemover}}`) {{
+            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id == `tab-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
 
-        // 3. Remover bloque de polígonos del DOM
-        let divsPoly = document.querySelectorAll(`.p-content`);
+        // 3. Remover los polígonos de la pantalla en tiempo real
+        let divsPoly = document.querySelectorAll(".p-content");
         divsPoly.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || el.id == `polys-${{tabIdARemover}}`) {{
+            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id == `polys-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
@@ -2387,17 +2387,21 @@ app_html = f"""
         }} catch (err) {{ console.error("Error de conexión:", err); }}
     }}
 
+
+
+
     function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
         let selectorCiclos = document.getElementById("ciclo-selector");
         if (selectorCiclos) {{
-            let existe = Array.from(selectorCiclos.options).some(opt => opt.value == nuevoTabId);
+            let existe = Array.from(selectorCiclos.options).some(opt => opt.getAttribute("data-id-bd") == idBD || opt.value == nuevoTabId);
             if (!existe) {{
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
-                opt.innerText = `🟣 ${{nombreRuteo.toUpperCase()}}`;
+                if (idBD) opt.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
+                opt.innerText = `🟣 ${nombreRuteo.toUpperCase()}`;
                 selectorCiclos.appendChild(opt);
             }}
         }}
@@ -2406,6 +2410,7 @@ app_html = f"""
         let nuevoContentFlota = document.createElement("div");
         nuevoContentFlota.id = `tab-${{nuevoTabId}}`;
         nuevoContentFlota.className = "t-content";
+        if (idBD) nuevoContentFlota.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
         nuevoContentFlota.style.display = "none";
 
         let botonesAccion = idBD ? `
@@ -2437,7 +2442,7 @@ app_html = f"""
         flotaElegida.forEach(f => {{
             let tdORH = incluirORH ? `
                 <td contenteditable="true" class="edit-orh" oninput="actualizarHoraMinuto(this); recalc();" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
-                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00</td>
+                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
             ` : '';
 
             let tdOcup = incluirOcup ? `
@@ -2473,8 +2478,9 @@ app_html = f"""
 
         let contenedorPolysPadre = document.getElementById("polys-4")?.parentNode || document.body;
         let nuevoContentPolys = document.createElement("div");
-        nuevoContentPolys.id = `polys-${{nuevoTabId}}`;
+        nuevoContentPolys.id = `polys-${nuevoTabId}`;
         nuevoContentPolys.className = "p-content";
+        if (idBD) nuevoContentPolys.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
         nuevoContentPolys.style.display = "none";
 
         let htmlPolys = "";
@@ -2572,6 +2578,8 @@ app_html = f"""
             cambiarCiclo(nuevoTabId);
         }}
     }}
+
+    
 
     async function guardarCambiosRuteoActual(tabId, idBD) {{
         let tbodyFlota = document.querySelectorAll(`#body-${{tabId}} tr.master-row`);
