@@ -2185,13 +2185,13 @@ app_html = f"""
 
                 removerRuteoDePantallaPorId(idRuteoBD);
             alert("✅ Ruteo eliminado con éxito.");
-            if (typeof abrirGestorEliminacionMasiva === 'function') {
+            if (typeof abrirGestorEliminacionMasiva === 'function') {{
                 abrirGestorEliminacionMasiva(); // Refrescar modal
-            }
-        } catch (err) {
+            }}
+        }} catch (err) {{
             console.error("Error al eliminar:", err);
-        }
-    }
+        }}
+    }}
 
     // ==============================================================================
     // ✏️ MODAL INTERACTIVO DE EDICIÓN CON SELECTORES (LISTA DE FLOTA)
