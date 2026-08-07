@@ -1667,6 +1667,11 @@ app_html = f"""
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
             🗑️ GESTIONAR / BORRAR RUTEOS
         </button>
+        
+        <!-- 🧹 BOTÓN REINICIAR / LIMPIAR PANTALLA -->
+        <button onclick="limpiarPantallaCompleta()" style="cursor:pointer; background: #6c757d; color: white; border: 1px solid #5a6268; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 0 #343a40; outline: none;">
+            🧹 LIMPIAR PANTALLA
+        </button>
     </div>
 
     <!-- CONTENEDOR PRINCIPAL FLOTANTE DE TABLAS -->
