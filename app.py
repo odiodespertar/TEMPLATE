@@ -1646,10 +1646,6 @@ app_html = f"""
         </button>
 
         <div class="btn-tooltip-container">
-            <button id="excel-btn" onclick="toggleExcelView()" title="VISTA EXCEL" style="cursor:pointer; background:#228B22; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; box-shadow:0 2px 0 #1c6d1c; outline:none;">
-                VISTA EXCEL
-            </button>
-        </div>
 
         <button onclick="distribuirAutomatico()" style="cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 0 #2d968f; outline: none;">
             🧠 AUTO-CALCULAR
@@ -1661,21 +1657,6 @@ app_html = f"""
 
         <button class="filter-btn" onclick="filterRows(false)" style="cursor:pointer; background: #808080; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;">
             TODAS
-        </button>
-
-        <!-- ➕ BOTÓN CREADOR DE RUTEO -->
-        <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
-            ➕ CREAR NUEVO RUTEO
-        </button>
-
-        <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
-        <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
-            🗑️ GESTIONAR / BORRAR RUTEOS
-        </button>
-        
-        <!-- 🧹 BOTÓN REINICIAR / LIMPIAR PANTALLA -->
-        <button onclick="limpiarPantallaCompleta()" style="cursor:pointer; background: #6c757d; color: white; border: 1px solid #5a6268; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 0 #343a40; outline: none;">
-            🧹 LIMPIAR PANTALLA
         </button>
     </div>
 
