@@ -3900,26 +3900,40 @@ app_html = f"""
         recalc();
     }}
 
-    function procesarAsignacionUnidadSJA1(poly, fleetList) {{
-        let bloque = poly.bloque;
-        let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
-        let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
-        let yaAsignado = 0;
-        bloque.querySelectorAll('.calc-row').forEach(r => {{
-            let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
-            let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
-            yaAsignado += (unidades * spr);
-        }});
 
-        let restante = objetivo - yaAsignado;
-        if (restante <= 0) return;
+    // ==============================================================================
+// 🔥 SECCIÓN 4: MOTOR EXCLUSIVO CON NUEVAS PRIORIDADES PARA C1 SJA1 (TAB 6)
+// ==============================================================================
+function procesarAsignacionUnidadSJA1(poly) {{
+    let bloque = poly.bloque;
+    let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
+    let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
-        let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-        
+    let yaAsignado = 0;
+    bloque.querySelectorAll('.calc-row').forEach(r => {{
+        let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
+        let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
+        yaAsignado += (unidades * spr);
+    }});
+
+    let restante = objetivo - yaAsignado;
+    if (restante <= 0) return;
+
+    let filas = Array.from(bloque.querySelectorAll('.calc-row'));
+    for (let fila of filas) {{
+        let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
+        let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
+        let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
+
+        if (yaTieneUnidad || yaTieneTipo) continue;
+        if (restante <= 0) break;
+
         let unidad = null;
 
+        // 4.1 PRIORIDAD PLANES LOCALES: "CENTRO 1" Y "CENTRO 2"
         if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
+            
             if (nombrePlan === "⚠️ CENTRO 1") {{
                 const listaEspecialesC1 = [
                     "Extra Large Van MLP H&B", 
@@ -3928,14 +3942,14 @@ app_html = f"""
                 ];
                 
                 for (let nombre of listaEspecialesC1) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombre.toLowerCase());
+                    unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombre.toLowerCase());
                     if (unidad) break;
                 }}
 
                 if (!unidad) {{
                     const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
                     for (let nombre of listaRental) {{
-                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
+                        unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                         if (unidad) break;
                     }}
                 }}
@@ -3943,21 +3957,27 @@ app_html = f"""
             }} else if (nombrePlan === "⚠️ CENTRO 2") {{
                 const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
                 for (let nombre of listaRental) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
+                    unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                     if (unidad) break;
                 }}
             }}
         }}
+
+        // 4.2 PLAN ESPECÍFICO: EJA1 SP (Media Milla SP)
         else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
-            unidad = fleetList.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
+            unidad = fleet.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
         }}
+
+        // 4.3 CASOS ESPECÍFICOS PARA XICO Y TUZAMAPA (LÓGICA BASE ORIGINAL)
         else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+            // Asigna con las MLP foráneas que queden de los demás planes
+            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
 
             if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+                unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
             }}
 
+            // Si se agotan las MLP foráneas, asigna con las unidades sustitutas registradas
             if (!unidad) {{
                 let listaSustitutas = [
                     "car 8h", 
@@ -3969,65 +3989,58 @@ app_html = f"""
                     "moto 3h"
                 ];
                 for (let palabra of listaSustitutas) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(palabra));
+                    unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(palabra));
                     if (unidad) break;
                 }}
             }}
         }}
+
+        // 4.4 PRIORIDAD MÁXIMA FORÁNEA: PEROTE Y TLALTETELA (FORÁNEOS CON NODO)
         else if (nombrePlan === "PEROTE" || nombrePlan === "TLALTETELA") {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
 
             if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+                unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
             }}
         }}
+
+        // 4.5 RESTO DE PLANES FORÁNEOS GENERALES
         else {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
             
             if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-            }}
-            if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0);
+                unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
             }}
         }}
 
-        if (!unidad) return;
+        if (!unidad) break;
 
+        // MATEMÁTICA DE ASIGNACIÓN Y CONSOLIDACIÓN DE FILAS
         let necesarias = Math.ceil(restante / unidad.spr);
-        let usar = Math.min(necesarias, unidad.restante);
+        let usar = (unidad.restante > 0) ? Math.min(necesarias, unidad.restante) : 0;
 
-        if (usar <= 0) return;
+        if (usar <= 0) continue;
 
-        // 🟢 BUSCAR Y CONSOLIDAR SI YA EXISTE EN EL PLAN
         let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-
         if (filaExistente) {{
             let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
             filaExistente.querySelector('.u-manual').innerText = actual + usar;
             filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
             editedRowsPlan.add(filaExistente);
         }} else {{
-            let filaLibre = filas.find(f => {{
-                let uVal = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
-                let tVal = f.querySelector('.s-type')?.value?.trim() || "";
-                return uVal === 0 && (tVal === "" || tVal === "Seleccionar...");
-            }});
-
-            if (filaLibre) {{
-                filaLibre.querySelector('.s-type').value = unidad.nombre;
-                filaLibre.querySelector('.u-manual').innerText = usar;
-                filaLibre.querySelector('.spr-real-val').innerText = unidad.spr;
-                editedRowsPlan.add(filaLibre);
-            }}
+            fila.querySelector('.s-type').value = unidad.nombre;
+            fila.querySelector('.u-manual').innerText = usar;
+            fila.querySelector('.spr-real-val').innerText = unidad.spr;
+            editedRowsPlan.add(fila);
         }}
 
         unidad.restante -= usar;
+        restante -= (usar * unidad.spr);
     }}
+}}
 
-    function actualizarTotales() {{
-        return;
-    }}
+
+
 
     function updateSelectColor(selectElement) {{
         if (selectElement.value === "") {{
