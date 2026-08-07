@@ -20,11 +20,6 @@ if "ruteos_dinamicos" not in st.session_state:
     st.session_state["ruteos_dinamicos"] = {}
 
 
-import json
-import streamlit as st
-from supabase import Client, create_client
-
-
 # Inicializar cliente de Supabase
 @st.cache_resource
 def init_supabase():
@@ -114,7 +109,7 @@ st.markdown(
         }
     }
 
-    /* --- VENTANA FLOTANTE (Lila azulado vibrante y moderno) --- */
+    /* --- VENTANA FLOTANTE --- */
     div[data-testid="stExpander"] {
         position: fixed !important;
         bottom: 30px !important;
@@ -537,7 +532,7 @@ def gen_master_rows(data_dict, table_id):
 
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
-            rows += """
+            rows += f"""
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
                 <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
                     {name}
@@ -582,7 +577,7 @@ def gen_master_rows(data_dict, table_id):
                 <td class="edit-ocup" style="display:none;">0</td>
                 """
 
-            rows += """
+            rows += f"""
             <tr class="master-row" style="{st_base}">
                 <td contenteditable="true" class="edit-name" oninput="recalc()"
                     style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; width: 150px; color: #25282b;">
@@ -677,35 +672,29 @@ def gen_poligonos(data_target=None):
         " pointer;"
     )
 
-    fila_inner = """
+    fila_inner = f"""
     <tr class="calc-row">
         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
-            <div style="__DIV_FLEX__">
-                <button style="__BTN_S__" onclick="stepVal(this, -1, 'u')">-</button>
-                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="__SPAN_U__ color: #25282b !important;">0</span>
-                <button style="__BTN_S__" onclick="stepVal(this, 1, 'u')">+</button>
+            <div style="{div_flex}">
+                <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button>
+                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="{span_num_u} color: #25282b !important;">0</span>
+                <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
             </div>
         </td>
         <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
-            <div style="__DIV_FLEX__">
-                <button style="__BTN_S__" onclick="stepVal(this, -1, 's')">-</button>
-                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="__SPAN_SPR__ color: #25282b !important;">0</span>
-                <button style="__BTN_S__" onclick="stepVal(this, 1, 's')">+</button>
+            <div style="{div_flex}">
+                <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
+                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="{span_num_spr} color: #25282b !important;">0</span>
+                <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
             </div>
         </td>
         <td style="border: 0.5px solid #25282b; padding: 2px; width: 170px; min-width: 170px; max-width: 170px;">
-            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="__SELECT_STYLE__ color: #808080;"> 
+            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="{select_style} color: #808080;"> 
                 <option value="">Seleccionar...</option>
             </select>
         </td>
         <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
     </tr>"""
-
-    fila_inner = fila_inner.replace("__DIV_FLEX__", div_flex)
-    fila_inner = fila_inner.replace("__BTN_S__", btn_s)
-    fila_inner = fila_inner.replace("__SPAN_U__", span_num_u)
-    fila_inner = fila_inner.replace("__SPAN_SPR__", span_num_spr)
-    fila_inner = fila_inner.replace("__SELECT_STYLE__", select_style)
 
     campo_volumen_normal = """
 <div style="text-align:center;">
@@ -782,7 +771,7 @@ def gen_poligonos(data_target=None):
         else:
             filas_extra = fila_inner * 2
 
-        bloque_temp = """
+        polys += f"""
         <div class="poligono-bloque" style="margin-bottom:12px; box-shadow: none; border-radius: 0px; overflow-x: auto; background: #ededed; border: 1.5px solid #25282b;">           
             <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                 <thead>
@@ -797,30 +786,30 @@ def gen_poligonos(data_target=None):
                 </thead>
                 <tbody>
                     <tr class="calc-row"> 
-                        <td class="plan-cell" rowspan="__ROWSPAN__" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">__NOMBRE_FINAL__</td>
-                        <td class="vol-cell" rowspan="__ROWSPAN__" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">__CONTENIDO_VOLUMEN__</td>
+                        <td class="plan-cell" rowspan="{rowspan_actual}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; padding: 5px; color:#141414;">{nombre_final}</td>
+                        <td class="vol-cell" rowspan="{rowspan_actual}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">{contenido_volumen}</td>
                         <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px; width: 105px; min-width: 105px; max-width: 105px;">
-                            <div style="__DIV_FLEX__">
-                                <button style="__BTN_S__" onclick="stepVal(this, -1, 'u')">-</button> 
-                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="__SPAN_U__ color: #25282b !important;">0</span>
-                                <button style="__BTN_S__" onclick="stepVal(this, 1, 'u')">+</button>
+                            <div style="{div_flex}">
+                                <button style="{btn_s}" onclick="stepVal(this, -1, 'u')">-</button> 
+                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="{span_num_u} color: #25282b !important;">0</span>
+                                <button style="{btn_s}" onclick="stepVal(this, 1, 'u')">+</button>
                             </div>
                         </td>
                         <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px; width: 90px; min-width: 90px; max-width: 90px;">
-                            <div style="__DIV_FLEX__">
-                                <button style="__BTN_S__" onclick="stepVal(this, -1, 's')">-</button>
-                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="__SPAN_SPR__">0</span>
-                                <button style="__BTN_S__" onclick="stepVal(this, 1, 's')">+</button>
+                            <div style="{div_flex}">
+                                <button style="{btn_s}" onclick="stepVal(this, -1, 's')">-</button>
+                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="{span_num_spr}">0</span>
+                                <button style="{btn_s}" onclick="stepVal(this, 1, 's')">+</button>
                             </div>
                         </td>
                         <td style="border: 0.5px solid #25282b; padding: 2px;">
-                            <select class="s-type" onchange="resetRow(this)" style="__SELECT_STYLE__">
+                            <select class="s-type" onchange="resetRow(this)" style="{select_style}">
                                 <option>Seleccionar...</option>
                             </select>
                         </td>
                         <td style="width: 45px; min-width: 45px; max-width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
                     </tr>
-                    __FILAS_EXTRA__
+                    {filas_extra}
                     <tr style="background:#ededed; height: 32px;">
                         <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
                         <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
@@ -830,22 +819,10 @@ def gen_poligonos(data_target=None):
                 <div style="text-align:center; padding:5px; background:#ededed;">
                     <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
                     <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
-                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: __ROWSPAN__</span>
+                    <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: {rowspan_actual}</span>
                 </div>     
             </table>
         </div>"""
-
-        bloque_temp = bloque_temp.replace("__ROWSPAN__", str(rowspan_actual))
-        bloque_temp = bloque_temp.replace("__NOMBRE_FINAL__", nombre_final)
-        bloque_temp = bloque_temp.replace("__CONTENIDO_VOLUMEN__", contenido_volumen)
-        bloque_temp = bloque_temp.replace("__FILAS_EXTRA__", filas_extra)
-        bloque_temp = bloque_temp.replace("__DIV_FLEX__", div_flex)
-        bloque_temp = bloque_temp.replace("__BTN_S__", btn_s)
-        bloque_temp = bloque_temp.replace("__SPAN_U__", span_num_u)
-        bloque_temp = bloque_temp.replace("__SPAN_SPR__", span_num_spr)
-        bloque_temp = bloque_temp.replace("__SELECT_STYLE__", select_style)
-
-        polys += bloque_temp
 
     return polys
 
@@ -856,7 +833,7 @@ perfil_actual = "LUNES"
 # ==============================================================================
 # 6. PLANTILLA HTML/JAVASCRIPT COMPLETA (APP_HTML)
 # ==============================================================================
-app_html = """
+app_html = f"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -865,186 +842,186 @@ app_html = """
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
     
-        tr.master-row:hover, tr.calc-row:hover {
+        tr.master-row:hover, tr.calc-row:hover {{
             background-color: #fffecd !important;
             outline: 2px solid #ffc107 !important;
             transition: background-color 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
-        }
-        tr.master-row:hover td, tr.calc-row:hover td { color: #000 !important; }
+        }}
+        tr.master-row:hover td, tr.calc-row:hover td {{ color: #000 !important; }}
 
-        #mi-contador-scp1 {
+        #mi-contador-scp1 {{
             position: fixed; top: 156px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0px 6px 18px rgba(0,0,0,0.6);
             border: 1.2px solid transparent; width: 300px; max-height: 410px;
             overflow-y: auto; pointer-events: auto; display: block;
-        }
+        }}
 
-        #mi-contador-sja1 {
+        #mi-contador-sja1 {{
             position: fixed; top: 156px; right: 20px; 
             background: rgba(37, 40, 43, 0.98); color: #ffffff; padding: 16px; 
             border-radius: 10px; z-index: 999999; font-family: sans-serif;
             font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
             border: 1.2px solid transparent; width: 350px; max-height: 210px;
             overflow-y: auto; pointer-events: auto; display: none;
-        }
+        }}
 
-        .cont-item {
+        .cont-item {{
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.15); padding: 8px 0;
-        }
-        .cont-item:last-child { border-bottom: none; }
-        .cont-name {
+        }}
+        .cont-item:last-child {{ border-bottom: none; }}
+        .cont-name {{
             font-weight: normal; color: #D3D3D3; white-space: nowrap;
             overflow: hidden; text-overflow: ellipsis; max-width: 150px; font-size: 14px;
-        }
-        .cont-vals { font-family: monospace; font-weight: bold; text-align: right; font-size: 14px; }
+        }}
+        .cont-vals {{ font-family: monospace; font-weight: bold; text-align: right; font-size: 14px; }}
 
-        .poligono-bloque button { box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.1s; }
-        .poligono-bloque button:active { box-shadow: 0 0px 0px transparent; transform: translateY(1px); }
-        .filter-btn:active { transform: translateY(4px); box-shadow: none !important; }  
+        .poligono-bloque button {{ box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.1s; }}
+        .poligono-bloque button:active {{ box-shadow: 0 0px 0px transparent; transform: translateY(1px); }}
+        .filter-btn:active {{ transform: translateY(4px); box-shadow: none !important; }}  
 
-        tr.fila-ok { background-color: #e8f5e9 !important; transition: background-color 0.3s ease; }
-        tr.fila-ok td { color: #1b5e20 !important; }
+        tr.fila-ok {{ background-color: #e8f5e9 !important; transition: background-color 0.3s ease; }}
+        tr.fila-ok td {{ color: #1b5e20 !important; }}
 
-        body { font-family: sans-serif; background: #ffffff; padding: 14px; }
-        #visor { margin-right: 250px !important; }
+        body {{ font-family: sans-serif; background: #ffffff; padding: 14px; }}
+        #visor {{ margin-right: 250px !important; }}
 
-        .meli-table {
+        .meli-table {{
             width: 100% !important; border-collapse: collapse !important;
             border-spacing: 0 !important; table-layout: fixed; background: white;
             border: 1px solid #25282b; box-shadow: none !important; border-radius: 0 !important; overflow: hidden;
-        }
-        .meli-table th {
+        }}
+        .meli-table th {{
             background: #f3f3f3 !important; color: #222 !important; font-size: 14px;
             font-weight: 600; border: 1px solid #25282b !important; padding: 4px 6px; text-align: center; height: 24px;
-        }
-        .meli-table th:last-child { border-right: 2px solid #25282b !important; }
-        .meli-table td { border: 1px solid #25282b; padding: 2px 4px; font-size: 14px; height: 24px; background: white; color: #25282b; }
+        }}
+        .meli-table th:last-child {{ border-right: 2px solid #25282b !important; }}
+        .meli-table td {{ border: 1px solid #25282b; padding: 2px 4px; font-size: 14px; height: 24px; background: white; color: #25282b; }}
 
-        #fleet-sticky.fleet-floating {
+        #fleet-sticky.fleet-floating {{
             position: fixed !important; top: 70px; left: 20px; right: 20px;
             width: min(1100px, 92vw) !important; margin: 0 auto; max-height: 360px !important;
             overflow: hidden !important; z-index: 999999 !important; background: rgba(255,255,255,0.98) !important;
             border: 4px solid #636363 !important; border-radius: 12px !important;
             box-shadow: 0 14px 28px rgba(0,0,0,0.30) !important; padding: 10px !important;
-        }
+        }}
 
-        #fleet-sticky.fleet-floating .t-content { max-height: 200px !important; overflow: auto !important; }
+        #fleet-sticky.fleet-floating .t-content {{ max-height: 200px !important; overflow: auto !important; }}
 
-        #fleet-drag-handle {
+        #fleet-drag-handle {{
             position: relative; z-index: 9999999; cursor: grab; user-select: none;
             -webkit-user-select: none; touch-action: none; -webkit-touch-callout: none;
             font-weight: 900; font-size: 12px; padding: 6px 10px; margin: -6px -6px 8px -6px;
             border-bottom: 1px solid rgba(0,0,0,0.10); color: #0a2e42;
-        }
-        #fleet-drag-handle:active { cursor: grabbing; }
+        }}
+        #fleet-drag-handle:active {{ cursor: grabbing; }}
 
-        #fleet-sticky { position: static; top: auto; z-index: auto; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; backdrop-filter: none; }
+        #fleet-sticky {{ position: static; top: auto; z-index: auto; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; backdrop-filter: none; }}
 
-        #fleet-sticky.fleet-normal {
+        #fleet-sticky.fleet-normal {{
             position: static !important; top: auto !important; left: auto !important;
             right: auto !important; bottom: auto !important; transform: none !important;
             z-index: auto !important; background: transparent !important; border: none !important;
             border-radius: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important;
-        }
+        }}
 
-        .master-row { border-radius: 9px; box-shadow: 1px 1px 5px #ededed, -2px -2px 6px #efefef; transition: all 0.2s ease; }
-        .meli-table td:first-child { border-radius: 3px 0 0 3px; }
-        .meli-table td:last-child { border-radius: 0 3px 3px 0; }
+        .master-row {{ border-radius: 9px; box-shadow: 1px 1px 5px #ededed, -2px -2px 6px #efefef; transition: all 0.2s ease; }}
+        .meli-table td:first-child {{ border-radius: 3px 0 0 3px; }}
+        .meli-table td:last-child {{ border-radius: 0 3px 3px 0; }}
 
-        #google-alert {
+        #google-alert {{
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: #d32f2f; color: white; padding: 15px 25px; border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.4s; z-index: 10000;
-        }
-        #google-alert.show { top: 20px; }
+        }}
+        #google-alert.show {{ top: 20px; }}
 
-        .tab-btn {
+        .tab-btn {{
             padding: 10px 12px; cursor: pointer; border: 1px solid #25282b;
             background: linear-gradient(180deg, #f0f0f0 0%, #dcdcdc 100%);
             border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; color: #25282b;
             transition: all 0.2s ease; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
             margin-right: 2px; outline: none;
-        }
-        .tab-btn:hover {
+        }}
+        .tab-btn:hover {{
             background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
             color: #25282b; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transform: translateY(-2px);
-        }
-        .tab-btn.active {
+        }}
+        .tab-btn.active {{
             background: linear-gradient(180deg, #424242 0%, #25282b 100%) !important;
             color: #ffffff !important; border: 1px solid #061821 !important;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transform: translateY(0);
-        }
+        }}
 
-        .tools-panel { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .google-tool {
+        .tools-panel {{ display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }}
+        .google-tool {{
             background: linear-gradient(145deg, #ffffff, #DDA0DD); padding: 15px;
             border-radius: 15px; border: 1px solid #25282b; text-align: center;
             box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff; transition: transform 0.2s;
-        }
-        .google-tool:hover { transform: translateY(-3px); }
-        .google-tool input {
+        }}
+        .google-tool:hover {{ transform: translateY(-3px); }}
+        .google-tool input {{
             border-radius: 8px; border: 1px solid #25282b; padding: 5px;
             font-size: 16px; outline: none; box-shadow: inset 2px 2px 5px #d9dbde;
-        }
+        }}
 
-        #calc_wrapper { background: #22c5bc; border-radius: 20px; padding: 15px; border: transparent; outline: none; transition: 0.3s; }
-        #calc_wrapper:focus { box-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; border: 2px solid #FF00FF; }
-        #calc_display_box { background: #fffacd; border-radius: 10px; padding: 10px; text-align: right; margin-bottom: 10px; min-height: 60px; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .btn-c {
+        #calc_wrapper {{ background: #22c5bc; border-radius: 20px; padding: 15px; border: transparent; outline: none; transition: 0.3s; }}
+        #calc_wrapper:focus {{ box-shadow: 0 0 20px #FF00FF, 0 0 40px #FF00FF; border: 2px solid #FF00FF; }}
+        #calc_display_box {{ background: #fffacd; border-radius: 10px; padding: 10px; text-align: right; margin-bottom: 10px; min-height: 60px; }}
+        .calc-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }}
+        .btn-c {{
             background: #f0f0f0; border: none; font-weight: bold; border-radius: 12px;
             padding: 12px; cursor: pointer; box-shadow: 3px 3px 6px #1da39b, -2px -2px 5px #27ebd2;
             transition: transform 0.1s;
-        }
-        .btn-c:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px #b1b1b1; }
-        .btn-c-eq { background: #FF00FF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        .crono-card { background: #1c1c1c; border-radius: 12px; padding: 15px; color: white; font-family: sans-serif; text-align: center; }
+        }}
+        .btn-c:active {{ transform: scale(0.95); box-shadow: inset 2px 2px 5px #b1b1b1; }}
+        .btn-c-eq {{ background: #FF00FF; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }}
+        .crono-card {{ background: #1c1c1c; border-radius: 12px; padding: 15px; color: white; font-family: sans-serif; text-align: center; }}
 
-        html body .meli-table tbody tr:last-child td {
+        html body .meli-table tbody tr:last-child td {{
             height: 25px !important; min-height: 25px !important; max-height: 20px !important;
             padding-top: 2px !important; padding-bottom: 3px !important; line-height: 25px !important; font-size: 14px !important;
-        }
-        html body .meli-table tbody tr:last-child { height: 16px !important; }
+        }}
+        html body .meli-table tbody tr:last-child {{ height: 16px !important; }}
 
-        .btn-start { background: #28a745; color: white; box-shadow: 0 5px 0 #1e7e34; }
-        .btn-stop  { background: #ffc107; color: #333;  box-shadow: 0 5px 0 #d39e00; }
-        .btn-reset { background: #dc3545; color: white; box-shadow: 0 5px 0 #bd2130; }
+        .btn-start {{ background: #28a745; color: white; box-shadow: 0 5px 0 #1e7e34; }}
+        .btn-stop  {{ background: #ffc107; color: #333;  box-shadow: 0 5px 0 #d39e00; }}
+        .btn-reset {{ background: #dc3545; color: white; box-shadow: 0 5px 0 #bd2130; }}
 
-        .crono-card button:active { transform: translateY(4px); box-shadow: 0 1px 0 #333; }
-        .crono-card button:hover { filter: brightness(1.1); }
+        .crono-card button:active {{ transform: translateY(4px); box-shadow: 0 1px 0 #333; }}
+        .crono-card button:hover {{ filter: brightness(1.1); }}
 
-        #body-plan-container th, .meli-table:nth-of-type(2) th {
+        #body-plan-container th, .meli-table:nth-of-type(2) th {{
             font-size: 22px !important; height: 90px !important; padding: 11px 6px !important; vertical-align: middle !important;
-        }
+        }}
 
         body.excel-view #fleet-float,
         body.excel-view #ruteo-float,
         body.excel-view .tools-panel,
-        body.excel-view #btn-excel-view { display: none !important; }
+        body.excel-view #btn-excel-view {{ display: none !important; }}
 
-        body.excel-view .meli-table td { padding: 2px 3px !important; font-size: 14px !important; }
-        body.excel-view .meli-table th {
+        body.excel-view .meli-table td {{ padding: 2px 3px !important; font-size: 14px !important; }}
+        body.excel-view .meli-table th {{
             padding: 2px 1px !important; font-size: 11px !important; letter-spacing: -0.3px !important;
             overflow: hidden !important; line-height: 1.0 !important; vertical-align: middle !important;
-        }
+        }}
 
-        body.excel-view .meli-table tfoot.fila-total td { font-size: 16px !important; padding: 6px 8px !important; line-height: 18px !important; font-weight: 900 !important; }
-        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] { font-size: 20px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }
+        body.excel-view .meli-table tfoot.fila-total td {{ font-size: 16px !important; padding: 6px 8px !important; line-height: 18px !important; font-weight: 900 !important; }}
+        body.excel-view .meli-table tfoot.fila-total td[id^="total-ruteadas-"] {{ font-size: 20px !important; font-weight: 900 !important; color: #66CDAA !important; text-align: center !important; }}
 
-        body.excel-view .poligono-bloque table { border-collapse: collapse !important; width: 120% !important; table-layout: fixed !important; }
-        body.excel-view .poligono-bloque td, body.excel-view .poligono-bloque th {
+        body.excel-view .poligono-bloque table {{ border-collapse: collapse !important; width: 120% !important; table-layout: fixed !important; }}
+        body.excel-view .poligono-bloque td, body.excel-view .poligono-bloque th {{
             padding: 8px 3px !important; height: 60px !important; font-size: 13px !important;
             overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important;
             text-align: center !important; vertical-align: middle !important;
-        }
+        }}
 
-        body.excel-view .poligono-bloque th:nth-child(5) { width: 90px !important; }
-        body.excel-view .poligono-bloque th:nth-child(6) { width: 55px !important; }
-        body.excel-view .poligono-bloque th:nth-child(7) { width: 45px !important; }
+        body.excel-view .poligono-bloque th:nth-child(5) {{ width: 90px !important; }}
+        body.excel-view .poligono-bloque th:nth-child(6) {{ width: 55px !important; }}
+        body.excel-view .poligono-bloque th:nth-child(7) {{ width: 45px !important; }}
     </style> 
 </head>
 
@@ -1115,7 +1092,6 @@ app_html = """
                     <button id="btn-tab-sch1" class="tab-btn" onclick="showTab(7, this)">C1 SCH1</button>
                     <button id="btn-tab-smd1" class="tab-btn" onclick="showTab(8, this)">C1 SMD1</button>
                     <button id="btn-tab-sja1" class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
-                    <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 7px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8px;">➕ CREAR NUEVO RUTEO</button>
                 </div>
 
                 <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
@@ -1347,58 +1323,6 @@ app_html = """
             <div id="fleet-float-body">Cargando...</div>
         </div>
 
-        <!-- MODAL CREADOR DE RUTEO -->
-        <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
-                <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
-                <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">❌ CERRAR</button>
-            </div>
-
-            <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
-                    <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
-                        <div>
-                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Pestaña / Ruteo:</label>
-                            <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
-                        </div>
-                        <div>
-                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
-                                <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">⚙️ Generar Campos de Planes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
-                    <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
-                    <div id="contenedor-lista-planes">
-                        <p style="color: #888;">Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.</p>
-                    </div>
-                </div>
-
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
-                    <h3 style="color: #FFD700; margin-top: 0;">🚐 SELECCIÓN Y CONFIGURACIÓN DE FLOTA</h3>
-                    <div id="contenedor-lista-flota" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
-                        <p style="color: #888;">Cargando unidades de flota...</p>
-                    </div>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
-                    <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">Cancelar</button>
-                    <button onclick="guardarNuevoRuteoCompleto()" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(40,167,69,0.4);">💾 Guardar y Sincronizar Ruteo</button>
-                </div>
-
-                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
-                    <h3 style="color: #FFD700; margin-top: 0;">⚡ PRIORIDADES DE ASIGNACIÓN POR PLAN</h3>
-                    <p style="color: #aaa; font-size: 12px; margin-bottom: 10px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
-                    <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8px;">
-                        <p style="color: #888;">Genera los planes arriba para configurar sus prioridades aquí.</p>
-                    </div>
-                </div>
-
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -1411,352 +1335,117 @@ app_html = """
     let elapsedTime = 0;
     let estadoPaquetesAntesDeExcel = "none";
 
-
     // ==============================================================================
-    // 🔌 CONFIGURACIÓN E INICIALIZACIÓN DE SUPABASE EN JS
+    // 🔌 CONEXIÓN SEGURA A SUPABASE EN JS
     // ==============================================================================
     const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
     
-    const supabaseClient = (window.supabase && window.supabase.createClient) 
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
-        : null;
+    let supabaseClient = null;
+    try {{
+        if (window.supabase && typeof window.supabase.createClient === "function") {{
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }}
+    }} catch(e) {{
+        console.error("Error al inicializar Supabase:", e);
+    }}
 
-    let contadorPestanaDinamica = 100;
-
-    // ==============================================================================
-    // 💾 GUARDAR RUTEO EN SUPABASE
-    // ==============================================================================
-    async function guardarNuevoRuteoCompleto() {
-        let inputNombre = document.getElementById("creador-nombre-ruteo");
-        if (!inputNombre) return;
-
-        let nombreRuteo = inputNombre.value.trim().toUpperCase();
-        if (!nombreRuteo) {
-            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
-            return;
-        }
-
-        let flotaElegida = [];
-        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
-        
-        itemsFlota.forEach((div, idx) => {
-            let chk = div.querySelector(".chk-flota-unidad");
-            if (chk && chk.checked) {
-                let nombreUnidad = chk.value;
-                let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
-                let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
-                flotaElegida.push({ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax });
-            }
-        });
-
-        if (flotaElegida.length === 0) {
-            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
-            return;
-        }
-
-        let planesElegidos = [];
-        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
-        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
-        
-        divsPlanes.forEach((div, idx) => {
-            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
-            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
-            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
-            
-            planesElegidos.push({ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan });
-        });
-
-        if (planesElegidos.length === 0) {
-            alert("⚠️ Ingresa al menos un plan o polígono.");
-            return;
-        }
-
-        let datosEstructura = {
-            flota: flotaElegida,
-            planes: planesElegidos
-        };
-
-        // Enviar inserción a Supabase
-        if (supabaseClient) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('ruteos_guardados')
-                    .insert([{ nombre: nombreRuteo, datos: datosEstructura }]);
-
-                if (error) {
-                    console.error("Error en Supabase:", error);
-                    alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
-                    return;
-                }
-            } catch (err) {
-                console.error("Error al conectar con Supabase:", err);
-            }
-        }
-
-        // Renderizar pestaña localmente en el navegador
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos);
-
-        if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
-        alert(`¡Ruteo "${nombreRuteo}" guardado exitosamente en la base de datos!`);
-    }
-
-    // ==============================================================================
-    // 📂 CARGAR RUTEOS AL ABRIR LA APP DESDE SUPABASE
-    // ==============================================================================
-    async function cargarRuteosDesdeSupabase() {
+    async function cargarRuteosDesdeSupabase() {{
         if (!supabaseClient) return;
-
-        try {
-            const { data, error } = await supabaseClient
+        try {{
+            const {{ data, error }} = await supabaseClient
                 .from('ruteos_guardados')
                 .select('*')
-                .order('created_at', { ascending: true });
+                .order('created_at', {{ ascending: true }});
 
-            if (error) {
-                console.error("Error cargando de Supabase:", error);
+            if (error) {{
+                console.error("Error leyendo de Supabase:", error);
                 return;
-            }
+            }}
 
-            if (data && data.length > 0) {
-                data.forEach(ruteo => {
-                    let nombre = ruteo.nombre;
-                    let flota = ruteo.datos.flota || [];
-                    let planes = ruteo.datos.planes || [];
-                    
-                    crearTabYContenidoEnPantalla(nombre, flota, planes);
-                });
-            }
-        } catch (err) {
-            console.error("Error de conexión:", err);
-        }
-    }
+            if (data && data.length > 0) {{
+                console.log("Ruteos encontrados en Supabase:", data);
+            }}
+        }} catch (err) {{
+            console.error("Excepción al conectar a Supabase:", err);
+        }}
+    }}
 
-    // ==============================================================================
-    // 🛠️ RENDERIZADOR AUXILIAR DE PESTAÑAS Y TABLAS
-    // ==============================================================================
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos) {
-        contadorPestanaDinamica++;
-        let tabId = contadorPestanaDinamica;
+    window.addEventListener("load", function() {{
+        setTimeout(cargarRuteosDesdeSupabase, 1000);
+    }});
 
-        // 1. Agregar opción al menú desplegable de ciclos
-        let selectorCiclos = document.getElementById("ciclo-selector");
-        if (selectorCiclos) {
-            let opt = document.createElement("option");
-            opt.value = tabId;
-            opt.innerText = `🔹 ${nombreRuteo}`;
-            selectorCiclos.appendChild(opt);
-        }
+    function cambiarCiclo(valorTab) {{
+        document.querySelectorAll('.t-content').forEach(el => {{
+            el.style.display = 'none';
+        }});
+        const tablaActiva = document.getElementById('tab-' + valorTab);
+        if (tablaActiva) {{
+            tablaActiva.style.display = 'block';
+        }}
 
-        // 2. Crear tabla de Flota
-        let fleetSticky = document.getElementById("fleet-sticky");
-        let nuevoContentFlota = document.createElement("div");
-        nuevoContentFlota.id = `tab-${tabId}`;
-        nuevoContentFlota.className = "t-content";
-        nuevoContentFlota.style.display = "none";
+        document.querySelectorAll('.p-content').forEach(el => {{
+            el.style.display = 'none';
+        }});
+        const polyActivo = document.getElementById('polys-' + valorTab);
+        if (polyActivo) {{
+            polyActivo.style.display = 'block';
+        }}
 
-        let htmlFlota = `
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                        <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                        <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center;">USADAS</th>
-                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
-                    </tr>
-                </thead>
-                <tbody id="body-${tabId}">`;
+        currentTab = parseInt(valorTab);
+        
+        if (typeof recalc === 'function') {{
+            recalc();
+        }}
+    }}
 
-        flotaElegida.forEach(f => {
-            htmlFlota += `
-                <tr class="master-row">
-                    <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${f.nombre}</td>
-                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMin}</td>
-                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMax}</td>
-                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
-                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
-                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
-                </tr>`;
-        });
-
-        htmlFlota += `
-                </tbody>
-                <tfoot class="fila-total">
-                    <tr class="fila-total">
-                        <td style="border:none;"></td>
-                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                        <td id="total-ruteadas-${tabId}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-
-        nuevoContentFlota.innerHTML = htmlFlota;
-        if (fleetSticky) fleetSticky.appendChild(nuevoContentFlota);
-
-        // 3. Crear bloque de Polígonos
-        let contenedorPolysPadre = document.getElementById("polys-4")?.parentNode;
-        let nuevoContentPolys = document.createElement("div");
-        nuevoContentPolys.id = `polys-${tabId}`;
-        nuevoContentPolys.className = "p-content";
-        nuevoContentPolys.style.display = "none";
-
-        let htmlPolys = "";
-        planesElegidos.forEach(p => {
-            let filasExtra = "";
-            for (let i = 1; i < p.filas; i++) {
-                filasExtra += `
-                    <tr class="calc-row">
-                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
-                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
-                            </div>
-                        </td>
-                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
-                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
-                            </div>
-                        </td>
-                        <td style="border: 0.5px solid #25282b; padding: 2px;">
-                            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
-                                <option value="">Seleccionar...</option>
-                            </select>
-                        </td>
-                        <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-                    </tr>`;
-            }
-
-            htmlPolys += `
-                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
-                    <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
-                        <thead>
-                            <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
-                                <th style="padding: 0 10px; border-right: 1px solid #25282b; width: 130px;">PLAN</th>
-                                <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
-                                <th style="width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
-                                <th style="width: 105px; border-right: 1px solid #25282b;">SPR</th>
-                                <th style="width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
-                                <th style="width: 45px; text-align: center;">OK</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="calc-row">
-                                <td class="plan-cell" rowspan="${p.filas}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${p.nombre}</td>
-                                <td class="vol-cell" rowspan="${p.filas}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
-                                    <div style="text-align:center;">
-                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
-                                    </div>
-                                </td>
-                                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
-                                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
-                                    </div>
-                                </td>
-                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
-                                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
-                                    </div>
-                                </td>
-                                <td style="border: 0.5px solid #25282b; padding: 2px;">
-                                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
-                                        <option value="">Seleccionar...</option>
-                                    </select>
-                                </td>
-                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-                            </tr>
-                            ${filasExtra}
-                            <tr style="background:#ededed; height: 32px;">
-                                <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
-                                <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
-                                <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
-                            </tr>
-                        </tbody>
-                        <div style="text-align:center; padding:5px; background:#ededed;">
-                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
-                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
-                            <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${p.filas}</span>
-                        </div>
-                    </table>
-                </div>`;
-        });
-
-        nuevoContentPolys.innerHTML = htmlPolys;
-        if (contenedorPolysPadre) contenedorPolysPadre.appendChild(nuevoContentPolys);
-
-        // Cambiar a la pestaña recién creada
-        if (selectorCiclos) {
-            selectorCiclos.value = tabId;
-            cambiarCiclo(tabId);
-        }
-    }
-
-    // Ejecutar carga automática al abrir la página
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(cargarRuteosDesdeSupabase, 600);
-    });
-
-
-
-
-    
-
-    function aplicarPerfil() {
+    function aplicarPerfil() {{
         let perfil = perfiles[perfilActual];
         if(!perfil) return;
 
-        Object.keys(perfil).forEach(tabId => {
-            document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
+        Object.keys(perfil).forEach(tabId => {{
+            document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
                 let unidad = row.querySelector('.edit-name')?.innerText.trim(); 
-                if(perfil[tabId][unidad]) {
+                if(perfil[tabId][unidad]) {{
                     let data = perfil[tabId][unidad];
                     let orh = row.querySelector('.edit-orh');
                     let disp = row.querySelector('.edit-ocup');
+
                     if(orh) orh.innerText = data.orh;
                     if(disp) disp.innerText = data.disp;
-                }
-            });
-        });
+                }}
+            }});
+        }});
         recalc();
-    }
+    }}
 
-    (function initSuma() {
-        console.log("Iniciando lógica de suma...");
+    (function initSuma() {{
         const inputs = document.querySelectorAll('.sum-input');
         const totalDisplay = document.getElementById('total-final');
 
-        if (inputs.length === 0) {
-            console.error("ERROR: No se encontraron los inputs con clase .sum-input");
-        }
-
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
+        inputs.forEach(input => {{
+            input.addEventListener('input', () => {{
                 let sum = 0;
-                inputs.forEach(i => { sum += parseFloat(i.value) || 0; });
-                if (totalDisplay) {
+                inputs.forEach(i => {{
+                    sum += parseFloat(i.value) || 0;
+                }});
+                if (totalDisplay) {{
                     totalDisplay.value = sum;
-                    console.log("Total actualizado:", sum);
-                }
-            });
-        });
-    })();
+                }}
+            }});
+        }});
+    }})();
 
-    function agregarFilaPlan(btn){
+    function agregarFilaPlan(btn){{
         const bloque = btn.closest(".poligono-bloque");
         const tbody = bloque.querySelector("tbody");
         const filas = tbody.querySelectorAll(".calc-row");
         const filaBase = filas[0];
         const nuevaFila = filaBase.cloneNode(true);
 
-        nuevaFila.querySelectorAll("[rowspan]").forEach(td => { td.remove(); });
+        nuevaFila.querySelectorAll("[rowspan]").forEach(td => {{
+            td.remove();
+        }});
 
         const u = nuevaFila.querySelector(".u-manual");
         if(u) u.innerText = "0";
@@ -1775,35 +1464,41 @@ app_html = """
 
         actualizarRowspan(bloque);
         recalc();
-    }
+    }}
 
-    function quitarFilaPlan(btn){
+    function quitarFilaPlan(btn){{
         const bloque = btn.closest(".poligono-bloque");
         const tbody = bloque.querySelector("tbody");
         const filas = tbody.querySelectorAll(".calc-row");
 
-        if(filas.length <= 1) return;
+        if(filas.length <= 1){{
+            return;
+        }}
 
         filas[filas.length - 1].remove();
         actualizarRowspan(bloque);
 
         const tabla = bloque.querySelector("table");
-        if(tabla){
+        if(tabla){{
             tabla.style.width = "100%";
             tabla.style.tableLayout = "fixed";
             void tabla.offsetWidth;
-            setTimeout(() => { tabla.style.tableLayout = "fixed"; }, 50);
-        }
+            setTimeout(() => {{
+                tabla.style.tableLayout = "fixed";
+            }}, 50);
+        }}
         recalc();
-    }
+    }}
 
-    function actualizarContador(bloque){
+    function actualizarContador(bloque){{
         const filas = bloque.querySelectorAll(".calc-row");
         const contador = bloque.querySelector(".contador-filas");
-        if(contador) contador.innerText = "Filas: " + filas.length;
-    }
+        if(contador){{
+            contador.innerText = "Filas: " + filas.length;
+        }}
+    }}
 
-    function actualizarRowspan(bloque){
+    function actualizarRowspan(bloque){{
         const filas = bloque.querySelectorAll(".calc-row").length;
         const plan = bloque.querySelector("td.plan-cell");
         const volumen = bloque.querySelector("td.vol-cell");
@@ -1812,69 +1507,62 @@ app_html = """
         if(volumen) volumen.rowSpan = filas;
 
         const contador = bloque.querySelector(".contador-filas");
-        if(contador) contador.innerText = "Filas: " + filas;
-    }
+        if(contador){{
+            contador.innerText = "Filas: " + filas;
+        }}
+    }}
 
-    function toggleMenuPestanas() {
+    function toggleMenuPestanas() {{
         let panel = document.getElementById("panel-selector-pestanas");
-        if (panel) {
+        if (panel) {{
             panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
-        }
-    }
+        }}
+    }}
 
-    function toggleBtnPestana(btnId, visible) {
+    function toggleBtnPestana(btnId, visible) {{
         let btn = document.getElementById(btnId);
-        if (btn) btn.style.display = visible ? "inline-block" : "none";
-    }
+        if (btn) {{
+            btn.style.display = visible ? "inline-block" : "none";
+        }}
+    }}
 
-    function toggleFleetFloating() {
+    function toggleFleetFloating() {{
         const panel = document.getElementById("fleet-sticky");
-        const btn = document.querySelector("#fleet-drag-handle button");
+        const btn = document.getElementById("fleet-toggle-btn");
         if (!panel) return;
 
         const goingToFloat = !panel.classList.contains("fleet-floating");
 
-        if (goingToFloat) {
-            panel.removeAttribute("style");
+        if (goingToFloat) {{
             panel.classList.remove("fleet-normal");
             panel.classList.add("fleet-floating");
-
-            const rect = panel.getBoundingClientRect();
-            panel.style.transform = "none";
-            panel.style.left = rect.left + "px";
-            panel.style.top  = rect.top + "px";
-            panel.style.right = "auto";
-            panel.style.bottom = "auto";
-            panel.style.margin = "0";
-
             if (btn) btn.textContent = "NORMAL (enter)";
-        } else {
+        }} else {{
             panel.classList.remove("fleet-floating");
             panel.classList.add("fleet-normal");
             panel.removeAttribute("style");
-
             if (btn) btn.textContent = "FLOTAR ☁️";
-        }
-        console.log("toggle ->", panel.className, "style=", panel.getAttribute("style"));
-    }
+        }}
+    }}
 
-    function showTab(n, btn) {
+    function showTab(n, btn) {{
         const bloqueC1 = document.getElementById('contenedor-paquetes-c1');
-        if (bloqueC1) {
-            if (n === 6) {
+        if (bloqueC1) {{
+            if (n === 6) {{
                 bloqueC1.style.display = 'block';
-            } else {
+            }} else {{
                 bloqueC1.style.display = 'none';
-            }
-        }
+            }}
+        }}
 
-        if (document.body.classList.contains("excel-view")) {
+        if (document.body.classList.contains("excel-view")) {{
             document.body.classList.remove("excel-view");
             let bExcel = document.getElementById("excel-btn");
             if (bExcel) bExcel.innerHTML = "👁️";
+            
             let excelPanel = document.getElementById("excel-polys");
             if (excelPanel) excelPanel.style.display = "none";
-
+            
             const idsArestaurar = [
                 "total-no-car-2", "total-car-schedule-2", "total-car-real-2",
                 "total-no-car-6", "total-car-schedule-6", "total-car-real-6",
@@ -1883,18 +1571,18 @@ app_html = """
                 "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
                 "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
             ];
-            idsArestaurar.forEach(id => {
+            idsArestaurar.forEach(id => {{
                 let el = document.getElementById(id);
-                if (el) {
+                if (el) {{
                     let fila = el.closest('tr');
                     if (fila) fila.style.removeProperty('display');
-                }
-            });
-
-            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {
+                }}
+            }});
+            
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
                 fila.style.setProperty('display', 'table-row', 'important');
-            });
-        }
+            }});
+        }}
 
         currentTab = n;
         document.querySelectorAll('.p-content, .t-content').forEach(el => el.style.display = 'none');
@@ -1910,386 +1598,22 @@ app_html = """
         updateFleetFloat();
 
         const excelBtn = document.getElementById('excel-btn');
-        if (excelBtn) {
-            if (n === 2 || n === 6 || n === 7 || n === 8) {
+        if (excelBtn) {{
+            if (n === 2 || n === 6 || n === 7 || n === 8) {{
                 excelBtn.style.setProperty('display', 'inline-block', 'important');
-            } else {
+            }} else {{
                 excelBtn.style.setProperty('display', 'none', 'important');
-            }
-        }
-    }
+            }}
+        }}
+    }}
 
-    function abrirCreadorRuteo() {
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {
-            modal.style.display = "block";
-            inicializarCreadorFlota();
-            generarCamposPlanes();
-        }
-    }
-
-    function cerrarCreadorRuteo() {
-        let modal = document.getElementById("modal-crear-ruteo");
-        if (modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    const BASE_FLOTA_MASTER = {
-        "Car MLP": [110, 120],
-        "Small Van MLP": [110, 120],
-        "Large Van MLP": [110, 120],
-        "Small Van MLP Newbie": [110, 120],
-        "Large Van MLP Newbie": [110, 120],
-        "Extra large Van MLP": [110, 120],
-        "Small Van MLP foráneo": [110, 120],
-        "Large Van MLP foráneo": [110, 120],
-        "Car MLP foráneo": [110, 120],
-        "Extra large Van MLP H&B": [100, 100],
-        "Rental Car": [120, 150],
-        "Rental Electric Large Van": [120, 150],
-        "Rental Large Van": [120, 150],
-        "Rental Replacement": [120, 150],
-        "Rental Small Van Electrica": [120, 150],
-        "Rental Small Van": [120, 150],
-        "Truck 3.5 tons MLP": [1, 1],
-        "Delivery Cell Large Van": [1, 1],
-        "Car 8h": [70, 70],
-        "Car Newbie": [50, 50],
-        "Car Zona Extendida": [60, 60],
-        "Moto 3h": [30, 30],
-        "Small Van 9h": [70, 70],
-        "Small Van 9h Ext": [70, 70],
-        "Small Van Newbie": [70, 70],
-        "Media Milla SP": [1, 1]
-    };
-
-    function inicializarCreadorFlota() {
-        let cont = document.getElementById("contenedor-lista-flota");
-        if (!cont) return;
-
-        let htmlFlota = "";
-        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {
-            let sprDef = BASE_FLOTA_MASTER[unidad];
-            htmlFlota += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
-                        <input type="checkbox" class="chk-flota-unidad" value="${unidad}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
-                        ${unidad}
-                    </label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="font-size: 10px; color: #aaa;">MIN:</span>
-                        <input type="number" class="spr-min-${idx}" value="${sprDef[0]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
-                        <span style="font-size: 10px; color: #aaa;">MAX:</span>
-                        <input type="number" class="spr-max-${idx}" value="${sprDef[1]}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
-                    </div>
-                </div>
-            `;
-        });
-        cont.innerHTML = htmlFlota;
-    }
-
-    function generarCamposPlanes() {
-        let cantInput = document.getElementById("creador-cant-planes");
-        let cont = document.getElementById("contenedor-lista-planes");
-        if (!cantInput || !cont) return;
-
-        let cant = parseInt(cantInput.value) || 1;
-        let htmlPlanes = "";
-        
-        for (let i = 1; i <= cant; i++) {
-            htmlPlanes += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${i}:</span>
-                    <input type="text" class="input-nombre-plan" value="PLAN ${i}" placeholder="Nombre del Plan" 
-                        style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
-                        oninput="generarPrioridadesPlanes()">
-                    <span style="font-size: 11px; color: #aaa;">Filas:</span>
-                    <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
-                        style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                </div>
-            `;
-        }
-        cont.innerHTML = htmlPlanes;
-        generarPrioridadesPlanes();
-    }
-
-    let contadorPestanaDinamica = 900;
-
-    function generarPrioridadesPlanes() {
-        let contPrioridades = document.getElementById("contenedor-prioridades-planes");
-        if (!contPrioridades) return;
-
-        let inputsPlanes = document.querySelectorAll("#contenedor-lista-planes .input-nombre-plan");
-        
-        if (inputsPlanes.length === 0) {
-            contPrioridades.innerHTML = `<p style="color: #888;">Primero genera y nombra los planes arriba.</p>`;
-            return;
-        }
-
-        let htmlPrioridades = "";
-        inputsPlanes.forEach((input, index) => {
-            let nombrePlan = input.value.trim() || `PLAN ${index + 1}`;
-            htmlPrioridades += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${nombrePlan}</span>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
-                        <input type="number" class="input-prioridad-plan" value="${index + 1}" min="1" max="10" 
-                            style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                    </div>
-                </div>
-            `;
-        });
-        contPrioridades.innerHTML = htmlPrioridades;
-    }
-
-
-
-    function guardarNuevoRuteoCompleto() {
-        let inputNombre = document.getElementById("creador-nombre-ruteo");
-        if (!inputNombre) return;
-
-        let nombreRuteo = inputNombre.value.trim().toUpperCase();
-        if (!nombreRuteo) {
-            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
-            return;
-        }
-
-        let flotaElegida = [];
-        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
-        
-        itemsFlota.forEach((div, idx) => {
-            let chk = div.querySelector(".chk-flota-unidad");
-            if (chk && chk.checked) {
-                let nombreUnidad = chk.value;
-                let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
-                let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
-                flotaElegida.push({
-                    nombre: nombreUnidad,
-                    sprMin: sprMin,
-                    sprMax: sprMax
-                });
-            }
-        });
-
-        if (flotaElegida.length === 0) {
-            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
-            return;
-        }
-
-        let planesElegidos = [];
-        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
-        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
-        
-        divsPlanes.forEach((div, idx) => {
-            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
-            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
-            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
-            
-            planesElegidos.push({
-                nombre: nombrePlan,
-                filas: filasPlan,
-                prioridad: prioridadPlan
-            });
-        });
-
-        if (planesElegidos.length === 0) {
-            alert("⚠️ Ingresa al menos un plan o polígono.");
-            return;
-        }
-
-        // ==============================================================================
-        // CREACIÓN DINÁMICA DE LA PESTAÑA EN PANTALLA (JS)
-        // ==============================================================================
-        contadorPestanaDinamica++;
-        let nuevoTabId = contadorPestanaDinamica;
-
-        // 1. Crear el botón de la nueva pestaña
-        let contenedorBotones = document.querySelector("#fleet-sticky .position-relative") || document.querySelector("#fleet-sticky > div > div");
-        let btnCrear = document.querySelector("button[onclick*='abrirCreadorRuteo']");
-        
-        let nuevoBtnTab = document.createElement("button");
-        nuevoBtnTab.className = "tab-btn";
-        nuevoBtnTab.innerText = nombreRuteo;
-        nuevoBtnTab.onclick = function() { showTab(nuevoTabId, this); };
-
-        if (btnCrear && btnCrear.parentNode) {
-            btnCrear.parentNode.insertBefore(nuevoBtnTab, btnCrear);
-        }
-
-        // 2. Agregar opción al menú selector de pestañas
-        let panelSelector = document.getElementById("panel-selector-pestanas");
-        if (panelSelector) {
-            let lbl = document.createElement("label");
-            lbl.style.cssText = "display:block; margin-bottom:4px; cursor:pointer;";
-            lbl.innerHTML = `<input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-dyn-${nuevoTabId}', this.checked)"> ${nombreRuteo}`;
-            nuevoBtnTab.id = `btn-tab-dyn-${nuevoTabId}`;
-            panelSelector.appendChild(lbl);
-        }
-
-        // 3. Crear contenedor de flota para la nueva pestaña
-        let fleetSticky = document.getElementById("fleet-sticky");
-        let nuevoContentFlota = document.createElement("div");
-        nuevoContentFlota.id = `tab-${nuevoTabId}`;
-        nuevoContentFlota.className = "t-content";
-        nuevoContentFlota.style.display = "none";
-
-        let htmlFlota = `
-            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
-                        <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
-                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
-                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
-                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
-                        <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center;">USADAS</th>
-                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
-                    </tr>
-                </thead>
-                <tbody id="body-${nuevoTabId}">`;
-
-        flotaElegida.forEach(f => {
-            htmlFlota += `
-                <tr class="master-row">
-                    <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${f.nombre}</td>
-                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMin}</td>
-                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${f.sprMax}</td>
-                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
-                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
-                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
-                </tr>`;
-        });
-
-        htmlFlota += `
-                </tbody>
-                <tfoot class="fila-total">
-                    <tr class="fila-total">
-                        <td style="border:none;"></td>
-                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
-                        <td id="total-ruteadas-${nuevoTabId}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-
-        nuevoContentFlota.innerHTML = htmlFlota;
-        fleetSticky.appendChild(nuevoContentFlota);
-
-        // 4. Crear contenedor de polígonos para la nueva pestaña
-        let contenedorPolysPadre = document.getElementById("polys-2")?.parentNode;
-        let nuevoContentPolys = document.createElement("div");
-        nuevoContentPolys.id = `polys-${nuevoTabId}`;
-        nuevoContentPolys.className = "p-content";
-        nuevoContentPolys.style.display = "none";
-
-        let htmlPolys = "";
-        planesElegidos.forEach(p => {
-            let filasExtra = "";
-            for (let i = 1; i < p.filas; i++) {
-                filasExtra += `
-                    <tr class="calc-row">
-                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
-                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
-                            </div>
-                        </td>
-                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
-                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
-                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
-                            </div>
-                        </td>
-                        <td style="border: 0.5px solid #25282b; padding: 2px;">
-                            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
-                                <option value="">Seleccionar...</option>
-                            </select>
-                        </td>
-                        <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-                    </tr>`;
-            }
-
-            htmlPolys += `
-                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
-                    <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
-                        <thead>
-                            <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
-                                <th style="padding: 0 10px; border-right: 1px solid #25282b; width: 130px;">PLAN</th>
-                                <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
-                                <th style="width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
-                                <th style="width: 105px; border-right: 1px solid #25282b;">SPR</th>
-                                <th style="width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
-                                <th style="width: 45px; text-align: center;">OK</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="calc-row">
-                                <td class="plan-cell" rowspan="${p.filas}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${p.nombre}</td>
-                                <td class="vol-cell" rowspan="${p.filas}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
-                                    <div style="text-align:center;">
-                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
-                                    </div>
-                                </td>
-                                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
-                                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
-                                    </div>
-                                </td>
-                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
-                                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
-                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
-                                    </div>
-                                </td>
-                                <td style="border: 0.5px solid #25282b; padding: 2px;">
-                                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
-                                        <option value="">Seleccionar...</option>
-                                    </select>
-                                </td>
-                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
-                            </tr>
-                            ${filasExtra}
-                            <tr style="background:#ededed; height: 32px;">
-                                <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
-                                <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
-                                <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
-                            </tr>
-                        </tbody>
-                        <div style="text-align:center; padding:5px; background:#ededed;">
-                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
-                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
-                            <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${p.filas}</span>
-                        </div>
-                    </table>
-                </div>`;
-        });
-
-        nuevoContentPolys.innerHTML = htmlPolys;
-        if (contenedorPolysPadre) {
-            contenedorPolysPadre.appendChild(nuevoContentPolys);
-        }
-
-        // 5. Cerrar modal y cambiar a la nueva pestaña inmediatamente
-        cerrarCreadorRuteo();
-        showTab(nuevoTabId, nuevoBtnTab);
-
-        alert(`¡Ruteo "${nombreRuteo}" creado y mostrado con éxito!`);
-    }
-    
-
-    
-    function showAlert(msg) {
+    function showAlert(msg) {{
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
-    }
-    function hideAlert() { document.getElementById('google-alert').classList.remove('show'); }
+    }}
+    function hideAlert() {{ document.getElementById('google-alert').classList.remove('show'); }}
 
-    function stepVal(btn, delta, type) {
+    function stepVal(btn, delta, type) {{
         let row = btn.closest('tr');
         let sel = row.querySelector('.s-type').value;
         
@@ -2303,32 +1627,34 @@ app_html = """
         let left = parseInt(fRow.querySelector('.f-left').innerText) || 0;
         let sprMaxReal = parseFloat(fRow.querySelector('.edit-spr-max').innerText) || 0;
 
-        if(type === 'u') {
+        if(type === 'u') {{
             let span = row.querySelector('.u-manual');
             let val = parseInt(span.innerText) || 0;
             let newVal = val + delta;
             if (newVal < 0) newVal = 0;
 
-            if (delta > 0 && left <= 0) {
+            if (delta > 0 && left <= 0) {{
                 showAlert("⚠️ UNIDAD ADICIONAL. Se registrará como exceso en Delta.");
-            }
+            }}
+            
             span.innerText = newVal;
-        } else {
+        }} else {{
             let span = row.querySelector('.spr-real-val');
             let val = parseFloat(span.innerText) || 0;
             let newVal = Math.round(val + delta);
 
-            if (delta > 0 && newVal > sprMaxReal) {
+            if (delta > 0 && newVal > sprMaxReal) {{
                 showAlert("⚠️ NO PUEDES SOBREPASAR EL SPR MÁXIMO (" + sprMaxReal + ")");
                 return; 
-            }
+            }}
+            
             span.innerText = newVal;
-        }
+        }}
         editedRowsPlan.add(row);
         recalc();
-    }
+    }}
 
-    function actualizarHoraMinuto(celda){
+    function actualizarHoraMinuto(celda){{
         let valor = celda.innerText.trim().replace(",", ".");
         if(valor === "") valor = "0";
 
@@ -2336,13 +1662,13 @@ app_html = """
         if(isNaN(numero)) numero = 0;
 
         let minutosTotales;
-        if(valor.includes(".")){
+        if(valor.includes(".")){{
             minutosTotales = Math.round(numero * 60);
-        } else if(numero >= 24){
+        }} else if(numero >= 24){{
             minutosTotales = Math.round(numero);
-        } else{
+        }} else{{
             minutosTotales = Math.round(numero * 60);
-        }
+        }}
 
         let horas = Math.floor(minutosTotales / 60);
         let mins = minutosTotales % 60;
@@ -2350,89 +1676,88 @@ app_html = """
         let fila = celda.closest("tr");
         let hm = fila.querySelector(".orh-hora");
 
-        if(hm){
+        if(hm){{
             hm.style.color = "#141414";
             hm.innerText = String(horas).padStart(2,"0") + ":" + String(mins).padStart(2,"0");
-        }
-    }
+        }}
+    }}
 
-    document.querySelectorAll(".edit-orh").forEach(function(celda){
+    document.querySelectorAll(".edit-orh").forEach(function(celda){{
         actualizarHoraMinuto(celda);
-        celda.addEventListener("input", function(){
+        celda.addEventListener("input", function(){{
             actualizarHoraMinuto(this);
-        });
-    });
+        }});
+    }});
 
-    function actualizarDosPorciento() {
+    function actualizarDosPorciento() {{
         let volumenTotal = 0;
-        document.querySelectorAll('#polys-' + currentTab + ' .v-total-val').forEach(el => {
+        document.querySelectorAll('#polys-' + currentTab + ' .v-total-val').forEach(el => {{
             volumenTotal += parseFloat(el.innerText) || 0;
-        });
+        }});
 
         let permitido = Math.round(volumenTotal * 0.02);
         let div = document.getElementById('dos-pct-global');
 
-        if (div) {
-            div.innerHTML = `<b>2% PERMITIDO:</b> ${permitido.toLocaleString()}`;
-        }
-    }
+        if (div) {{
+            div.innerHTML = `<b>2% PERMITIDO:</b> ${{permitido.toLocaleString()}}`;
+        }}
+    }}
 
-    function recalc() {
-        let fleet = {};
+    function recalc() {{
+        let fleet = {{}};
         let tabId = currentTab;
 
         // 1. Capturar datos de la flota (Tabla de arriba)
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
             let name = nameCell.innerText.trim();
             let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
             
-            if(sch > 0) {
-                row.style.background = "white";
-                if (fs) fs.style.background = "#fcf8cc";
-                if (mi) { mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold"; }
-                if (ma) { ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold"; }
+            if(sch > 0) {{
+                row.style.background = "white"; 
+                if (fs) fs.style.background = "#fcf8cc"; 
+                if (mi) {{ mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold"; }}
+                if (ma) {{ ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold"; }}
                 nameCell.style.color = "#25282b";
                 nameCell.style.fontWeight = "bold";
-            } else {
-                row.style.background = "#ffffff"; 
+            }} else {{
+                row.style.background = "#DCDCDC"; 
                 if (fs) fs.style.background = "#FFFF00"; 
-                if (mi) { mi.style.background = "#25282b"; mi.style.color = "#ffffff"; mi.style.fontWeight = "bold"; }
-                if (ma) { ma.style.background = "#25282b"; ma.style.color = "#ffffff"; ma.style.fontWeight = "bold"; }
-                nameCell.style.color = "#25282b";
-                nameCell.style.fontWeight = "bold";
-            }
+                if (mi) {{ mi.style.background = "#dcdcdc"; mi.style.color = "#969696"; mi.style.fontWeight = "normal"; }}
+                if (ma) {{ ma.style.background = "#dcdcdc"; ma.style.color = "#969696"; ma.style.fontWeight = "normal"; }}
+                nameCell.style.color = "#969696";
+                nameCell.style.fontWeight = "normal";
+            }}
             
-            if (name !== "" && name !== "IGNORAR" && name !== "NUEVA UNIDAD") {
-                fleet[name] = { max: parseFloat(ma?.innerText)||0, stock: sch, used: 0 };
-            }
-        });
+            if(name !== "" && name !== "NUEVA UNIDAD" && name !== "IGNORAR") {{
+                fleet[name] = {{ max: parseFloat(ma?.innerText)||0, stock: sch, used: 0 }};
+            }}
+        }});
 
-
-
-
-        let mapeoRuteadas = {};
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {
-            let s = row.querySelector('.s-type').value;
-            let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
-            if (s && s !== "Seleccionar...") {
+        // 2. Mapeo de ruteadas
+        let mapeoRuteadas = {{}};
+        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
+            let s = row.querySelector('.s-type')?.value;
+            let u = parseInt(row.querySelector('.u-manual')?.innerText) || 0;
+            if (s && s !== "Seleccionar...") {{
                 mapeoRuteadas[s] = (mapeoRuteadas[s] || 0) + u;
-            }
-        });
+            }}
+        }});
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (nameCell && ruteadaCell) {
+            if (nameCell && ruteadaCell) {{
                 let name = nameCell.innerText.trim();
                 ruteadaCell.innerText = mapeoRuteadas[name] || 0;
-            }
-        });
+            }}
+        }});
 
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
-            let vT = parseFloat(bl.querySelector('.v-total-val').innerText) || 0, vA = 0;
+        // 3. Recálculo por polígono
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+            let vT = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0, vA = 0;
             let vCalcEl = bl.querySelector('.v-calculado-total');
 
             let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -2440,264 +1765,108 @@ app_html = """
             
             let celdaNodos = bl.querySelector('.nodos-val');
             let tieneNodo = (tabId == 6 && celdaNodos && parseInt(celdaNodos.innerText) > 0);
+            
             let filas = bl.querySelectorAll('.calc-row');
 
-            filas.forEach((r, index) => {
+            filas.forEach((r, index) => {{
                 let sType = r.querySelector('.s-type');
                 let uManual = r.querySelector('.u-manual');
                 let sp = r.querySelector('.spr-real-val');
-
-                if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {
+                if (!sType || !uManual || !sp) return;
+                
+                if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {{
                     sType.value = "Large Van MLP foráneo";
                     uManual.innerText = "1";
-                }
+                }}
 
-                if (sType.value === "" || sType.value === "Seleccionar...") {
+                if (sType.value === "" || sType.value === "Seleccionar...") {{
                     uManual.innerText = "0";
-                }
+                }}
                 
                 let s = sType.value;
                 let u = parseInt(uManual.innerText) || 0;
 
-                let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase() || "";
-                if (nombrePlanPadre.includes("ALCHICHICA")) {
-                    if (s !== "Seleccionar..." && s !== "") {
+                if (nombrePlanPadre.includes("ALCHICHICA")) {{
+                    if (s !== "Seleccionar..." && s !== "") {{
                         vA += (u * (parseFloat(sp.innerText) || 0));
                         sp.style.fontWeight = "bold";
                         sp.style.setProperty("background-color", "#edf2f2");
                         sp.style.setProperty("color", "#25282b");
-                    }
+                    }}
                     return; 
-                }
+                }}
 
-                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {
+                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
                     if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
                     fleet[s].used += u; 
                     vA += (u * (parseFloat(sp.innerText) || 0));
                     sp.style.setProperty("background-color", "#edf2f2");
                     sp.style.setProperty("color", "#25282b");
-                } else {
+                }} else {{
                     sp.style.setProperty("background-color", "#FFFFFF");
-                }
-            });
+                }}
+            }});
 
-            vCalcEl.innerText = Math.round(vA);
+            if (vCalcEl) vCalcEl.innerText = Math.round(vA);
             let d = bl.querySelector('.p-diff');
-            let diffVal = Math.round(vA);
-            if (vT === 0) d.innerText = "VACÍO";
-            else if (diffVal === Math.round(vT)) { d.innerText = "OK"; d.style.background = "#61b888"; }
-            else if (vA > vT) { d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }
-            else { d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }
-        });
+            if (d) {{
+                let diffVal = Math.round(vA);
+                if (vT === 0) d.innerText = "VACÍO";
+                else if (diffVal === Math.round(vT)) {{ d.innerText = "OK"; d.style.background = "#61b888"; }}
+                else if (vA > vT) {{ d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }}
+                else {{ d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }}
+            }}
+        }});
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
+        // 4. Actualización Deltas
+        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
             
-            let n = nameCell.innerText.trim();
             let ruteadasManuales = parseFloat(row.querySelector('.f-ruteadas')?.innerText || 0);
             let stock = parseFloat(row.querySelector('.f-stock')?.innerText || 0);
             let cL = row.querySelector('.f-left');
             
             let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (ruteadaCell) {
-                if (ruteadasManuales > 0) {
+            if (ruteadaCell) {{
+                if (ruteadasManuales > 0) {{
                     ruteadaCell.style.backgroundColor = "#d3f0e5";
                     ruteadaCell.style.color = "#008B8B";
                     ruteadaCell.style.fontWeight = "bold";
-                } else {
+                }} else {{
                     ruteadaCell.style.backgroundColor = "#dcdcdc";
                     ruteadaCell.style.color = "";
                     ruteadaCell.style.fontWeight = "bold";
-                }
-            }
+                }}
+            }}
 
-            if (cL) {
+            if (cL) {{
                 let exceso = ruteadasManuales - stock;
-                if (exceso > 0) {
+                if (exceso > 0) {{
                     cL.innerText = "+" + exceso;
                     cL.style.color = "red"; 
                     cL.style.fontWeight = "bold"; 
                     cL.style.background = "transparent";
-                } else if (ruteadasManuales === stock && stock > 0) {
+                }} else if (ruteadasManuales === stock && stock > 0) {{
                     cL.innerText = "0";
                     cL.style.color = "white"; 
                     cL.style.background = "#fc765d";
                     cL.style.fontWeight = "bold";
-                } else {
+                }} else {{
                     let restantes = stock - ruteadasManuales;
                     cL.innerText = restantes;
                     cL.style.color = "#17191a"; 
                     cL.style.background = "transparent"; 
                     cL.style.fontWeight = "normal";
-                }
-            }
-        });
+                }}
+            }}
+        }});
 
-        let contadorAcumulado = {};
+        if (typeof updateFleetFloat === "function") updateFleetFloat();
+        if (typeof actualizarDosPorciento === "function") actualizarDosPorciento();
+    }}
 
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {
-            let sel = r.querySelector('.s-type')?.value;
-            let uCell = r.querySelector('.u-manual-cell');
-            let divFlex = uCell ? uCell.querySelector('div') : null;
-            let spanU = r.querySelector('.u-manual');
-            let uManual = parseInt(spanU?.innerText) || 0;
-
-            if (!divFlex) return;
-
-            let badge = divFlex.querySelector('.badge-adicional');
-
-            if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {
-                let stockInicial = fleet[sel].stock;
-                let usadasPrevias = contadorAcumulado[sel] || 0;
-
-                let cubiertasPorSchedule = Math.max(0, Math.min(uManual, stockInicial - usadasPrevias));
-                let excesoFila = uManual - cubiertasPorSchedule;
-
-                contadorAcumulado[sel] = usadasPrevias + uManual;
-
-                if (excesoFila > 0) {
-                    if (!badge) {
-                        badge = document.createElement('span');
-                        badge.className = 'badge-adicional';
-                        badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
-                        if (spanU) spanU.after(badge);
-                    }
-                    badge.innerText = `+${excesoFila}`;
-                    badge.style.display = 'inline-block';
-                    badge.title = `${cubiertasPorSchedule} de Schedule + ${excesoFila} adicionales en este plan`;
-                    uCell.style.backgroundColor = "#d3f0e5";
-                } else {
-                    if (badge) badge.style.display = 'none';
-                    uCell.style.backgroundColor = "#d3f0e5";
-                }
-            } else {
-                if (badge) badge.style.display = 'none';
-                if (uCell) uCell.style.backgroundColor = "#d3f0e5";
-            }
-        });
-
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
-            const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h"];
-
-            bl.querySelectorAll('.s-type').forEach(s => { 
-                let cur = s.value; 
-                let opt = '<option value="">Seleccionar...</option>';
-                
-                Object.keys(fleet).forEach(k => {
-                    let nameLower = k.toLowerCase().trim();
-                    let stock = fleet[k].stock;
-                    let used = fleet[k].used;
-                    
-                    let esPermitida = permitidasSinStock.some(u => nameLower.includes(u));
-                    let tieneCapacidad = (stock - used > 0);
-
-                    if (tieneCapacidad || esPermitida || k === cur) {
-                        opt += `<option value="${k}">${k}</option>`;
-                    }
-                });
-                
-                s.innerHTML = opt;
-                s.value = cur;
-                updateSelectColor(s);
-            });
-        });
-
-        let totals = {
-            mlpDecl: 0, mlpRute: 0,
-            rentalDecl: 0, rentalRute: 0,
-            carDecl: 0, carRute: 0,
-            otrosRute: 0,
-            totalRuteadas: 0
-        };
-
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {
-            let name = row.querySelector('.edit-name')?.innerText.toLowerCase().trim() || "";
-            let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
-            
-            if (name.includes("mlp")) totals.mlpDecl += sch;
-            else if (name.includes("rental")) totals.rentalDecl += sch;
-            else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) totals.carDecl += sch;
-        });
-
-        totals.totalRuteadas = 0;
-        totals.mlpRute = 0;
-        totals.rentalRute = 0;
-        totals.carRute = 0;
-        totals.otrosRute = 0; 
-
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {
-            let s = row.querySelector('.s-type').value; 
-            let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
-
-            if (!s || s === "Seleccionar...") return;
-
-            let name = s.toLowerCase().trim();
-
-            if (name.includes("mlp")) {
-                totals.mlpRute += u;
-            } else if (name.includes("rental")) {
-                totals.rentalRute += u;
-            } else if (name.includes("delivery")) {
-                totals.otrosRute += u;
-            } else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {
-                totals.carRute += u;
-            } else {
-                totals.otrosRute += u; 
-            }
-
-            totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-        });
-
-        totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-
-        console.log("DEBUG: MLP=" + totals.mlpRute + ", Rental=" + totals.rentalRute + ", Car=" + totals.carRute + ", Otros=" + totals.otrosRute + ", TOTAL=" + totals.totalRuteadas);
-
-        function setT(id, val) {
-            let finalId = id + '-' + tabId;
-            let el = document.getElementById(finalId);
-            if (el) {
-                el.innerText = Math.round(val);
-                console.log("ÉXITO: Se actualizó el ID " + finalId + " con valor " + val);
-            } else {
-                console.error("¡ERROR! No encontré el ID: " + finalId);
-            }
-        }
-
-        totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-
-        setT('total-mlp-decl', totals.mlpDecl);
-        setT('total-mlp-rute', totals.mlpRute);
-        setT('total-rental-decl', totals.rentalDecl);
-        setT('total-rental-rute', totals.rentalRute);
-        setT('total-car-schedule', totals.carDecl);
-        setT('total-car-real', totals.carRute);
-        setT('total-otros', totals.otrosRute); 
-
-        setTimeout(() => {
-            let valorCorrecto = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-            let el = document.getElementById('total-ruteadas-' + tabId);
-            if (el) {
-                el.innerText = Math.round(valorCorrecto);
-                el.style.color = "#66CDAA";
-                console.log("FORZADO: El total ahora es " + valorCorrecto);
-            }
-        }, 500);
-
-        updateFleetFloat();
-        actualizarTotales();
-        actualizarDosPorciento();
-
-        let elMlp = document.getElementById('val-mlp-rute-' + tabId);
-        let elRental = document.getElementById('val-rental-rute-' + tabId);
-        let elCar = document.getElementById('val-car-rute-' + tabId);
-
-        if(elMlp) elMlp.innerText = Math.round(totals.mlpRute);
-        if(elRental) elRental.innerText = Math.round(totals.rentalRute);
-        if(elCar) elCar.innerText = Math.round(totals.carRute);
-    }
-
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function(event) {{
         if (event.key !== 'Enter') return;
 
         const ae = document.activeElement;
@@ -2706,39 +1875,39 @@ app_html = """
         if (ae && ae.isContentEditable) return;
 
         const fleet = document.getElementById("fleet-sticky");
-        if (fleet && fleet.classList.contains("fleet-floating")) {
+        if (fleet && fleet.classList.contains("fleet-floating")) {{
             event.preventDefault();
             if (typeof toggleFleetFloating === "function") toggleFleetFloating();
             return;
-        }
+        }}
 
         let panel = document.getElementById('panel-prioridades');
-        if (panel && panel.style.top === "0px") {
+        if (panel && panel.style.top === "0px") {{
             panel.style.top = "-600px";
             if (document.activeElement) document.activeElement.blur();
-        }
+        }}
 
         let alerta = document.querySelector('.alerta-roja, .p-diff');
-        if (alerta && alerta.innerText.includes('EXCESO')) {
+        if (alerta && alerta.innerText.includes('EXCESO')) {{
             if (document.activeElement) document.activeElement.blur();
-        }
-    });
+        }}
+    }});
 
-    function focusCalc() {
+    function focusCalc() {{
         document.getElementById('calc_wrapper').focus();
-    }
+    }}
 
-    function filterRows(onlyActive) {
+    function filterRows(onlyActive) {{
         const rows = document.querySelectorAll('#body-' + currentTab + ' .master-row');
-        rows.forEach(row => {
+        rows.forEach(row => {{
             const stock = parseInt(row.querySelector('.f-stock').innerText) || 0;
             row.style.display = (onlyActive && stock === 0) ? 'none' : '';
-        });
-    }
+        }});
+    }}
 
     let herramientasVisibles = true;
 
-    function toggleTools() {
+    function toggleTools() {{
         const crono = document.querySelector('.crono-card');
         const convertidorContenido = document.querySelectorAll('.google-tool > *:not(#toggle-tools-btn)');
         const boton = document.getElementById('toggle-tools-btn');
@@ -2747,48 +1916,48 @@ app_html = """
 
         if (crono) crono.style.display = herramientasVisibles ? '' : 'none';
 
-        convertidorContenido.forEach(elemento => {
+        convertidorContenido.forEach(elemento => {{
             elemento.style.display = herramientasVisibles ? '' : 'none';
-        });
+        }});
 
-        if (!herramientasVisibles) {
+        if (!herramientasVisibles) {{
             boton.innerHTML = '🛠️ MOSTRAR UTILERÍAS';
             boton.className = 'btn-mostrar';
-        } else {
+        }} else {{
             boton.innerHTML = '❌ OCULTAR UTILERÍAS';
             boton.className = 'btn-ocultar';
-        }
-    }
+        }}
+    }}
 
-    function convertTime() {
+    function convertTime() {{
         let m = parseInt(document.getElementById('min-in').value) || 0;
         document.getElementById('time-res').innerText = Math.floor(m/60) + "h " + (m%60) + "m";
-    }
-    function an(n) { curC += n; updateCalc(); }
-    function ao(o) { curC += " " + o + " "; updateCalc(); }
-    function cl() { curC = ""; updateCalc(); document.getElementById('calc_h').innerText = ""; }
-    function del() { curC = curC.trim().slice(0, -1); updateCalc(); }
-    function updateCalc() { document.getElementById('calc_r').innerText = curC || "0"; }
-    function calc_eq() { try { let res = eval(curC); document.getElementById('calc_h').innerText = curC + " ="; curC = res.toString(); updateCalc(); } catch { } }
+    }}
+    function an(n) {{ curC += n; updateCalc(); }}
+    function ao(o) {{ curC += " " + o + " "; updateCalc(); }}
+    function cl() {{ curC = ""; updateCalc(); document.getElementById('calc_h').innerText = ""; }}
+    function del() {{ curC = curC.trim().slice(0, -1); updateCalc(); }}
+    function updateCalc() {{ document.getElementById('calc_r').innerText = curC || "0"; }}
+    function calc_eq() {{ try {{ let res = eval(curC); document.getElementById('calc_h').innerText = curC + " ="; curC = res.toString(); updateCalc(); }} catch {{ }} }}
 
-    function updateReloj() { document.getElementById('reloj-actual').innerText = new Date().toLocaleTimeString('en-GB'); }
+    function updateReloj() {{ document.getElementById('reloj-actual').innerText = new Date().toLocaleTimeString('en-GB'); }}
     setInterval(updateReloj, 1000);
 
-    function startC() { if(!chronoInterval) { startTime = Date.now() - elapsedTime; chronoInterval = setInterval(()=>{ elapsedTime = Date.now() - startTime; updateCDisplay(); }, 100); } }
-    function stopC() { clearInterval(chronoInterval); chronoInterval = null; }
-    function resetC() { stopC(); elapsedTime = 0; updateCDisplay(); }
-    function updateCDisplay() { 
+    function startC() {{ if(!chronoInterval) {{ startTime = Date.now() - elapsedTime; chronoInterval = setInterval(()=>{{ elapsedTime = Date.now() - startTime; updateCDisplay(); }}, 100); }} }}
+    function stopC() {{ clearInterval(chronoInterval); chronoInterval = null; }}
+    function resetC() {{ stopC(); elapsedTime = 0; updateCDisplay(); }}
+    function updateCDisplay() {{ 
         let d = new Date(elapsedTime);
         let h = String(Math.floor(elapsedTime/3600000)).padStart(2,'0');
         let m = String(d.getUTCMinutes()).padStart(2,'0');
         let s = String(d.getUTCSeconds()).padStart(2,'0');
         let ms = Math.floor(d.getUTCMilliseconds()/100);
-        document.getElementById('crono-main').innerText = `${h}:${m}:${s}.${ms}`;
-    }
+        document.getElementById('crono-main').innerText = `${{h}}:${{m}}:${{s}}.${{ms}}`;
+    }}
 
-    function manualEdit(el) { 
+    function manualEdit(el) {{ 
         let r = el.closest('tr');
-        if (r) {
+        if (r) {{
             editedRowsPlan.add(r);
             let table = r.closest('table');
             let tbody = table ? table.querySelector('tbody') : null;
@@ -2799,29 +1968,29 @@ app_html = """
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
 
             let activeTabBtn = document.querySelector('.tab-btn.active');
-            if (activeTabBtn) {
+            if (activeTabBtn) {{
                 let tabId = activeTabBtn.textContent.trim();
                 
-                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {
+                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
                     permiteInfinito = true;
-                } else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
+                }} else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
                     permiteInfinito = true;
-                } else if ((tabId === "SDE" || tabId === "PREC") && esUnidadCar) {
+                }} else if ((tabId === "SDE" || tabId === "PREC") && esUnidadCar) {{
                     permiteInfinito = true;
-                }
-            }
+                }}
+            }}
 
-            if (permiteInfinito && tbody) {
+            if (permiteInfinito && tbody) {{
                 let filasCalculo = tbody.querySelectorAll('tr.calc-row');
                 let ultimaFila = filasCalculo[filasCalculo.length - 1];
                 
-                if (r === ultimaFila) {
+                if (r === ultimaFila) {{
                     let nuevaFila = r.cloneNode(true);
                     let nuevoSelect = nuevaFila.querySelector('.s-type');
-                    if (nuevoSelect) {
+                    if (nuevoSelect) {{
                         nuevoSelect.value = "";
                         nuevoSelect.style.color = "#808080";
-                    }
+                    }}
                     let nuevoSpanU = nuevaFila.querySelector('.u-manual');
                     if (nuevoSpanU) nuevoSpanU.innerText = "0";
                     let nuevoSpanS = nuevaFila.querySelector('.spr-real-val');
@@ -2830,13 +1999,13 @@ app_html = """
                     if (nuevoCheck) nuevoCheck.checked = false;
 
                     tbody.appendChild(nuevaFila);
-                }
-            }
-        }
+                }}
+            }}
+        }}
         recalc(); 
-    }
+    }}
 
-    function resetRow(sel) { 
+    function resetRow(sel) {{ 
         let r = sel.closest('tr');
         if (!r) return;
         let table = sel.closest('table');
@@ -2845,13 +2014,13 @@ app_html = """
         let tbody = table.querySelector('tbody');
         let unidadSeleccionada = sel.value;
 
-        if (unidadSeleccionada === "") {
+        if (unidadSeleccionada === "") {{
             r.querySelector('.u-manual').innerText = "0";
             r.querySelector('.spr-real-val').innerText = "0";
             editedRowsPlan.delete(r);
             recalc();
             return;
-        }
+        }}
 
         let volTotalSpan = table.querySelector('.v-total-val');
         let volumenTotal = volTotalSpan ? parseFloat(volTotalSpan.textContent) || 0 : 0;
@@ -2861,17 +2030,17 @@ app_html = """
         let totalUnidadesUsadasEnEstaPestana = 0;
         
         let filasFlota = document.querySelectorAll('#body-' + currentTab + ' .master-row');
-        for (let filaFlota of filasFlota) {
+        for (let filaFlota of filasFlota) {{
             let celdaNombre = filaFlota.querySelector('.edit-name');
-            if (celdaNombre && celdaNombre.innerText.trim() === unidadSeleccionada.trim()) {
+            if (celdaNombre && celdaNombre.innerText.trim() === unidadSeleccionada.trim()) {{
                 let celdaSprMax = filaFlota.querySelector('.edit-spr-max');
                 let celdaStock = filaFlota.querySelector('.f-stock');
                 
                 if (celdaSprMax) sprEncontrado = parseFloat(celdaSprMax.innerText) || 0;
                 if (celdaStock) stockInicialFlota = parseInt(celdaStock.innerText) || 0;
                 break;
-            }
-        }
+            }}
+        }}
 
         let spanS = r.querySelector('.spr-real-val');
         if (spanS) spanS.innerText = sprEncontrado;
@@ -2879,63 +2048,63 @@ app_html = """
         let volumenYaCubierto = 0;
         let todasLasFilasPlan = tbody.querySelectorAll('tr.calc-row');
         
-        todasLasFilasPlan.forEach(filaPlan => {
-            if (filaPlan !== r) {
+        todasLasFilasPlan.forEach(filaPlan => {{
+            if (filaPlan !== r) {{
                 let u = parseInt(filaPlan.querySelector('.u-manual').innerText) || 0;
                 let spr = parseFloat(filaPlan.querySelector('.spr-real-val').innerText) || 0;
                 volumenYaCubierto += (u * spr);
-            }
-        });
+            }}
+        }});
 
         let volumenRestantePlan = volumenTotal - volumenYaCubierto;
         if (volumenRestantePlan < 0) volumenRestantePlan = 0;
 
-        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(fGlobal => {
-            if (fGlobal !== r) {
+        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(fGlobal => {{
+            if (fGlobal !== r) {{
                 let t = fGlobal.querySelector('.s-type')?.value || "";
-                if (t.trim() === unidadSeleccionada.trim()) {
+                if (t.trim() === unidadSeleccionada.trim()) {{
                     totalUnidadesUsadasEnEstaPestana += parseInt(fGlobal.querySelector('.u-manual').innerText) || 0;
-                }
-            }
-        });
+                }}
+            }}
+        }});
 
         let inventarioDisponibleReal = stockInicialFlota - totalUnidadesUsadasEnEstaPestana;
         if (inventarioDisponibleReal < 0) inventarioDisponibleReal = 0;
 
         let unidadesCalculadas = 0;
         
-        if (unidadSeleccionada.trim() === "Delivery Cell Large Van") {
+        if (unidadSeleccionada.trim() === "Delivery Cell Large Van") {{
             unidadesCalculadas = 1;
-        } else if (volumenRestantePlan > 0 && sprEncontrado > 0) {
+        }} else if (volumenRestantePlan > 0 && sprEncontrado > 0) {{
             unidadesCalculadas = Math.ceil(volumenRestantePlan / sprEncontrado);
             let permiteInfinito = false;
             let esUnidadCar = unidadSeleccionada.toLowerCase().includes("car");
             let activeTabBtn = document.querySelector('.tab-btn.active');
             
-            if (activeTabBtn) {
+            if (activeTabBtn) {{
                 let tabId = activeTabBtn.textContent.trim();
-                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {
+                if ((currentTab === 7 || currentTab === 8) && unidadSeleccionada.trim() === "CAR 8H") {{
                     permiteInfinito = true;
-                } else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
+                }} else if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
                     permiteInfinito = true;
-                } else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {
-                    if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {
+                }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCar) {{
+                    if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
                         permiteInfinito = true;
-                    }
-                }
-            }
+                    }}
+                }}
+            }}
 
-            if (!permiteInfinito) {
-                if (unidadesCalculadas > inventarioDisponibleReal) {
+            if (!permiteInfinito) {{
+                if (unidadesCalculadas > inventarioDisponibleReal) {{
                     unidadesCalculadas = inventarioDisponibleReal;
-                    if (unidadesCalculadas === 0) {
+                    if (unidadesCalculadas === 0) {{
                         showAlert("⚠️ FLOTA AGOTADA. No quedan unidades disponibles de: " + unidadSeleccionada);
-                    } else {
+                    }} else {{
                         showAlert("⚠️ FLOTA INSUFICIENTE. Se asignaron las últimas " + unidadesCalculadas + " unidades para amortiguar el volumen.");
-                    }
-                }
-            }
-        }
+                    }}
+                }}
+            }}
+        }}
 
         let spanU = r.querySelector('.u-manual');
         if (spanU) spanU.innerText = unidadesCalculadas;
@@ -2944,28 +2113,28 @@ app_html = """
         let esUnidadCarFila = unidadSeleccionada.toLowerCase().includes("car");
         let activeTabBtnFila = document.querySelector('.tab-btn.active');
         
-        if (activeTabBtnFila) {
+        if (activeTabBtnFila) {{
             let tabId = activeTabBtnFila.textContent.trim();
-            if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {
+            if (tabId === "C1 SCP1" && unidadSeleccionada.trim() === "Large Van MLP") {{
                 permiteInfinitoFila = true;
-            } else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {
-                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {
+            }} else if ((currentTab === 1 || currentTab === 5 || currentTab === 4) && esUnidadCarFila) {{
+                if (unidadSeleccionada.trim() !== "Small 9h Ext Car") {{
                     permiteInfinitoFila = true;
-                }
-            }
-        }
+                }}
+            }}
+        }}
 
-        if (permiteInfinitoFila && tbody) {
+        if (permiteInfinitoFila && tbody) {{
             let filasCalculo = tbody.querySelectorAll('tr.calc-row');
             let ultimaFila = filasCalculo[filasCalculo.length - 1];
             
-            if (r === ultimaFila) {
+            if (r === ultimaFila) {{
                 let nuevaFila = r.cloneNode(true);
                 let nuevoSelect = nuevaFila.querySelector('.s-type');
-                if (nuevoSelect) {
+                if (nuevoSelect) {{
                     nuevoSelect.value = "";
                     nuevoSelect.style.color = "#808080";
-                }
+                }}
                 let nuevoSpanU = nuevaFila.querySelector('.u-manual');
                 if (nuevoSpanU) nuevoSpanU.innerText = "0";
                 let nuevoSpanS = nuevaFila.querySelector('.spr-real-val');
@@ -2974,40 +2143,40 @@ app_html = """
                 if (nuevoCheck) nuevoCheck.checked = false;
 
                 tbody.appendChild(nuevaFila);
-            }
-        }
+            }}
+        }}
 
-        if (typeof manualEdit === 'function' && spanU) {
+        if (typeof manualEdit === 'function' && spanU) {{
             manualEdit(spanU);
-        } else {
+        }} else {{
             recalc();
-        }
-    }
+        }}
+    }}
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e) => {{
         const calc = document.getElementById('calc_wrapper');
         const alerta = document.getElementById('google-alert');
 
-        if (e.key === 'Enter' && alerta.classList.contains('show')) {
+        if (e.key === 'Enter' && alerta.classList.contains('show')) {{
             e.preventDefault();
             e.stopPropagation();
             hideAlert();
             return;
-        }
+        }}
 
-        if (document.activeElement === calc) {
+        if (document.activeElement === calc) {{
             if (e.key >= '0' && e.key <= '9') an(e.key);
             if (e.key === '+') ao('+');
             if (e.key === '-') ao('-');
             if (e.key === '*') ao('*');
-            if (e.key === '/') { e.preventDefault(); ao('/'); }
-            if (e.key === 'Enter') { e.preventDefault(); calc_eq(); }
+            if (e.key === '/') {{ e.preventDefault(); ao('/'); }}
+            if (e.key === 'Enter') {{ e.preventDefault(); calc_eq(); }}
             if (e.key === 'Escape') cl();
             if (e.key === 'Backspace') del();
-        }
-    });
+        }}
+    }});
 
-    function toggleExcelView() {
+    function toggleExcelView() {{
         const isExcel = !document.body.classList.contains("excel-view");
         document.body.classList.toggle("excel-view", isExcel);
         
@@ -3023,74 +2192,74 @@ app_html = """
             "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
             "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
         ];
-        if (isExcel) {
-            if (bPaquetes) {
+        if (isExcel) {{
+            if (bPaquetes) {{
                 estadoPaquetesAntesDeExcel = bPaquetes.style.display;
                 bPaquetes.style.display = "none";
-            }
+            }}
             
             generarExcelPolys();
             btn.innerHTML = "N";
             if(excel) excel.style.display = "block";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {
+            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
                 let el = document.getElementById(id);
                 if(el) el.style.display = "none";
-            });
-            idsAocultar.forEach(id => {
+            }});
+            idsAocultar.forEach(id => {{
                 let el = document.getElementById(id);
-                if(el) {
+                if(el) {{
                     let fila = el.closest('tr');
                     if(fila) fila.style.display = 'none';
-                }
-            });
-        } else {
-            if (bPaquetes) {
+                }}
+            }});
+        }} else {{
+            if (bPaquetes) {{
                 bPaquetes.style.display = estadoPaquetesAntesDeExcel;
-            }
+            }}
             
             btn.innerHTML = "👁️";
             if(excel) excel.style.display = "none";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {
+            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
                 let el = document.getElementById(id);
                 if(el) el.style.display = (id === "polys-" + currentTab) ? "block" : "none";
-            });
+            }});
             
-            if (contScp1 && contSja1) {
-                if (currentTab == 2) {
+            if (contScp1 && contSja1) {{
+                if (currentTab == 2) {{
                     contScp1.style.display = 'block';
                     contSja1.style.display = 'none';
-                } else if (currentTab == 6) {
+                }} else if (currentTab == 6) {{
                     contScp1.style.display = 'none';
                     contSja1.style.display = 'block';
-                } else {
+                }} else {{
                     contScp1.style.display = 'none';
                     contSja1.style.display = 'none';
-                }
-            }
+                }}
+            }}
 
-            idsAocultar.forEach(id => {
+            idsAocultar.forEach(id => {{
                 let el = document.getElementById(id);
-                if(el) {
+                if(el) {{
                     let fila = el.closest('tr');
                     if(fila) fila.style.removeProperty('display');
-                }
-            });
-            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {
+                }}
+            }});
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
                 fila.style.setProperty('display', 'table-row', 'important');
                 actualizarVisibilidadContador();
-            });
-        }
-    }
+            }});
+        }}
+    }}
 
-    function generarExcelPolys() {
+    function generarExcelPolys() {{
         let body = document.getElementById("excel-polys-body");
         if(!body) return;
 
         body.innerHTML = "";
         let tabId = currentTab;
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
             let plan = bl.querySelector('tbody tr td')?.innerText.trim() || "";
             let vol = bl.querySelector('.v-total-val')?.innerText.trim() || "0";
 
@@ -3099,14 +2268,14 @@ app_html = """
             let nodoTxt = (parseInt(nodoExcel) || 0) > 0 ? nodoExcel : "-";
 
             let filasCalc = Array.from(bl.querySelectorAll('.calc-row'));
-            let filasValidas = filasCalc.filter(r => {
+            let filasValidas = filasCalc.filter(r => {{
                 let u = r.querySelector('.s-type')?.value || "";
                 return u !== "" && u !== "Seleccionar...";
-            });
+            }});
 
             if (filasValidas.length === 0) return;
 
-            filasValidas.forEach((r, index) => {
+            filasValidas.forEach((r, index) => {{
                 let unidad = r.querySelector('.s-type')?.value || "";
                 let asignadas = r.querySelector('.u-manual')?.innerText.trim() || "0";
 
@@ -3114,84 +2283,84 @@ app_html = """
                 let fRow = fRows.find(fr => fr.querySelector('.edit-name')?.innerText.trim() === unidad);
                 let valSpr = "-";
 
-                if (fRow) {
+                if (fRow) {{
                     let orh  = fRow.querySelector(".edit-orh")?.innerText.trim() || "0";
                     let ocup = fRow.querySelector(".edit-ocup")?.innerText.trim() || "0";
                     valSpr = orh + " / " + ocup;
-                }
+                }}
 
                 let filaHtml = '<tr>';
-                if (index === 0) {
+                if (index === 0) {{
                     filaHtml += `
-                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${plan}</td>
-                        <td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${vol}</td>
+                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${{plan}}</td>
+                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{vol}}</td>
                     `;
-                }
+                }}
                 filaHtml += `
-                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${unidad}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${asignadas}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle;">${valSpr}</td>
+                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${{unidad}}</td>
+                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${{asignadas}}</td>
+                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle;">${{valSpr}}</td>
                 `;
-                if (index === 0) {
-                    filaHtml += `<td rowspan="${filasValidas.length}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${nodoTxt}</td>`;
-                }
+                if (index === 0) {{
+                    filaHtml += `<td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{nodoTxt}}</td>`;
+                }}
                 filaHtml += '</tr>';
                 body.innerHTML += filaHtml;
-            });
-        });
+            }});
+        }});
 
         let valRuteadasNormal = document.getElementById('total-ruteadas-' + tabId)?.innerText || "0";
         let celdaTotalExcel = document.getElementById('excel-total-ruteadas-naranja');
         if(celdaTotalExcel) celdaTotalExcel.innerText = valRuteadasNormal;
 
         let tablaActual = document.querySelector('#tab-' + tabId + ' table');
-        if (tablaActual) {
+        if (tablaActual) {{
             let filasFooter = tablaActual.querySelectorAll('tfoot tr');
-            filasFooter.forEach(fila => {
-                if (!fila.innerText.includes("TOTAL RUTEADAS")) {
+            filasFooter.forEach(fila => {{
+                if (!fila.innerText.includes("TOTAL RUTEADAS")) {{
                     fila.style.display = 'none';
-                }
-            });
-        }
-    }
+                }}
+            }});
+        }}
+    }}
 
-    function obtenerCarFlexible() {
+    function obtenerCarFlexible() {{
         const opciones = ["Car - 8h", "Car - 5h", "Car - 3h"];
-        for (let nombre of opciones) {
+        for (let nombre of opciones) {{
             let unidad = fleet.find(f => f.nombre === nombre && f.stock > 0);
             if (unidad) return unidad;
-        }
+        }}
         return null;
-    }
+    }}
 
-    function distribuirAutomatico() {
+    function distribuirAutomatico() {{
         let fleet = [];
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
             let nombre = row.querySelector('.edit-name')?.innerText.trim();
             let sprMax = parseFloat(row.querySelector('.edit-spr-max')?.innerText) || 0;
             let stock = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
 
-            if (nombre && nombre !== "IGNORAR" && stock > 0) {
-                fleet.push({
+            if (nombre && nombre !== "IGNORAR" && stock > 0) {{
+                fleet.push({{
                     nombre: nombre,
                     spr: sprMax,
                     stock: stock,
                     restante: stock
-                });
-            }
-        });
+                }});
+            }}
+        }});
 
-        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {
+        document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
 
-            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {
+            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {{
                 let unidadReal = fleet.find(f => f.nombre === tipo);
-                if (unidadReal) {
+                if (unidadReal) {{
                     unidadReal.restante -= unidades;
-                }
-            }
-        });
+                }}
+            }}
+        }});
 
         console.log("FLEET DISPONIBLE EN PESTAÑA ACTIVA:", fleet.map(f => f.nombre));
         fleet.sort((a, b) => b.spr - a.spr);
@@ -3199,29 +2368,29 @@ app_html = """
         let bloques = Array.from(document.querySelectorAll('#polys-' + currentTab + ' .poligono-bloque'));
         let polys = [];
 
-        bloques.forEach(bl => {
+        bloques.forEach(bl => {{
             let volumen = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0;
-            if (volumen > 0) {
-                polys.push({
+            if (volumen > 0) {{
+                polys.push({{
                     bloque: bl,
                     volumen: volumen
-                });
-            }
-        });
+                }});
+            }}
+        }});
 
-        if (currentTab == 1) {
+        if (currentTab == 1) {{
             let small9h = fleet.find(f => f.nombre === "Small 9h Ext Car");
-            if (small9h && small9h.restante > 0) {
+            if (small9h && small9h.restante > 0) {{
                 let planesPrioridad = ["IZTAPALAPA", "COYOACÁN"];
-                planesPrioridad.forEach(nombreBuscado => {
+                planesPrioridad.forEach(nombreBuscado => {{
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    });
+                    }});
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -3229,32 +2398,32 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / small9h.spr), small9h.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    });
+                    }});
 
-                    if (filaLibre) {
+                    if (filaLibre) {{
                         filaLibre.querySelector('.s-type').value = small9h.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = small9h.spr;
                         editedRowsPlan.add(filaLibre);
                         small9h.restante -= usar;
-                    }
-                });
+                    }}
+                }});
 
-                if (small9h.restante > 0) {
-                    polys.forEach(polyPlan => {
+                if (small9h.restante > 0) {{
+                    polys.forEach(polyPlan => {{
                         if (small9h.restante <= 0) return;
                         let nombrePlan = polyPlan.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "";
                         if (nombrePlan !== "TLAHUAC") return;
 
                         let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                         let yaAsignado = 0;
-                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                             yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                        });
+                        }});
 
                         let restante = objetivo - yaAsignado;
                         if (restante <= 0) return;
@@ -3262,37 +2431,37 @@ app_html = """
                         let usar = Math.min(Math.ceil(restante / small9h.spr), small9h.restante);
                         if (usar <= 0) return;
 
-                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        });
+                        }});
 
-                        if (filaLibre) {
+                        if (filaLibre) {{
                             filaLibre.querySelector('.s-type').value = small9h.nombre;
                             filaLibre.querySelector('.u-manual').innerText = usar;
                             filaLibre.querySelector('.spr-real-val').innerText = small9h.spr;
                             editedRowsPlan.add(filaLibre);
                             small9h.restante -= usar;
-                        }
-                    });
-                }
-            }
-        }
+                        }}
+                    }});
+                }}
+            }}
+        }}
 
-        if (currentTab == 5) {
+        if (currentTab == 5) {{
             let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
-            if (smallVan && smallVan.restante > 0) {
+            if (smallVan && smallVan.restante > 0) {{
                 let planesPrioridad = ["IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ"];
-                planesPrioridad.forEach(nombreBuscado => {
+                planesPrioridad.forEach(nombreBuscado => {{
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    });
+                    }});
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -3300,32 +2469,32 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / smallVan.spr), smallVan.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    });
+                    }});
 
-                    if (filaLibre) {
+                    if (filaLibre) {{
                         filaLibre.querySelector('.s-type').value = smallVan.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = smallVan.spr;
                         editedRowsPlan.add(filaLibre);
                         smallVan.restante -= usar;
-                    }
-                });
+                    }}
+                }});
 
-                if (smallVan.restante > 0) {
-                    polys.forEach(polyPlan => {
+                if (smallVan.restante > 0) {{
+                    polys.forEach(polyPlan => {{
                         if (smallVan.restante <= 0) return;
                         let nombrePlan = polyPlan.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "";
                         if (!nombrePlan.includes("CHIMAS")) return;
 
                         let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                         let yaAsignado = 0;
-                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                        polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                             yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                        });
+                        }});
 
                         let restante = objetivo - yaAsignado;
                         if (restante <= 0) return;
@@ -3333,35 +2502,35 @@ app_html = """
                         let usar = Math.min(Math.ceil(restante / smallVan.spr), smallVan.restante);
                         if (usar <= 0) return;
 
-                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                        let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        });
+                        }});
 
-                        if (filaLibre) {
+                        if (filaLibre) {{
                             filaLibre.querySelector('.s-type').value = smallVan.nombre;
                             filaLibre.querySelector('.u-manual').innerText = usar;
                             filaLibre.querySelector('.spr-real-val').innerText = smallVan.spr;
                             editedRowsPlan.add(filaLibre);
                             smallVan.restante -= usar;
-                        }
-                    });
-                }
-            }
+                        }}
+                    }});
+                }}
+            }}
 
             let CarZonaExtendida = fleet.find(f => f.nombre === "Car Zona Extendida");
-            if (CarZonaExtendida && CarZonaExtendida.restante > 0) {
+            if (CarZonaExtendida && CarZonaExtendida.restante > 0) {{
                 let planesPrioridad = ["PUEBLOS", "TEXCOCO"];
-                planesPrioridad.forEach(nombreBuscado => {
+                planesPrioridad.forEach(nombreBuscado => {{
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    });
+                    }});
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -3369,54 +2538,54 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / CarZonaExtendida.spr), CarZonaExtendida.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    });
+                    }});
 
-                    if (filaLibre) {
+                    if (filaLibre) {{
                         filaLibre.querySelector('.s-type').value = CarZonaExtendida.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = CarZonaExtendida.spr;
                         editedRowsPlan.add(filaLibre);
                         CarZonaExtendida.restante -= usar;
-                    }
-                });
+                    }}
+                }});
 
-                if (CarZonaExtendida.restante > 0) {
+                if (CarZonaExtendida.restante > 0) {{
                     let chalco = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CHALCO");
-                    if (chalco) {
-                        let filaLibre = Array.from(chalco.bloque.querySelectorAll('.calc-row')).find(f => {
+                    if (chalco) {{
+                        let filaLibre = Array.from(chalco.bloque.querySelectorAll('.calc-row')).find(f => {{
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        });
-                        if (filaLibre) {
+                        }});
+                        if (filaLibre) {{
                             filaLibre.querySelector('.s-type').value = CarZonaExtendida.nombre;
                             filaLibre.querySelector('.u-manual').innerText = CarZonaExtendida.restante;
                             filaLibre.querySelector('.spr-real-val').innerText = CarZonaExtendida.spr;
                             editedRowsPlan.add(filaLibre);
                             CarZonaExtendida.restante = 0;
-                        }
-                    }
-                }
-            }
-        }
+                        }}
+                    }}
+                }}
+            }}
+        }}
 
-        if (currentTab == 2) {
+        if (currentTab == 2) {{
             let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
-            if (largeVanMLP && largeVanMLP.restante > 0) {
+            if (largeVanMLP && largeVanMLP.restante > 0) {{
                 let planesPrioridad = ["ESCÁRCEGA", "ESCÁRCEGA EXT", "MAXCANUN", "CANDELARIA", "SEYBAPLAYA", "CHAMPOTÓN", "HOLPECHEN"];
-                planesPrioridad.forEach(nombreBuscado => {
+                planesPrioridad.forEach(nombreBuscado => {{
                     let polyPlan = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === nombreBuscado);
                     if (!polyPlan) return;
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    });
+                    }});
 
                     let restante = objetivo - yaAsignado;
                     if (restante <= 0) return;
@@ -3424,65 +2593,65 @@ app_html = """
                     let usar = Math.min(Math.ceil(restante / largeVanMLP.spr), largeVanMLP.restante);
                     if (usar <= 0) return;
 
-                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {
+                    let filaLibre = Array.from(polyPlan.bloque.querySelectorAll('.calc-row')).find(f => {{
                         let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                         let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                         return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                    });
+                    }});
 
-                    if (filaLibre) {
+                    if (filaLibre) {{
                         filaLibre.querySelector('.s-type').value = largeVanMLP.nombre;
                         filaLibre.querySelector('.u-manual').innerText = usar;
                         filaLibre.querySelector('.spr-real-val').innerText = largeVanMLP.spr;
                         editedRowsPlan.add(filaLibre);
                         largeVanMLP.restante -= usar;
-                    }
-                });
-            }
+                    }}
+                }});
+            }}
 
             let deliveryCell = fleet.find(f => f.nombre === "Delivery Cell Large Van");
-            if (deliveryCell && deliveryCell.restante > 0) {
+            if (deliveryCell && deliveryCell.restante > 0) {{
                 let campeche = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CAMPECHE");
-                if (campeche) {
+                if (campeche) {{
                     let nodos = parseInt(campeche.bloque.querySelector('.nodos-campeche')?.innerText) || 0;
-                    if (nodos > 0) {
-                        let filaLibre = Array.from(campeche.bloque.querySelectorAll('.calc-row')).find(f => {
+                    if (nodos > 0) {{
+                        let filaLibre = Array.from(campeche.bloque.querySelectorAll('.calc-row')).find(f => {{
                             let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                             let unidades = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                             return unidades === 0 && (tipo === "" || tipo === "Seleccionar...");
-                        });
-                        if (filaLibre) {
+                        }});
+                        if (filaLibre) {{
                             filaLibre.querySelector('.s-type').value = deliveryCell.nombre;
                             filaLibre.querySelector('.u-manual').innerText = 1;
                             filaLibre.querySelector('.spr-real-val').innerText = deliveryCell.spr;
                             editedRowsPlan.add(filaLibre);
                             deliveryCell.restante -= 1;
-                        }
-                    }
-                }
-            }
-        }
+                        }}
+                    }}
+                }}
+            }}
+        }}
 
-        if (currentTab == 6) {
-            polys.forEach(poly => {
+        if (currentTab == 6) {{
+            polys.forEach(poly => {{
                 procesarAsignacionUnidadSJA1(poly);
-            });
-        } else {
-            polys.forEach(poly => {
+            }});
+        }} else {{
+            polys.forEach(poly => {{
                 let bloque = poly.bloque;
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                 let yaAsignado = 0;
-                bloque.querySelectorAll('.calc-row').forEach(r => {
+                bloque.querySelectorAll('.calc-row').forEach(r => {{
                     yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                });
+                }});
 
                 let restante = objetivo - yaAsignado;
                 if (restante <= 0) return;
 
                 let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-                for (let fila of filas) {
+                for (let fila of filas) {{
                     let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
                     let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
                     let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
@@ -3492,101 +2661,101 @@ app_html = """
 
                     let unidad = null;
 
-                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {
+                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
                         unidad = fleet.find(f => f.nombre === "Rental Large Van");
-                    } else if (currentTab == 2) {
+                    }} else if (currentTab == 2) {{
                         unidad = fleet.find(f => f.restante > 0 && f.nombre !== "Rental Large Van");
-                    } else {
+                    }} else {{
                         unidad = fleet.find(f => f.restante > 0);
-                    }
+                    }}
 
-                    if (!unidad) {
-                        if (currentTab == 4) {
+                    if (!unidad) {{
+                        if (currentTab == 4) {{
                             let options = ["Car - 5h", "Car - 3h"];
-                            for (let opt of options) {
+                            for (let opt of options) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }
-                        } else if (currentTab == 7) {
+                            }}
+                        }} else if (currentTab == 7) {{
                             let options = ["Car - 8h"];
-                            for (let opt of options) {
+                            for (let opt of options) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }
-                        } else if (currentTab == 8) {
+                            }}
+                        }} else if (currentTab == 8) {{
                             let options = ["Car - 8h"];
-                            for (let opt of options) {
+                            for (let opt of options) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }
-                        } else if (currentTab == 2) {
+                            }}
+                        }} else if (currentTab == 2) {{
                             let options = ["Large Van MLP", "Car - 8h", "Car - 5h"];
-                            for (let opt of options) {
+                            for (let opt of options) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }
-                        } else if (currentTab == 1 || currentTab == 5) {
+                            }}
+                        }} else if (currentTab == 1 || currentTab == 5) {{
                             let options = ["Car - 8h", "Car - 5h"];
-                            for (let opt of options) {
+                            for (let opt of options) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
-                            }
-                        }
+                            }}
+                        }}
                         if (!unidad) break;
-                    }
+                    }}
 
                     let necesarias = Math.ceil(restante / unidad.spr);
                     let usar;
 
                     let permiteNegativo = unidad.nombre === "Car - 8h" || unidad.nombre === "Car - 5h" || unidad.nombre === "Car - 3h" || (currentTab == 2 && unidad.nombre === "Large Van MLP");
-                    if (unidad.restante > 0) {
+                    if (unidad.restante > 0) {{
                         usar = Math.min(necesarias, unidad.restante);
-                    } else if (permiteNegativo) {
+                    }} else if (permiteNegativo) {{
                         usar = necesarias;
-                    } else {
+                    }} else {{
                         usar = 0;
-                    }
+                    }}
 
                     if (usar <= 0) continue;
 
                     let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-                    if (filaExistente) {
+                    if (filaExistente) {{
                         let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
                         filaExistente.querySelector('.u-manual').innerText = actual + usar;
                         filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
                         editedRowsPlan.add(filaExistente);
-                    } else {
+                    }} else {{
                         fila.querySelector('.s-type').value = unidad.nombre;
                         fila.querySelector('.u-manual').innerText = usar;
                         fila.querySelector('.spr-real-val').innerText = unidad.spr;
                         editedRowsPlan.add(fila);
-                    }
+                    }}
 
                     unidad.restante -= usar;
                     restante -= (usar * unidad.spr);
-                }
-            });
-        }
+                }}
+            }});
+        }}
         recalc();
-    }
+    }}
 
-    function procesarAsignacionUnidadSJA1(poly) {
+    function procesarAsignacionUnidadSJA1(poly) {{
         let bloque = poly.bloque;
         let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
         let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
         let yaAsignado = 0;
-        bloque.querySelectorAll('.calc-row').forEach(r => {
+        bloque.querySelectorAll('.calc-row').forEach(r => {{
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
             let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
             yaAsignado += (unidades * spr);
-        });
+        }});
 
         let restante = objetivo - yaAsignado;
         if (restante <= 0) return;
 
         let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-        for (let fila of filas) {
+        for (let fila of filas) {{
             let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
             let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
             let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
@@ -3596,43 +2765,46 @@ app_html = """
 
             let unidad = null;
 
-            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {
-                if (nombrePlan === "⚠️ CENTRO 1") {
+            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
+                if (nombrePlan === "⚠️ CENTRO 1") {{
                     const listaEspecialesC1 = [
                         "Extra Large Van MLP H&B", 
                         "Truck 3.5 tons MLP", 
                         "Delivery Cell Large Van"
                     ];
                     
-                    for (let nombre of listaEspecialesC1) {
+                    for (let nombre of listaEspecialesC1) {{
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombre.toLowerCase());
                         if (unidad) break;
-                    }
+                    }}
 
-                    if (!unidad) {
+                    if (!unidad) {{
                         const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                        for (let nombre of listaRental) {
+                        for (let nombre of listaRental) {{
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                             if (unidad) break;
-                        }
-                    }
-                } else if (nombrePlan === "⚠️ CENTRO 2") {
+                        }}
+                    }}
+
+                }} else if (nombrePlan === "⚠️ CENTRO 2") {{
                     const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                    for (let nombre of listaRental) {
+                    for (let nombre of listaRental) {{
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
                         if (unidad) break;
-                    }
-                }
-            } else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {
+                    }}
+                }}
+            }}
+            else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
                 unidad = fleet.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
-            } else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {
+            }}
+            else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {{
                 unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
 
-                if (!unidad) {
+                if (!unidad) {{
                     unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-                }
+                }}
 
-                if (!unidad) {
+                if (!unidad) {{
                     let listaSustitutas = [
                         "car 8h", 
                         "car newbie", 
@@ -3642,18 +2814,26 @@ app_html = """
                         "small van newbie", 
                         "moto 3h"
                     ];
-                    for (let palabra of listaSustitutas) {
+                    for (let palabra of listaSustitutas) {{
                         unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(palabra));
                         if (unidad) break;
-                    }
-                }
-            } else {
+                    }}
+                }}
+            }}
+            else if (nombrePlan === "PEROTE" || nombrePlan === "TLALTETELA") {{
+                unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+
+                if (!unidad) {{
+                    unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+                }}
+            }}
+            else {{
                 unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
                 
-                if (!unidad) {
+                if (!unidad) {{
                     unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-                }
-            }
+                }}
+            }}
 
             if (!unidad) break;
 
@@ -3663,34 +2843,36 @@ app_html = """
             if (usar <= 0) continue;
 
             let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-            if (filaExistente) {
+            if (filaExistente) {{
                 let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
                 filaExistente.querySelector('.u-manual').innerText = actual + usar;
                 filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
                 editedRowsPlan.add(filaExistente);
-            } else {
+            }} else {{
                 fila.querySelector('.s-type').value = unidad.nombre;
                 fila.querySelector('.u-manual').innerText = usar;
                 fila.querySelector('.spr-real-val').innerText = unidad.spr;
                 editedRowsPlan.add(fila);
-            }
+            }}
 
             unidad.restante -= usar;
             restante -= (usar * unidad.spr);
-        }
-    }
+        }}
+    }}
 
-    function actualizarTotales() { return; }
+    function actualizarTotales() {{
+        return;
+    }}
 
-    function updateSelectColor(selectElement) {
-        if (selectElement.value === "") {
+    function updateSelectColor(selectElement) {{
+        if (selectElement.value === "") {{
             selectElement.style.color = "#A9A9A9";
-        } else {
+        }} else {{
             selectElement.style.color = "#25282b";
-        }
-    }
+        }}
+    }}
 
-    function updateFleetFloat() {
+    function updateFleetFloat() {{
         let htmlLeft = "";
         let htmlRight = "";
 
@@ -3702,12 +2884,12 @@ app_html = """
         let totalCarSchedule = 0;
         let totalNoCar = 0;
 
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
             let name = row.querySelector('.edit-name')?.innerText.trim();
             let stock = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             let asignado = parseInt(row.querySelector('.f-ruteadas')?.innerText) || 0;
 
-            if(name && (stock > 0 || asignado > 0)) {
+            if(name && (stock > 0 || asignado > 0)) {{
                 let nameLower = name.toLowerCase();
 
                 let esExtraLargeMLP = nameLower.includes("extra large van mlp h&b") || nameLower.includes("extra large van mlp h & b");
@@ -3719,79 +2901,79 @@ app_html = """
                     !nameLower.includes("mlp") && !nameLower.includes("van grande") && !nameLower.includes("large van")
                 );
 
-                if (esCarStrict) {
+                if (esCarStrict) {{
                     totalCarSchedule += stock;
-                }
+                }}
 
-                if (name.includes("MLP") && !debeExcluirMLP) {
+                if (name.includes("MLP") && !debeExcluirMLP) {{
                     totalMLPStock += stock;
                     totalMLPReal += asignado;
-                }
+                }}
 
-                if (nameLower.includes("rental")) {
+                if (nameLower.includes("rental")) {{
                     totalRentalStock += stock;
                     totalRentalReal += asignado;
-                }
+                }}
 
                 let colorCategoria = esCarStrict ? "#FF4500" : "#0000CD";
 
-                if (esCarStrict) {
+                if (esCarStrict) {{
                     totalCarReal += asignado;
-                } else {
-                    if (!debeExcluirMLP && (name === "Large Van MLP" || name === "Small Van MLP" || name.includes("foráneo"))) {
+                }} else {{
+                    if (!debeExcluirMLP && (name === "Large Van MLP" || name === "Small Van MLP" || name.includes("foráneo"))) {{
                         totalNoCar += asignado;
-                    }
-                }
+                    }}
+                }}
 
                 let leftDisplay = row.querySelector('.f-left')?.innerText || "0";
 
                 htmlLeft += `
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px;"> 
-                        <span style="color:#0a2745;">${name}</span>
-                        <span style="color:${colorCategoria}; font-weight:bold;">${leftDisplay}/${stock}</span>
+                        <span style="color:#0a2745;">${{name}}</span>
+                        <span style="color:${{colorCategoria}}; font-weight:bold;">${{leftDisplay}}/${{stock}}</span>
                     </div>
                 `;
-            }
-        });
+            }}
+        }});
 
         htmlRight = `
             <div style="margin-top: 5px; padding-top: 5px;"> 
                 <div style="display:flex; justify-content:space-between; color: #D2691E; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL CAR (sched):</span> <span>${totalCarSchedule}</span>
+                    <span>TOTAL CAR (sched):</span> <span>${{totalCarSchedule}}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #FF4500; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
-                    <span>TOTAL CAR (real):</span> <span>${totalCarReal}</span>
+                    <span>TOTAL CAR (real):</span> <span>${{totalCarReal}}</span>
                 </div>
 
                 <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
 
                 <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL MLP (decl):</span> <span>${totalMLPStock}</span>
+                    <span>TOTAL MLP (decl):</span> <span>${{totalMLPStock}}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #0000CD; font-weight: 800; font-size: 14px; margin-bottom: 8px;">
-                    <span>TOTAL MLP (rute):</span> <span>${totalMLPReal}</span>
+                    <span>TOTAL MLP (rute):</span> <span>${{totalMLPReal}}</span>
                 </div>
 
                 <div style="border-top: 1px solid #25282b; padding-top: 4px;"></div>
 
                 <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL RENTAL (decl):</span> <span>${totalRentalStock}</span>
+                    <span>TOTAL RENTAL (decl):</span> <span>${{totalRentalStock}}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color: #25282b; font-weight: 800; font-size: 14px;">
-                    <span>TOTAL RENTAL (rute):</span> <span>${totalRentalReal}</span>
+                    <span>TOTAL RENTAL (rute):</span> <span>${{totalRentalReal}}</span>
                 </div>
             </div>
         `;
 
         let html = `
         <div style="display:flex; gap:15px; align-items:flex-start;">
-            <div style="flex:1; min-width:180px;">${htmlLeft}</div>
-            <div style="width:190px; border-left:2px solid #25282b; padding-left:12px;">${htmlRight}</div>
+            <div style="flex:1; min-width:180px;">${{htmlLeft}}</div>
+            <div style="width:190px; border-left:2px solid #25282b; padding-left:12px;">${{htmlRight}}</div>
         </div>
         `;
 
         let elNoCar = document.getElementById('total-no-car-' + currentTab);
-        if (elNoCar) elNoCar.innerText = totalNoCar;
+        if (elNoCar) elNoCar.innerText = totalNoCar; 
 
         let elCarReal = document.getElementById('total-car-real-' + currentTab);
         if (elCarReal) elCarReal.innerText = totalCarReal;
@@ -3809,29 +2991,33 @@ app_html = """
         document.getElementById("val-rental-rute-2").innerText = totalRentalReal;
         document.getElementById("val-car-rute-2").innerText = totalCarReal;
 
-        if (typeof guardarEstado === 'function') { guardarEstado(); }
-    }
+        if (typeof guardarEstado === 'function') {{ guardarEstado(); }}
+    }}
 
     aplicarPerfil();
     recalc();
 
-    function togglePrioridades() {
+    function togglePrioridades() {{
         const panel = document.getElementById('panel-prioridades');
-        if (panel.style.top === '0px') {
+        if (panel.style.top === '0px') {{
             panel.style.top = '-600px';
-        } else {
+        }} else {{
             panel.style.top = '0px';
-        }
-    }
+        }}
+    }}
 
-    function actualizarSelects() {
-        const listaPermitidas = ["Small Van MLP foráneo", "Car 8h", "Car - 8h"];
+    function actualizarSelects() {{
+        const listaPermitidas = [
+            "Small Van MLP foráneo",
+            "Car 8h",
+            "Car - 8h"
+        ];
 
-        document.querySelectorAll('.s-type').forEach(select => {
+        document.querySelectorAll('.s-type').forEach(select => {{
             let valorActual = select.value;
             select.innerHTML = '<option value="">Seleccionar...</option>';
             
-            document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {
+            document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
                 let name = row.querySelector('.edit-name')?.innerText.trim();
                 if (!name || name === "IGNORAR") return;
                 
@@ -3841,31 +3027,32 @@ app_html = """
 
                 let permiteSinStock = listaPermitidas.some(u => nameLower.includes(u));
                 
-                if (permiteSinStock || left > 0 || stock > 0) {
+                if (permiteSinStock || left > 0 || stock > 0) {{
                     let opt = document.createElement('option');
                     opt.value = name;
                     opt.textContent = name;
                     select.appendChild(opt);
-                }
-            });
+                }}
+            }});
             select.value = valorActual;
-        });
-    }
+        }});
+    }}
 
-    document.addEventListener('input', (e) => {
-        if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual')) {
+    document.addEventListener('input', (e) => {{
+        if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual')) {{
             recalc(); 
-        }
-    });
+        }}
+    }});
 
-    window.addEventListener('load', () => {
+    window.addEventListener('load', () => {{
         actualizarSelects();
         agregarIndicadorSchedule();
-    });
+    }});
 
     actualizarDosPorciento();
 
-    document.addEventListener("keydown", function(e){
+    /* NAVEGACIÓN TECLADO TIPO EXCEL */
+    document.addEventListener("keydown", function(e){{
         const celda = document.activeElement;
         if (!celda || !celda.hasAttribute("contenteditable")) return;
 
@@ -3880,84 +3067,92 @@ app_html = """
         const celdasFila = Array.from(fila.querySelectorAll('[contenteditable="true"]'));
         const colIdx = celdasFila.indexOf(celda);
 
-        if(e.key === "ArrowDown"){
+        if(e.key === "ArrowDown"){{
             e.preventDefault();
             const sigFila = filas[filaIdx + 1];
-            if(sigFila){
+            if(sigFila){{
                 const celdas = sigFila.querySelectorAll('[contenteditable="true"]');
                 if(celdas[colIdx]) celdas[colIdx].focus();
-            }
-        }
+            }}
+        }}
 
-        if(e.key === "ArrowUp"){
+        if(e.key === "ArrowUp"){{
             e.preventDefault();
             const antFila = filas[filaIdx - 1];
-            if(antFila){
+            if(antFila){{
                 const celdas = antFila.querySelectorAll('[contenteditable="true"]');
                 if(celdas[colIdx]) celdas[colIdx].focus();
-            }
-        }
+            }}
+        }}
 
-        if(e.key === "ArrowRight"){
+        if(e.key === "ArrowRight"){{
             e.preventDefault();
-            if(celdasFila[colIdx + 1]) celdasFila[colIdx + 1].focus();
-        }
+            if(celdasFila[colIdx + 1]){{
+                celdasFila[colIdx + 1].focus();
+            }}
+        }}
 
-        if(e.key === "ArrowLeft"){
+        if(e.key === "ArrowLeft"){{
             e.preventDefault();
-            if(celdasFila[colIdx - 1]) celdasFila[colIdx - 1].focus();
-        }
-    });
+            if(celdasFila[colIdx - 1]){{
+                celdasFila[colIdx - 1].focus();
+            }}
+        }}
+    }});
 
-    document.addEventListener("focusin", function(e) {
+    /* SELECCIÓN AUTOMÁTICA DE TEXTO EN CELDAS */
+    document.addEventListener("focusin", function(e) {{
         const celda = e.target;
         if (!celda.hasAttribute("contenteditable")) return;
 
-        setTimeout(() => {
+        setTimeout(() => {{
             const rango = document.createRange();
             rango.selectNodeContents(celda);
             const seleccion = window.getSelection();
             seleccion.removeAllRanges();
             seleccion.addRange(rango);
-        }, 0);
-    });
+        }}, 0);
+    }});
 
+    /* CONTROL DE RELOJ Y TAREAS */
     const ruteos = [
-        { nombre:"SMX9", hora:"16:40" },
-        { nombre:"SMX5", hora:"17:20" },
-        { nombre:"SMX2", hora:"18:05" },
-        { nombre:"SMT2", hora:"18:40" },
-        { nombre:"SJA1 C1", hora:"23:30" }
+        {{ nombre:"SMX9", hora:"16:40" }},
+        {{ nombre:"SMX5", hora:"17:20" }},
+        {{ nombre:"SMX2", hora:"18:05" }},
+        {{ nombre:"SMT2", hora:"18:40" }},
+        {{ nombre:"SJA1 C1", hora:"23:30" }}
     ];
 
     let ultimaAlerta = "";
 
-    function actualizarRelojRuteos() {
+    function actualizarRelojRuteos() {{
         const ahora = new Date();
         document.getElementById("hora-actual").innerText = ahora.toLocaleTimeString();
         
         let siguiente = null;
-        for (let tarea of ruteos) {
+        for (let tarea of ruteos) {{
             let partes = tarea.hora.split(":");
             let fechaTarea = new Date();
             fechaTarea.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
-            if (fechaTarea > ahora) {
-                siguiente = { tarea, fechaTarea };
+            if (fechaTarea > ahora) {{
+                siguiente = {{ tarea, fechaTarea }};
                 break;
-            }
-        }
+            }}
+        }}
 
         const elProximo = document.getElementById("proximo-ruteo");
         const elCuenta = document.getElementById("cuenta-regresiva");
         const elHora = document.getElementById("hora-ruteo");
 
-        if (!siguiente) {
+        if (!siguiente) {{
             elProximo.innerText = "Fin del turno";
             if (elHora) elHora.innerText = "--";
             elCuenta.innerText = "--:--";
-        } else {
+        }} else {{
             elProximo.innerText = siguiente.tarea.nombre;
-            if (elHora) elHora.innerText = "A LAS " + siguiente.tarea.hora;
+            if (elHora) {{
+                elHora.innerText = "A LAS " + siguiente.tarea.hora;
+            }}
             
             let diff = siguiente.fechaTarea - ahora;
             let mins = Math.floor(diff / 60000);
@@ -3965,201 +3160,85 @@ app_html = """
             
             elCuenta.innerText = String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
             elCuenta.style.color = mins < 5 ? "#FF0000" : "#7CFFB2";
-        }
-    }
+        }}
+    }}
     setInterval(actualizarRelojRuteos, 1000);
     actualizarRelojRuteos();
 
-    function enableFleetVerticalDrag(){
-        const el = document.querySelector("#fleet-sticky");
-        const handle = document.querySelector("#fleet-drag-handle");
+    /* CONTROL DE ARRASTRE FLOTANTE DE PANTALLA */
+    function iniciarArrastreFlotante(e) {{
+        const el = document.getElementById("fleet-sticky");
+        const handle = document.getElementById("handle-moverse-flotante");
         if (!el || !handle) return;
 
-        if (el.dataset.vdragInit === "1") return;
-        el.dataset.vdragInit = "1";
+        e.preventDefault();
+        e.stopPropagation();
 
-        let dragging = false;
-        let startY = 0;
-        let startTop = 0;
+        if (e.pointerId !== undefined) {{
+            try {{
+                handle.setPointerCapture(e.pointerId);
+            }} catch(err) {{}}
+        }}
 
-        function down(e){
-            if (!el.classList.contains("fleet-floating")) return;
+        const startY = e.clientY;
+        const rect = el.getBoundingClientRect();
+        const startTop = rect.top;
 
-            dragging = true;
-            startY = e.clientY;
-            startTop = el.getBoundingClientRect().top;
+        handle.style.cursor = "grabbing";
 
-            el.style.position = "fixed";
-            el.style.bottom = "auto";
-            el.style.top = `${startTop}px`;
-
-            handle.style.cursor = "grabbing";
-            e.preventDefault();
-            handle.setPointerCapture(e.pointerId);
-        }
-
-        function move(e){
-            if (!dragging) return;
-
-            const dy = e.clientY - startY;
+        function enMovimiento(evt) {{
+            const dy = evt.clientY - startY;
             let newTop = startTop + dy;
 
-            const pad = 8;
-            const minTop = pad;
-            const maxTop = window.innerHeight - el.offsetHeight - pad;
+            const minTop = 10;
+            const maxTop = window.innerHeight - el.offsetHeight - 10;
             newTop = Math.max(minTop, Math.min(maxTop, newTop));
 
-            el.style.top = `${newTop}px`;
-        }
+            el.style.setProperty("top", newTop + "px", "important");
+        }}
 
-        function up(e){
-            if (!dragging) return;
-            dragging = false;
+        function alSoltar(evt) {{
             handle.style.cursor = "grab";
-            try { handle.releasePointerCapture(e.pointerId); } catch {}
-        }
+            
+            if (evt && evt.pointerId !== undefined) {{
+                try {{
+                    handle.releasePointerCapture(evt.pointerId);
+                }} catch(err) {{}}
+            }}
 
-        handle.addEventListener("pointerdown", down, { passive: false });
-        window.addEventListener("pointermove", move, { passive: false });
-        window.addEventListener("pointerup", up, { passive: true });
-    }
+            window.removeEventListener("pointermove", enMovimiento, true);
+            window.removeEventListener("pointerup", alSoltar, true);
+            window.removeEventListener("pointercancel", alSoltar, true);
+        }}
 
-    function makeDraggableWithHandle(el, handleEl, storageKey) {
-        if (!el) return;
-
-        const key = "dragReady_" + storageKey;
-        if (el.dataset[key] === "1") return;
-        el.dataset[key] = "1";
-
-        try {
-            const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-            if (saved && typeof saved.top === "number" && typeof saved.left === "number") {
-                el.style.top = saved.top + "px";
-                el.style.left = saved.left + "px";
-                el.style.right = "auto";
-                el.style.transform = "none";
-            }
-        } catch (e) {}
-
-        let isDown = false;
-        let startX = 0, startY = 0;
-        let startTop = 0, startLeft = 0;
-
-        const getPoint = (ev) => {
-            if (ev.touches && ev.touches[0]) {
-                return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
-            }
-            return { x: ev.clientX, y: ev.clientY };
-        };
-
-        const onDown = (ev) => {
-            isDown = true;
-            el.style.right = "auto";
-            el.style.margin = "0";
-            el.style.transform = "none";
-
-            const p = getPoint(ev);
-            startX = p.x; startY = p.y;
-
-            const rect = el.getBoundingClientRect();
-            startTop = rect.top;
-            startLeft = rect.left;
-
-            el.style.right = "auto";
-            el.style.left = startLeft + "px";
-            el.style.top = startTop + "px";
-            el.style.userSelect = "none";
-
-            ev.preventDefault();
-        };
-
-        const onMove = (ev) => {
-            if (!isDown) return;
-
-            const p = getPoint(ev);
-            const dx = p.x - startX;
-            const dy = p.y - startY;
-
-            const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
-            const maxTop  = Math.max(0, window.innerHeight - el.offsetHeight);
-
-            el.style.left = Math.max(0, Math.min(maxLeft, startLeft + dx)) + "px";
-            el.style.top  = Math.max(0, Math.min(maxTop, startTop + dy)) + "px";
-
-            ev.preventDefault();
-        };
-
-        const onUp = () => {
-            if (!isDown) return;
-            isDown = false;
-            el.style.userSelect = "";
-
-            const rect = el.getBoundingClientRect();
-            localStorage.setItem(storageKey, JSON.stringify({ top: rect.top, left: rect.left }));
-        };
-
-        const h = handleEl || el;
-
-        h.addEventListener("mousedown", onDown);
-        window.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", onUp);
-
-        h.addEventListener("touchstart", onDown, { passive: false });
-        window.addEventListener("touchmove", onMove, { passive: false });
-        window.addEventListener("touchend", onUp);
-    }
-
-    enableFleetVerticalDrag();   
+        window.addEventListener("pointermove", enMovimiento, true);
+        window.addEventListener("pointerup", alSoltar, true);
+        window.addEventListener("pointercancel", alSoltar, true);
+    }}
 </script>
 </body>
 </html>
 """
 
-# Reemplazos dinámicos antes de renderizar la vista HTML
-app_html = app_html.replace("{json.dumps(PERFILES)}", json.dumps(PERFILES))
-app_html = app_html.replace("{perfil_actual}", perfil_actual)
-
-app_html = app_html.replace("{gen_master_rows(u_C1, 2)}", gen_master_rows(u_C1, 2))
-app_html = app_html.replace("{gen_master_rows(u_C1_SJA1, 6)}", gen_master_rows(u_C1_SJA1, 6))
-app_html = app_html.replace("{gen_master_rows(u_C1_SCH1, 7)}", gen_master_rows(u_C1_SCH1, 7))
-app_html = app_html.replace("{gen_master_rows(u_C1_SMD1, 8)}", gen_master_rows(u_C1_SMD1, 8))
-app_html = app_html.replace("{gen_master_rows(u_PREC, 1)}", gen_master_rows(u_PREC, 1))
-app_html = app_html.replace("{gen_master_rows(u_PREC_SMX2, 5)}", gen_master_rows(u_PREC_SMX2, 5))
-app_html = app_html.replace("{gen_master_rows(u_SDE, 4)}", gen_master_rows(u_SDE, 4))
-
-app_html = app_html.replace("{gen_poligonos(u_C1)}", gen_poligonos(u_C1))
-app_html = app_html.replace("{gen_poligonos(u_C1_SJA1)}", gen_poligonos(u_C1_SJA1))
-app_html = app_html.replace("{gen_poligonos(u_C1_SCH1)}", gen_poligonos(u_C1_SCH1))
-app_html = app_html.replace("{gen_poligonos(u_C1_SMD1)}", gen_poligonos(u_C1_SMD1))
-app_html = app_html.replace("{gen_poligonos(u_PREC)}", gen_poligonos(u_PREC))
-app_html = app_html.replace("{gen_poligonos(u_PREC_SMX2)}", gen_poligonos(u_PREC_SMX2))
-app_html = app_html.replace("{gen_poligonos(u_SDE)}", gen_poligonos(u_SDE))
- 
-# ==============================================================================
-# INYECCIÓN AUTOMÁTICA DE RUTEOS GUARDADOS EN SUPABASE
-# ==============================================================================
+# INYECCIÓN DE RUTEOS DESDE BD
 ruteos_bd = cargar_ruteos_bd()
 
 if ruteos_bd:
-    # Convertimos los ruteos guardados en un formato JSON seguro para JavaScript
     ruteos_json_str = json.dumps(ruteos_bd)
-    script_cargas = """
+    script_cargas = f"""
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {{
             let ruteosCargados = {ruteos_json_str};
-            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {
+            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {{
                 window.restaurarRuteosDesdeBD(ruteosCargados);
-            }
-        });
+            }}
+        }});
     </script>
     </body>
     """
     app_html = app_html.replace("</body>", script_cargas)
 
-# ==============================================================================
-# RENDERIZADO EN STREAMLIT
-# ==============================================================================
-
+# Renderizado principal
 html(app_html, height=1200, scrolling=True)
 
 
@@ -4278,7 +3357,7 @@ info_operativa = {
              - 🚛 Small van 9h en Iztapalapa, Coyoacán y si sobra en Tláhuac</p>
         </div>
 
-        <h3 style='color: #000; margin-top: 25px;'>👉 OTROS RUTEOS PM2 (SDE)</h3>
+        <h3 style='color: #000; margin-top: 25px;'>👉 OTROS RUTEO PM2 (SDE)</h3>
         <hr style='border: 1px solid #808080; margin-bottom: 20px;'> 
 
         <div style='background: white; border-left: 6px solid #808080; padding: 12px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); color: #000; margin-bottom: 12px;'>
@@ -4542,12 +3621,12 @@ html_notitas = """
         <button class="tab-btn" onclick="changeTab(event, 'ENLACES')">ENLACES</button>
     </div>
     <div id="visor" class="content-area">
-        {info_operativa['SDE']}
+        __SDE_CONTENT__
     </div>
 </div>
 
 <script>
-    const allData = {info_operativa};  
+    const allData = __ALL_DATA__;  
 
     function changeTab(e, name) {
         document.getElementById('visor').innerHTML = allData[name];
@@ -4567,9 +3646,9 @@ html_notitas = """
 </script>
 """
 
-# Reemplazo seguro sin f-strings
-html_notitas = html_notitas.replace("{info_operativa['SDE']}", info_operativa['SDE'])
-html_notitas = html_notitas.replace("{info_operativa}", json.dumps(info_operativa))
+# Reemplazo seguro de variables en notitas
+html_notitas = html_notitas.replace("__SDE_CONTENT__", info_operativa["SDE"])
+html_notitas = html_notitas.replace("__ALL_DATA__", json.dumps(info_operativa))
 
 st.markdown("---")
 components.html(html_notitas, height=1200, scrolling=True)
