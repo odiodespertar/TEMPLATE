@@ -4949,6 +4949,55 @@ app_html = f"""
     }}
 
 
+    #submenu-ruteos-lateral {{
+        display: none;
+        margin: -2px 0 10px 10px;
+        padding: 6px;
+        background: #17191b;
+        border-left: 2px solid #66CDAA;
+        border-radius: 0 6px 6px 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }}
+
+
+    .ruteo-submenu-item {{
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+
+        padding: 9px 10px;
+        margin-bottom: 4px;
+
+        background: #25282b;
+        color: #e4e6e8;
+
+        border: 1px solid #3b3f43;
+        border-radius: 5px;
+
+        font-size: 12px;
+        font-weight: 600;
+
+        text-align: left;
+        cursor: pointer;
+    }}
+
+
+    .ruteo-submenu-item:hover {{
+        background: #363a3f;
+        border-color: #66CDAA;
+        color: white;
+    }}
+
+
+    .ruteo-submenu-item.activo {{
+        background: #315c4f;
+        border-color: #66CDAA;
+        color: white;
+    }}
+
+
+
     #cerrar-menu-ruteos {{
         border: none;
         background: transparent;
@@ -5057,6 +5106,20 @@ app_html = f"""
     </button>
 
 
+    <!-- SELECCIONAR RUTEO -->
+
+    <button
+        class="opcion-menu-ruteos"
+        onclick="toggleSubmenuRuteos()">
+        🔽 &nbsp; SELECCIONAR RUTEO
+    </button>
+
+    <div id="submenu-ruteos-lateral">
+        <!-- Aquí se cargarán automáticamente los ruteos -->
+    </div>
+
+
+
     <!-- GESTIONAR / BORRAR -->
 
     <button
@@ -5114,6 +5177,101 @@ app_html = f"""
 
         menu.classList.remove("abierto");
     }}
+
+
+    function toggleSubmenuRuteos() {{
+
+        const submenu =
+            document.getElementById("submenu-ruteos-lateral");
+
+        if (!submenu) return;
+
+        if (submenu.style.display === "block") {{
+
+            submenu.style.display = "none";
+
+        }} else {{
+
+            cargarRuteosEnMenuLateral();
+
+            submenu.style.display = "block";
+
+        }}
+    }}
+
+
+    function cargarRuteosEnMenuLateral() {{
+
+        const selector =
+            document.getElementById("ciclo-selector");
+
+        const submenu =
+            document.getElementById("submenu-ruteos-lateral");
+
+        if (!selector || !submenu) return;
+
+
+        // Limpiar la lista anterior
+        submenu.innerHTML = "";
+
+
+        // Leer directamente las opciones reales
+        // del selector original
+        Array.from(selector.options).forEach(opcion => {{
+
+            const boton =
+                document.createElement("button");
+
+            boton.type = "button";
+
+            boton.className = "ruteo-submenu-item";
+
+            boton.innerText = opcion.textContent;
+
+            boton.setAttribute("data-valor", opcion.value);
+
+
+            // Marcar el ruteo actualmente seleccionado
+            if (opcion.value === selector.value) {{
+                boton.classList.add("activo");
+            }}
+
+
+            boton.onclick = function() {{
+
+                seleccionarRuteoDesdeMenu(this.getAttribute("data-valor"));
+
+            }};
+
+
+            submenu.appendChild(boton);
+
+        }});
+    }}
+
+
+    function seleccionarRuteoDesdeMenu(valor) {{
+
+        const selector =
+            document.getElementById("ciclo-selector");
+
+        if (!selector) return;
+
+
+        // Cambiar el selector real
+        selector.value = valor;
+
+
+        // Ejecutar EXACTAMENTE la función
+        // que ya utilizaba tu selector original
+        cambiarCiclo(valor);
+
+
+        // Actualizar visualmente la lista
+        cargarRuteosEnMenuLateral();
+
+    }}
+
 
 
     function accionMenuRuteos(accion) {{
