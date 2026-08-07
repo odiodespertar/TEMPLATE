@@ -2879,10 +2879,14 @@ app_html = f"""
         }}
     }}
 
+
     function limpiarPantallaCompleta() {{
         if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
         
-        localStorage.removeItem('monitor_logistico_estado_vivo');
+        // 🟢 BORRAR LA CLAVE DINÁMICA DEL USUARIO ACTIVO
+        let claveLocal = 'monitor_logistico_estado_' + usuarioActivo;
+        localStorage.removeItem(claveLocal);
+        localStorage.removeItem('monitor_logistico_estado_vivo'); // Limpieza de respaldo de la clave vieja
 
         // Resetear volúmenes a 0
         document.querySelectorAll('.v-total-val, .nodos-val, .nodos-campeche').forEach(el => el.innerText = "0");
@@ -2907,20 +2911,10 @@ app_html = f"""
         document.querySelectorAll('.f-stock').forEach(el => el.innerText = "0");
 
         if (typeof recalc === 'function') recalc();
+
+        // 🟢 RECARGAR PÁGINA LIMPIA
+        location.reload();
     }}
-
-    // LISTENERS DE GUARDA Y RESTAURACIÓN AUTOMÁTICA
-    document.addEventListener('input', function(e) {{
-        guardarEstadoEnVivo();
-    }});
-
-    document.addEventListener('change', function(e) {{
-        guardarEstadoEnVivo();
-    }});
-
-    window.addEventListener('load', function() {{
-        restaurarEstadoEnVivo();
-    }});
 
 
 
