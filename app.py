@@ -1859,7 +1859,7 @@ app_html = f"""
         }});
 
         nuevoContentPolys.innerHTML = htmlPolys;
-        if (contenedorPolysPadre) {
+        if (contenedorPolysPadre) {{
             contenedorPolysPadre.appendChild(nuevoContentPolys);
         }}
 
