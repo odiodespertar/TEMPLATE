@@ -3904,7 +3904,7 @@ function distribuirAutomatico() {{
                     unidad.restante -= usar;
                     restante -= (usar * unidad.spr);
                 }}
-            });
+            }});
         }}
         recalc();
     }}
