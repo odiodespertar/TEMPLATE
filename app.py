@@ -5084,9 +5084,24 @@ app_html = f"""
         const menu =
             document.getElementById("menu-lateral-ruteos");
 
-        if (!menu) return;
+        const boton =
+            document.getElementById("btn-menu-lateral");
+
+        if (!menu || !boton) return;
 
         menu.classList.toggle("abierto");
+
+        if (menu.classList.contains("abierto")) {{
+
+            // Ocultar ☰
+            boton.style.display = "none";
+
+        }} else {{
+
+            // Mostrar ☰
+            boton.style.display = "block";
+
+        }}
     }}
 
 
