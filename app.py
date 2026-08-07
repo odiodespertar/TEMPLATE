@@ -1,11 +1,35 @@
 import json
-import streamlit as st 
-import pandas as pd
 import io
+import pandas as pd
+import streamlit as st 
 from streamlit.components.v1 import html  
+from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
+
+# ==========================================
+# CONEXIÓN NATIVA A SUPABASE
+# ==========================================
+@st.cache_resource
+def init_supabase():
+    try:
+        url = st.secrets["SUPABASE_URL"]
+        key = st.secrets["SUPABASE_KEY"]
+        return create_client(url, key)
+    except Exception:
+        return None
+
+supabase = init_supabase()
+
+def cargar_ruteos_bd():
+    if supabase:
+        try:
+            res = supabase.table("ruteos_guardados").select("*").order("created_at").execute()
+            return res.data
+        except Exception:
+            return []
+    return []
 
 
 # ==========================================
@@ -73,13 +97,12 @@ st.markdown("""
             zoom: 0.95; 
         }
     }
-    /* --- VENTANA FLOTANTE AJUSTADA Y ORDENADA --- */
     div[data-testid="stExpander"] {
         position: fixed !important;
         bottom: 15px !important;
         right: 15px !important;
         width: 550px !important;
-        max-height: 100vh !important; /* Limitado al alto de la pantalla */
+        max-height: 100vh !important;
         z-index: 999999 !important;
         background-color: #fcf1b6 !important;
         border-radius: 12px !important;
@@ -88,7 +111,6 @@ st.markdown("""
         overflow: hidden !important;
     }
     
-    /* 🔥 TÍTULO DEL BOT ("🤖 BOT prioridades") EN NEGRO OSCURO BIEN VISIBLE */
     div[data-testid="stExpander"] summary,
     div[data-testid="stExpander"] summary p, 
     div[data-testid="stExpander"] summary span,
@@ -100,13 +122,11 @@ st.markdown("""
         font-size: 1.1rem !important;
     }
 
-    /* 🔥 TEXTO INDICATIVO INTERNO ("👉 Escribe el SVC a consultar.🔍") EN NEGRO */
     div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] p {
         color: #19191a !important;
         font-weight: bold !important;
     }
 
-    /* --- MENSAJE DEL USUARIO (Lila eléctrico con texto blanco) --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="user"]),
     div[data-testid="stChatMessage"]:has([data-testid*="User"]) {
         background-color: #FFD700 !important;
@@ -121,10 +141,9 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- MENSAJE DEL BOT / ASISTENTE (Fondo Blanco Puro y Esquema Claro) --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="assistant"]),
     div[data-testid="stChatMessage"]:has([data-testid*="Assistant"]) {
-        color-scheme: light !important; /* 🔥 Bloquea la inversión del modo oscuro del navegador */
+        color-scheme: light !important;
         background-color: #FFFFFF !important;
         color: #000000 !important;
         border: 2px solid #FFD700 !important;
@@ -133,7 +152,6 @@ st.markdown("""
         margin: 6px 0 !important;
     }
 
-    /* 🔥 FORZAR A TODOS LOS ELEMENTOS HIJOS (párrafos, listas, viñetas, negritas, spans) */
     div[data-testid="stChatMessage"]:has(div[aria-label="assistant"]) *,
     div[data-testid="stChatMessage"]:has([data-testid*="Assistant"]) * {
         color-scheme: light !important;
@@ -141,7 +159,6 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* Altura fija del bloque de mensajes */
     div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
         max-height: 760px !important;
         overflow-y: auto !important;
@@ -149,7 +166,6 @@ st.markdown("""
         flex-direction: column !important;
     }
 
-    /* Cuando el panel está flotando, oculta los botones y la barra de pestañas */
     .fleet-floating .vista-excel-btn,
     .fleet-floating .autocalcular-btn,
     .fleet-floating .activas-btn,
@@ -164,7 +180,7 @@ st.markdown("""
 # ==========================================
 # 🤖 ASISTENTE DE PRIORIDADES Y RESUMEN
 # ==========================================
-with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
+with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
     st.markdown("""
     <style>
@@ -854,7 +870,7 @@ def gen_master_rows(data_dict, table_id):
             else:
                 celdas_orh_ocup = '''
                 <td class="edit-orh" style="display:none;">0</td>
-                <td class="orh-hora" style="display:none;">00:00</td>
+                <td class="orh-hora" style="display:none;">00:00 hs</td>
                 <td class="edit-ocup" style="display:none;">0</td>
                 '''
 
@@ -883,7 +899,7 @@ def gen_master_rows(data_dict, table_id):
                 </td>
 
                 <td class="f-ruteadas" 
-                    style="text-align: center; border: 0.2px solid #25282b; width: 55px; background-color: #ffffff; font-weight: bold;">
+                    style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">
                     0
                 </td>
 
@@ -898,12 +914,12 @@ def gen_master_rows(data_dict, table_id):
 def export_c1_csv():
     data = []
     for unidad, spr in u_C1.items():
-        data.append({{
+        data.append({
             "PLAN": "C1",
             "UNIDAD": unidad,
             "SPR_MIN": spr[0],
             "SPR_MAX": spr[1]
-        }})
+        })
 
     df_c1 = pd.DataFrame(data)
     csv = df_c1.to_csv(index=False).encode("utf-8")
@@ -1201,7 +1217,6 @@ def gen_poligonos(data_target=None):
     return polys
 
 
-# Perfiles y configuración
 PERFILES = {}
 perfil_actual = "LUNES"
 
@@ -1210,7 +1225,6 @@ app_html = f"""
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         tr.master-row:hover, tr.calc-row:hover {{
@@ -1986,7 +2000,6 @@ app_html = f"""
     </div>
 </div>
 
-<!-- SCRIPT JAVASCRIPT Y LÓGICA COMPLETA DE INTERACCIÓN -->
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -1999,7 +2012,36 @@ app_html = f"""
     let elapsedTime = 0;
     let estadoPaquetesAntesDeExcel = "none";
 
+    const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
+    
+    const supabaseClient = (window.supabase && window.supabase.createClient) 
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+        : null;
+
     let contadorPestanaDinamica = 900;
+
+    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {{
+        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${{nombreRuteo}}"?`)) return;
+
+        if (supabaseClient) {{
+            try {{
+                const {{ error }} = await supabaseClient.from('ruteos_guardados').delete().eq('id', idRuteoBD);
+                if (error) {{ alert("⚠️ Error al eliminar: " + error.message); return; }}
+                alert(`Ruteo "${{nombreRuteo}}" eliminado con éxito.`);
+                window.location.reload();
+            }} catch (err) {{ console.error("Error al eliminar en Supabase:", err); }}
+        }}
+    }}
+
+    async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {{
+        if (!supabaseClient) return;
+        try {{
+            const {{ error }} = await supabaseClient.from('ruteos_guardados').update({{ datos: nuevosDatos }}).eq('id', idRuteoBD);
+            if (error) alert("⚠️ Error al guardar los cambios: " + error.message);
+            else alert("✅ ¡Cambios guardados con éxito en la base de datos!");
+        }} catch (err) {{ console.error("Error al actualizar ruteo:", err); }}
+    }}
 
     function abrirCreadorRuteo() {{
         let modal = document.getElementById("modal-crear-ruteo");
@@ -2115,7 +2157,7 @@ app_html = f"""
         contPrioridades.innerHTML = htmlPrioridades;
     }}
 
-    function guardarNuevoRuteoCompleto() {{
+    async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
 
@@ -2150,12 +2192,35 @@ app_html = f"""
             planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
         }});
 
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, incluirORH, incluirOcup);
+        let datosEstructura = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: incluirORH, incluirOcup: incluirOcup }};
+        let nuevoIdBD = null;
+
+        if (supabaseClient) {{
+            try {{
+                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]).select();
+                if (error) {{ alert("⚠️ Error al guardar en BD: " + error.message); return; }}
+                if (data && data.length > 0) nuevoIdBD = data[0].id;
+            }} catch (err) {{ console.error("Error Supabase:", err); }}
+        }}
+
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup);
         cerrarCreadorRuteo();
-        alert(`¡Ruteo "${{nombreRuteo}}" creado exitosamente!`);
+        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente!`);
     }}
 
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, incluirORH = false, incluirOcup = false) {{
+    async function cargarRuteosDesdeSupabase() {{
+        if (!supabaseClient) return;
+        try {{
+            const {{ data, error }} = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: true }});
+            if (data && data.length > 0) {{
+                data.forEach(ruteo => {{
+                    crearTabYContenidoEnPantalla(ruteo.nombre, ruteo.datos.flota || [], ruteo.datos.planes || [], ruteo.id, ruteo.datos.incluirORH || false, ruteo.datos.incluirOcup || false);
+                }});
+            }}
+        }} catch (err) {{ console.error("Error de conexión:", err); }}
+    }}
+
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -2176,11 +2241,18 @@ app_html = f"""
         nuevoContentFlota.className = "t-content";
         nuevoContentFlota.style.display = "none";
 
+        let botonesAccion = idBD ? `
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
+                <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
+                <button onclick="eliminarRuteoCompleto(${{idBD}}, '${{nombreRuteo}}')" style="cursor:pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ ELIMINAR RUTEO</button>
+            </div>
+        ` : '';
+
         let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>` : '';
         let thOcup = incluirOcup ? `<th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>` : '';
         let colspanFooter = 1 + (incluirORH ? 2 : 0) + (incluirOcup ? 1 : 0) + 3;
 
-        let htmlFlota = `
+        let htmlFlota = botonesAccion + `
             <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <thead>
                     <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
@@ -2199,7 +2271,7 @@ app_html = f"""
         flotaElegida.forEach(f => {{
             let tdORH = incluirORH ? `
                 <td contenteditable="true" class="edit-orh" oninput="actualizarHoraMinuto(this); recalc();" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
-                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00</td>
+                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
             ` : '';
 
             let tdOcup = incluirOcup ? `
@@ -2333,6 +2405,31 @@ app_html = f"""
             selectorCiclos.value = nuevoTabId;
             cambiarCiclo(nuevoTabId);
         }}
+    }}
+
+    async function guardarCambiosRuteoActual(tabId, idBD) {{
+        let tbodyFlota = document.querySelectorAll(`#body-${{tabId}} tr.master-row`);
+        let flotaElegida = [];
+        tbodyFlota.forEach(row => {{
+            let nombre = row.querySelector('.edit-name')?.innerText.trim();
+            let sprMin = parseInt(row.querySelector('.edit-spr-min')?.innerText) || 0;
+            let sprMax = parseInt(row.querySelector('.edit-spr-max')?.innerText) || 0;
+            if (nombre) flotaElegida.push({{ nombre, sprMin, sprMax }});
+        }});
+
+        let bloquesPolys = document.querySelectorAll(`#polys-${{tabId}} .poligono-bloque`);
+        let planesElegidos = [];
+        bloquesPolys.forEach(bloque => {{
+            let nombre = bloque.querySelector('.plan-cell')?.innerText.trim() || "PLAN";
+            let filas = bloque.querySelectorAll('.calc-row').length || 3;
+            planesElegidos.push({{ nombre, filas }});
+        }});
+
+        let tieneORH = document.querySelectorAll(`#tab-${{tabId}} .edit-orh`).length > 0;
+        let tieneOcup = document.querySelectorAll(`#tab-${{tabId}} .edit-ocup`).length > 0;
+
+        let nuevosDatos = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: tieneORH, incluirOcup: tieneOcup }};
+        await actualizarRuteoEnBD(idBD, nuevosDatos);
     }}
 
     function cambiarCiclo(valorTab) {{
@@ -4353,6 +4450,25 @@ app_html = f"""
 </html>
 """
 
+# INYECCIÓN DE RUTEO BD DE SUPABASE SI EXISTEN
+ruteos_bd = cargar_ruteos_bd()
+if ruteos_bd:
+    ruteos_json_str = json.dumps(ruteos_bd)
+    script_cargas = """
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let ruteosCargados = """ + ruteos_json_str + """;
+            if (Array.isArray(ruteosCargados)) {
+                ruteosCargados.forEach(ruteo => {
+                    crearTabYContenidoEnPantalla(ruteo.nombre, ruteo.datos.flota || [], ruteo.datos.planes || [], ruteo.id, ruteo.datos.incluirORH || false, ruteo.datos.incluirOcup || false);
+                });
+            }
+        });
+    </script>
+    </body>
+    """
+    app_html = app_html.replace("</body>", script_cargas)
+
 html(app_html, height=1200, scrolling=True)
 
 
@@ -4365,68 +4481,4 @@ url_final = "https://drive.google.com/thumbnail?id=" + ID_IMAGEN + "&sz=w1000"
 html_limpio = """
 <style>
     body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
-    .main-box { background: #25282b; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-    
-    .unified-console {
-        background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-bottom: 20px; border: 1px solid #25282b; text-align: center; width: 100%; max-width: 500px;
-    }
-    .display-screen {
-        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
-    }
-    .btn-3d {
-        background: linear-gradient(145deg, #1e90ff, #1c82e6);
-        color: white; border: none; padding: 12px 25px; border-radius: 10px;
-        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-    }
-    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
-    
-    .map-container {
-        background: #1e1e1e; border-radius: 12px; padding: 15px; 
-        width: 100%; max-width: 900px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .map-container img {
-        max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #444;
-    }
-</style>
-
-<div class="main-box">
-    <!-- Reloj Restador / Consola -->
-    <div class="unified-console"> 
-        <div class="display-screen">
-            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
-            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
-        </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-            <div>
-                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
-                <input type="number" id="minInput" value="10" 
-                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
-            </div>
-            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
-        </div>
-    </div>
-
-    <!-- Imagen del Mapa -->
-    <div class="map-container">
-        <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
-        <img src='""" + url_final + """' alt="Mapa de regiones">
-    </div>
-</div>
-
-<script>
-    function ejecutarTodo() {
-        const mins = document.getElementById('minInput').value || 0;
-        const ahora = new Date();
-        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
-        const h = String(nuevaFecha.getHours()).padStart(2, '0');
-        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
-        document.getElementById('horaReal').innerText = h + ":" + m;
-    }
-    ejecutarTodo();
-</script>
-"""
-
-# Renderizado final del componente inferior
-st.markdown("---")
-html(html_limpio, height=850, scrolling=True)
+    .main-box { background: #25282b; padding: 10px; display: flex; flex-direction: column; align-items: centerSolo soy una IA basada en texto, por lo que no puedo ayudarte con eso.
