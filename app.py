@@ -1663,7 +1663,6 @@ app_html = f"""
             ➕ CREAR NUEVO RUTEO
         </button>
 
-
         <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
             🗑️ GESTIONAR / BORRAR RUTEOS
@@ -2034,11 +2033,6 @@ app_html = f"""
 </div> <!-- 👈 AQUÍ CIERRA COMPLETAMENTE EL MODAL 2 -->
 
 
-
-
-
-
-
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -2158,110 +2152,13 @@ app_html = f"""
                 }}
 
                 removerRuteoDePantallaPorId(idRuteoBD);
-            alert("✅ Ruteo eliminado con éxito.");
-            if (typeof abrirGestorEliminacionMasiva === 'function') {{
+                alert(`✅ Ruteo "${{nombreRuteo}}" eliminado.`);
                 abrirGestorEliminacionMasiva(); // Refrescar modal
+            }} catch (err) {{
+                console.error("Error al eliminar:", err);
             }}
-        }} catch (err) {{
-            console.error("Error al eliminar:", err);
         }}
     }}
-
-   
-    function agregarSelectorPrioridadEdit(valSeleccionado) {{
-        if (valSeleccionado === undefined) valSeleccionado = "";
-        var contenedor = document.getElementById('contenedorPrioridadesEdit');
-        if (!contenedor) return;
-
-        var opcionesFleet = [];
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(function(row) {{
-            var nombreEl = row.querySelector('.edit-name');
-            var nombre = nombreEl ? nombreEl.innerText.trim() : "";
-            if (nombre && nombre !== "IGNORAR") {{
-                opcionesFleet.push(nombre);
-            }}
-        }});
-
-        var divFila = document.createElement('div');
-        divFila.style.cssText = "display:flex; gap:5px; margin-bottom:8px; align-items:center;";
-
-        var select = document.createElement('select');
-        select.className = "select-prioridad-modal";
-        select.style.cssText = "flex:1; padding:6px; border-radius:4px; border:1px solid #4b5263; background:#282c34; color:white; font-weight:bold;";
-
-        var optDefault = document.createElement('option');
-        optDefault.value = "";
-        optDefault.innerText = "-- Sin prioridad (Usar Flota Estándar) --";
-        select.appendChild(optDefault);
-
-        opcionesFleet.forEach(function(uNombre) {{
-            var opt = document.createElement('option');
-            opt.value = uNombre;
-            opt.innerText = uNombre;
-            if (uNombre.toLowerCase() === valSeleccionado.toLowerCase()) {{
-                opt.selected = true;
-            }}
-            select.appendChild(opt);
-        }});
-
-        var btnBorrar = document.createElement('button');
-        btnBorrar.type = "button";
-        btnBorrar.innerText = "❌";
-        btnBorrar.style.cssText = "cursor:pointer; background:#e06c75; color:white; border:none; padding:6px 10px; border-radius:4px;";
-        btnBorrar.onclick = function() {{
-            divFila.remove();
-        }};
-
-        divFila.appendChild(select);
-        divFila.appendChild(btnBorrar);
-        contenedor.appendChild(divFila);
-    }}
-
-    function cerrarModalEditarPlan() {{
-        var modal = document.getElementById('modalEditarPlan');
-        if (modal) modal.style.display = 'none';
-        bloquePlanEnEdicion = null;
-    }}
-
-    function guardarCambiosModalPlan() {{
-        if (!bloquePlanEnEdicion) return;
-
-        var inputNom = document.getElementById('editPlanNombreInput');
-        var nuevoNombre = inputNom ? inputNom.value.trim() : "";
-        if (nuevoNombre === "") {{
-            alert("El nombre del plan no puede estar vacío.");
-            return;
-        }}
-
-        var prioridadesSeleccionadas = [];
-        document.querySelectorAll('.select-prioridad-modal').forEach(function(sel) {{
-            if (sel.value && sel.value.trim() !== "") {{
-                prioridadesSeleccionadas.push(sel.value.trim());
-            }}
-        }});
-
-        var prioridadesStr = prioridadesSeleccionadas.join(', ');
-
-        var celdaPlan = bloquePlanEnEdicion.querySelector('.plan-cell');
-        var divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
-
-        if (divNombre) {{
-            divNombre.innerText = nuevoNombre.toUpperCase();
-        }} else if (celdaPlan) {{
-            celdaPlan.innerText = nuevoNombre.toUpperCase();
-        }}
-
-        bloquePlanEnEdicion.setAttribute('data-unidad-prioritaria', prioridadesStr);
-        bloquePlanEnEdicion.setAttribute('data-prioridades', prioridadesStr);
-
-        if (typeof guardarEstadoEnVivo === 'function') {{
-            guardarEstadoEnVivo();
-        }}
-
-        cerrarModalEditarPlan();
-        alert("✅ ¡Plan " + nuevoNombre.toUpperCase() + " actualizado con éxito!");
-    }}
-
 
 
     function removerRuteoDePantallaPorId(idBD) {{
@@ -4056,7 +3953,7 @@ app_html = f"""
 
 
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO (RESPETO ESTRICTO Y BLOQUEO DE PLANES CON PRIORIDAD)
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO (CONEXIÓN EXACTA CON PRIORIDADES DE NUEVOS RUTEOS)
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -4075,7 +3972,7 @@ app_html = f"""
             }}
         }});
 
-        // Descontar lo ya asignado manualmente
+        // Descontar lo ya asignado manualmente en la pestaña activa
         document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
@@ -4114,18 +4011,20 @@ app_html = f"""
         // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS
         // ==============================================================================
         else {{
-            // Array para registrar qué planes ya fueron procesados por prioridades específicas
-            let planesConPrioridadProcesados = new Set();
-
-            // 📌 FASE 0: APLICACIÓN EXCLUSIVA DE UNIDADES PRIORITARIAS CONFIGURADAS
+            
+            // 📌 FASE 0: LECTURA Y APLICACIÓN DE UNIDADES PRIORITARIAS CONFIGURADAS
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
+                
+                // Lee el atributo exacto del HTML
                 let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
                                      bloque.getAttribute('data-prioridades') || "";
                 
                 if (prioridadesRaw.trim() !== "" && !prioridadesRaw.includes("Sin prioridad")) {{
                     
+                    // Separar por comas por si se configuraron varias unidades prioritarias
                     let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
+                    
                     let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                     let yaAsignado = 0;
@@ -4134,12 +4033,17 @@ app_html = f"""
                     }});
 
                     let restante = objetivo - yaAsignado;
+                    if (restante <= 0) return;
+
                     let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
                     for (let nombrePrio of listaPrioridades) {{
                         if (restante <= 0) break;
 
+                        // Coincidencia flexible de nombres
                         let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
+                        
+                        // Si no la encuentra exacta, busca coincidencia parcial
                         if (!unidad) {{
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombrePrio.toLowerCase()));
                         }}
@@ -4149,6 +4053,7 @@ app_html = f"""
                             let usar = Math.min(necesarias, unidad.restante);
                             if (usar <= 0) break;
 
+                            // Buscar fila libre en el plan
                             let filaLibre = filas.find(f => {{
                                 let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                                 let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
@@ -4168,12 +4073,10 @@ app_html = f"""
                                 break;
                             }}
 
+                            // Recomprobar si queda stock de esta unidad
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
                         }}
                     }}
-
-                    // Marcar este bloque para que la Fase 2 general NO le meta unidades no deseadas
-                    planesConPrioridadProcesados.add(bloque);
                 }}
             }});
 
@@ -4346,13 +4249,9 @@ app_html = f"""
                 }}
             }}
 
-            // 📌 FASE 2: LLENADO GENERAL RESTANTE (SOLO PARA PLANES SIN PRIORIDAD PROCESADA)
+            // 📌 FASE 2: LLENADO GENERAL RESTANTE CON FLOTA ESTÁNDAR
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
-
-                // Si este plan ya fue asignado según su prioridad específica en la Fase 0, lo salta por completo
-                if (planesConPrioridadProcesados.has(bloque)) return;
-
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
@@ -4447,7 +4346,6 @@ app_html = f"""
     }}
    
 
-   
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
