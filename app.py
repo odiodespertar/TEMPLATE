@@ -6,27 +6,7 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
-# 🟢 Dejar una sola configuración de página al inicio:
-st.set_page_config(
-    page_title="Monitor Logístico - Liliana García", 
-    layout="wide", 
-    initial_sidebar_state="expanded"
-)
-
-# 2. Leer si viene un usuario desde la URL (ejemplo: ?usuario=Pedro)
-query_params = st.query_params
-usuario_defecto = query_params.get("usuario", "Usuario_1")
-
-# 3. Campo en la barra lateral para el usuario activo
-usuario_activo = st.sidebar.text_input("👤 Usuario / Estación:", value=usuario_defecto).strip().replace(" ", "_")
-
-# 4. Validar que no quede vacío
-if not usuario_activo:
-    usuario_activo = "Usuario_1"
-
-# 5. Guardar en el estado de sesión de Streamlit
-st.session_state["usuario_activo"] = usuario_activo
-
+st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
@@ -1683,6 +1663,10 @@ app_html = f"""
             ➕ CREAR NUEVO RUTEO
         </button>
 
+        <button onclick="abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">
+            ✏️ Editar Plan
+        </button>
+
         <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
             🗑️ GESTIONAR / BORRAR RUTEOS
@@ -2056,14 +2040,6 @@ app_html = f"""
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
-    
-    // 🟢 Agregamos respaldo si usuario_activo viene vacío
-    const usuarioActivo = ("{usuario_activo}".trim() || "Usuario_1").replace(/\s+/g, '_'); 
-    
-    function obtenerClaveUsuario(tabNombre) {{
-        return (tabNombre || currentTab) + "_" + usuarioActivo;
-    }}
-
 
     let currentTab = 2;
     let editedRowsPlan = new Set();
@@ -2777,19 +2753,15 @@ app_html = f"""
             // Guardar pestaña/ciclo activo
             estado['currentTabActive'] = currentTab;
 
-            // 🟢 CLAVE ÚNICA POR USUARIO:
-            let claveLocal = 'monitor_logistico_estado_' + usuarioActivo;
-            localStorage.setItem(claveLocal, JSON.stringify(estado));
+            localStorage.setItem('monitor_logistico_estado_vivo', JSON.stringify(estado));
         }} catch (e) {{
             console.error("Error al guardar estado local:", e);
         }}
-        }}
+    }}
 
     function restaurarEstadoEnVivo() {{
         try {{
-            // 🟢 LEER CLAVE ÚNICA DEL USUARIO:
-            let claveLocal = 'monitor_logistico_estado_' + usuarioActivo;
-            let dataRaw = localStorage.getItem(claveLocal);
+            let dataRaw = localStorage.getItem('monitor_logistico_estado_vivo');
             if (!dataRaw) return;
 
             let estado = JSON.parse(dataRaw);
@@ -3985,7 +3957,7 @@ app_html = f"""
 
 
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO (CONEXIÓN EXACTA CON PRIORIDADES DE NUEVOS RUTEOS)
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO (RESPETO ESTRICTO Y BLOQUEO DE PLANES CON PRIORIDAD)
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -4004,7 +3976,7 @@ app_html = f"""
             }}
         }});
 
-        // Descontar lo ya asignado manualmente en la pestaña activa
+        // Descontar lo ya asignado manualmente
         document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
@@ -4043,20 +4015,18 @@ app_html = f"""
         // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS
         // ==============================================================================
         else {{
-            
-            // 📌 FASE 0: LECTURA Y APLICACIÓN DE UNIDADES PRIORITARIAS CONFIGURADAS
+            // Array para registrar qué planes ya fueron procesados por prioridades específicas
+            let planesConPrioridadProcesados = new Set();
+
+            // 📌 FASE 0: APLICACIÓN EXCLUSIVA DE UNIDADES PRIORITARIAS CONFIGURADAS
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
-                
-                // Lee el atributo exacto del HTML
                 let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
                                      bloque.getAttribute('data-prioridades') || "";
                 
                 if (prioridadesRaw.trim() !== "" && !prioridadesRaw.includes("Sin prioridad")) {{
                     
-                    // Separar por comas por si se configuraron varias unidades prioritarias
                     let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
-                    
                     let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                     let yaAsignado = 0;
@@ -4065,17 +4035,12 @@ app_html = f"""
                     }});
 
                     let restante = objetivo - yaAsignado;
-                    if (restante <= 0) return;
-
                     let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
                     for (let nombrePrio of listaPrioridades) {{
                         if (restante <= 0) break;
 
-                        // Coincidencia flexible de nombres
                         let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
-                        
-                        // Si no la encuentra exacta, busca coincidencia parcial
                         if (!unidad) {{
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombrePrio.toLowerCase()));
                         }}
@@ -4085,7 +4050,6 @@ app_html = f"""
                             let usar = Math.min(necesarias, unidad.restante);
                             if (usar <= 0) break;
 
-                            // Buscar fila libre en el plan
                             let filaLibre = filas.find(f => {{
                                 let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                                 let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
@@ -4105,10 +4069,12 @@ app_html = f"""
                                 break;
                             }}
 
-                            // Recomprobar si queda stock de esta unidad
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
                         }}
                     }}
+
+                    // Marcar este bloque para que la Fase 2 general NO le meta unidades no deseadas
+                    planesConPrioridadProcesados.add(bloque);
                 }}
             }});
 
@@ -4281,9 +4247,13 @@ app_html = f"""
                 }}
             }}
 
-            // 📌 FASE 2: LLENADO GENERAL RESTANTE CON FLOTA ESTÁNDAR
+            // 📌 FASE 2: LLENADO GENERAL RESTANTE (SOLO PARA PLANES SIN PRIORIDAD PROCESADA)
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
+
+                // Si este plan ya fue asignado según su prioridad específica en la Fase 0, lo salta por completo
+                if (planesConPrioridadProcesados.has(bloque)) return;
+
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
@@ -4378,6 +4348,57 @@ app_html = f"""
     }}
    
 
+    // ==============================================================================
+    // ✏️ EDICIÓN COMPLETA DE PLANES (NOMBRE Y PRIORIDADES)
+    // ==============================================================================
+    window.abrirModalEditarPlan = function(btn) {{
+        let bloque = btn.closest('.poligono-bloque');
+        if (!bloque) {{
+            alert("Error: No se encontró el bloque del plan.");
+            return;
+        }}
+
+        let celdaPlan = bloque.querySelector('.plan-cell');
+        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
+        let nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
+        
+        let prioridadesActuales = bloque.getAttribute('data-unidad-prioritaria') || 
+                                  bloque.getAttribute('data-prioridades') || "";
+
+        // PASO 1: Preguntar Nombre
+        let nuevoNombre = prompt("1/2 - Nombre del Plan:", nombreActual);
+        if (nuevoNombre === null) return; // Canceló el usuario
+        nuevoNombre = nuevoNombre.trim();
+        if (nuevoNombre === "") {{
+            alert("El nombre no puede estar vacío.");
+            return;
+        }}
+
+        // PASO 2: Preguntar Prioridades de Flota
+        let nuevasPrioridades = prompt(
+            "2/2 - Escribe las Unidades Prioritarias separadas por comas:\n(Ejemplo: Rental Large Van, Small Van SDD)", 
+            prioridadesActuales
+        );
+        if (nuevasPrioridades === null) return; // Canceló el usuario
+        nuevasPrioridades = nuevasPrioridades.trim();
+
+        // APLICAR CAMBIOS RESPETANDO EL DIV CONTENEDOR
+        if (divNombre) {{
+            divNombre.innerText = nuevoNombre.toUpperCase();
+        }} else if (celdaPlan) {{
+            celdaPlan.innerText = nuevoNombre.toUpperCase();
+        }}
+
+        bloque.setAttribute('data-unidad-prioritaria', nuevasPrioridades);
+        bloque.setAttribute('data-prioridades', nuevasPrioridades);
+
+        // Guardar estado local inmediatamente
+        if (typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+
+        alert("✅ ¡Cambios Guardados!\n\nPlan: " + nuevoNombre.toUpperCase() + "\nPrioridades: " + (nuevasPrioridades || "Sin prioridad"));
+    }};
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
