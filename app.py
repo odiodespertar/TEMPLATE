@@ -2492,7 +2492,7 @@ app_html = f"""
         flotaElegida.forEach(f => {{
             let tdORH = incluirORH ? `
                 <td contenteditable="true" class="edit-orh" oninput="actualizarHoraMinuto(this); recalc();" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#141414;">0</td>
-                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00 hs</td>
+                <td class="orh-hora" style="text-align:center; border:0.2px solid #25282b; width:60px; background:#f5f5f5; color:#141414; font-weight:bold;">00:00</td>
             ` : '';
 
             let tdOcup = incluirOcup ? `
