@@ -2401,7 +2401,7 @@ app_html = f"""
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
                 if (idBD) opt.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
-                opt.innerText = `🟣 ${nombreRuteo.toUpperCase()}`;
+                opt.innerText = `🟣 ${{nombreRuteo.toUpperCase()}}`;
                 selectorCiclos.appendChild(opt);
             }}
         }}
