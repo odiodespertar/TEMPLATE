@@ -1663,9 +1663,6 @@ app_html = f"""
             ➕ CREAR NUEVO RUTEO
         </button>
 
-        <button onclick="abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">
-            ✏️ Editar Plan
-        </button>
 
         <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
@@ -4348,57 +4345,7 @@ app_html = f"""
     }}
    
 
-    // ==============================================================================
-    // ✏️ EDICIÓN COMPLETA DE PLANES (NOMBRE Y PRIORIDADES)
-    // ==============================================================================
-    window.abrirModalEditarPlan = function(btn) {{
-        let bloque = btn.closest('.poligono-bloque');
-        if (!bloque) {{
-            alert("Error: No se encontró el bloque del plan.");
-            return;
-        }}
-
-        let celdaPlan = bloque.querySelector('.plan-cell');
-        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
-        let nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
-        
-        let prioridadesActuales = bloque.getAttribute('data-unidad-prioritaria') || 
-                                  bloque.getAttribute('data-prioridades') || "";
-
-        // PASO 1: Preguntar Nombre
-        let nuevoNombre = prompt("1/2 - Nombre del Plan:", nombreActual);
-        if (nuevoNombre === null) return; // Canceló el usuario
-        nuevoNombre = nuevoNombre.trim();
-        if (nuevoNombre === "") {{
-            alert("El nombre no puede estar vacío.");
-            return;
-        }}
-
-        // PASO 2: Preguntar Prioridades de Flota
-        let nuevasPrioridades = prompt(
-            "2/2 - Escribe las Unidades Prioritarias separadas por comas:\n(Ejemplo: Rental Large Van, Small Van SDD)", 
-            prioridadesActuales
-        );
-        if (nuevasPrioridades === null) return; // Canceló el usuario
-        nuevasPrioridades = nuevasPrioridades.trim();
-
-        // APLICAR CAMBIOS RESPETANDO EL DIV CONTENEDOR
-        if (divNombre) {{
-            divNombre.innerText = nuevoNombre.toUpperCase();
-        }} else if (celdaPlan) {{
-            celdaPlan.innerText = nuevoNombre.toUpperCase();
-        }}
-
-        bloque.setAttribute('data-unidad-prioritaria', nuevasPrioridades);
-        bloque.setAttribute('data-prioridades', nuevasPrioridades);
-
-        // Guardar estado local inmediatamente
-        if (typeof guardarEstadoEnVivo === 'function') {{
-            guardarEstadoEnVivo();
-        }}
-
-        alert("✅ ¡Cambios Guardados!\n\nPlan: " + nuevoNombre.toUpperCase() + "\nPrioridades: " + (nuevasPrioridades || "Sin prioridad"));
-    }};
+   
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
