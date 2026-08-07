@@ -1,51 +1,20 @@
-# ==============================================================================
-# 1. IMPORTACIÓN DE LIBRERÍAS Y CONFIGURACIÓN INICIAL
-# ==============================================================================
 import json
-import io
-import pandas as pd
 import streamlit as st 
+import pandas as pd
+import io
 from streamlit.components.v1 import html  
-from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
-# Configuración principal del diseño de la página en Streamlit
-st.set_page_config(
-    page_title="Monitor Logístico - Liliana García", 
-    layout="wide", 
-    initial_sidebar_state="expanded"
-)
-
-# Inicializador de cliente Supabase para guardar ruteos creados
-@st.cache_resource
-def init_supabase():
-    try:
-        url = st.secrets["SUPABASE_URL"]
-        key = st.secrets["SUPABASE_KEY"]
-        return create_client(url, key)
-    except Exception:
-        return None
-
-supabase = init_supabase()
-
-def cargar_ruteos_bd():
-    if supabase:
-        try:
-            res = supabase.table("ruteos_guardados").select("*").order("created_at").execute()
-            return res.data
-        except Exception:
-            return []
-    return []
+st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
 
-# ==============================================================================
-# 2. CONTROL DEL MODO FLOTANTE (ESTADO DE SESIÓN)
-# ==============================================================================
+# ==========================================
+# ESTADO Y CONTROL DEL MODO FLOTANTE
+# ==========================================
 if "flotar_activo" not in st.session_state:
     st.session_state.flotar_activo = False
 
 def toggle_flotar():
-    """Alterna el estado de flotación entre activo e inactivo."""
     st.session_state.flotar_activo = not st.session_state.flotar_activo
 
 if st.session_state.flotar_activo:
@@ -68,9 +37,9 @@ if st.session_state.flotar_activo:
     """, unsafe_allow_html=True)
 
 
-# ==============================================================================
-# 3. ESTILOS CSS GENERALES Y VENTANA FLOTANTE DEL CHATBOT
-# ==============================================================================
+# ==========================================
+# CSS GENERAL + ESTILO DE VENTANA FLOTANTE
+# ========================================== 
 st.markdown("""
     <style>
     .block-container {padding: 0rem !important;}
@@ -104,12 +73,13 @@ st.markdown("""
             zoom: 0.95; 
         }
     }
+    /* --- VENTANA FLOTANTE AJUSTADA Y ORDENADA --- */
     div[data-testid="stExpander"] {
         position: fixed !important;
         bottom: 15px !important;
         right: 15px !important;
         width: 550px !important;
-        max-height: 100vh !important;
+        max-height: 100vh !important; /* Limitado al alto de la pantalla */
         z-index: 999999 !important;
         background-color: #fcf1b6 !important;
         border-radius: 12px !important;
@@ -118,6 +88,7 @@ st.markdown("""
         overflow: hidden !important;
     }
     
+    /* 🔥 TÍTULO DEL BOT ("🤖 BOT prioridades") EN NEGRO OSCURO BIEN VISIBLE */
     div[data-testid="stExpander"] summary,
     div[data-testid="stExpander"] summary p, 
     div[data-testid="stExpander"] summary span,
@@ -129,11 +100,13 @@ st.markdown("""
         font-size: 1.1rem !important;
     }
 
+    /* 🔥 TEXTO INDICATIVO INTERNO ("👉 Escribe el SVC a consultar.🔍") EN NEGRO */
     div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] p {
         color: #19191a !important;
         font-weight: bold !important;
     }
 
+    /* --- MENSAJE DEL USUARIO (Lila eléctrico con texto blanco) --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="user"]),
     div[data-testid="stChatMessage"]:has([data-testid*="User"]) {
         background-color: #FFD700 !important;
@@ -148,9 +121,10 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
+    /* --- MENSAJE DEL BOT / ASISTENTE (Fondo Blanco Puro y Esquema Claro) --- */
     div[data-testid="stChatMessage"]:has(div[aria-label="assistant"]),
     div[data-testid="stChatMessage"]:has([data-testid*="Assistant"]) {
-        color-scheme: light !important;
+        color-scheme: light !important; /* 🔥 Bloquea la inversión del modo oscuro del navegador */
         background-color: #FFFFFF !important;
         color: #000000 !important;
         border: 2px solid #FFD700 !important;
@@ -159,6 +133,7 @@ st.markdown("""
         margin: 6px 0 !important;
     }
 
+    /* 🔥 FORZAR A TODOS LOS ELEMENTOS HIJOS (párrafos, listas, viñetas, negritas, spans) */
     div[data-testid="stChatMessage"]:has(div[aria-label="assistant"]) *,
     div[data-testid="stChatMessage"]:has([data-testid*="Assistant"]) * {
         color-scheme: light !important;
@@ -166,6 +141,7 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
+    /* Altura fija del bloque de mensajes */
     div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
         max-height: 760px !important;
         overflow-y: auto !important;
@@ -173,6 +149,7 @@ st.markdown("""
         flex-direction: column !important;
     }
 
+    /* Cuando el panel está flotando, oculta los botones y la barra de pestañas */
     .fleet-floating .vista-excel-btn,
     .fleet-floating .autocalcular-btn,
     .fleet-floating .activas-btn,
@@ -184,9 +161,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ==============================================================================
-# 4. BOT / ASISTENTE VIRTUAL DE PRIORIDADES Y CUESTIONARIO DE RESUMEN
-# ==============================================================================
+# ==========================================
+# 🤖 ASISTENTE DE PRIORIDADES Y RESUMEN
+# ==========================================
 with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
     st.markdown("""
@@ -248,6 +225,7 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
                     elif paso == 2:
                         st.write("👇 **Unidades dedicadas para nodos (selecciona la casilla):**")
+                        
                         u1 = st.checkbox("3.5 tons", key="chk_35")
                         u2 = st.checkbox("Delivery Cell", key="chk_del")
                         
@@ -273,6 +251,7 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
                     elif paso == 2.2:
                         st.write("👇 **¿Cuál o cuáles unidades dejó fuera Logis?**")
                         unis_pre = st.session_state.data_resumen.get("unidades_centro", [])
+                        
                         fuera_elegidas = []
                         for i_idx, u in enumerate(unis_pre):
                             if st.checkbox(f"Dejó fuera: {u}", key=f"chk_fuera_{i_idx}"):
@@ -381,9 +360,9 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
 
                             if d.get("dropeo_nodos", False):
                                 if d.get("dropeo_restriccion", False):
-                                    texto_dropeo = "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción)."
+                                    texto_dropeo = f"👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción)."
                                 else:
-                                    texto_dropeo = "👉 No hubo dropeo de nodo."
+                                    texto_dropeo = f"👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia."
                             else:
                                 texto_dropeo = "👉 No hubo dropeo de nodo."
 
@@ -599,49 +578,39 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEOS? Te ayudo", expanded=False):
             st.rerun()
 
 
-# ==============================================================================
-# 5. ESTRUCTURAS DE DATOS BASE Y CONFIGURACIÓN DE CENTROS / RUTEO
-# ==============================================================================
-u_SDE = {
-    "Moto Car - 3": [25, 30], 
-    "Moto Car Newbie": [25, 25], 
-    "Car - 5h": [25, 30], 
-    "Car - 5 Extendida": [25, 30], 
-    "Car - 3h": [25, 28]
-}
+# --- DATOS BASE ---
+u_SDE = {"Moto Car - 3": [25, 30], "Moto Car Newbie": [25, 25], "Car - 5h": [25, 30], "Car - 5 Extendida": [25, 30], "Car - 3h": [25, 28]}
 
 u_PREC = {      
     "Car - 8h": [70, 75],
     "Small 9h Ext Car": [70, 75] 
 }
 
-NOMBRES_PLANES_PREC = [
-    "CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", 
-    "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"
-]
+NOMBRES_PLANES_PREC = ["CHALCO", "COYOACÁN", "IZTAPALAPA", "MILPA ALTA", "TLAHUAC", "TLALPAN NORTE", "TLALPAN SUR", "XOCHIMILCO"]
 
 u_PREC_SMX2 = {
     "Car - 8h": [70, 75],
     "Small 9h Ext Car": [70, 75],
     "Car Zona Extendida": [65, 65]
 }
-
-NOMBRES_PLANES_PREG = [
-    "CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", 
-    "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"
-]
+NOMBRES_PLANES_PREG = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
 
 NOMBRES_PLANES_C1 = [
-    "CALKINI", "CAMPECHE", "CANDELARIA", "CHAMPOTÓN", "ESCÁRCEGA",
-    "ESCÁRCEGA EXT", "HOLPECHEN", "MAXCANUN", "SEYBAPLAYA", "PLAN 10", "PLAN 11"
+    "CALKINI", 
+    "CAMPECHE",
+    "CANDELARIA",
+    "CHAMPOTÓN",
+    "ESCÁRCEGA",
+    "ESCÁRCEGA EXT",
+    "HOLPECHEN",
+    "MAXCANUN",
+    "SEYBAPLAYA",
+    "PLAN 10",
+    "PLAN 11"
 ]
 
 u_C1 = {
-    "Rental Large Van": [100, 100], 
-    "Large Van MLP": [100, 100], 
-    "Small Van MLP": [100, 100], 
-    "Delivery Cell Large Van": [1, 1], 
-    "Delivery Cell Small Van": [1, 1]
+    "Rental Large Van": [100, 100], "Large Van MLP": [100, 100], "Small Van MLP":[100, 100], "Delivery Cell Large Van": [1, 1], "Delivery Cell Small Van": [1, 1]
 }
 
 u_C2 = u_C1.copy()
@@ -668,9 +637,8 @@ u_C1_SJA1 = {
 }
 
 NOMBRES_PLANES_C1_SJA1 = [
-   "ACTOPAN", "⚠️ CENTRO 1", "⚠️ CENTRO 2", "EJA1 SP", "MISANTLA", "NAOLINCO", 
-   "PEROTE", "TEZUITLAN", "TLALTETELA", "TRAPICHE", "TUZAMAPA", "XICO", 
-   "CONTINGENCIA NODO", "PLAN 14", "PLAN 15", "PLAN 16", "PLAN 17"
+   "ACTOPAN", "⚠️ CENTRO 1", "⚠️ CENTRO 2", "EJA1 SP", "MISANTLA", "NAOLINCO", "PEROTE", "TEZUITLAN", "TLALTETELA", "TRAPICHE",  
+   "TUZAMAPA", "XICO", "CONTINGENCIA NODO", "PLAN 14", "PLAN 15", "PLAN 16", "PLAN 17"
 ]
 
 u_C1_SCH1 = { 
@@ -706,8 +674,8 @@ u_C1_SCH1 = {
 }
 
 NOMBRES_PLANES_C1_SCH1 = [
-   "AEROPUERTO", "CANTERA", "DELICIAS", "GRANJAS", "MEOQUI", "NORTE", "SUR", 
-   "CUAUHTEMOC", "PARRAL", "PLAN 10", "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
+   "AEROPUERTO", "CANTERA", "DELICIAS", "GRANJAS", "MEOQUI", "NORTE", "SUR", "CUAUHTEMOC", "PARRAL", "PLAN 10",  
+   "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
 ]
 
 u_C1_VACIA = { 
@@ -745,8 +713,8 @@ u_C1_VACIA = {
 }
 
 NOMBRES_PLANES_C1_VACIA = [
-   "PLAN 1", "PLAN 2", "PLAN 3", "PLAN 4", "PLAN 5", "PLAN 6", "PLAN 7", "PLAN 8", 
-   "PLAN 9", "PLAN 10", "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
+   "PLAN 1", "PLAN 2", "PLAN 3", "PLAN 4", "PLAN 5", "PLAN 6", "PLAN 7", "PLAN 8", "PLAN 9", "PLAN 10",  
+   "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
 ]
 
 u_C1_SMD1 = { 
@@ -782,8 +750,8 @@ u_C1_SMD1 = {
 }
 
 NOMBRES_PLANES_C1_SMD1 = [
-   "⚠️ CENTRO 1", "⚠️ CENTRO 2", "⚠️ KANASIN", "MOTUL", "MUNA", "⚠️ NORTE", 
-   "SEYE", "UMAN", "PLAN 9", "PLAN 10", "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
+   "⚠️ CENTRO 1", "⚠️ CENTRO 2", "⚠️ KANASIN", "MOTUL", "MUNA", "⚠️ NORTE", "SEYE", "UMAN", "PLAN 9", "PLAN 10",  
+   "PLAN 11", "PLAN 12", "PLAN 13", "PLAN 14"
 ]
 
 ORH_FIJOS = {
@@ -791,18 +759,23 @@ ORH_FIJOS = {
     "Rental E. Small Van": ["450", "70"],
     "Rental Large Van": ["54", "70"],
     "Rental Small Van": ["480", "70"],
+
     "Large Van MLP": ["500", "80"],
     "Small Van MLP": ["487", "70"],
     "Large Van SDD": ["487", "70"],
     "Small Van SDD": ["487", "70"],
+
     "Car MLP": ["300", "66"],
     "Car Newbie 3h": ["180", "66"],
     "Car Newbie": ["360", "83"],
+
     "Car - 8h": ["360", "66"],
     "Car - 8h E1": ["360", "66"],
     "Car - 5h": ["300", "66"],
     "Car - 3h": ["300", "66"],
+
     "Moto - 3h": ["180", "66"],
+
     "Small Van SDD": ["487", "70"],
     "Car Zona Extendida": ["360", "66"],
     "Car - 5 Extendida": ["330", "66"],
@@ -810,11 +783,7 @@ ORH_FIJOS = {
 }
 
 
-# ==============================================================================
-# 6. FUNCIONES GENERADORAS DE FILAS HTML Y POLÍGONOS
-# ==============================================================================
 def gen_master_rows(data_dict, table_id):
-    """Genera las filas HTML dinamicas para la tabla superior de disponibilidad de flota."""
     rows = ""
     items = list(data_dict.items())
     total_items = len(items)
@@ -823,6 +792,7 @@ def gen_master_rows(data_dict, table_id):
     nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
 
     mostrar_orh_ocup = (table_id in [1, 2, 6, 7, 8, 5, 9])
+
     num_filas_objetivo = 45 if table_id == "PREC" else 3
     rango_final = max(total_items, num_filas_objetivo)
 
@@ -841,6 +811,7 @@ def gen_master_rows(data_dict, table_id):
 
         if "---" in name:
             colspan = 8 if mostrar_orh_ocup else 5
+
             rows += f'''
             <tr class="es-divisor" style="background: #25282b !important; color: #25282b; height: 28px;">
                 <td colspan="{colspan}" style="text-align: center; font-weight: bold; font-size: 13px; letter-spacing: 3px; border: none; pointer-events: none;"> 
@@ -858,6 +829,7 @@ def gen_master_rows(data_dict, table_id):
         else:
             st_base = "background: #ebebeb; color: #969696;" if not name else ""
 
+            celdas_orh_ocup = ""
             if mostrar_orh_ocup:
                 celdas_orh_ocup = f'''
                 <td contenteditable="true"
@@ -924,15 +896,14 @@ def gen_master_rows(data_dict, table_id):
 
 
 def export_c1_csv():
-    """Exporta el diccionario de C1 a formato CSV binario."""
     data = []
     for unidad, spr in u_C1.items():
-        data.append({
+        data.append({{
             "PLAN": "C1",
             "UNIDAD": unidad,
             "SPR_MIN": spr[0],
             "SPR_MAX": spr[1]
-        })
+        }})
 
     df_c1 = pd.DataFrame(data)
     csv = df_c1.to_csv(index=False).encode("utf-8")
@@ -940,7 +911,6 @@ def export_c1_csv():
 
 
 def gen_poligonos(data_target=None):
-    """Genera los bloques de HTML para las tablas de polígonos/planes de entrega."""
     polys = ""
  
     btn_s = "cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; min-width:24px; max-width:24px; height:24px; min-height:24px; max-height:24px; border-radius:4px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;"
@@ -949,7 +919,13 @@ def gen_poligonos(data_target=None):
     nombres_smx2 = ["CHALCO", "CHIMAS", "IXTAPALUCA VALLE CHALCO", "IZTAPALAPA 1", "IZTAPALAPA 2", "LA PAZ", "PUEBLOS", "TEXCOCO"]
     nombres_c1 = ["ESCÁRCEGA", "CAMPECHE", "ESCÁRCEGA EXT", "MAXCANUN", "CANDELARIA", "SEYBAPLAYA", "CHAMPOTÓN", "HOLPECHEN"]  
    
-    es_c1 = data_target in (u_C1, u_C1_SJA1, u_C1_SCH1, u_C1_SMD1, u_C1_VACIA)
+    es_c1 = data_target in (
+        u_C1,
+        u_C1_SJA1,
+        u_C1_SCH1,
+        u_C1_SMD1,
+        u_C1_VACIA,
+    )
     es_sde = (data_target == u_SDE)
     es_prec = (data_target == u_PREC)
     es_prec_smx2 = (data_target == u_PREC_SMX2)
@@ -1230,17 +1206,13 @@ PERFILES = {}
 perfil_actual = "LUNES"
 
 
-# ==============================================================================
-# 7. PLANTILLA HTML/JAVASCRIPT COMPLETA (APP_HTML)
-# ==============================================================================
 app_html = f"""
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Librería de Supabase -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Efecto de iluminación al pasar el mouse por las filas */
         tr.master-row:hover, tr.calc-row:hover {{
             background-color: #fffecd !important;
             box-shadow: inset 0 0 2px #ffc107 !important;
@@ -1252,7 +1224,6 @@ app_html = f"""
             color: #000 !important;
         }}
 
-        /* CONTADOR SCP1 */
         #mi-contador-scp1 {{
             position: fixed;
             top: 156px; 
@@ -1273,7 +1244,6 @@ app_html = f"""
             display: block;
         }}
 
-        /* CONTADOR SJA1 */
         #mi-contador-sja1 {{
             position: fixed;
             top: 156px; 
@@ -1392,7 +1362,6 @@ app_html = f"""
             color: #25282b;
         }}
 
-        /* MODO FLOTANTE CENTRADO */
         #fleet-sticky.fleet-floating {{
             position: fixed !important;
             top: 170px;
@@ -1613,7 +1582,7 @@ app_html = f"""
 <div id="google-alert">⚠️ <span id="alert-msg"></span> [ENTER para cerrar]</div>
 <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
 
-<!-- PANEL SUPERIOR Y DISPONIBILIDAD DE FLOTA -->
+<!-- PANEL SUPERIOR -->
 <div style="width:100%; padding:0; margin-bottom:10px;">
 
     <div style="background-color: #25282b; color: white; padding: 10px; border-radius: 2px; font-weight: bold; text-align: center; margin-bottom: 10px;">🚚 🚚 DISPONIBILIDAD DE FLOTA 🚛 🚛</div>
@@ -1704,7 +1673,7 @@ app_html = f"""
             </select>
         </div>
 
-        <!-- TABLAS DE DISPONIBILIDAD BASE -->
+        <!-- TABLAS DE DISPONIBILIDAD -->
         <div id="tab-2" class="t-content" style="display:none;">
             <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <thead>
@@ -2017,7 +1986,7 @@ app_html = f"""
     </div>
 </div>
 
-<!-- SCRIPT JAVASCRIPT DE INTERACCIONALIDAD Y CREADOR -->
+<!-- SCRIPT JAVASCRIPT Y LÓGICA COMPLETA DE INTERACCIÓN -->
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -2030,36 +1999,7 @@ app_html = f"""
     let elapsedTime = 0;
     let estadoPaquetesAntesDeExcel = "none";
 
-    const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
-    
-    const supabaseClient = (window.supabase && window.supabase.createClient) 
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
-        : null;
-
     let contadorPestanaDinamica = 900;
-
-    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {{
-        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${{nombreRuteo}}"?`)) return;
-
-        if (supabaseClient) {{
-            try {{
-                const {{ error }} = await supabaseClient.from('ruteos_guardados').delete().eq('id', idRuteoBD);
-                if (error) {{ alert("⚠️ Error al eliminar: " + error.message); return; }}
-                alert(`Ruteo "${{nombreRuteo}}" eliminado con éxito.`);
-                window.location.reload();
-            }} catch (err) {{ console.error("Error al eliminar en Supabase:", err); }}
-        }}
-    }}
-
-    async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {{
-        if (!supabaseClient) return;
-        try {{
-            const {{ error }} = await supabaseClient.from('ruteos_guardados').update({{ datos: nuevosDatos }}).eq('id', idRuteoBD);
-            if (error) alert("⚠️ Error al guardar los cambios: " + error.message);
-            else alert("✅ ¡Cambios guardados con éxito en la base de datos!");
-        }} catch (err) {{ console.error("Error al actualizar ruteo:", err); }}
-    }}
 
     function abrirCreadorRuteo() {{
         let modal = document.getElementById("modal-crear-ruteo");
@@ -2175,7 +2115,7 @@ app_html = f"""
         contPrioridades.innerHTML = htmlPrioridades;
     }}
 
-    async function guardarNuevoRuteoCompleto() {{
+    function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
 
@@ -2210,35 +2150,12 @@ app_html = f"""
             planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
         }});
 
-        let datosEstructura = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: incluirORH, incluirOcup: incluirOcup }};
-        let nuevoIdBD = null;
-
-        if (supabaseClient) {{
-            try {{
-                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]).select();
-                if (error) {{ alert("⚠️ Error al guardar en BD: " + error.message); return; }}
-                if (data && data.length > 0) nuevoIdBD = data[0].id;
-            }} catch (err) {{ console.error("Error Supabase:", err); }}
-        }}
-
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup);
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, incluirORH, incluirOcup);
         cerrarCreadorRuteo();
-        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente!`);
+        alert(`¡Ruteo "${{nombreRuteo}}" creado exitosamente!`);
     }}
 
-    async function cargarRuteosDesdeSupabase() {{
-        if (!supabaseClient) return;
-        try {{
-            const {{ data, error }} = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: true }});
-            if (data && data.length > 0) {{
-                data.forEach(ruteo => {{
-                    crearTabYContenidoEnPantalla(ruteo.nombre, ruteo.datos.flota || [], ruteo.datos.planes || [], ruteo.id, ruteo.datos.incluirORH || false, ruteo.datos.incluirOcup || false);
-                }});
-            }}
-        }} catch (err) {{ console.error("Error de conexión:", err); }}
-    }}
-
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false) {{
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, incluirORH = false, incluirOcup = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -2259,18 +2176,11 @@ app_html = f"""
         nuevoContentFlota.className = "t-content";
         nuevoContentFlota.style.display = "none";
 
-        let botonesAccion = idBD ? `
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
-                <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
-                <button onclick="eliminarRuteoCompleto(${{idBD}}, '${{nombreRuteo}}')" style="cursor:pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ ELIMINAR RUTEO</button>
-            </div>
-        ` : '';
-
         let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>` : '';
         let thOcup = incluirOcup ? `<th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>` : '';
         let colspanFooter = 1 + (incluirORH ? 2 : 0) + (incluirOcup ? 1 : 0) + 3;
 
-        let htmlFlota = botonesAccion + `
+        let htmlFlota = `
             <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <thead>
                     <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
@@ -2425,47 +2335,34 @@ app_html = f"""
         }}
     }}
 
-    async function guardarCambiosRuteoActual(tabId, idBD) {{
-        let tbodyFlota = document.querySelectorAll(`#body-${{tabId}} tr.master-row`);
-        let flotaElegida = [];
-        tbodyFlota.forEach(row => {{
-            let nombre = row.querySelector('.edit-name')?.innerText.trim();
-            let sprMin = parseInt(row.querySelector('.edit-spr-min')?.innerText) || 0;
-            let sprMax = parseInt(row.querySelector('.edit-spr-max')?.innerText) || 0;
-            if (nombre) flotaElegida.push({{ nombre, sprMin, sprMax }});
-        }});
-
-        let bloquesPolys = document.querySelectorAll(`#polys-${{tabId}} .poligono-bloque`);
-        let planesElegidos = [];
-        bloquesPolys.forEach(bloque => {{
-            let nombre = bloque.querySelector('.plan-cell')?.innerText.trim() || "PLAN";
-            let filas = bloque.querySelectorAll('.calc-row').length || 3;
-            planesElegidos.push({{ nombre, filas }});
-        }});
-
-        let tieneORH = document.querySelectorAll(`#tab-${{tabId}} .edit-orh`).length > 0;
-        let tieneOcup = document.querySelectorAll(`#tab-${{tabId}} .edit-ocup`).length > 0;
-
-        let nuevosDatos = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: tieneORH, incluirOcup: tieneOcup }};
-        await actualizarRuteoEnBD(idBD, nuevosDatos);
-    }}
-
     function cambiarCiclo(valorTab) {{
-        document.querySelectorAll('.t-content').forEach(el => {{ el.style.display = 'none'; }});
+        document.querySelectorAll('.t-content').forEach(el => {{
+            el.style.display = 'none';
+        }});
         const tablaActiva = document.getElementById('tab-' + valorTab);
-        if (tablaActiva) tablaActiva.style.display = 'block';
+        if (tablaActiva) {{
+            tablaActiva.style.display = 'block';
+        }}
 
-        document.querySelectorAll('.p-content').forEach(el => {{ el.style.display = 'none'; }});
+        document.querySelectorAll('.p-content').forEach(el => {{
+            el.style.display = 'none';
+        }});
         const polyActivo = document.getElementById('polys-' + valorTab);
-        if (polyActivo) polyActivo.style.display = 'block';
+        if (polyActivo) {{
+            polyActivo.style.display = 'block';
+        }}
 
         currentTab = parseInt(valorTab);
-        if (typeof recalc === 'function') recalc();
+        
+        if (typeof recalc === 'function') {{
+            recalc();
+        }}
     }}
 
     function aplicarPerfil() {{
         let perfil = perfiles[perfilActual];
         if(!perfil) return;
+
         Object.keys(perfil).forEach(tabId => {{
             document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
                 let unidad = row.querySelector('.edit-name')?.innerText.trim(); 
@@ -2473,6 +2370,7 @@ app_html = f"""
                     let data = perfil[tabId][unidad];
                     let orh = row.querySelector('.edit-orh');
                     let disp = row.querySelector('.edit-ocup');
+
                     if(orh) orh.innerText = data.orh;
                     if(disp) disp.innerText = data.disp;
                 }}
@@ -2484,11 +2382,16 @@ app_html = f"""
     (function initSuma() {{
         const inputs = document.querySelectorAll('.sum-input');
         const totalDisplay = document.getElementById('total-final');
+
         inputs.forEach(input => {{
             input.addEventListener('input', () => {{
                 let sum = 0;
-                inputs.forEach(i => {{ sum += parseFloat(i.value) || 0; }});
-                if (totalDisplay) totalDisplay.value = sum;
+                inputs.forEach(i => {{
+                    sum += parseFloat(i.value) || 0;
+                }});
+                if (totalDisplay) {{
+                    totalDisplay.value = sum;
+                }}
             }});
         }});
     }})();
@@ -2499,19 +2402,26 @@ app_html = f"""
         const filas = tbody.querySelectorAll(".calc-row");
         const filaBase = filas[0];
         const nuevaFila = filaBase.cloneNode(true);
-        nuevaFila.querySelectorAll("[rowspan]").forEach(td => {{ td.remove(); }});
+
+        nuevaFila.querySelectorAll("[rowspan]").forEach(td => {{
+            td.remove();
+        }});
 
         const u = nuevaFila.querySelector(".u-manual");
         if(u) u.innerText = "0";
+
         const spr = nuevaFila.querySelector(".spr-real-val");
         if(spr) spr.innerText = "0";
+
         const select = nuevaFila.querySelector(".s-type");
         if(select) select.selectedIndex = 0;
+
         const check = nuevaFila.querySelector(".ok-check");
         if(check) check.checked = false;
 
         const estado = tbody.querySelector("tr:last-child");
         tbody.insertBefore(nuevaFila, estado);
+
         actualizarRowspan(bloque);
         recalc();
     }}
@@ -2520,15 +2430,22 @@ app_html = f"""
         const bloque = btn.closest(".poligono-bloque");
         const tbody = bloque.querySelector("tbody");
         const filas = tbody.querySelectorAll(".calc-row");
-        if(filas.length <= 1) return;
+
+        if(filas.length <= 1){{
+            return;
+        }}
+
         filas[filas.length - 1].remove();
         actualizarRowspan(bloque);
+
         const tabla = bloque.querySelector("table");
         if(tabla){{
             tabla.style.width = "100%";
             tabla.style.tableLayout = "fixed";
             void tabla.offsetWidth;
-            setTimeout(() => {{ tabla.style.tableLayout = "fixed"; }}, 50);
+            setTimeout(() => {{
+                tabla.style.tableLayout = "fixed";
+            }}, 50);
         }}
         recalc();
     }}
@@ -2536,24 +2453,32 @@ app_html = f"""
     function actualizarContador(bloque){{
         const filas = bloque.querySelectorAll(".calc-row");
         const contador = bloque.querySelector(".contador-filas");
-        if(contador) contador.innerText = "Filas: " + filas.length;
+        if(contador){{
+            contador.innerText = "Filas: " + filas.length;
+        }}
     }}
 
     function actualizarRowspan(bloque){{
         const filas = bloque.querySelectorAll(".calc-row").length;
         const plan = bloque.querySelector("td.plan-cell");
         const volumen = bloque.querySelector("td.vol-cell");
+
         if(plan) plan.rowSpan = filas;
         if(volumen) volumen.rowSpan = filas;
+
         const contador = bloque.querySelector(".contador-filas");
-        if(contador) contador.innerText = "Filas: " + filas;
+        if(contador){{
+            contador.innerText = "Filas: " + filas;
+        }}
     }}
 
     function toggleFleetFloating() {{
         const panel = document.getElementById("fleet-sticky");
         const btn = document.getElementById("fleet-toggle-btn");
         if (!panel) return;
+
         const goingToFloat = !panel.classList.contains("fleet-floating");
+
         if (goingToFloat) {{
             panel.classList.remove("fleet-normal");
             panel.classList.add("fleet-floating");
@@ -2568,14 +2493,22 @@ app_html = f"""
 
     function showTab(n, btn) {{
         const bloqueC1 = document.getElementById('contenedor-paquetes-c1');
-        if (bloqueC1) bloqueC1.style.display = (n === 6) ? 'block' : 'none';
+        if (bloqueC1) {{
+            if (n === 6) {{
+                bloqueC1.style.display = 'block';
+            }} else {{
+                bloqueC1.style.display = 'none';
+            }}
+        }}
 
         if (document.body.classList.contains("excel-view")) {{
             document.body.classList.remove("excel-view");
             let bExcel = document.getElementById("excel-btn");
             if (bExcel) bExcel.innerHTML = "VISTA EXCEL";
+            
             let excelPanel = document.getElementById("excel-polys");
             if (excelPanel) excelPanel.style.display = "none";
+            
             const idsArestaurar = [
                 "total-no-car-2", "total-car-schedule-2", "total-car-real-2",
                 "total-no-car-6", "total-car-schedule-6", "total-car-real-6",
@@ -2591,7 +2524,10 @@ app_html = f"""
                     if (fila) fila.style.removeProperty('display');
                 }}
             }});
-            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{ fila.style.setProperty('display', 'table-row', 'important'); }});
+            
+            document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
+                fila.style.setProperty('display', 'table-row', 'important');
+            }});
         }}
 
         currentTab = n;
@@ -2600,6 +2536,7 @@ app_html = f"""
 
         document.getElementById('polys-' + n).style.display = 'block';
         document.getElementById('tab-' + n).style.display = 'block';
+
         btn.classList.add('active');
 
         recalc();
@@ -2608,7 +2545,11 @@ app_html = f"""
 
         const excelBtn = document.getElementById('excel-btn');
         if (excelBtn) {{
-            excelBtn.style.setProperty('display', (n === 2 || n === 6 || n === 7 || n === 8 || n === 9) ? 'inline-block' : 'none', 'important');
+            if (n === 2 || n === 6 || n === 7 || n === 8 || n === 9) {{
+                excelBtn.style.setProperty('display', 'inline-block', 'important');
+            }} else {{
+                excelBtn.style.setProperty('display', 'none', 'important');
+            }}
         }}
     }}
 
@@ -2621,10 +2562,12 @@ app_html = f"""
     function stepVal(btn, delta, type) {{
         let row = btn.closest('tr');
         let sel = row.querySelector('.s-type').value;
+        
         if(sel === "Seleccionar..." || !sel) return;
 
         let fRows = Array.from(document.querySelectorAll('#body-' + currentTab + ' tr'));
         let fRow = fRows.find(r => r.querySelector('.edit-name').innerText.trim() === sel);
+        
         if (!fRow) return;
 
         let left = parseInt(fRow.querySelector('.f-left').innerText) || 0;
@@ -2639,6 +2582,7 @@ app_html = f"""
             if (delta > 0 && left <= 0) {{
                 showAlert("⚠️ UNIDAD ADICIONAL. Se registrará como exceso en Delta.");
             }}
+            
             span.innerText = newVal;
         }} else {{
             let span = row.querySelector('.spr-real-val');
@@ -2649,6 +2593,7 @@ app_html = f"""
                 showAlert("⚠️ NO PUEDES SOBREPASAR EL SPR MÁXIMO (" + sprMaxReal + ")");
                 return; 
             }}
+            
             span.innerText = newVal;
         }}
         editedRowsPlan.add(row);
@@ -2685,7 +2630,9 @@ app_html = f"""
 
     document.querySelectorAll(".edit-orh").forEach(function(celda){{
         actualizarHoraMinuto(celda);
-        celda.addEventListener("input", function(){{ actualizarHoraMinuto(this); }});
+        celda.addEventListener("input", function(){{
+            actualizarHoraMinuto(this);
+        }});
     }});
 
     function actualizarDosPorciento() {{
@@ -2693,9 +2640,13 @@ app_html = f"""
         document.querySelectorAll('#polys-' + currentTab + ' .v-total-val').forEach(el => {{
             volumenTotal += parseFloat(el.innerText) || 0;
         }});
+
         let permitido = Math.round(volumenTotal * 0.02);
         let div = document.getElementById('dos-pct-global');
-        if (div) div.innerHTML = `<b>2% PERMITIDO:</b> ${{permitido.toLocaleString()}}`;
+
+        if (div) {{
+            div.innerHTML = `<b>2% PERMITIDO:</b> ${{permitido.toLocaleString()}}`;
+        }}
     }}
 
     function recalc() {{
@@ -3349,7 +3300,6 @@ app_html = f"""
         if (selector) {{
             cambiarCiclo(selector.value);
         }}
-        setTimeout(cargarRuteosDesdeSupabase, 500);
     }});
 
     function toggleExcelView() {{
@@ -3489,9 +3439,7 @@ app_html = f"""
         return null;
     }}
 
-    
-function distribuirAutomatico() {{
-        // 1. CAPTURA DE DATOS EN PANTALLA Y CONFIGURACIÓN INICIAL
+    function distribuirAutomatico() {{
         let fleet = [];
         document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
             let nombre = row.querySelector('.edit-name')?.innerText.trim();
@@ -3508,7 +3456,6 @@ function distribuirAutomatico() {{
             }}
         }});
 
-        // Descontar inventario asignado manualmente en los polígonos
         document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
@@ -3536,7 +3483,6 @@ function distribuirAutomatico() {{
             }}
         }});
 
-        // 2. ORDENAMIENTO ESPECIAL DE POLÍGONOS
         if (currentTab == 6) {{
             polys.sort((a, b) => {{
                 let nameA = a.bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -3549,8 +3495,6 @@ function distribuirAutomatico() {{
             }});
         }}
 
-        // 3. PREASIGNACIONES ESPECÍFICAS
-        // --- PREC SMX5 ---
         if (currentTab == 1) {{
             let small9h = fleet.find(f => f.nombre === "Small 9h Ext Car");
             if (small9h && small9h.restante > 0) {{
@@ -3622,7 +3566,6 @@ function distribuirAutomatico() {{
             }}
         }}
 
-        // --- PREC SMX2 ---
         if (currentTab == 5) {{
             let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
             if (smallVan && smallVan.restante > 0) {{
@@ -3747,7 +3690,6 @@ function distribuirAutomatico() {{
             }}
         }}
 
-        // --- C1 SCP1 ---
         if (currentTab == 2) {{
             let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
             if (largeVanMLP && largeVanMLP.restante > 0) {{
@@ -3807,7 +3749,6 @@ function distribuirAutomatico() {{
             }}
         }}
 
-        // 4. ASIGNACIÓN PRINCIPAL
         if (currentTab == 6) {{
             polys.forEach(poly => {{
                 procesarAsignacionUnidadSJA1(poly, fleet);
@@ -3909,12 +3850,8 @@ function distribuirAutomatico() {{
         recalc();
     }}
 
-
-
-    // ==============================================================================
-// 🔥 SECCIÓN 4: MOTOR EXCLUSIVO CON NUEVAS PRIORIDADES PARA C1 SJA1 (TAB 6)
-// ==============================================================================
-function procesarAsignacionUnidadSJA1(poly, fleetList) {{
+    // 🔴 REGLAS EXACTAS DE ASIGNACIÓN PARA C1 SJA1 CON BUCLE CONTINUO DE RENTALS
+    function procesarAsignacionUnidadSJA1(poly, fleetList) {{
         let bloque = poly.bloque;
         let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
         let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
@@ -3930,36 +3867,68 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
         if (restante <= 0) return;
 
         let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-        let unidad = null;
 
-        if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
-            if (nombrePlan === "⚠️ CENTRO 1") {{
-                const listaEspecialesC1 = ["Extra Large Van MLP H&B", "Truck 3.5 tons MLP", "Delivery Cell Large Van"];
-                for (let nombre of listaEspecialesC1) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombre.toLowerCase());
-                    if (unidad) break;
+        if (nombrePlan === "⚠️ CENTRO 1") {{
+            const listaEspecialesC1 = ["Extra Large Van MLP H&B", "Truck 3.5 tons MLP", "Delivery Cell Large Van"];
+            for (let nombreEsp of listaEspecialesC1) {{
+                if (restante <= 0) break;
+                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreEsp.toLowerCase());
+                if (unidad) {{
+                    let usar = Math.min(1, unidad.restante);
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
                 }}
-                if (!unidad) {{
-                    const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                    for (let nombre of listaRental) {{
-                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
-                        if (unidad) break;
-                    }}
+            }}
+
+            const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
+            for (let nombreRent of listaRental) {{
+                if (restante <= 0) break;
+                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
+                while (unidad && unidad.restante > 0 && restante > 0) {{
+                    let necesarias = Math.ceil(restante / unidad.spr);
+                    let usar = Math.min(necesarias, unidad.restante);
+                    if (usar <= 0) break;
+
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
                 }}
-            }} else if (nombrePlan === "⚠️ CENTRO 2") {{
-                const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-                for (let nombre of listaRental) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombre.toLowerCase()));
-                    if (unidad) break;
+            }}
+        }}
+        else if (nombrePlan === "⚠️ CENTRO 2") {{
+            const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
+            for (let nombreRent of listaRental) {{
+                if (restante <= 0) break;
+                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
+                while (unidad && unidad.restante > 0 && restante > 0) {{
+                    let necesarias = Math.ceil(restante / unidad.spr);
+                    let usar = Math.min(necesarias, unidad.restante);
+                    if (usar <= 0) break;
+
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
                 }}
             }}
         }}
         else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
-            unidad = fleetList.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
+            let unidad = fleetList.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
+            if (unidad) {{
+                let necesarias = Math.ceil(restante / unidad.spr);
+                let usar = Math.min(necesarias, unidad.restante);
+                if (usar > 0) {{
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                }}
+            }}
         }}
         else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
-            if (!unidad) unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+
+            if (!unidad) {{
+                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+            }}
+
             if (!unidad) {{
                 let listaSustitutas = ["car 8h", "car newbie", "car zona extendida", "small van 9h", "small van 9h ext", "small van newbie", "moto 3h"];
                 for (let palabra of listaSustitutas) {{
@@ -3967,28 +3936,45 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
                     if (unidad) break;
                 }}
             }}
-        }}
-        else if (nombrePlan === "PEROTE" || nombrePlan === "TLALTETELA") {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
-            if (!unidad) unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+
+            if (unidad) {{
+                let necesarias = Math.ceil(restante / unidad.spr);
+                let usar = Math.min(necesarias, unidad.restante);
+                if (usar > 0) {{
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                }}
+            }}
         }}
         else {{
-            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
-            if (!unidad) unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-            if (!unidad) unidad = fleetList.find(f => f.restante > 0);
+            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+
+            if (!unidad) {{
+                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
+            }}
+            if (!unidad) {{
+                unidad = fleetList.find(f => f.restante > 0);
+            }}
+
+            if (unidad) {{
+                let necesarias = Math.ceil(restante / unidad.spr);
+                let usar = Math.min(necesarias, unidad.restante);
+                if (usar > 0) {{
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                }}
+            }}
         }}
+    }}
 
-        if (!unidad) return;
+    function asentarUnidadEnPlan(filas, unidad, cantidad) {{
+        if (cantidad <= 0) return;
 
-        let necesarias = Math.ceil(restante / unidad.spr);
-        let usar = Math.min(necesarias, unidad.restante);
-        if (usar <= 0) return;
-
-        // Consolidación en filas para evitar duplicados
         let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
+
         if (filaExistente) {{
             let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
-            filaExistente.querySelector('.u-manual').innerText = actual + usar;
+            filaExistente.querySelector('.u-manual').innerText = actual + cantidad;
             filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
             editedRowsPlan.add(filaExistente);
         }} else {{
@@ -4000,16 +3986,16 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
 
             if (filaLibre) {{
                 filaLibre.querySelector('.s-type').value = unidad.nombre;
-                filaLibre.querySelector('.u-manual').innerText = usar;
+                filaLibre.querySelector('.u-manual').innerText = cantidad;
                 filaLibre.querySelector('.spr-real-val').innerText = unidad.spr;
                 editedRowsPlan.add(filaLibre);
             }}
         }}
 
-        unidad.restante -= usar;
+        unidad.restante -= cantidad;
     }}
 
-
+    function actualizarTotales() {{ return; }}
 
     function updateSelectColor(selectElement) {{
         if (selectElement.value === "") {{
@@ -4193,17 +4179,13 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
 
     window.addEventListener('load', () => {{
         actualizarSelects();
-        agregarIndicadorSchedule();
+        if (typeof agregarIndicadorSchedule === 'function') agregarIndicadorSchedule();
     }});
 
     actualizarDosPorciento();
 
-
-
-    // ==============================================================================
-    // 1. NAVEGACIÓN TECLADO TIPO EXCEL Y SELECCIÓN AL HACER FOCO
-    // ==============================================================================
-    document.addEventListener("keydown", function(e) {{
+    /* NAVEGACIÓN TECLADO TIPO EXCEL */
+    document.addEventListener("keydown", function(e){{
         const celda = document.activeElement;
         if (!celda || !celda.hasAttribute("contenteditable")) return;
 
@@ -4218,53 +4200,38 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
         const celdasFila = Array.from(fila.querySelectorAll('[contenteditable="true"]'));
         const colIdx = celdasFila.indexOf(celda);
 
-        if (e.key === "ArrowDown") {{
+        if(e.key === "ArrowDown"){{
             e.preventDefault();
             const sigFila = filas[filaIdx + 1];
-            if (sigFila) {{
+            if(sigFila){{
                 const celdas = sigFila.querySelectorAll('[contenteditable="true"]');
-                if (celdas[colIdx]) celdas[colIdx].focus();
+                if(celdas[colIdx]) celdas[colIdx].focus();
             }}
         }}
 
-        if (e.key === "ArrowUp") {{
+        if(e.key === "ArrowUp"){{
             e.preventDefault();
             const antFila = filas[filaIdx - 1];
-            if (antFila) {{
+            if(antFila){{
                 const celdas = antFila.querySelectorAll('[contenteditable="true"]');
-                if (celdas[colIdx]) celdas[colIdx].focus();
+                if(celdas[colIdx]) celdas[colIdx].focus();
             }}
         }}
 
-        if (e.key === "ArrowRight") {{
+        if(e.key === "ArrowRight"){{
             e.preventDefault();
-            if (celdasFila[colIdx + 1]) {{
+            if(celdasFila[colIdx + 1]){{
                 celdasFila[colIdx + 1].focus();
             }}
         }}
 
-        if (e.key === "ArrowLeft") {{
+        if(e.key === "ArrowLeft"){{
             e.preventDefault();
-            if (celdasFila[colIdx - 1]) {{
+            if(celdasFila[colIdx - 1]){{
                 celdasFila[colIdx - 1].focus();
             }}
         }}
     }});
-
-    document.addEventListener("focusin", function(e) {{
-        const celda = e.target;
-        if (!celda.hasAttribute("contenteditable")) return;
-
-        setTimeout(() => {{
-            const rango = document.createRange();
-            rango.selectNodeContents(celda);
-            const seleccion = window.getSelection();
-            seleccion.removeAllRanges();
-            seleccion.addRange(rango);
-        }}, 0);
-    }});
-
-    
 
     /* SELECCIÓN AUTOMÁTICA DE TEXTO EN CELDAS */
     document.addEventListener("focusin", function(e) {{
@@ -4386,25 +4353,6 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
 </html>
 """
 
-# INYECCIÓN DE RUTEOS DESDE BD
-ruteos_bd = cargar_ruteos_bd()
-
-if ruteos_bd:
-    ruteos_json_str = json.dumps(ruteos_bd)
-    script_cargas = """
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let ruteosCargados = """ + ruteos_json_str + """;
-            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {
-                window.restaurarRuteosDesdeBD(ruteosCargados);
-            }
-        });
-    </script>
-    </body>
-    """
-    app_html = app_html.replace("</body>", script_cargas)
-
-# Renderizado principal de la app HTML/JS
 html(app_html, height=1200, scrolling=True)
 
 
@@ -4459,7 +4407,7 @@ html_limpio = """
         </div>
     </div>
 
-    <!-- Imagen del Mapa Operativo -->
+    <!-- Imagen del Mapa -->
     <div class="map-container">
         <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
         <img src='""" + url_final + """' alt="Mapa de regiones">
