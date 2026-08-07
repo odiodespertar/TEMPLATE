@@ -1656,11 +1656,103 @@ app_html = f"""
         alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente en la base de datos!`);
     }}
 
+
+    
+    // ==============================================================================
+    // 🗑️ 1. FUNCIÓN GUARDAR NUEVO RUTEO
+    // ==============================================================================
+    
+    async function guardarNuevoRuteoCompleto() {{
+        let inputNombre = document.getElementById("creador-nombre-ruteo");
+        if (!inputNombre) return;
+
+        let nombreRuteo = inputNombre.value.trim().toUpperCase();
+        if (!nombreRuteo) {{
+            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
+            return;
+        }}
+
+        let flotaElegida = [];
+        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
+        
+        itemsFlota.forEach((div, idx) => {{
+            let chk = div.querySelector(".chk-flota-unidad");
+            if (chk && chk.checked) {{
+                let nombreUnidad = chk.value;
+                let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
+                let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
+                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
+            }}
+        }});
+
+        if (flotaElegida.length === 0) {{
+            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
+            return;
+        }}
+
+        let planesElegidos = [];
+        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
+        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
+        
+        divsPlanes.forEach((div, idx) => {{
+            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
+            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
+            
+            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
+        }});
+
+        if (planesElegidos.length === 0) {{
+            alert("⚠️ Ingresa al menos un plan o polígono.");
+            return;
+        }}
+
+        let datosEstructura = {{
+            flota: flotaElegida,
+            planes: planesElegidos
+        }};
+
+        let nuevoIdBD = null;
+
+        // Enviar inserción a Supabase y obtener el ID retornado (.select())
+        if (supabaseClient) {{
+            try {{
+                const {{ data, error }} = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{{ nombre: nombreRuteo, datos: datosEstructura }}])
+                    .select(); // 👈 IMPORTANTE: Pide a Supabase devolver el nuevo registro creado
+
+                if (error) {{
+                    console.error("Error en Supabase:", error);
+                    alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
+                    return;
+                }}
+
+                if (data && data.length > 0) {
+                    nuevoIdBD = data[0].id; // 👈 Captura el ID asignado en Supabase
+                }}
+            }} catch (err) {{
+                console.error("Error al conectar con Supabase:", err);
+            }}
+        }}
+
+        // Renderizar pestaña localmente pasándole el ID real asignado por Supabase
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD);
+
+        if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
+        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente en la base de datos!`);
+    }}
+
+
+
+    // ==============================================================================
+    // 🗑️ 1. FUNCIÓN CARGAR RUTEO DESDE SUPABASE
+    // ==============================================================================
     async function cargarRuteosDesdeSupabase() {{
         if (!supabaseClient) return;
 
         try {{
-            const {{ data, error }} = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('ruteos_guardados')
                 .select('*')
                 .order('created_at', {{ ascending: true }});
@@ -1672,12 +1764,11 @@ app_html = f"""
 
             if (data && data.length > 0) {{
                 data.forEach(ruteo => {{
-                    let idBD = ruteo.id; // 👈 1. Extraemos el ID de Supabase
+                    let idBD = ruteo.id;
                     let nombre = ruteo.nombre;
                     let flota = ruteo.datos.flota || [];
                     let planes = ruteo.datos.planes || [];
-                
-                    // 👈 2. Se lo enviamos como cuarto argumento
+                    
                     crearTabYContenidoEnPantalla(nombre, flota, planes, idBD);
                 }});
             }}
@@ -1687,6 +1778,9 @@ app_html = f"""
     }}
     
 
+    // ==============================================================================
+    // 🗑️ 1. FUNCIÓN CREAR TAB Y CONTENIDO EN PANTALLA
+    // ==============================================================================
     function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
