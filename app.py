@@ -3112,7 +3112,7 @@ app_html = f"""
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
 
-            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {
+            if (tipo && tipo !== "Seleccionar..." && unidades > 0) {{
                 let unidadReal = fleet.find(f => f.nombre === tipo);
                 if (unidadReal) {{
                     unidadReal.restante -= unidades;
