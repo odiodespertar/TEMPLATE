@@ -213,7 +213,6 @@ st.markdown("""
         overflow-x: auto !important;
         width: 100% !important;
     }
-</style>
     
     </style>
 """, unsafe_allow_html=True)
