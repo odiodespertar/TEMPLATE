@@ -1875,7 +1875,7 @@ app_html = f"""
             let sprMin = parseInt(row.querySelector('.edit-spr-min')?.innerText) || 0;
             let sprMax = parseInt(row.querySelector('.edit-spr-max')?.innerText) || 0;
             if (nombre) {{
-                flotaElegida.push({ nombre, sprMin, sprMax }});
+                flotaElegida.push({{ nombre, sprMin, sprMax }});
             }}
         }});
 
