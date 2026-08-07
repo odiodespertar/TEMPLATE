@@ -1404,6 +1404,58 @@ app_html = f"""
 
     let contadorPestanaDinamica = 900;
 
+
+    // ==============================================================================
+    // 🗑️ 1. FUNCIÓN PARA ELIMINAR UN RUTEO DE LA BD
+    // ==============================================================================
+    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {
+        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${nombreRuteo}"?`)) {
+            return;
+        }
+
+        if (supabaseClient) {
+            try {
+                const { error } = await supabaseClient
+                    .from('ruteos_guardados')
+                    .delete()
+                    .eq('id', idRuteoBD);
+
+                if (error) {
+                    alert("⚠️ Error al eliminar de la base de datos: " + error.message);
+                    return;
+                }
+
+                alert(`Ruteo "${nombreRuteo}" eliminado con éxito.`);
+                window.location.reload();
+            } catch (err) {
+                console.error("Error al eliminar en Supabase:", err);
+            }
+        }
+    }
+
+    // ==============================================================================
+    // 💾 2. FUNCIÓN PARA GUARDAR CAMBIOS EDITADOS DE UN RUTEO EXISTENTE
+    // ==============================================================================
+    async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {
+        if (!supabaseClient) return;
+
+        try {
+            const { error } = await supabaseClient
+                .from('ruteos_guardados')
+                .update({ datos: nuevosDatos })
+                .eq('id', idRuteoBD);
+
+            if (error) {
+                alert("⚠️ Error al guardar los cambios: " + error.message);
+            } else {
+                alert("✅ ¡Cambios guardados con éxito en la base de datos!");
+            }
+        } catch (err) {
+            console.error("Error al actualizar ruteo:", err);
+        }
+    }
+    
+
     // ==============================================================================
     // 🛠️ FUNCIONES DEL CREADOR DE RUTEO
     // ==============================================================================
@@ -1620,18 +1672,22 @@ app_html = f"""
 
             if (data && data.length > 0) {{
                 data.forEach(ruteo => {{
+                    let idBD = ruteo.id; // 👈 1. Extraemos el ID de Supabase
                     let nombre = ruteo.nombre;
                     let flota = ruteo.datos.flota || [];
                     let planes = ruteo.datos.planes || [];
-                    crearTabYContenidoEnPantalla(nombre, flota, planes);
+                
+                    // 👈 2. Se lo enviamos como cuarto argumento
+                    crearTabYContenidoEnPantalla(nombre, flota, planes, idBD);
                 }});
             }}
         }} catch (err) {{
             console.error("Error de conexión:", err);
         }}
     }}
+    
 
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos) {{
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -1661,7 +1717,15 @@ app_html = f"""
         nuevoContentFlota.className = "t-content";
         nuevoContentFlota.style.display = "none";
 
-        let htmlFlota = `
+        // BARRA DE ACCIONES PARA EDITAR / ELIMINAR RUTEO GUARDADO
+        let botonesAccion = idBD ? `
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
+                <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
+                <button onclick="eliminarRuteoCompleto(${{idBD}}, '${{nombreRuteo}}')" style="cursor:pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ ELIMINAR RUTEO</button>
+            </div>
+        ` : '';
+
+        let htmlFlota = botonesAccion + `
             <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <thead>
                     <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
@@ -1795,16 +1859,39 @@ app_html = f"""
         }});
 
         nuevoContentPolys.innerHTML = htmlPolys;
-        if (contenedorPolysPadre) {{
+        if (contenedorPolysPadre) {
             contenedorPolysPadre.appendChild(nuevoContentPolys);
         }}
 
         showTab(nuevoTabId, nuevoBtnTab);
     }}
 
-    document.addEventListener("DOMContentLoaded", function() {{
-        setTimeout(cargarRuteosDesdeSupabase, 600);
-    }});
+    // FUNCIÓN AUXILIAR PARA RECOLECTAR LA ESTRUCTURA MODIFICADA Y GUARDARLA EN BD
+    async function guardarCambiosRuteoActual(tabId, idBD) {{
+        let tbodyFlota = document.querySelectorAll(`#body-${tabId} tr.master-row`);
+        let flotaElegida = [];
+        tbodyFlota.forEach(row => {{
+            let nombre = row.querySelector('.edit-name')?.innerText.trim();
+            let sprMin = parseInt(row.querySelector('.edit-spr-min')?.innerText) || 0;
+            let sprMax = parseInt(row.querySelector('.edit-spr-max')?.innerText) || 0;
+            if (nombre) {{
+                flotaElegida.push({ nombre, sprMin, sprMax }});
+            }}
+        }});
+
+        let bloquesPolys = document.querySelectorAll(`#polys-${tabId} .poligono-bloque`);
+        let planesElegidos = [];
+        bloquesPolys.forEach(bloque => {{
+            let nombre = bloque.querySelector('.plan-cell')?.innerText.trim() || "PLAN";
+            let filas = bloque.querySelectorAll('.calc-row').length || 3;
+            planesElegidos.push({{ nombre, filas }});
+        }});
+
+        let nuevosDatos = {{ flota: flotaElegida, planes: planesElegidos }};
+        await actualizarRuteoEnBD(idBD, nuevosDatos);
+    }}
+
+
 
     function cambiarCiclo(valorTab) {{
         document.querySelectorAll('.t-content').forEach(el => {{
