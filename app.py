@@ -1678,7 +1678,7 @@ app_html = f"""
         </div>
 
         <div style="margin: 10px 0; text-align: center;">
-            <select id="ciclo-selector" onchange="cambiarCiclo(this.value)" style="background: #FFFFFF; color: #000000; border: 2px solid #242526; padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; outline: none; cursor: pointer; width: 250px; text-align-last: center;">
+            <select id="ciclo-selector" onchange="cambiarCiclo(this.value)" style="display:none;" color: #000000; border: 2px solid #242526; padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; outline: none; cursor: pointer; width: 250px; text-align-last: center;">
                 <option value="2">🟠 C1 SCP1</option>
                 <option value="6">🔴 C1 SJA1</option>
                 <option value="7">🔴 C1 SCH1</option>
