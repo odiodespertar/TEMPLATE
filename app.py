@@ -1092,6 +1092,9 @@ app_html = f"""
                     <button id="btn-tab-sch1" class="tab-btn" onclick="showTab(7, this)">C1 SCH1</button>
                     <button id="btn-tab-smd1" class="tab-btn" onclick="showTab(8, this)">C1 SMD1</button>
                     <button id="btn-tab-sja1" class="tab-btn" onclick="showTab(6, this)">C1 SJA1</button>
+                    
+                    <!-- ➕ BOTÓN CREADOR DE RUTEO RESTAURADO -->
+                    <button onclick="abrirCreadorRuteo()" style="cursor:pointer; background: linear-gradient(180deg, #8A2BE2 0%, #4B0082 100%); color: white; border: 1px solid #9932CC; font-size: 12px; padding: 7px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s; margin-left: 8px;">➕ CREAR NUEVO RUTEO</button>
                 </div>
 
                 <div style="padding-bottom: 5px; display: flex; gap: 6px; align-items: center;"> 
@@ -1323,6 +1326,60 @@ app_html = f"""
             <div id="fleet-float-body">Cargando...</div>
         </div>
 
+        <!-- 🏢 MODAL CREADOR DE RUTEO DINÁMICO -->
+        <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
+                <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
+                <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">❌ CERRAR</button>
+            </div>
+
+            <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+                    <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
+                        <div>
+                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Pestaña / Ruteo:</label>
+                            <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
+                        </div>
+                        <div>
+                            <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
+                                <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">⚙️ Generar Campos de Planes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
+                    <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
+                    <div id="contenedor-lista-planes">
+                        <p style="color: #888;">Define el número de planes arriba y haz clic en "Generar Campos de Planes" para configurar los nombres y requerimientos de flota.</p>
+                    </div>
+                </div>
+
+                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+                    <h3 style="color: #FFD700; margin-top: 0;">🚐 SELECCIÓN Y CONFIGURACIÓN DE FLOTA</h3>
+                    <div id="contenedor-lista-flota" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+                        <p style="color: #888;">Cargando unidades de flota...</p>
+                    </div>
+                </div>
+
+                <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
+                    <h3 style="color: #FFD700; margin-top: 0;">⚡ PRIORIDADES DE ASIGNACIÓN POR PLAN</h3>
+                    <p style="color: #aaa; font-size: 12px; margin-bottom: 10px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
+                    <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8px;">
+                        <p style="color: #888;">Genera los planes arriba para configurar sus prioridades aquí.</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
+                    <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">Cancelar</button>
+                    <button onclick="guardarNuevoRuteoCompleto()" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(40,167,69,0.4);">💾 Guardar y Sincronizar Ruteo</button>
+                </div>
+            </div>
+        </div>
+
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -1341,17 +1398,215 @@ app_html = f"""
     const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
     
-    let supabaseClient = null;
-    try {{
-        if (window.supabase && typeof window.supabase.createClient === "function") {{
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = (window.supabase && window.supabase.createClient) 
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+        : null;
+
+    let contadorPestanaDinamica = 900;
+
+    // ==============================================================================
+    // 🛠️ FUNCIONES DEL CREADOR DE RUTEO
+    // ==============================================================================
+    function abrirCreadorRuteo() {{
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) {{
+            modal.style.display = "block";
+            inicializarCreadorFlota();
+            generarCamposPlanes();
         }}
-    }} catch(e) {{
-        console.error("Error al inicializar Supabase:", e);
+    }}
+
+    function cerrarCreadorRuteo() {{
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) {{
+            modal.style.display = "none";
+        }}
+    }}
+
+    const BASE_FLOTA_MASTER = {{
+        "Car MLP": [110, 120],
+        "Small Van MLP": [110, 120],
+        "Large Van MLP": [110, 120],
+        "Small Van MLP Newbie": [110, 120],
+        "Large Van MLP Newbie": [110, 120],
+        "Extra large Van MLP": [110, 120],
+        "Small Van MLP foráneo": [110, 120],
+        "Large Van MLP foráneo": [110, 120],
+        "Car MLP foráneo": [110, 120],
+        "Extra large Van MLP H&B": [100, 100],
+        "Rental Car": [120, 150],
+        "Rental Electric Large Van": [120, 150],
+        "Rental Large Van": [120, 150],
+        "Rental Replacement": [120, 150],
+        "Rental Small Van Electrica": [120, 150],
+        "Rental Small Van": [120, 150],
+        "Truck 3.5 tons MLP": [1, 1],
+        "Delivery Cell Large Van": [1, 1],
+        "Car 8h": [70, 70],
+        "Car Newbie": [50, 50],
+        "Car Zona Extendida": [60, 60],
+        "Moto 3h": [30, 30],
+        "Small Van 9h": [70, 70],
+        "Small Van 9h Ext": [70, 70],
+        "Small Van Newbie": [70, 70],
+        "Media Milla SP": [1, 1]
+    }};
+
+    function inicializarCreadorFlota() {{
+        let cont = document.getElementById("contenedor-lista-flota");
+        if (!cont) return;
+
+        let htmlFlota = "";
+        Object.keys(BASE_FLOTA_MASTER).forEach((unidad, idx) => {{
+            let sprDef = BASE_FLOTA_MASTER[unidad];
+            htmlFlota += `
+                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; flex: 1;">
+                        <input type="checkbox" class="chk-flota-unidad" value="${{unidad}}" checked style="transform: scale(1.2); accent-color: #8A2BE2;">
+                        ${{unidad}}
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="font-size: 10px; color: #aaa;">MIN:</span>
+                        <input type="number" class="spr-min-${{idx}}" value="${{sprDef[0]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                        <span style="font-size: 10px; color: #aaa;">MAX:</span>
+                        <input type="number" class="spr-max-${{idx}}" value="${{sprDef[1]}}" style="width: 45px; text-align: center; background: #25282b; color: white; border: 1px solid #555; border-radius: 4px; font-size: 12px;">
+                    </div>
+                </div>
+            `;
+        }});
+        cont.innerHTML = htmlFlota;
+    }}
+
+    function generarCamposPlanes() {{
+        let cantInput = document.getElementById("creador-cant-planes");
+        let cont = document.getElementById("contenedor-lista-planes");
+        if (!cantInput || !cont) return;
+
+        let cant = parseInt(cantInput.value) || 1;
+        let htmlPlanes = "";
+        
+        for (let i = 1; i <= cant; i++) {{
+            htmlPlanes += `
+                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
+                    <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
+                        style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
+                        oninput="generarPrioridadesPlanes()">
+                    <span style="font-size: 11px; color: #aaa;">Filas:</span>
+                    <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
+                        style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                </div>
+            `;
+        }}
+        cont.innerHTML = htmlPlanes;
+        generarPrioridadesPlanes();
+    }}
+
+    function generarPrioridadesPlanes() {{
+        let contPrioridades = document.getElementById("contenedor-prioridades-planes");
+        if (!contPrioridades) return;
+
+        let inputsPlanes = document.querySelectorAll("#contenedor-lista-planes .input-nombre-plan");
+        if (inputsPlanes.length === 0) {{
+            contPrioridades.innerHTML = `<p style="color: #888;">Primero genera y nombra los planes arriba.</p>`;
+            return;
+        }}
+
+        let htmlPrioridades = "";
+        inputsPlanes.forEach((input, index) => {{
+            let nombrePlan = input.value.trim() || `PLAN ${{index + 1}}`;
+            htmlPrioridades += `
+                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${{nombrePlan}}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
+                        <input type="number" class="input-prioridad-plan" value="${{index + 1}}" min="1" max="10" 
+                            style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                    </div>
+                </div>
+            `;
+        }});
+        contPrioridades.innerHTML = htmlPrioridades;
+    }}
+
+    // ==============================================================================
+    // 💾 GUARDAR NUEVO RUTEO Y SYNC SUPABASE
+    // ==============================================================================
+    async function guardarNuevoRuteoCompleto() {{
+        let inputNombre = document.getElementById("creador-nombre-ruteo");
+        if (!inputNombre) return;
+
+        let nombreRuteo = inputNombre.value.trim().toUpperCase();
+        if (!nombreRuteo) {{
+            alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo.");
+            return;
+        }}
+
+        let flotaElegida = [];
+        let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
+        
+        itemsFlota.forEach((div, idx) => {{
+            let chk = div.querySelector(".chk-flota-unidad");
+            if (chk && chk.checked) {{
+                let nombreUnidad = chk.value;
+                let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
+                let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
+                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
+            }}
+        }});
+
+        if (flotaElegida.length === 0) {{
+            alert("⚠️ Debes seleccionar al menos una unidad para la flota.");
+            return;
+        }}
+
+        let planesElegidos = [];
+        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
+        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
+        
+        divsPlanes.forEach((div, idx) => {{
+            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
+            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
+            
+            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
+        }});
+
+        if (planesElegidos.length === 0) {{
+            alert("⚠️ Ingresa al menos un plan o polígono.");
+            return;
+        }}
+
+        let datosEstructura = {{
+            flota: flotaElegida,
+            planes: planesElegidos
+        }};
+
+        if (supabaseClient) {{
+            try {{
+                const {{ data, error }} = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]);
+
+                if (error) {{
+                    console.error("Error en Supabase:", error);
+                    alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
+                    return;
+                }}
+            }} catch (err) {{
+                console.error("Error al conectar con Supabase:", err);
+            }}
+        }}
+
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos);
+
+        cerrarCreadorRuteo();
+        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente en la base de datos!`);
     }}
 
     async function cargarRuteosDesdeSupabase() {{
         if (!supabaseClient) return;
+
         try {{
             const {{ data, error }} = await supabaseClient
                 .from('ruteos_guardados')
@@ -1359,20 +1614,196 @@ app_html = f"""
                 .order('created_at', {{ ascending: true }});
 
             if (error) {{
-                console.error("Error leyendo de Supabase:", error);
+                console.error("Error cargando de Supabase:", error);
                 return;
             }}
 
             if (data && data.length > 0) {{
-                console.log("Ruteos encontrados en Supabase:", data);
+                data.forEach(ruteo => {{
+                    let nombre = ruteo.nombre;
+                    let flota = ruteo.datos.flota || [];
+                    let planes = ruteo.datos.planes || [];
+                    crearTabYContenidoEnPantalla(nombre, flota, planes);
+                }});
             }}
         }} catch (err) {{
-            console.error("Excepción al conectar a Supabase:", err);
+            console.error("Error de conexión:", err);
         }}
     }}
 
-    window.addEventListener("load", function() {{
-        setTimeout(cargarRuteosDesdeSupabase, 1000);
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos) {{
+        contadorPestanaDinamica++;
+        let nuevoTabId = contadorPestanaDinamica;
+
+        let btnCrear = document.querySelector("button[onclick*='abrirCreadorRuteo']");
+        
+        let nuevoBtnTab = document.createElement("button");
+        nuevoBtnTab.className = "tab-btn";
+        nuevoBtnTab.innerText = nombreRuteo;
+        nuevoBtnTab.onclick = function() {{ showTab(nuevoTabId, this); }};
+
+        if (btnCrear && btnCrear.parentNode) {{
+            btnCrear.parentNode.insertBefore(nuevoBtnTab, btnCrear);
+        }}
+
+        let panelSelector = document.getElementById("panel-selector-pestanas");
+        if (panelSelector) {{
+            let lbl = document.createElement("label");
+            lbl.style.cssText = "display:block; margin-bottom:4px; cursor:pointer;";
+            lbl.innerHTML = `<input type="checkbox" checked onchange="toggleBtnPestana('btn-tab-dyn-${{nuevoTabId}}', this.checked)"> ${{nombreRuteo}}`;
+            nuevoBtnTab.id = `btn-tab-dyn-${{nuevoTabId}}`;
+            panelSelector.appendChild(lbl);
+        }}
+
+        let fleetSticky = document.getElementById("fleet-sticky");
+        let nuevoContentFlota = document.createElement("div");
+        nuevoContentFlota.id = `tab-${{nuevoTabId}}`;
+        nuevoContentFlota.className = "t-content";
+        nuevoContentFlota.style.display = "none";
+
+        let htmlFlota = `
+            <table class="meli-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: linear-gradient(180deg, #0a2e42 0%, #25282b 100%); color: white;">
+                        <th style="border-right: 0.5px solid #25282b; padding: 4px 8px; font-size: 14px; color: #25282b !important;">UNIDAD</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MIN</th>
+                        <th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">SPR<br>MAX</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:60px;">SCHEDULE</th>
+                        <th style="border-right:0.7px solid #25282b; padding:4px 9px; font-size:11px; color:#25282b !important; width:57px; text-align:center;">USADAS</th>
+                        <th style="border-right:0.5px solid #25282b; padding:4px 8px; font-size:11px; color:#25282b !important; width:50px;">DELTA</th>
+                    </tr>
+                </thead>
+                <tbody id="body-${{nuevoTabId}}">`;
+
+        flotaElegida.forEach(f => {{
+            htmlFlota += `
+                <tr class="master-row">
+                    <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${{f.nombre}}</td>
+                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMin}}</td>
+                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMax}}</td>
+                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
+                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
+                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
+                </tr>`;
+        }});
+
+        htmlFlota += `
+                </tbody>
+                <tfoot class="fila-total">
+                    <tr class="fila-total">
+                        <td style="border:none;"></td>
+                        <td colspan="4" style="padding:6px; text-align:right;">🚛 TOTAL RUTEADAS</td>
+                        <td id="total-ruteadas-${{nuevoTabId}}" style="text-align:center; color:#3CB371; font-size:16px; font-weight:bold;">0</td>
+                    </tr>
+                </tfoot>
+            </table>`;
+
+        nuevoContentFlota.innerHTML = htmlFlota;
+        if (fleetSticky) fleetSticky.appendChild(nuevoContentFlota);
+
+        let contenedorPolysPadre = document.getElementById("polys-2")?.parentNode;
+        let nuevoContentPolys = document.createElement("div");
+        nuevoContentPolys.id = `polys-${{nuevoTabId}}`;
+        nuevoContentPolys.className = "p-content";
+        nuevoContentPolys.style.display = "none";
+
+        let htmlPolys = "";
+        planesElegidos.forEach(p => {{
+            let filasExtra = "";
+            for (let i = 1; i < p.filas; i++) {{
+                filasExtra += `
+                    <tr class="calc-row">
+                        <td class="u-manual-cell" style="background: #d3f0e5; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                            </div>
+                        </td>
+                        <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                            </div>
+                        </td>
+                        <td style="border: 0.5px solid #25282b; padding: 2px;">
+                            <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </td>
+                        <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                    </tr>`;
+            }}
+
+            htmlPolys += `
+                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                    <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
+                        <thead>
+                            <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
+                                <th style="padding: 0 10px; border-right: 1px solid #25282b; width: 130px;">PLAN</th>
+                                <th style="border-right: 1px solid #25282b; width: 85px;">VOL. TOTAL</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;"># USADAS</th>
+                                <th style="width: 105px; border-right: 1px solid #25282b;">SPR</th>
+                                <th style="width: 180px; border-right: 1px solid #25282b;">TIPO DE UNIDAD</th>
+                                <th style="width: 45px; text-align: center;">OK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="calc-row">
+                                <td class="plan-cell" rowspan="${{p.filas}}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${{p.nombre}}</td>
+                                <td class="vol-cell" rowspan="${{p.filas}}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
+                                    <div style="text-align:center;">
+                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
+                                    </div>
+                                </td>
+                                <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 'u')">-</button>
+                                        <span contenteditable="true" class="u-manual" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 28px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
+                                    </div>
+                                </td>
+                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
+                                        <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
+                                        <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 's')">+</button>
+                                    </div>
+                                </td>
+                                <td style="border: 0.5px solid #25282b; padding: 2px;">
+                                    <select class="s-type" onchange="resetRow(this); updateSelectColor(this);" style="width:160px; border:none; background:transparent; font-weight:600; font-size:14px; color: #808080;">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </td>
+                                <td style="width: 45px; text-align: center; border: 0.5px solid #25282b;"><input type="checkbox" class="ok-check" style="transform: scale(1.7); accent-color: #9ACD32; cursor: pointer;"></td>
+                            </tr>
+                            ${{filasExtra}}
+                            <tr style="background:#ededed; height: 32px;">
+                                <td colspan="3" style="text-align:center; font-weight:bold; border: 1px solid #25282b; font-size: 14px; color:#25282b;">ESTADO:</td>
+                                <td class="v-calculado-total" style="font-weight: bold; font-size: 14px; color: #d32f2f; border: 1px solid #25282b; text-align: center;">0</td>
+                                <td class="p-diff delta" colspan="2" style="text-align: center; font-weight: bold; border: 1px solid #25282b; font-size: 14px; color: #25282b">VACÍO:</td>
+                            </tr>
+                        </tbody>
+                        <div style="text-align:center; padding:5px; background:#ededed;">
+                            <button onclick="agregarFilaPlan(this)" style="cursor:pointer; margin-right:5px;">➕</button>
+                            <button onclick="quitarFilaPlan(this)" style="cursor:pointer;">➖</button>
+                            <span class="contador-filas" style="margin-left:10px;font-weight:bold;">Filas: ${{p.filas}}</span>
+                        </div>
+                    </table>
+                </div>`;
+        }});
+
+        nuevoContentPolys.innerHTML = htmlPolys;
+        if (contenedorPolysPadre) {{
+            contenedorPolysPadre.appendChild(nuevoContentPolys);
+        }}
+
+        showTab(nuevoTabId, nuevoBtnTab);
+    }}
+
+    document.addEventListener("DOMContentLoaded", function() {{
+        setTimeout(cargarRuteosDesdeSupabase, 600);
     }});
 
     function cambiarCiclo(valorTab) {{
@@ -1588,10 +2019,12 @@ app_html = f"""
         document.querySelectorAll('.p-content, .t-content').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
-        document.getElementById('polys-' + n).style.display = 'block';
-        document.getElementById('tab-' + n).style.display = 'block';
+        let pTab = document.getElementById('polys-' + n);
+        let tTab = document.getElementById('tab-' + n);
+        if (pTab) pTab.style.display = 'block';
+        if (tTab) tTab.style.display = 'block';
 
-        btn.classList.add('active');
+        if (btn) btn.classList.add('active');
 
         recalc();
         if (typeof actualizarVisibilidadContador === "function") actualizarVisibilidadContador();
