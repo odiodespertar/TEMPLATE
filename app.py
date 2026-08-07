@@ -2147,7 +2147,7 @@ app_html = f"""
                 }}
 
                 removerRuteoDePantallaPorId(idRuteoBD);
-                alert(`✅ Ruteo "${nombreRuteo}" eliminado.`);
+                alert(`✅ Ruteo "${{nombreRuteo}}" eliminado.`);
                 abrirGestorEliminacionMasiva(); // Refrescar modal
             }} catch (err) {{
                 console.error("Error al eliminar:", err);
