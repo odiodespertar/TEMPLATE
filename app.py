@@ -1663,10 +1663,6 @@ app_html = f"""
             ➕ CREAR NUEVO RUTEO
         </button>
 
-        <button onclick="abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">
-            ✏️ Editar Plan
-        </button>
-
         <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
             🗑️ GESTIONAR / BORRAR RUTEOS
@@ -1957,7 +1953,7 @@ app_html = f"""
 <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
         <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
-        <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 16px;">❌ CERRAR</button>
+        <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">❌ CERRAR</button>
     </div>
 
     <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
@@ -1965,27 +1961,27 @@ app_html = f"""
             <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
                 <div>
-                    <label style="color: #d0d0d0; font-size: 16px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Opción / Ruteo:</label>
-                    <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 16px; font-weight: bold;">
+                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Opción / Ruteo:</label>
+                    <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
                 </div>
                 <div>
-                    <label style="color: #d0d0d0; font-size: 16px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
+                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
-                        <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 16px;">⚙️ Generar Campos de Planes</button>
+                        <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">⚙️ Generar Campos de Planes</button>
                     </div>
                 </div>
             </div>
 
             <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
-                <span style="color: #aaa; font-size: 14px; font-weight: bold;">Configuración adicional:</span>
-                <label style="color: #FFD700; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <span style="color: #aaa; font-size: 12px; font-weight: bold;">Configuración adicional:</span>
+                <label style="color: #FFD700; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-nodos" style="transform: scale(1.2); accent-color: #FFD700;"> 📍 ¿Lleva Nodos?
                 </label>
-                <label style="color: #26d4ca; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-orh" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir ORH
                 </label>
-                <label style="color: #26d4ca; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-ocup" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir % OCUPACIÓN
                 </label>
             </div>
@@ -3956,8 +3952,9 @@ app_html = f"""
     }}
 
 
+   
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO (RESPETO ESTRICTO Y BLOQUEO DE PLANES CON PRIORIDAD)
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO COMPLETO (TODOS LOS RUTEOS + C1 SJA1 INTACTO)
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -3976,7 +3973,7 @@ app_html = f"""
             }}
         }});
 
-        // Descontar lo ya asignado manualmente
+        // Descontar lo ya asignado manualmente en la pestaña activa
         document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
@@ -4005,80 +4002,17 @@ app_html = f"""
         }});
 
         // ==============================================================================
-        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE EXACTA
+        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE EXACTA (INTACTA)
         // ==============================================================================
         if (currentTab == 6) {{
             procesarAsignacionCompletaSJA1(polys, fleet);
         }} 
         
         // ==============================================================================
-        // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS
+        // 🟢 CASO 2: TODOS LOS DEMÁS RUTEOS (SCP1, PREC SMX5, PREC SMX2, EXTENDIDO, ETC.)
         // ==============================================================================
         else {{
-            // Array para registrar qué planes ya fueron procesados por prioridades específicas
-            let planesConPrioridadProcesados = new Set();
-
-            // 📌 FASE 0: APLICACIÓN EXCLUSIVA DE UNIDADES PRIORITARIAS CONFIGURADAS
-            polys.forEach(poly => {{
-                let bloque = poly.bloque;
-                let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
-                                     bloque.getAttribute('data-prioridades') || "";
-                
-                if (prioridadesRaw.trim() !== "" && !prioridadesRaw.includes("Sin prioridad")) {{
-                    
-                    let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
-                    let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
-
-                    let yaAsignado = 0;
-                    bloque.querySelectorAll('.calc-row').forEach(r => {{
-                        yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                    }});
-
-                    let restante = objetivo - yaAsignado;
-                    let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-
-                    for (let nombrePrio of listaPrioridades) {{
-                        if (restante <= 0) break;
-
-                        let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
-                        if (!unidad) {{
-                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombrePrio.toLowerCase()));
-                        }}
-
-                        while (unidad && unidad.restante > 0 && restante > 0) {{
-                            let necesarias = Math.ceil(restante / unidad.spr);
-                            let usar = Math.min(necesarias, unidad.restante);
-                            if (usar <= 0) break;
-
-                            let filaLibre = filas.find(f => {{
-                                let tipo = f.querySelector('.s-type')?.value?.trim() || "";
-                                let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
-                                return u === 0 && (tipo === "" || tipo === "Seleccionar...");
-                            }});
-
-                            if (filaLibre) {{
-                                filaLibre.querySelector('.s-type').value = unidad.nombre;
-                                filaLibre.querySelector('.u-manual').innerText = usar;
-                                filaLibre.querySelector('.spr-real-val').innerText = unidad.spr;
-                                if (typeof updateSelectColor === 'function') updateSelectColor(filaLibre.querySelector('.s-type'));
-                                editedRowsPlan.add(filaLibre);
-
-                                unidad.restante -= usar;
-                                restante -= (usar * unidad.spr);
-                            }} else {{
-                                break;
-                            }}
-
-                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
-                        }}
-                    }}
-
-                    // Marcar este bloque para que la Fase 2 general NO le meta unidades no deseadas
-                    planesConPrioridadProcesados.add(bloque);
-                }}
-            }});
-
-            // 📌 FASE 1: REGLAS PREVIAS DE RUTEOS NATIVOS (SCP1, PREC SMX5, PREC SMX2)
+            // --- C1 SCP1 (TAB 2): PRIORIDAD LARGE VAN Y DELIVERY CELL CAMPECHE ---
             if (currentTab == 2) {{
                 let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
                 if (largeVanMLP && largeVanMLP.restante > 0) {{
@@ -4115,6 +4049,7 @@ app_html = f"""
                     }});
                 }}
 
+                // 📌 ASIGNACIÓN DE DELIVERY CELL LARGE VAN A CAMPECHE SI SE DETECTA NODO
                 let deliveryCell = fleet.find(f => f.nombre === "Delivery Cell Large Van");
                 if (deliveryCell && deliveryCell.restante > 0) {{
                     let campeche = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CAMPECHE");
@@ -4138,6 +4073,7 @@ app_html = f"""
                 }}
             }}
 
+            // --- PREC SMX5 (TAB 1): PRIORIDAD SMALL 9H EXT CAR ---
             if (currentTab == 1) {{
                 let small9h = fleet.find(f => f.nombre === "Small 9h Ext Car");
                 if (small9h && small9h.restante > 0) {{
@@ -4175,6 +4111,7 @@ app_html = f"""
                 }}
             }}
 
+            // --- PREC SMX2 (TAB 5): PRIORIDAD SMALL VAN SDD Y CAR ZONA EXTENDIDA ---
             if (currentTab == 5) {{
                 let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
                 if (smallVan && smallVan.restante > 0) {{
@@ -4247,13 +4184,9 @@ app_html = f"""
                 }}
             }}
 
-            // 📌 FASE 2: LLENADO GENERAL RESTANTE (SOLO PARA PLANES SIN PRIORIDAD PROCESADA)
+            // 📌 ASIGNACIÓN GENERAL RESTANTE CON PERMISO DE SOBRE-ASIGNACIÓN A UNIDADES TIPO CAR
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
-
-                // Si este plan ya fue asignado según su prioridad específica en la Fase 0, lo salta por completo
-                if (planesConPrioridadProcesados.has(bloque)) return;
-
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
@@ -4276,6 +4209,7 @@ app_html = f"""
 
                     let unidad = null;
 
+                    // 1. Intentar tomar unidades con stock disponible en Schedule
                     if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
                         unidad = fleet.find(f => f.nombre === "Rental Large Van" && f.restante > 0);
                     }} else if (currentTab == 2) {{
@@ -4284,20 +4218,21 @@ app_html = f"""
                         unidad = fleet.find(f => f.restante > 0);
                     }}
 
+                    // 2. SI NO HAY STOCK, BUSCAR UNIDADES TIPO CAR QUE PERMITEN SOBRE-ASIGNACIÓN (VALOR NEGATIVO)
                     if (!unidad) {{
-                        if (currentTab == 4) {{
+                        if (currentTab == 4) {{ // EXTENDIDO
                             let opcionesCar = ["Car - 8h", "Car - 5h", "Car - 3h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
                             }}
-                        }} else if (currentTab == 1 || currentTab == 5) {{
+                        }} else if (currentTab == 1 || currentTab == 5) {{ // PREC SMX5 Y PREC SMX2
                             let opcionesCar = ["Car - 8h", "Car - 5h", "Car 8h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
                             }}
-                        }} else if (currentTab == 2) {{
+                        }} else if (currentTab == 2) {{ // SCP1
                             let opcionesCar = ["Large Van MLP", "Car - 8h", "Car - 5h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
@@ -4346,59 +4281,199 @@ app_html = f"""
         }}
         recalc();
     }}
-   
 
+    
     // ==============================================================================
-    // ✏️ EDICIÓN COMPLETA DE PLANES (NOMBRE Y PRIORIDADES)
+    // 🔴 MOTOR C1 SJA1 (BALANCEADO DE MLP EN FORÁNEOS Y NODOS PROTEGIDOS)
     // ==============================================================================
-    window.abrirModalEditarPlan = function(btn) {{
-        let bloque = btn.closest('.poligono-bloque');
-        if (!bloque) {{
-            alert("Error: No se encontró el bloque del plan.");
-            return;
-        }}
+    function procesarAsignacionCompletaSJA1(polys, fleetList) {{
+        const listaCrowdPrioridad = [
+            "Car Newbie",
+            "Car 8h",
+            "Car Zona Extendida",
+            "Small Van 9h",
+            "Small Van 9h Ext",
+            "Small Van Newbie"
+        ];
 
-        let celdaPlan = bloque.querySelector('.plan-cell');
-        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
-        let nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
-        
-        let prioridadesActuales = bloque.getAttribute('data-unidad-prioritaria') || 
-                                  bloque.getAttribute('data-prioridades') || "";
+        // ------------------------------------------------------------------
+        // FASE 1: NODOS, ESPECIALES, RENTALS Y REPARTO BALANCEADO DE MLP
+        // ------------------------------------------------------------------
+        polys.forEach(poly => {{
+            let bloque = poly.bloque;
+            let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
+            let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
-        // PASO 1: Preguntar Nombre
-        let nuevoNombre = prompt("1/2 - Nombre del Plan:", nombreActual);
-        if (nuevoNombre === null) return; // Canceló el usuario
-        nuevoNombre = nuevoNombre.trim();
-        if (nuevoNombre === "") {{
-            alert("El nombre no puede estar vacío.");
-            return;
-        }}
+            let yaAsignado = 0;
+            bloque.querySelectorAll('.calc-row').forEach(r => {{
+                yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
+            }});
 
-        // PASO 2: Preguntar Prioridades de Flota
-        let nuevasPrioridades = prompt(
-            "2/2 - Escribe las Unidades Prioritarias separadas por comas:\n(Ejemplo: Rental Large Van, Small Van SDD)", 
-            prioridadesActuales
-        );
-        if (nuevasPrioridades === null) return; // Canceló el usuario
-        nuevasPrioridades = nuevasPrioridades.trim();
+            let restante = objetivo - yaAsignado;
+            if (restante <= 0) return;
 
-        // APLICAR CAMBIOS RESPETANDO EL DIV CONTENEDOR
-        if (divNombre) {{
-            divNombre.innerText = nuevoNombre.toUpperCase();
-        }} else if (celdaPlan) {{
-            celdaPlan.innerText = nuevoNombre.toUpperCase();
-        }}
+            let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
-        bloque.setAttribute('data-unidad-prioritaria', nuevasPrioridades);
-        bloque.setAttribute('data-prioridades', nuevasPrioridades);
+            // 1. CENTRO 1 Y CENTRO 2
+            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
+                if (nombrePlan === "⚠️ CENTRO 1") {{
+                    const listaEspecialesC1 = ["Truck 3.5 tons MLP", "Delivery Cell Large Van"];
+                    for (let nombreEsp of listaEspecialesC1) {{
+                        if (restante <= 0) break;
+                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreEsp.toLowerCase());
+                        if (unidad) {{
+                            let usar = Math.min(1, unidad.restante);
+                            asentarUnidadEnPlan(filas, unidad, usar);
+                            restante -= (usar * unidad.spr);
+                        }}
+                    }}
+                }}
 
-        // Guardar estado local inmediatamente
-        if (typeof guardarEstadoEnVivo === 'function') {{
-            guardarEstadoEnVivo();
-        }}
+                const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement", "Extra Large Van MLP H&B"];
+                for (let nombreRent of listaRental) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
+                    while (unidad && unidad.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar = Math.min(necesarias, unidad.restante);
+                        if (usar <= 0) break;
 
-        alert("✅ ¡Cambios Guardados!\n\nPlan: " + nuevoNombre.toUpperCase() + "\nPrioridades: " + (nuevasPrioridades || "Sin prioridad"));
-    }};
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
+                    }}
+                }}
+
+                if (restante > 0) {{
+                    let listaMLPSobrante = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                    for (let nombreMlp of listaMLPSobrante) {{
+                        if (restante <= 0) break;
+                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                        while (unidad && unidad.restante > 0 && restante > 0) {{
+                            let necesarias = Math.ceil(restante / unidad.spr);
+                            let usar = Math.min(necesarias, unidad.restante);
+                            if (usar <= 0) break;
+
+                            asentarUnidadEnPlan(filas, unidad, usar);
+                            restante -= (usar * unidad.spr);
+                            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                        }}
+                    }}
+                }}
+            }}
+            // 2. EJA1 SP
+            else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
+                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("media milla"));
+                if (unidad) {{
+                    let necesarias = Math.ceil(restante / unidad.spr);
+                    let usar = Math.min(necesarias, unidad.restante);
+                    if (usar > 0) {{
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                    }}
+                }}
+            }}
+            // 3. PLANES FORÁNEOS (TEZUITLAN, PEROTE, XICO, TUZAMAPA, ETC.)
+            else {{
+                let celdaNodo = bloque.querySelector('.nodos-val');
+                let cantidadNodos = celdaNodo ? (parseInt(celdaNodo.innerText) || 0) : 0;
+
+                // SI TIENE NODO: Exige acaparar Large Van MLP foráneo
+                if (cantidadNodos > 0) {{
+                    let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                    while (unidadLV && unidadLV.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidadLV.spr);
+                        let usar = Math.min(necesarias, unidadLV.restante);
+                        if (usar <= 0) break;
+
+                        asentarUnidadEnPlan(filas, unidadLV, usar);
+                        restante -= (usar * unidadLV.spr);
+                        unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                    }}
+                }}
+
+                // SI NO TIENE NODO: Reparto balanceado entre Large Van y Small Van MLP
+                if (restante > 0) {{
+                    let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                    let unidadSV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "small van mlp foráneo");
+
+                    // Si existen ambas unidades disponibles, asigna primero una fracción en Large Van y el remanente en Small Van
+                    if (unidadLV && unidadSV && unidadLV.restante > 0 && unidadSV.restante > 0) {{
+                        let usarLV = Math.min(Math.floor((restante * 0.65) / unidadLV.spr), unidadLV.restante);
+                        if (usarLV > 0) {{
+                            asentarUnidadEnPlan(filas, unidadLV, usarLV);
+                            restante -= (usarLV * unidadLV.spr);
+                        }}
+
+                        let usarSV = Math.min(Math.ceil(restante / unidadSV.spr), unidadSV.restante);
+                        if (usarSV > 0) {{
+                            asentarUnidadEnPlan(filas, unidadSV, usarSV);
+                            restante -= (usarSV * unidadSV.spr);
+                        }}
+                    }}
+
+                    // Si aún resta volumen o faltaba alguna unidad, se consume en orden estándar
+                    if (restante > 0) {{
+                        let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                        for (let nombreMlp of listaMLPForaneo) {{
+                            if (restante <= 0) break;
+                            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                            while (unidad && unidad.restante > 0 && restante > 0) {{
+                                let necesarias = Math.ceil(restante / unidad.spr);
+                                let usar = Math.min(necesarias, unidad.restante);
+                                if (usar <= 0) break;
+
+                                asentarUnidadEnPlan(filas, unidad, usar);
+                                restante -= (usar * unidad.spr);
+                                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }});
+
+        // ------------------------------------------------------------------
+        // FASE 2: ASIGNACIÓN PRIORIZADA DE CROWD (TUZAMAPA ➔ XICO ➔ CENTRO 1 ➔ CENTRO 2)
+        // ------------------------------------------------------------------
+        const ordenPrioridadCrowd = ["TUZAMAPA", "XICO", "⚠️ CENTRO 1", "⚠️ CENTRO 2"];
+
+        ordenPrioridadCrowd.forEach(nombreBuscado => {{
+            let polyCoincidente = polys.find(p => {{
+                let name = p.bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
+                return name === nombreBuscado;
+            }});
+
+            if (!polyCoincidente) return;
+
+            let bloque = polyCoincidente.bloque;
+            let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
+
+            let yaAsignado = 0;
+            bloque.querySelectorAll('.calc-row').forEach(r => {{
+                yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
+            }});
+
+            let restante = objetivo - yaAsignado;
+            if (restante <= 0) return;
+
+            let filas = Array.from(bloque.querySelectorAll('.calc-row'));
+
+            for (let nombreCrowd of listaCrowdPrioridad) {{
+                if (restante <= 0) break;
+                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                while (unidad && unidad.restante > 0 && restante > 0) {{
+                    let necesarias = Math.ceil(restante / unidad.spr);
+                    let usar = Math.min(necesarias, unidad.restante);
+                    if (usar <= 0) break;
+
+                    asentarUnidadEnPlan(filas, unidad, usar);
+                    restante -= (usar * unidad.spr);
+                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                }}
+            }}
+        }});
+    }}
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
