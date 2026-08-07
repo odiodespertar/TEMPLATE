@@ -3208,314 +3208,319 @@ app_html = f"""
         }}
     }}
 
+
+
     function recalc() {{
-        let fleet = {{}};
-        let tabId = currentTab;
+    let fleet = {{}};
+    let tabId = currentTab;
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
-            let nameCell = row.querySelector('.edit-name');
+    document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        let nameCell = row.querySelector('.edit-name');
+        let name = nameCell.innerText.trim();
+        let sch = parseInt(row.querySelector('.f-stock').innerText) || 0;
+        let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
+        
+        if(sch > 0) {{
+            row.style.background = "white"; 
+            fs.style.background = "#fcf8cc"; 
+            mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold";
+            ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold";
+            nameCell.style.color = "#25282b";
+            nameCell.style.fontWeight = "bold";
+        }} else {{
+            row.style.background = "#DCDCDC"; 
+            fs.style.background = "#FFFF00"; 
+            mi.style.background = "#dcdcdc"; mi.style.color = "#969696"; mi.style.fontWeight = "normal";
+            ma.style.background = "#dcdcdc"; ma.style.color = "#969696"; ma.style.fontWeight = "normal";
+            nameCell.style.color = "#969696";
+            nameCell.style.fontWeight = "normal";
+        }}
+        
+        if(name !== "" && name !== "NUEVA UNIDAD") {{
+            fleet[name] = {{ max: parseFloat(ma.innerText)||0, stock: sch, used: 0 }};
+        }}
+    }});
+
+    let mapeoRuteadas = {{}};
+    document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
+        let s = row.querySelector('.s-type').value;
+        let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
+        if (s && s !== "Seleccionar...") {{
+            mapeoRuteadas[s] = (mapeoRuteadas[s] || 0) + u;
+        }}
+    }});
+
+    document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        let nameCell = row.querySelector('.edit-name');
+        let ruteadaCell = row.querySelector('.f-ruteadas');
+        if (nameCell && ruteadaCell) {{
             let name = nameCell.innerText.trim();
-            let sch = parseInt(row.querySelector('.f-stock').innerText) || 0;
-            let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
+            ruteadaCell.innerText = mapeoRuteadas[name] || 0;
+        }}
+    }});
+
+    document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        let vT = parseFloat(bl.querySelector('.v-total-val').innerText) || 0, vA = 0;
+        let vCalcEl = bl.querySelector('.v-calculado-total');
+
+        let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
+        let esCentro = (nombrePlanPadre === "⚠️ CENTRO 1" || nombrePlanPadre === "⚠️ CENTRO 2");
+        
+        // 🟢 CORRECCIÓN C1 SJA1: Detección dinámica sin depender únicamente del tabId == 6
+        let celdaNodos = bl.querySelector('.nodos-val') || bl.querySelector('.nodos-campeche');
+        let valorNodo = celdaNodos ? (parseInt(celdaNodos.innerText) || 0) : 0;
+        let tieneNodo = (valorNodo > 0);
+        
+        let filas = bl.querySelectorAll('.calc-row');
+
+        filas.forEach((r, index) => {{
+            let sType = r.querySelector('.s-type');
+            let uManual = r.querySelector('.u-manual');
+            let sp = r.querySelector('.spr-real-val');
             
-            if(sch > 0) {{
-                row.style.background = "white"; 
-                fs.style.background = "#fcf8cc"; 
-                mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold";
-                ma.style.background = "#ffffff"; ma.style.color = "#25282b"; ma.style.fontWeight = "bold";
-                nameCell.style.color = "#25282b";
-                nameCell.style.fontWeight = "bold";
-            }} else {{
-                row.style.background = "#DCDCDC"; 
-                fs.style.background = "#FFFF00"; 
-                mi.style.background = "#dcdcdc"; mi.style.color = "#969696"; mi.style.fontWeight = "normal";
-                ma.style.background = "#dcdcdc"; ma.style.color = "#969696"; ma.style.fontWeight = "normal";
-                nameCell.style.color = "#969696";
-                nameCell.style.fontWeight = "normal";
+            // Autoasignación garantizada para C1 SJA1
+            if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {{
+                sType.value = "Large Van MLP foráneo";
+                uManual.innerText = "1";
+            }}
+
+            if (sType.value === "" || sType.value === "Seleccionar...") {{
+                uManual.innerText = "0";
             }}
             
-            if(name !== "" && name !== "NUEVA UNIDAD") {{
-                fleet[name] = {{ max: parseFloat(ma.innerText)||0, stock: sch, used: 0 }};
-            }}
-        }});
+            let s = sType.value;
+            let u = parseInt(uManual.innerText) || 0;
 
-        let mapeoRuteadas = {{}};
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
-            let s = row.querySelector('.s-type').value;
-            let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
-            if (s && s !== "Seleccionar...") {{
-                mapeoRuteadas[s] = (mapeoRuteadas[s] || 0) + u;
-            }}
-        }});
-
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
-            let nameCell = row.querySelector('.edit-name');
-            let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (nameCell && ruteadaCell) {{
-                let name = nameCell.innerText.trim();
-                ruteadaCell.innerText = mapeoRuteadas[name] || 0;
-            }}
-        }});
-
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
-            let vT = parseFloat(bl.querySelector('.v-total-val').innerText) || 0, vA = 0;
-            let vCalcEl = bl.querySelector('.v-calculado-total');
-
-            let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
-            let esCentro = (nombrePlanPadre === "⚠️ CENTRO 1" || nombrePlanPadre === "⚠️ CENTRO 2");
-            
-            let celdaNodos = bl.querySelector('.nodos-val');
-            let tieneNodo = (tabId == 6 && celdaNodos && parseInt(celdaNodos.innerText) > 0);
-            
-            let filas = bl.querySelectorAll('.calc-row');
-
-            filas.forEach((r, index) => {{
-                let sType = r.querySelector('.s-type');
-                let uManual = r.querySelector('.u-manual');
-                let sp = r.querySelector('.spr-real-val');
-                
-                if (!esCentro && tieneNodo && index === 0 && (sType.value === "" || sType.value === "Seleccionar...")) {{
-                    sType.value = "Large Van MLP foráneo";
-                    uManual.innerText = "1";
-                }}
-
-                if (sType.value === "" || sType.value === "Seleccionar...") {{
-                    uManual.innerText = "0";
-                }}
-                
-                let s = sType.value;
-                let u = parseInt(uManual.innerText) || 0;
-
-                let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase() || "";
-                if (nombrePlanPadre.includes("ALCHICHICA")) {{
-                    if (s !== "Seleccionar..." && s !== "") {{
-                        vA += (u * (parseFloat(sp.innerText) || 0));
-                        sp.style.fontWeight = "bold";
-                        sp.style.setProperty("background-color", "#edf2f2");
-                        sp.style.setProperty("color", "#25282b");
-                    }}
-                    return; 
-                }}
-
-                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
-                    if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
-                    fleet[s].used += u; 
+            let nombrePlanPadre = bl.querySelector('td[rowspan]')?.innerText?.toUpperCase() || "";
+            if (nombrePlanPadre.includes("ALCHICHICA")) {{
+                if (s !== "Seleccionar..." && s !== "") {{
                     vA += (u * (parseFloat(sp.innerText) || 0));
+                    sp.style.fontWeight = "bold";
                     sp.style.setProperty("background-color", "#edf2f2");
                     sp.style.setProperty("color", "#25282b");
-                }} else {{
-                    sp.style.setProperty("background-color", "#FFFFFF");
                 }}
-            }});
-
-            vCalcEl.innerText = Math.round(vA);
-            let d = bl.querySelector('.p-diff');
-            let diffVal = Math.round(vA);
-            if (vT === 0) d.innerText = "VACÍO";
-            else if (diffVal === Math.round(vT)) {{ d.innerText = "OK"; d.style.background = "#61b888"; }}
-            else if (vA > vT) {{ d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }}
-            else {{ d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }}
-        }});
-
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
-            let nameCell = row.querySelector('.edit-name');
-            if (!nameCell) return;
-            
-            let ruteadasManuales = parseFloat(row.querySelector('.f-ruteadas')?.innerText || 0);
-            let stock = parseFloat(row.querySelector('.f-stock')?.innerText || 0);
-            let cL = row.querySelector('.f-left');
-            
-            let ruteadaCell = row.querySelector('.f-ruteadas');
-            if (ruteadaCell) {{
-                if (ruteadasManuales > 0) {{
-                    ruteadaCell.style.backgroundColor = "#d3f0e5";
-                    ruteadaCell.style.color = "#008B8B";
-                    ruteadaCell.style.fontWeight = "bold";
-                }} else {{
-                    ruteadaCell.style.backgroundColor = "#dcdcdc";
-                    ruteadaCell.style.color = "";
-                    ruteadaCell.style.fontWeight = "bold";
-                }}
+                return; 
             }}
 
-            if (cL) {{
-                let exceso = ruteadasManuales - stock;
-                
-                if (exceso > 0) {{
-                    cL.innerText = "+" + exceso;
-                    cL.style.color = "red"; 
-                    cL.style.fontWeight = "bold"; 
-                    cL.style.background = "transparent";
-                }} else if (ruteadasManuales === stock && stock > 0) {{
-                    cL.innerText = "0";
-                    cL.style.color = "white"; 
-                    cL.style.background = "#fc765d";
-                    cL.style.fontWeight = "bold";
-                }} else {{
-                    let restantes = stock - ruteadasManuales;
-                    cL.innerText = restantes;
-                    cL.style.color = "#17191a"; 
-                    cL.style.background = "transparent"; 
-                    cL.style.fontWeight = "normal";
-                }}
-            }}
-        }});
-
-        let contadorAcumulado = {{}};
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {{
-            let sel = r.querySelector('.s-type')?.value;
-            let uCell = r.querySelector('.u-manual-cell');
-            let divFlex = uCell ? uCell.querySelector('div') : null;
-            let spanU = r.querySelector('.u-manual');
-            let uManual = parseInt(spanU?.innerText) || 0;
-
-            if (!divFlex) return;
-
-            let badge = divFlex.querySelector('.badge-adicional');
-
-            if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {{
-                let stockInicial = fleet[sel].stock;
-                let usadasPrevias = contadorAcumulado[sel] || 0;
-
-                let cubiertasPorSchedule = Math.max(0, Math.min(uManual, stockInicial - usadasPrevias));
-                let excesoFila = uManual - cubiertasPorSchedule;
-
-                contadorAcumulado[sel] = usadasPrevias + uManual;
-
-                if (excesoFila > 0) {{
-                    if (!badge) {{
-                        badge = document.createElement('span');
-                        badge.className = 'badge-adicional';
-                        badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
-                        if (spanU) spanU.after(badge);
-                    }}
-                    badge.innerText = `+${{excesoFila}}`;
-                    badge.style.display = 'inline-block';
-                    badge.title = `${{cubiertasPorSchedule}} de Schedule + ${{excesoFila}} adicionales en este plan`;
-                    uCell.style.backgroundColor = "#d3f0e5";
-                }} else {{
-                    if (badge) badge.style.display = 'none';
-                    uCell.style.backgroundColor = "#d3f0e5";
-                }}
+            if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
+                if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
+                fleet[s].used += u; 
+                vA += (u * (parseFloat(sp.innerText) || 0));
+                sp.style.setProperty("background-color", "#edf2f2");
+                sp.style.setProperty("color", "#25282b");
             }} else {{
-                if (badge) badge.style.display = 'none';
-                if (uCell) uCell.style.backgroundColor = "#d3f0e5";
+                sp.style.setProperty("background-color", "#FFFFFF");
             }}
         }});
 
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
-            const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h", "car 3h", "car - 3h"];
+        vCalcEl.innerText = Math.round(vA);
+        let d = bl.querySelector('.p-diff');
+        let diffVal = Math.round(vA);
+        if (vT === 0) d.innerText = "VACÍO";
+        else if (diffVal === Math.round(vT)) {{ d.innerText = "OK"; d.style.background = "#61b888"; }}
+        else if (vA > vT) {{ d.innerText = "EXCESO: " + Math.round(vA - vT); d.style.background = "#f2bd5c"; }}
+        else {{ d.innerText = "FALTAN: " + Math.round(vT - vA); d.style.background = "#fc9a88"; }}
+    }});
 
-            bl.querySelectorAll('.s-type').forEach(s => {{ 
-                let cur = s.value; 
-                let opt = '<option value="">Seleccionar...</option>';
-                
-                Object.keys(fleet).forEach(k => {{
-                    let nameLower = k.toLowerCase().trim();
-                    let stock = fleet[k].stock;
-                    let used = fleet[k].used;
-                    
-                    let esPermitida = permitidasSinStock.some(u => nameLower.includes(u));
-                    let tieneCapacidad = (stock - used > 0);
-                    
-                    if (tieneCapacidad || esPermitida || k === cur) {{
-                        opt += `<option value="${{k}}">${{k}}</option>`;
-                    }}
-                }});
-                
-                s.innerHTML = opt;
-                s.value = cur;
-                updateSelectColor(s);
-            }});
-        }});
-
-        let totals = {{
-            mlpDecl: 0, mlpRute: 0,
-            rentalDecl: 0, rentalRute: 0,
-            carDecl: 0, carRute: 0,
-            otrosRute: 0,
-            totalRuteadas: 0
-        }};
-
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
-            let name = row.querySelector('.edit-name')?.innerText.toLowerCase().trim() || "";
-            let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
-            
-            if (name.includes("mlp")) totals.mlpDecl += sch;
-            else if (name.includes("rental")) totals.rentalDecl += sch;
-            else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) totals.carDecl += sch;
-        }});
-
-        totals.totalRuteadas = 0;
-        totals.mlpRute = 0;
-        totals.rentalRute = 0;
-        totals.carRute = 0;
-        totals.otrosRute = 0; 
-
-        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
-            let s = row.querySelector('.s-type').value; 
-            let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
-
-            if (!s || s === "Seleccionar...") return;
-
-            let name = s.toLowerCase().trim();
-
-            if (name.includes("mlp")) {{
-                totals.mlpRute += u;
-            }} else if (name.includes("rental")) {{
-                totals.rentalRute += u;
-            }} else if (name.includes("delivery")) {{
-                totals.otrosRute += u;
-            }} else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {{
-                totals.carRute += u;
+    document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        let nameCell = row.querySelector('.edit-name');
+        if (!nameCell) return;
+        
+        let ruteadasManuales = parseFloat(row.querySelector('.f-ruteadas')?.innerText || 0);
+        let stock = parseFloat(row.querySelector('.f-stock')?.innerText || 0);
+        let cL = row.querySelector('.f-left');
+        
+        let ruteadaCell = row.querySelector('.f-ruteadas');
+        if (ruteadaCell) {{
+            if (ruteadasManuales > 0) {{
+                ruteadaCell.style.backgroundColor = "#d3f0e5";
+                ruteadaCell.style.color = "#008B8B";
+                ruteadaCell.style.fontWeight = "bold";
             }} else {{
-                totals.otrosRute += u; 
-            }}
-
-            totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-        }});
-
-        totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-
-        function setT(id, val) {{
-            let finalId = id + '-' + tabId;
-            let el = document.getElementById(finalId);
-            if (el) {{
-                el.innerText = Math.round(val);
+                ruteadaCell.style.backgroundColor = "#dcdcdc";
+                ruteadaCell.style.color = "";
+                ruteadaCell.style.fontWeight = "bold";
             }}
         }}
 
-        totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-
-        setT('total-mlp-decl', totals.mlpDecl);
-        setT('total-mlp-rute', totals.mlpRute);
-        setT('total-rental-decl', totals.rentalDecl);
-        setT('total-rental-rute', totals.rentalRute);
-        setT('total-car-schedule', totals.carDecl);
-        setT('total-car-real', totals.carRute);
-        setT('total-otros', totals.otrosRute); 
-
-        setTimeout(() => {{
-            let valorCorrecto = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
-            let el = document.getElementById('total-ruteadas-' + tabId);
-            if (el) {{
-                el.innerText = Math.round(valorCorrecto);
-                el.style.color = "#66CDAA";
+        if (cL) {{
+            let exceso = ruteadasManuales - stock;
+            
+            if (exceso > 0) {{
+                cL.innerText = "+" + exceso;
+                cL.style.color = "red"; 
+                cL.style.fontWeight = "bold"; 
+                cL.style.background = "transparent";
+            }} else if (ruteadasManuales === stock && stock > 0) {{
+                cL.innerText = "0";
+                cL.style.color = "white"; 
+                cL.style.background = "#fc765d";
+                cL.style.fontWeight = "bold";
+            }} else {{
+                let restantes = stock - ruteadasManuales;
+                cL.innerText = restantes;
+                cL.style.color = "#17191a"; 
+                cL.style.background = "transparent"; 
+                cL.style.fontWeight = "normal";
             }}
-        }}, 500);
+        }}
+    }});
 
-        updateFleetFloat();
-        actualizarTotales();
-        actualizarDosPorciento();
+    let contadorAcumulado = {{}};
+    document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {{
+        let sel = r.querySelector('.s-type')?.value;
+        let uCell = r.querySelector('.u-manual-cell');
+        let divFlex = uCell ? uCell.querySelector('div') : null;
+        let spanU = r.querySelector('.u-manual');
+        let uManual = parseInt(spanU?.innerText) || 0;
 
-        let elMlp = document.getElementById('val-mlp-rute-' + tabId);
-        let elRental = document.getElementById('val-rental-rute-' + tabId);
-        let elCar = document.getElementById('val-car-rute-' + tabId);
+        if (!divFlex) return;
 
-        if(elMlp) elMlp.innerText = Math.round(totals.mlpRute);
-        if(elRental) elRental.innerText = Math.round(totals.rentalRute);
-        if(elCar) elCar.innerText = Math.round(totals.carRute);
+        let badge = divFlex.querySelector('.badge-adicional');
+
+        if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {{
+            let stockInicial = fleet[sel].stock;
+            let usadasPrevias = contadorAcumulado[sel] || 0;
+
+            let cubiertasPorSchedule = Math.max(0, Math.min(uManual, stockInicial - usadasPrevias));
+            let excesoFila = uManual - cubiertasPorSchedule;
+
+            contadorAcumulado[sel] = usadasPrevias + uManual;
+
+            if (excesoFila > 0) {{
+                if (!badge) {{
+                    badge = document.createElement('span');
+                    badge.className = 'badge-adicional';
+                    badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
+                    if (spanU) spanU.after(badge);
+                }}
+                badge.innerText = `+${{excesoFila}}`;
+                badge.style.display = 'inline-block';
+                badge.title = `${{cubiertasPorSchedule}} de Schedule + ${{excesoFila}} adicionales en este plan`;
+                uCell.style.backgroundColor = "#d3f0e5";
+            }} else {{
+                if (badge) badge.style.display = 'none';
+                uCell.style.backgroundColor = "#d3f0e5";
+            }}
+        }} else {{
+            if (badge) badge.style.display = 'none';
+            if (uCell) uCell.style.backgroundColor = "#d3f0e5";
+        }}
+    }});
+
+    document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h", "car 3h", "car - 3h"];
+
+        bl.querySelectorAll('.s-type').forEach(s => {{ 
+            let cur = s.value; 
+            let opt = '<option value="">Seleccionar...</option>';
+            
+            Object.keys(fleet).forEach(k => {{
+                let nameLower = k.toLowerCase().trim();
+                let stock = fleet[k].stock;
+                let used = fleet[k].used;
+                
+                let esPermitida = permitidasSinStock.some(u => nameLower.includes(u));
+                let tieneCapacidad = (stock - used > 0);
+                
+                if (tieneCapacidad || esPermitida || k === cur) {{
+                    opt += `<option value="${{k}}">${{k}}</option>`;
+                }}
+            }});
+            
+            s.innerHTML = opt;
+            s.value = cur;
+            updateSelectColor(s);
+        }});
+    }});
+
+    let totals = {{
+        mlpDecl: 0, mlpRute: 0,
+        rentalDecl: 0, rentalRute: 0,
+        carDecl: 0, carRute: 0,
+        otrosRute: 0,
+        totalRuteadas: 0
+    }};
+
+    document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        let name = row.querySelector('.edit-name')?.innerText.toLowerCase().trim() || "";
+        let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
+        
+        if (name.includes("mlp")) totals.mlpDecl += sch;
+        else if (name.includes("rental")) totals.rentalDecl += sch;
+        else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) totals.carDecl += sch;
+    }});
+
+    totals.totalRuteadas = 0;
+    totals.mlpRute = 0;
+    totals.rentalRute = 0;
+    totals.carRute = 0;
+    totals.otrosRute = 0; 
+
+    document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
+        let s = row.querySelector('.s-type').value; 
+        let u = parseInt(row.querySelector('.u-manual').innerText) || 0;
+
+        if (!s || s === "Seleccionar...") return;
+
+        let name = s.toLowerCase().trim();
+
+        if (name.includes("mlp")) {{
+            totals.mlpRute += u;
+        }} else if (name.includes("rental")) {{
+            totals.rentalRute += u;
+        }} else if (name.includes("delivery")) {{
+            totals.otrosRute += u;
+        }} else if (name.includes("car") || name.includes("moto") || name.includes("Newbie") || name.includes("9h")) {{
+            totals.carRute += u;
+        }} else {{
+            totals.otrosRute += u; 
+        }}
+
+        totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
+    }});
+
+    totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
+
+    function setT(id, val) {{
+        let finalId = id + '-' + tabId;
+        let el = document.getElementById(finalId);
+        if (el) {{
+            el.innerText = Math.round(val);
+        }}
     }}
+
+    totals.totalRuteadas = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
+
+    setT('total-mlp-decl', totals.mlpDecl);
+    setT('total-mlp-rute', totals.mlpRute);
+    setT('total-rental-decl', totals.rentalDecl);
+    setT('total-rental-rute', totals.rentalRute);
+    setT('total-car-schedule', totals.carDecl);
+    setT('total-car-real', totals.carRute);
+    setT('total-otros', totals.otrosRute); 
+
+    setTimeout(() => {{
+        let valorCorrecto = totals.mlpRute + totals.rentalRute + totals.carRute + totals.otrosRute;
+        let el = document.getElementById('total-ruteadas-' + tabId);
+        if (el) {{
+            el.innerText = Math.round(valorCorrecto);
+            el.style.color = "#66CDAA";
+        }}
+    }}, 500);
+
+    updateFleetFloat();
+    actualizarTotales();
+    actualizarDosPorciento();
+
+    let elMlp = document.getElementById('val-mlp-rute-' + tabId);
+    let elRental = document.getElementById('val-rental-rute-' + tabId);
+    let elCar = document.getElementById('val-car-rute-' + tabId);
+
+    if(elMlp) elMlp.innerText = Math.round(totals.mlpRute);
+    if(elRental) elRental.innerText = Math.round(totals.rentalRute);
+    if(elCar) elCar.innerText = Math.round(totals.carRute);
+}}
 
     document.addEventListener('keydown', function(event) {{
         if (event.key !== 'Enter') return;
