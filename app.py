@@ -5112,8 +5112,8 @@ function iniciarArrastreFlotante(e) {{
 
        /* Volumen / profundidad */
        box-shadow:
-           6px 0 18px rgba(0, 0, 0, 0.55),
-           2px 0 4px rgba(255, 255, 255, 0.04);
+           8px 0 20px rgba(0, 0, 0, 0.65),
+           2px 0 5px rgba(255, 255, 255, 0.05);
 
        transition: left 0.3s ease;
 
