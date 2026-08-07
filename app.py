@@ -4282,8 +4282,9 @@ app_html = f"""
         recalc();
     }}
 
+    
     // ==============================================================================
-    // 🔴 MOTOR C1 SJA1 (FASE 1: NODOS/RENTAL/MLP + FASE 2: CROWD TUZAMAPA ➔ XICO ➔ CENTRO)
+    // 🔴 MOTOR C1 SJA1 (BALANCEADO DE MLP EN FORÁNEOS Y NODOS PROTEGIDOS)
     // ==============================================================================
     function procesarAsignacionCompletaSJA1(polys, fleetList) {{
         const listaCrowdPrioridad = [
@@ -4295,7 +4296,9 @@ app_html = f"""
             "Small Van Newbie"
         ];
 
-        // FASE 1: NODOS, ESPECIALES, RENTALS Y MLP EN TODOS LOS PLANES
+        // ------------------------------------------------------------------
+        // FASE 1: NODOS, ESPECIALES, RENTALS Y REPARTO BALANCEADO DE MLP
+        // ------------------------------------------------------------------
         polys.forEach(poly => {{
             let bloque = poly.bloque;
             let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -4311,6 +4314,7 @@ app_html = f"""
 
             let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
+            // 1. CENTRO 1 Y CENTRO 2
             if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
                 if (nombrePlan === "⚠️ CENTRO 1") {{
                     const listaEspecialesC1 = ["Truck 3.5 tons MLP", "Delivery Cell Large Van"];
@@ -4357,6 +4361,7 @@ app_html = f"""
                     }}
                 }}
             }}
+            // 2. EJA1 SP
             else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
                 let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("media milla"));
                 if (unidad) {{
@@ -4368,10 +4373,12 @@ app_html = f"""
                     }}
                 }}
             }}
+            // 3. PLANES FORÁNEOS (TEZUITLAN, PEROTE, XICO, TUZAMAPA, ETC.)
             else {{
                 let celdaNodo = bloque.querySelector('.nodos-val');
                 let cantidadNodos = celdaNodo ? (parseInt(celdaNodo.innerText) || 0) : 0;
 
+                // SI TIENE NODO: Exige acaparar Large Van MLP foráneo
                 if (cantidadNodos > 0) {{
                     let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
                     while (unidadLV && unidadLV.restante > 0 && restante > 0) {{
@@ -4385,26 +4392,50 @@ app_html = f"""
                     }}
                 }}
 
+                // SI NO TIENE NODO: Reparto balanceado entre Large Van y Small Van MLP
                 if (restante > 0) {{
-                    let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
-                    for (let nombreMlp of listaMLPForaneo) {{
-                        if (restante <= 0) break;
-                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                        while (unidad && unidad.restante > 0 && restante > 0) {{
-                            let necesarias = Math.ceil(restante / unidad.spr);
-                            let usar = Math.min(necesarias, unidad.restante);
-                            if (usar <= 0) break;
+                    let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                    let unidadSV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "small van mlp foráneo");
 
-                            asentarUnidadEnPlan(filas, unidad, usar);
-                            restante -= (usar * unidad.spr);
-                            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                    // Si existen ambas unidades disponibles, asigna primero una fracción en Large Van y el remanente en Small Van
+                    if (unidadLV && unidadSV && unidadLV.restante > 0 && unidadSV.restante > 0) {{
+                        let usarLV = Math.min(Math.floor((restante * 0.65) / unidadLV.spr), unidadLV.restante);
+                        if (usarLV > 0) {{
+                            asentarUnidadEnPlan(filas, unidadLV, usarLV);
+                            restante -= (usarLV * unidadLV.spr);
+                        }}
+
+                        let usarSV = Math.min(Math.ceil(restante / unidadSV.spr), unidadSV.restante);
+                        if (usarSV > 0) {{
+                            asentarUnidadEnPlan(filas, unidadSV, usarSV);
+                            restante -= (usarSV * unidadSV.spr);
+                        }}
+                    }}
+
+                    // Si aún resta volumen o faltaba alguna unidad, se consume en orden estándar
+                    if (restante > 0) {{
+                        let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                        for (let nombreMlp of listaMLPForaneo) {{
+                            if (restante <= 0) break;
+                            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                            while (unidad && unidad.restante > 0 && restante > 0) {{
+                                let necesarias = Math.ceil(restante / unidad.spr);
+                                let usar = Math.min(necesarias, unidad.restante);
+                                if (usar <= 0) break;
+
+                                asentarUnidadEnPlan(filas, unidad, usar);
+                                restante -= (usar * unidad.spr);
+                                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                            }}
                         }}
                     }}
                 }}
             }}
         }});
 
+        // ------------------------------------------------------------------
         // FASE 2: ASIGNACIÓN PRIORIZADA DE CROWD (TUZAMAPA ➔ XICO ➔ CENTRO 1 ➔ CENTRO 2)
+        // ------------------------------------------------------------------
         const ordenPrioridadCrowd = ["TUZAMAPA", "XICO", "⚠️ CENTRO 1", "⚠️ CENTRO 2"];
 
         ordenPrioridadCrowd.forEach(nombreBuscado => {{
@@ -4443,7 +4474,6 @@ app_html = f"""
             }}
         }});
     }}
-    
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
