@@ -1663,6 +1663,10 @@ app_html = f"""
             ➕ CREAR NUEVO RUTEO
         </button>
 
+        <button onclick="abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">
+            ✏️ Editar Plan
+        </button>
+
         <!-- 🗑️ BOTÓN GESTIONAR / BORRAR RUTEOS -->
         <button onclick="abrirGestorEliminacionMasiva()" style="cursor:pointer; background: linear-gradient(180deg, #d32f2f 0%, #8b0000 100%); color: white; border: 1px solid #ff4d4d; font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.1s;">
             🗑️ GESTIONAR / BORRAR RUTEOS
@@ -4344,6 +4348,47 @@ app_html = f"""
     }}
    
 
+    // ==============================================================================
+    // ✏️ EDICIÓN DE PLANES CREADOS (NOMBRE Y PRIORIDADES DE FLOTA)
+    // ==============================================================================
+
+    function abrirModalEditarPlan(btn) {{
+        let bloque = btn.closest('.poligono-bloque');
+        if (!bloque) return;
+
+        let celdaNombre = bloque.querySelector('.plan-cell');
+        let nombreActual = celdaNombre ? celdaNombre.innerText.trim() : "";
+        let prioridadesActuales = bloque.getAttribute('data-unidad-prioritaria') || 
+                                  bloque.getAttribute('data-prioridades') || "";
+
+        // 1. Pedir el nuevo nombre del plan
+        let nuevoNombre = prompt("Editar nombre del Plan / Polígono:", nombreActual);
+        if (nuevoNombre === null) return; // Cancelado por el usuario
+        nuevoNombre = nuevoNombre.trim();
+        if (nuevoNombre === "") {{
+            alert("El nombre del plan no puede estar vacío.");
+            return;
+        }}
+
+        // 2. Pedir / actualizar las unidades prioritarias (separadas por comas)
+        let nuevasPrioridades = prompt(
+            "Editar unidades prioritarias (separadas por coma, ej: Rental Large Van, Small Van SDD):", 
+            prioridadesActuales
+        );
+        if (nuevasPrioridades === null) return;
+
+        // 3. Actualizar el DOM de la pantalla en vivo
+        if (celdaNombre) celdaNombre.innerText = nuevoNombre.toUpperCase();
+        bloque.setAttribute('data-unidad-prioritaria', nuevasPrioridades.trim());
+        bloque.setAttribute('data-prioridades', nuevasPrioridades.trim());
+
+        // 4. Guardar inmediatamente en LocalStorage para no perder cambios si parpadea la página
+        if (typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+
+        alert("✅ Plan actualizado correctamente. Al hacer clic en 🧠 AUTO-CALCULAR usará la nueva prioridad.");
+    }}
    
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
