@@ -5103,9 +5103,6 @@ app_html = f"""
 
     function accionMenuRuteos(accion) {{
 
-        // Cerrar menú después de seleccionar
-        cerrarMenuRuteos();
-
 
         if (accion === 'excel') {{
 
