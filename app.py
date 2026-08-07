@@ -4202,7 +4202,7 @@ app_html = f"""
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
             let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
             yaAsignado += (unidades * spr);
-        });
+        }});
 
         let restante = objetivo - yaAsignado;
         if (restante <= 0) return;
