@@ -2943,8 +2943,13 @@ app_html = f"""
 
     function recalc() {{
         let fleet = {{}};
-        let tabId = currentTab;
+        
+        // 🟢 Corrección de lectura dinámica del selector de ruteos/ciclos
+        let selectorCiclos = document.getElementById("ciclo-selector");
+        let tabId = selectorCiclos ? parseInt(selectorCiclos.value) : currentTab;
+        if (!tabId) tabId = currentTab;
 
+        // 1. Capturar datos de la flota (Tabla superior)
         document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
@@ -2952,7 +2957,7 @@ app_html = f"""
             let sch = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
             let mi = row.querySelector('.edit-spr-min'), ma = row.querySelector('.edit-spr-max'), fs = row.querySelector('.f-stock');
             
-            if(sch > 0) {{
+            if (sch > 0) {{
                 row.style.background = "white"; 
                 if (fs) fs.style.background = "#fcf8cc"; 
                 if (mi) {{ mi.style.background = "#ffffff"; mi.style.color = "#25282b"; mi.style.fontWeight = "bold"; }}
@@ -2968,11 +2973,12 @@ app_html = f"""
                 nameCell.style.fontWeight = "normal";
             }}
             
-            if(name !== "" && name !== "NUEVA UNIDAD" && name !== "IGNORAR") {{
-                fleet[name] = {{ max: parseFloat(ma?.innerText)||0, stock: sch, used: 0 }};
+            if (name !== "" && name !== "NUEVA UNIDAD" && name !== "IGNORAR") {{
+                fleet[name] = {{ max: parseFloat(ma?.innerText) || 0, stock: sch, used: 0 }};
             }}
         }});
 
+        // 2. Mapeo de unidades asignadas desde los polígonos
         let mapeoRuteadas = {{}};
         document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
             let s = row.querySelector('.s-type')?.value;
@@ -2991,6 +2997,7 @@ app_html = f"""
             }}
         }});
 
+        // 3. Recálculo por polígono
         document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
             let vT = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0, vA = 0;
             let vCalcEl = bl.querySelector('.v-calculado-total');
@@ -3031,8 +3038,8 @@ app_html = f"""
                     return; 
                 }}
 
-                if(s !== "Seleccionar..." && s !== "" && fleet[s]) {{
-                    if(!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
+                if (s !== "Seleccionar..." && s !== "" && fleet[s]) {{
+                    if (!editedRowsPlan.has(r)) sp.innerText = fleet[s].max; 
                     fleet[s].used += u; 
                     vA += (u * (parseFloat(sp.innerText) || 0));
                     sp.style.setProperty("background-color", "#edf2f2");
@@ -3053,6 +3060,7 @@ app_html = f"""
             }}
         }});
 
+        // 4. Actualización Deltas
         document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
@@ -3098,43 +3106,8 @@ app_html = f"""
 
         if (typeof updateFleetFloat === "function") updateFleetFloat();
         if (typeof actualizarDosPorciento === "function") actualizarDosPorciento();
+        if (typeof actualizarSelects === "function") actualizarSelects();
     }}
-
-        actualizarSelects();
-    }}
-
-    document.addEventListener('keydown', function(event) {{
-        if (event.key !== 'Enter') return;
-
-        const fleet = document.getElementById("fleet-sticky");
-        if (fleet && fleet.classList.contains("fleet-floating")) {{
-            event.preventDefault();
-            if (typeof toggleFleetFloating === "function") {{
-                toggleFleetFloating();
-            }}
-            return;
-        }}
-
-        const ae = document.activeElement;
-        const tag = ae && ae.tagName ? ae.tagName.toLowerCase() : "";
-        if (tag === "button" || tag === "input" || tag === "select" || tag === "textarea") {{
-            return;
-        }}
-        if (ae && ae.isContentEditable) {{
-            return;
-        }}
-
-        let panel = document.getElementById('panel-prioridades');
-        if (panel && panel.style.top === "0px") {{
-            panel.style.top = "-600px";
-            if (document.activeElement) document.activeElement.blur();
-        }}
-
-        let alerta = document.querySelector('.alerta-roja, .p-diff');
-        if (alerta && alerta.innerText.includes('EXCESO')) {{
-            if (document.activeElement) document.activeElement.blur();
-        }}
-    }});
 
 
 
