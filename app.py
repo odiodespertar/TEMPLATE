@@ -159,8 +159,22 @@ menu_flotante_html = """
     }
 
     function ejecutarAccion(accion) {
-        toggleMenu();
-        console.log("Acción seleccionada: " + accion);
+        toggleMenu(); // Cierra el menú al hacer clic
+        
+        // Conecta cada opción con tu lógica existente:
+        if (accion === 'excel') {
+            // Llama aquí a tu función de exportar a Excel
+            console.log("Abriendo vista Excel...");
+        } else if (accion === 'nuevo') {
+            // Llama a tu función para crear ruteo
+            console.log("Abriendo modal de nuevo ruteo...");
+        } else if (accion === 'gestionar') {
+            // Llama a tu función de gestión
+            console.log("Abriendo gestor de ruteos...");
+        } else if (accion === 'limpiar') {
+            // Llama a tu función de limpiar pantalla
+            console.log("Limpiando pantalla...");
+        }
     }
 </script>
 """
@@ -1834,12 +1848,6 @@ app_html = f"""
                 <option value="9">🟣 C1 VACÍA</option>
             </select>
         </div>
-
-
-
-
-        
-
 
 
 
