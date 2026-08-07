@@ -1868,7 +1868,7 @@ app_html = f"""
 
     // FUNCIÓN AUXILIAR PARA RECOLECTAR LA ESTRUCTURA MODIFICADA Y GUARDARLA EN BD
     async function guardarCambiosRuteoActual(tabId, idBD) {{
-        let tbodyFlota = document.querySelectorAll(`#body-${tabId} tr.master-row`);
+        let tbodyFlota = document.querySelectorAll(`#body-${{tabId}} tr.master-row`);
         let flotaElegida = [];
         tbodyFlota.forEach(row => {{
             let nombre = row.querySelector('.edit-name')?.innerText.trim();
