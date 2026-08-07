@@ -1824,7 +1824,18 @@ app_html = f"""
         nuevoContentFlota.innerHTML = htmlFlota;
         if (fleetSticky) fleetSticky.appendChild(nuevoContentFlota);
 
+        // 🟢 INICIALIZAR EL EVENTO DEL CONVERTIDOR DE HORAS PARA LA NUEVA PESTAÑA
+        if (incluirORH) {{
+            nuevoContentFlota.querySelectorAll(".edit-orh").forEach(function(celda) {{
+                actualizarHoraMinuto(celda); // Lo calcula inicialmente (pone 00:00)
+                celda.addEventListener("input", function() {{
+                    actualizarHoraMinuto(this); // Lo recalcula cuando el usuario escribe
+                }});
+            }});
+        }}
+
         let contenedorPolysPadre = document.getElementById("polys-2")?.parentNode;
+        
         let nuevoContentPolys = document.createElement("div");
         nuevoContentPolys.id = `polys-${{nuevoTabId}}`;
         nuevoContentPolys.className = "p-content";
