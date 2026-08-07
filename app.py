@@ -5107,30 +5107,23 @@ app_html = f"""
         cerrarMenuRuteos();
 
 
-        if (accion === "excel") {{
+        if (accion === 'excel') {{
 
             toggleExcelView();
 
-        }}
-
-        else if (accion === "nuevo") {{
+        }} else if (accion === 'nuevo') {{
 
             abrirCreadorRuteo();
 
-        }}
-
-        else if (accion === "gestionar") {{
+        }} else if (accion === 'gestionar') {{
 
             abrirGestorEliminacionMasiva();
 
-        }}
-
-        else if (accion === "limpiar") {{
+        }} else if (accion === 'limpiar') {{
 
             limpiarPantallaCompleta();
 
         }}
-
     }}
 
 </script>
