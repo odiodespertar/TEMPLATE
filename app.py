@@ -1621,7 +1621,7 @@ app_html = f"""
             let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
             let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
             
-            planesElegidos.push({ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan });
+            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
         }});
 
         if (planesElegidos.length === 0) {{
