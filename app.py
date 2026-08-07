@@ -1752,7 +1752,7 @@ app_html = f"""
         if (!supabaseClient) return;
 
         try {{
-            const { data, error } = await supabaseClient
+            const {{ data, error }} = await supabaseClient
                 .from('ruteos_guardados')
                 .select('*')
                 .order('created_at', {{ ascending: true }});
