@@ -2046,9 +2046,9 @@ app_html = f"""
     
     const usuarioActivo = "{usuario_activo}"; 
     
-    function obtenerClaveUsuario(tabNombre) {
+    function obtenerClaveUsuario(tabNombre) {{
         return tabNombre + "_" + usuarioActivo;
-    }
+    }}
 
 
     let currentTab = 2;
