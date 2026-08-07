@@ -2380,7 +2380,7 @@ app_html = f"""
             let unidadPrioritaria = div.querySelector(".input-unidad-prioritaria-plan")?.value || "";
             let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
             
-            planesElegidos.push({ {
+            planesElegidos.push({{
                 nombre: nombrePlan, 
                 filas: filasPlan, 
                 prioridad: prioridadPlan,
