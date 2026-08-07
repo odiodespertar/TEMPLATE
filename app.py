@@ -2332,6 +2332,47 @@ app_html = f"""
     }}
 
 
+    // 🟢 CONTROL DE RESTAURACIÓN Y AUTOASIGNACIÓN AL CARGAR (F5)
+    var cargandoPantalla = true;
+
+    function inicializarPantallaSincronizada() {{
+        setTimeout(function() {{
+            // 1. Restaurar datos guardados
+            if (typeof restaurarEstadoEnVivo === 'function') {{
+                restaurarEstadoEnVivo();
+            }}
+
+            // 2. Disparar recálculo (ejecuta C1 SJA1)
+            if (typeof recalc === 'function') {{
+                recalc();
+            }}
+
+            // 3. Activar guardado continuo
+            cargandoPantalla = false;
+        }}, 350);
+    }}
+
+    // Escuchadores de guardado
+    document.addEventListener('input', function(e) {{
+        if (!cargandoPantalla && typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+    }});
+
+    document.addEventListener('change', function(e) {{
+        if (!cargandoPantalla && typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+    }});
+
+    // Ejecutar inicialización al terminar de cargar el DOM
+    if (document.readyState === 'complete') {{
+        inicializarPantallaSincronizada();
+    }} else {{
+        window.addEventListener('load', inicializarPantallaSincronizada);
+    }}
+
+
 
     // ==============================================================================
     // 🛠️ GENERADOR DE PLANES CON MÚLTIPLES UNIDADES PRIORITARIAS
