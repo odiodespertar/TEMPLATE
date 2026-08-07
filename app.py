@@ -145,7 +145,7 @@ menu_flotante_html = """
         <button id="btn-cerrar-menu" onclick="toggleMenu()">✕</button>
     </div>
     
-    <!-- Opciones solicitadas -->
+    <!-- Opciones del menú conectadas a tus acciones -->
     <a href="#" class="menu-opcion" onclick="ejecutarAccion('excel')">📊 Vista Excel</a>
     <a href="#" class="menu-opcion" onclick="ejecutarAccion('nuevo')">➕ Crear nuevo ruteo</a>
     <a href="#" class="menu-opcion" onclick="ejecutarAccion('gestionar')">⚙️ Gestionar / Borrar ruteos</a>
@@ -159,21 +159,21 @@ menu_flotante_html = """
     }
 
     function ejecutarAccion(accion) {
-        toggleMenu(); // Cierra el menú al hacer clic
+        toggleMenu(); // Cierra el menú automáticamente al hacer clic
         
-        // Conecta cada opción con tu lógica existente:
+        // Reemplaza estas líneas con las funciones exactas de tu script original:
         if (accion === 'excel') {
-            // Llama aquí a tu función de exportar a Excel
-            console.log("Abriendo vista Excel...");
+            // Ejemplo: document.getElementById('btn-vista-excel-original').click();
+            console.log("Ejecutando Vista Excel");
         } else if (accion === 'nuevo') {
-            // Llama a tu función para crear ruteo
-            console.log("Abriendo modal de nuevo ruteo...");
+            // Ejemplo: abrirModalNuevoRuteo();
+            console.log("Ejecutando Crear nuevo ruteo");
         } else if (accion === 'gestionar') {
-            // Llama a tu función de gestión
-            console.log("Abriendo gestor de ruteos...");
+            // Ejemplo: abrirModalGestionRuteos();
+            console.log("Ejecutando Gestionar / Borrar ruteos");
         } else if (accion === 'limpiar') {
-            // Llama a tu función de limpiar pantalla
-            console.log("Limpiando pantalla...");
+            // Ejemplo: limpiarPantallaLogistica();
+            console.log("Ejecutando Limpiar pantalla");
         }
     }
 </script>
