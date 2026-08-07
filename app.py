@@ -2067,7 +2067,7 @@ app_html = f"""
 
         if (supabaseClient) {{
             try {{
-                const { data, error } = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: false }});
+                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: false }});
                 if (error) {{
                     contenedor.innerHTML = `<p style='color:red;'>Error al cargar: ${error.message}</p>`;
                     return;
