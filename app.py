@@ -3161,7 +3161,7 @@ app_html = f"""
 
                     let objetivo = parseFloat(polyPlan.bloque.querySelector('.v-total-val')?.innerText) || 0;
                     let yaAsignado = 0;
-                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {
+                    polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                         yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
                     });
 
