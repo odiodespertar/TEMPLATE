@@ -3427,13 +3427,13 @@ app_html = f"""
         }}
     }});
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {{
         const selector = document.getElementById("ciclo-selector");
-        if (selector) {
+        if (selector) {{
             cambiarCiclo(selector.value);
-        }
+        }}
         setTimeout(cargarRuteosDesdeSupabase, 500);
-    });
+    }});
 
     function toggleExcelView() {{
         const isExcel = !document.body.classList.contains("excel-view");
