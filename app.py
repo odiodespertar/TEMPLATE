@@ -1728,7 +1728,7 @@ app_html = f"""
                     return;
                 }}
 
-                if (data && data.length > 0) {
+                if (data && data.length > 0) {{
                     nuevoIdBD = data[0].id; // 👈 Captura el ID asignado en Supabase
                 }}
             }} catch (err) {{
