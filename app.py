@@ -1966,8 +1966,11 @@ app_html = f"""
                 </div>
             </div>
 
-            <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center;">
-                <span style="color: #aaa; font-size: 12px; font-weight: bold;">Columnas adicionales opcionales:</span>
+            <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
+                <span style="color: #aaa; font-size: 12px; font-weight: bold;">Configuración adicional:</span>
+                <label style="color: #FFD700; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chk-incluir-nodos" style="transform: scale(1.2); accent-color: #FFD700;"> 📍 ¿Lleva Nodos?
+                </label>
                 <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-orh" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir ORH
                 </label>
@@ -1975,7 +1978,7 @@ app_html = f"""
                     <input type="checkbox" id="chk-incluir-ocup" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir % OCUPACIÓN
                 </label>
             </div>
-        </div>
+            
 
         <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
             <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
@@ -2276,6 +2279,8 @@ app_html = f"""
         cont.innerHTML = htmlFlota;
     }}
 
+
+
     function generarCamposPlanes() {{
         let cantInput = document.getElementById("creador-cant-planes");
         let cont = document.getElementById("contenedor-lista-planes");
@@ -2283,21 +2288,37 @@ app_html = f"""
 
         let cant = parseInt(cantInput.value) || 1;
         let htmlPlanes = "";
+
+        let opcionesUnidades = `<option value="">-- Sin prioridad (Usar Flota Estándar) --</option>`;
+        Object.keys(BASE_FLOTA_MASTER).forEach(u => {{
+            opcionesUnidades += `<option value="${u}">${{u}}</option>`;
+        }});
+
         for (let i = 1; i <= cant; i++) {{
             htmlPlanes += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
-                    <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
-                        style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
-                        oninput="generarPrioridadesPlanes()">
-                    <span style="font-size: 11px; color: #aaa;">Filas:</span>
-                    <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
-                        style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
+                        <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
+                            style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
+                            oninput="generarPrioridadesPlanes()">
+                        <span style="font-size: 11px; color: #aaa;">Filas:</span>
+                        <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
+                            style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; background: #25282b; padding: 6px 10px; border-radius: 4px; border: 1px dashed #555;">
+                        <span style="font-size: 11px; color: #FFD700; font-weight: bold;">🎯 Unidad Prioritaria / Requerida:</span>
+                        <select class="input-unidad-prioritaria-plan" style="flex: 1; padding: 4px; border-radius: 4px; background: #1a1c1e; color: white; border: 1px solid #555; font-size: 12px;">
+                            ${{opcionesUnidades}}
+                        </select>
+                    </div>
                 </div>`;
         }}
         cont.innerHTML = htmlPlanes;
         generarPrioridadesPlanes();
     }}
+
 
     function generarPrioridadesPlanes() {{
         let contPrioridades = document.getElementById("contenedor-prioridades-planes");
@@ -2333,6 +2354,7 @@ app_html = f"""
 
         let incluirORH = document.getElementById("chk-incluir-orh")?.checked || false;
         let incluirOcup = document.getElementById("chk-incluir-ocup")?.checked || false;
+        let llevaNodos = document.getElementById("chk-incluir-nodos")?.checked || false;
 
         let flotaElegida = [];
         let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
@@ -2355,11 +2377,25 @@ app_html = f"""
         divsPlanes.forEach((div, idx) => {{
             let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
             let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
+            let unidadPrioritaria = div.querySelector(".input-unidad-prioritaria-plan")?.value || "";
             let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
-            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
+            
+            planesElegidos.push({ {
+                nombre: nombrePlan, 
+                filas: filasPlan, 
+                prioridad: prioridadPlan,
+                unidadPrioritaria: unidadPrioritaria
+            }});
         }});
 
-        let datosEstructura = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: incluirORH, incluirOcup: incluirOcup }};
+        let datosEstructura = {{
+            flota: flotaElegida, 
+            planes: planesElegidos, 
+            incluirORH: incluirORH, 
+            incluirOcup: incluirOcup,
+            llevaNodos: llevaNodos
+        }};
+
         let nuevoIdBD = null;
 
         if (supabaseClient) {{
@@ -2370,10 +2406,11 @@ app_html = f"""
             }} catch (err) {{ console.error("Error Supabase:", err); }}
         }}
 
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup);
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
         cerrarCreadorRuteo();
         alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente!`);
     }}
+    
 
     async function cargarRuteosDesdeSupabase() {{
         if (!supabaseClient) return;
@@ -2390,7 +2427,7 @@ app_html = f"""
 
 
 
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false) {{
+    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -2400,7 +2437,7 @@ app_html = f"""
             if (!existe) {{
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
-                if (idBD) opt.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
+                if (idBD) opt.setAttribute("data-id-bd", idBD);
                 opt.innerText = `🟣 ${{nombreRuteo.toUpperCase()}}`;
                 selectorCiclos.appendChild(opt);
             }}
@@ -2410,7 +2447,7 @@ app_html = f"""
         let nuevoContentFlota = document.createElement("div");
         nuevoContentFlota.id = `tab-${{nuevoTabId}}`;
         nuevoContentFlota.className = "t-content";
-        if (idBD) nuevoContentFlota.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
+        if (idBD) nuevoContentFlota.setAttribute("data-id-bd", idBD);
         nuevoContentFlota.style.display = "none";
 
         let botonesAccion = idBD ? `
@@ -2478,13 +2515,28 @@ app_html = f"""
 
         let contenedorPolysPadre = document.getElementById("polys-4")?.parentNode || document.body;
         let nuevoContentPolys = document.createElement("div");
-        nuevoContentPolys.id = `polys-${{nuevoTabId}}`;
+        nuevoContentPolys.id = `polys-${nuevoTabId}`;
         nuevoContentPolys.className = "p-content";
-        if (idBD) nuevoContentPolys.setAttribute("data-id-bd", idBD); // 👈 Asigna la referencia de Supabase
+        if (idBD) nuevoContentPolys.setAttribute("data-id-bd", idBD);
         nuevoContentPolys.style.display = "none";
 
         let htmlPolys = "";
         planesElegidos.forEach(p => {{
+            let bloqueVolumenNodos = llevaNodos ? `
+                <div style="text-align:center;">
+                    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
+                </div>
+                <hr style="margin:4px 0; border:none; border-top:2px solid #999;">
+                <div style="font-size:12px; font-weight:bold; color:#25282b; text-align:center;">
+                    <div>Nodos:</div>
+                    <span class="nodos-val" contenteditable="true" style="display:inline-block; min-width:28px; text-align:center; border:none; border-radius:4px; background:#ededed; font-size:16px; font-weight:bold; color:#FF6347; padding:0 4px; margin-top:2px;">0</span>
+                </div>
+            ` : `
+                <div style="text-align:center;">
+                    <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
+                </div>
+            `;
+
             let filasExtra = "";
             for (let i = 1; i < p.filas; i++) {{
                 filasExtra += `
@@ -2513,7 +2565,7 @@ app_html = f"""
             }}
 
             htmlPolys += `
-                <div class="poligono-bloque" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                <div class="poligono-bloque" data-unidad-prioritaria="${{p.unidadPrioritaria || ''}}" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
                     <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                         <thead>
                             <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
@@ -2529,9 +2581,7 @@ app_html = f"""
                             <tr class="calc-row">
                                 <td class="plan-cell" rowspan="${{p.filas}}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${{p.nombre}}</td>
                                 <td class="vol-cell" rowspan="${{p.filas}}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
-                                    <div style="text-align:center;">
-                                        <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
-                                    </div>
+                                    ${{bloqueVolumenNodos}}
                                 </td>
                                 <td class="u-manual-cell" style="background: #d3f0e5; border: 0.5px solid #25282b; padding: 2px;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
@@ -4634,7 +4684,15 @@ if ruteos_bd:
             let ruteosCargados = """ + ruteos_json_str + """;
             if (Array.isArray(ruteosCargados)) {
                 ruteosCargados.forEach(ruteo => {
-                    crearTabYContenidoEnPantalla(ruteo.nombre, ruteo.datos.flota || [], ruteo.datos.planes || [], ruteo.id, ruteo.datos.incluirORH || false, ruteo.datos.incluirOcup || false);
+                    crearTabYContenidoEnPantalla(
+                        ruteo.nombre, 
+                        ruteo.datos.flota || [], 
+                        ruteo.datos.planes || [], 
+                        ruteo.id, 
+                        ruteo.datos.incluirORH || false, 
+                        ruteo.datos.incluirOcup || false,
+                        ruteo.datos.llevaNodos || false
+                    );
                 });
             }
         });
