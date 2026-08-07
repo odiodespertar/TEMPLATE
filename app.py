@@ -3954,7 +3954,7 @@ app_html = f"""
 
    
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO COMPLETO (TODOS LOS RUTEOS + C1 SJA1 INTACTO)
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO CONECTADO A CONSTRUCTOR DE NUEVOS RUTEOS
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -4002,17 +4002,73 @@ app_html = f"""
         }});
 
         // ==============================================================================
-        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE EXACTA (INTACTA)
+        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE
         // ==============================================================================
         if (currentTab == 6) {{
             procesarAsignacionCompletaSJA1(polys, fleet);
         }} 
         
         // ==============================================================================
-        // 🟢 CASO 2: TODOS LOS DEMÁS RUTEOS (SCP1, PREC SMX5, PREC SMX2, EXTENDIDO, ETC.)
+        // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS (SCP1, PREC SMX5, ETC.)
         // ==============================================================================
         else {{
-            // --- C1 SCP1 (TAB 2): PRIORIDAD LARGE VAN Y DELIVERY CELL CAMPECHE ---
+            
+            // 📌 FASE 0: ASIGNAR UNIDADES PRIORITARIAS CONFIGURADAS EN "AGREGAR NUEVO RUTEO"
+            polys.forEach(poly => {{
+                let bloque = poly.bloque;
+                // Lee el atributo exacto de tu HTML
+                let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || "";
+                
+                if (prioridadesRaw.trim() !== "") {{
+                    let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "");
+                    let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
+
+                    let yaAsignado = 0;
+                    bloque.querySelectorAll('.calc-row').forEach(r => {{
+                        yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
+                    }});
+
+                    let restante = objetivo - yaAsignado;
+                    if (restante <= 0) return;
+
+                    let filas = Array.from(bloque.querySelectorAll('.calc-row'));
+
+                    for (let nombrePrio of listaPrioridades) {{
+                        if (restante <= 0) break;
+
+                        let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombrePrio.toLowerCase());
+                        
+                        while (unidad && unidad.restante > 0 && restante > 0) {{
+                            let necesarias = Math.ceil(restante / unidad.spr);
+                            let usar = Math.min(necesarias, unidad.restante);
+                            if (usar <= 0) break;
+
+                            let filaLibre = filas.find(f => {{
+                                let tipo = f.querySelector('.s-type')?.value?.trim() || "";
+                                let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
+                                return u === 0 && (tipo === "" || tipo === "Seleccionar...");
+                            }});
+
+                            if (filaLibre) {{
+                                filaLibre.querySelector('.s-type').value = unidad.nombre;
+                                filaLibre.querySelector('.u-manual').innerText = usar;
+                                filaLibre.querySelector('.spr-real-val').innerText = unidad.spr;
+                                if (typeof updateSelectColor === 'function') updateSelectColor(filaLibre.querySelector('.s-type'));
+                                editedRowsPlan.add(filaLibre);
+
+                                unidad.restante -= usar;
+                                restante -= (usar * unidad.spr);
+                            }} else {{
+                                break;
+                            }}
+
+                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombrePrio.toLowerCase());
+                        }}
+                    }}
+                }}
+            }});
+
+            // 📌 FASE 1: REGLAS PREVIAS DE RUTEOS NATIVOS
             if (currentTab == 2) {{
                 let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
                 if (largeVanMLP && largeVanMLP.restante > 0) {{
@@ -4049,7 +4105,6 @@ app_html = f"""
                     }});
                 }}
 
-                // 📌 ASIGNACIÓN DE DELIVERY CELL LARGE VAN A CAMPECHE SI SE DETECTA NODO
                 let deliveryCell = fleet.find(f => f.nombre === "Delivery Cell Large Van");
                 if (deliveryCell && deliveryCell.restante > 0) {{
                     let campeche = polys.find(p => (p.bloque.querySelector('td[rowspan]')?.innerText?.trim()?.toUpperCase() || "") === "CAMPECHE");
@@ -4073,7 +4128,6 @@ app_html = f"""
                 }}
             }}
 
-            // --- PREC SMX5 (TAB 1): PRIORIDAD SMALL 9H EXT CAR ---
             if (currentTab == 1) {{
                 let small9h = fleet.find(f => f.nombre === "Small 9h Ext Car");
                 if (small9h && small9h.restante > 0) {{
@@ -4111,7 +4165,6 @@ app_html = f"""
                 }}
             }}
 
-            // --- PREC SMX2 (TAB 5): PRIORIDAD SMALL VAN SDD Y CAR ZONA EXTENDIDA ---
             if (currentTab == 5) {{
                 let smallVan = fleet.find(f => f.nombre === "Small Van SDD");
                 if (smallVan && smallVan.restante > 0) {{
@@ -4184,7 +4237,7 @@ app_html = f"""
                 }}
             }}
 
-            // 📌 ASIGNACIÓN GENERAL RESTANTE CON PERMISO DE SOBRE-ASIGNACIÓN A UNIDADES TIPO CAR
+            // 📌 FASE 2: LLENADO GENERAL RESTANTE CON FLOTA ESTÁNDAR
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -4209,7 +4262,6 @@ app_html = f"""
 
                     let unidad = null;
 
-                    // 1. Intentar tomar unidades con stock disponible en Schedule
                     if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
                         unidad = fleet.find(f => f.nombre === "Rental Large Van" && f.restante > 0);
                     }} else if (currentTab == 2) {{
@@ -4218,21 +4270,20 @@ app_html = f"""
                         unidad = fleet.find(f => f.restante > 0);
                     }}
 
-                    // 2. SI NO HAY STOCK, BUSCAR UNIDADES TIPO CAR QUE PERMITEN SOBRE-ASIGNACIÓN (VALOR NEGATIVO)
                     if (!unidad) {{
-                        if (currentTab == 4) {{ // EXTENDIDO
+                        if (currentTab == 4) {{
                             let opcionesCar = ["Car - 8h", "Car - 5h", "Car - 3h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
                             }}
-                        }} else if (currentTab == 1 || currentTab == 5) {{ // PREC SMX5 Y PREC SMX2
+                        }} else if (currentTab == 1 || currentTab == 5) {{
                             let opcionesCar = ["Car - 8h", "Car - 5h", "Car 8h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
                                 if (unidad) break;
                             }}
-                        }} else if (currentTab == 2) {{ // SCP1
+                        }} else if (currentTab == 2) {{
                             let opcionesCar = ["Large Van MLP", "Car - 8h", "Car - 5h"];
                             for (let opt of opcionesCar) {{
                                 unidad = fleet.find(f => f.nombre.includes(opt));
@@ -4280,205 +4331,6 @@ app_html = f"""
             }});
         }}
         recalc();
-    }}
-
-    
-
-    // ==============================================================================
-    // 🔴 MOTOR C1 SJA1 (SIN DIVIDIR FILAS EN PLANES PEQUEÑOS COMO TRAPICHE)
-    // ==============================================================================
-    function procesarAsignacionCompletaSJA1(polys, fleetList) {{
-        const listaCrowdPrioridad = [
-            "Car Newbie",
-            "Car 8h",
-            "Car Zona Extendida",
-            "Small Van 9h",
-            "Small Van 9h Ext",
-            "Small Van Newbie"
-        ];
-
-        // ------------------------------------------------------------------
-        // FASE 1: NODOS, ESPECIALES, RENTALS Y ASIGNACIÓN LIMPIA DE MLP
-        // ------------------------------------------------------------------
-        polys.forEach(poly => {{
-            let bloque = poly.bloque;
-            let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
-            let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
-
-            let yaAsignado = 0;
-            bloque.querySelectorAll('.calc-row').forEach(r => {{
-                yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-            }});
-
-            let restante = objetivo - yaAsignado;
-            if (restante <= 0) return;
-
-            let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-
-            // 1. CENTRO 1 Y CENTRO 2
-            if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
-                if (nombrePlan === "⚠️ CENTRO 1") {{
-                    const listaEspecialesC1 = ["Truck 3.5 tons MLP", "Delivery Cell Large Van"];
-                    for (let nombreEsp of listaEspecialesC1) {{
-                        if (restante <= 0) break;
-                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreEsp.toLowerCase());
-                        if (unidad) {{
-                            let usar = Math.min(1, unidad.restante);
-                            asentarUnidadEnPlan(filas, unidad, usar);
-                            restante -= (usar * unidad.spr);
-                        }}
-                    }}
-                }}
-
-                const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement", "Extra Large Van MLP H&B"];
-                for (let nombreRent of listaRental) {{
-                    if (restante <= 0) break;
-                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
-                    while (unidad && unidad.restante > 0 && restante > 0) {{
-                        let necesarias = Math.ceil(restante / unidad.spr);
-                        let usar = Math.min(necesarias, unidad.restante);
-                        if (usar <= 0) break;
-
-                        asentarUnidadEnPlan(filas, unidad, usar);
-                        restante -= (usar * unidad.spr);
-                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
-                    }}
-                }}
-
-                if (restante > 0) {{
-                    let listaMLPSobrante = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
-                    for (let nombreMlp of listaMLPSobrante) {{
-                        if (restante <= 0) break;
-                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                        while (unidad && unidad.restante > 0 && restante > 0) {{
-                            let necesarias = Math.ceil(restante / unidad.spr);
-                            let usar = Math.min(necesarias, unidad.restante);
-                            if (usar <= 0) break;
-
-                            asentarUnidadEnPlan(filas, unidad, usar);
-                            restante -= (usar * unidad.spr);
-                            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                        }}
-                    }}
-                }}
-            }}
-            // 2. EJA1 SP
-            else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
-                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("media milla"));
-                if (unidad) {{
-                    let necesarias = Math.ceil(restante / unidad.spr);
-                    let usar = Math.min(necesarias, unidad.restante);
-                    if (usar > 0) {{
-                        asentarUnidadEnPlan(filas, unidad, usar);
-                        restante -= (usar * unidad.spr);
-                    }}
-                }}
-            }}
-            // 3. PLANES FORÁNEOS
-            else {{
-                let celdaNodo = bloque.querySelector('.nodos-val');
-                let cantidadNodos = celdaNodo ? (parseInt(celdaNodo.innerText) || 0) : 0;
-
-                let esTeziutlan = (nombrePlan.includes("TEZIUTLAN") || nombrePlan.includes("TEZUITLAN"));
-                let esGranVolumen = (objetivo >= 1000) || esTeziutlan;
-
-                // CASO A: SI TIENE NODO O ES PLAN PEQUEÑO (< 1000) -> UNA SOLA UNIDAD AL 100%
-                if (cantidadNodos > 0 || !esGranVolumen) {{
-                    let unidadPrincipal = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
-                    
-                    // Si no quedan Large Van y no hay nodo, toma Small Van
-                    if (!unidadPrincipal && cantidadNodos === 0) {{
-                        unidadPrincipal = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "small van mlp foráneo");
-                    }}
-
-                    if (unidadPrincipal) {{
-                        let necesarias = Math.ceil(restante / unidadPrincipal.spr);
-                        let usar = Math.min(necesarias, unidadPrincipal.restante);
-                        if (usar > 0) {{
-                            asentarUnidadEnPlan(filas, unidadPrincipal, usar);
-                            restante -= (usar * unidadPrincipal.spr);
-                        }}
-                    }}
-                }}
-                // CASO B: ES PLAN GRANDE (>= 1000) O TEZIUTLÁN SIN NODO -> REPARTO MIXTO
-                else if (esGranVolumen && restante > 0) {{
-                    let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
-                    let unidadSV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "small van mlp foráneo");
-
-                    if (unidadLV && unidadSV && unidadLV.restante > 0 && unidadSV.restante > 0) {{
-                        let usarLV = Math.min(Math.floor((restante * 0.65) / unidadLV.spr), unidadLV.restante);
-                        if (usarLV > 0) {{
-                            asentarUnidadEnPlan(filas, unidadLV, usarLV);
-                            restante -= (usarLV * unidadLV.spr);
-                        }}
-
-                        let usarSV = Math.min(Math.ceil(restante / unidadSV.spr), unidadSV.restante);
-                        if (usarSV > 0) {{
-                            asentarUnidadEnPlan(filas, unidadSV, usarSV);
-                            restante -= (usarSV * unidadSV.spr);
-                        }}
-                    }}
-                }}
-
-                // CONSUMIR RESTANTE EN CASO DE SALDOS PENDIENTES
-                if (restante > 0) {{
-                    let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
-                    for (let nombreMlp of listaMLPForaneo) {{
-                        if (restante <= 0) break;
-                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                        if (unidad && unidad.restante > 0) {{
-                            let necesarias = Math.ceil(restante / unidad.spr);
-                            let usar = Math.min(necesarias, unidad.restante);
-                            if (usar > 0) {{
-                                asentarUnidadEnPlan(filas, unidad, usar);
-                                restante -= (usar * unidad.spr);
-                            }}
-                        }}
-                    }}
-                }}
-            }}
-        }});
-
-        // ------------------------------------------------------------------
-        // FASE 2: ASIGNACIÓN PRIORIZADA DE CROWD (TUZAMAPA ➔ XICO ➔ CENTRO 1 ➔ CENTRO 2)
-        // ------------------------------------------------------------------
-        const ordenPrioridadCrowd = ["TUZAMAPA", "XICO", "⚠️ CENTRO 1", "⚠️ CENTRO 2"];
-
-        ordenPrioridadCrowd.forEach(nombreBuscado => {{
-            let polyCoincidente = polys.find(p => {{
-                let name = p.bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
-                return name === nombreBuscado;
-            }});
-
-            if (!polyCoincidente) return;
-
-            let bloque = polyCoincidente.bloque;
-            let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
-
-            let yaAsignado = 0;
-            bloque.querySelectorAll('.calc-row').forEach(r => {{
-                yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-            }});
-
-            let restante = objetivo - yaAsignado;
-            if (restante <= 0) return;
-
-            let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-
-            for (let nombreCrowd of listaCrowdPrioridad) {{
-                if (restante <= 0) break;
-                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
-                while (unidad && unidad.restante > 0 && restante > 0) {{
-                    let necesarias = Math.ceil(restante / unidad.spr);
-                    let usar = Math.min(necesarias, unidad.restante);
-                    if (usar <= 0) break;
-
-                    asentarUnidadEnPlan(filas, unidad, usar);
-                    restante -= (usar * unidad.spr);
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
-                }}
-            }}
-        }});
     }}
 
 
