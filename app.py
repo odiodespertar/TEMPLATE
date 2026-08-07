@@ -2275,6 +2275,10 @@ app_html = f"""
 
 
 
+    // ==============================================================================
+    // 🛠️ GENERADOR DE PLANES CON MÚLTIPLES UNIDADES PRIORITARIAS
+    // ==============================================================================
+
     function generarCamposPlanes() {{
         let cantInput = document.getElementById("creador-cant-planes");
         let cont = document.getElementById("contenedor-lista-planes");
@@ -2283,60 +2287,70 @@ app_html = f"""
         let cant = parseInt(cantInput.value) || 1;
         let htmlPlanes = "";
 
-        let opcionesUnidades = `<option value="">-- Sin prioridad (Usar Flota Estándar) --</option>`;
-        Object.keys(BASE_FLOTA_MASTER).forEach(u => {{
-            opcionesUnidades += `<option value="${{u}}">${{u}}</option>`;
-        }});
-
         for (let i = 1; i <= cant; i++) {{
             htmlPlanes += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;">
+                <div class="bloque-config-plan" style="background: #1a1c1e; border: 1px solid #3f4347; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{i}}:</span>
                         <input type="text" class="input-nombre-plan" value="PLAN ${{i}}" placeholder="Nombre del Plan" 
-                            style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;"
-                            oninput="generarPrioridadesPlanes()">
+                            style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
                         <span style="font-size: 11px; color: #aaa;">Filas:</span>
                         <input type="number" class="input-filas-plan" value="4" min="1" max="15" 
                             style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
                     </div>
                     
-                    <div style="display: flex; align-items: center; gap: 10px; background: #25282b; padding: 6px 10px; border-radius: 4px; border: 1px dashed #555;">
-                        <span style="font-size: 11px; color: #FFD700; font-weight: bold;">🎯 Unidad Prioritaria / Requerida:</span>
-                        <select class="input-unidad-prioritaria-plan" style="flex: 1; padding: 4px; border-radius: 4px; background: #1a1c1e; color: white; border: 1px solid #555; font-size: 12px;">
-                            ${{opcionesUnidades}}
-                        </select>
+                    <!-- CONTENEDOR DINÁMICO DE UNIDADES PRIORITARIAS -->
+                    <div style="background: #25282b; padding: 8px; border-radius: 4px; border: 1px dashed #555; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; color: #FFD700; font-weight: bold;">🎯 Unidades Prioritarias / Requeridas:</span>
+                            <button onclick="agregarFilaUnidadPrioritaria(this)" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">➕ Añadir Unidad</button>
+                        </div>
+                        <div class="contenedor-unidades-prioritarias-plan" style="display: flex; flex-direction: column; gap: 6px;">
+                            ${{obtenerHTMLSelectorUnidad()}}
+                        </div>
                     </div>
                 </div>`;
         }}
         cont.innerHTML = htmlPlanes;
-        generarPrioridadesPlanes();
     }}
 
-
-    function generarPrioridadesPlanes() {{
-        let contPrioridades = document.getElementById("contenedor-prioridades-planes");
-        if (!contPrioridades) return;
-        let inputsPlanes = document.querySelectorAll("#contenedor-lista-planes .input-nombre-plan");
-        if (inputsPlanes.length === 0) {{
-            contPrioridades.innerHTML = `<p style="color: #888;">Primero genera y nombra los planes arriba.</p>`;
-            return;
-        }}
-
-        let htmlPrioridades = "";
-        inputsPlanes.forEach((input, index) => {{
-            let nombrePlan = input.value.trim() || `PLAN ${{index + 1}}`;
-            htmlPrioridades += `
-                <div style="background: #1a1c1e; border: 1px solid #3f4347; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <span style="color: #26d4ca; font-weight: bold; font-size: 12px; flex: 1;">${{nombrePlan}}</span>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 11px; color: #aaa;">Prioridad (1 es más alto):</span>
-                        <input type="number" class="input-prioridad-plan" value="${{index + 1}}" min="1" max="10" 
-                            style="width: 50px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                    </div>
-                </div>`;
+    function obtenerHTMLSelectorUnidad() {{
+        let opcionesUnidades = `<option value="">-- Sin prioridad (Usar Flota Estándar) --</option>`;
+        Object.keys(BASE_FLOTA_MASTER).forEach(u => {{
+            opcionesUnidades += `<option value="${{u}}">${{u}}</option>`;
         }});
-        contPrioridades.innerHTML = htmlPrioridades;
+
+        return `
+            <div class="fila-unidad-prioritaria" style="display: flex; align-items: center; gap: 6px;">
+                <select class="input-unidad-prioritaria-plan" style="flex: 1; padding: 4px; border-radius: 4px; background: #1a1c1e; color: white; border: 1px solid #555; font-size: 12px;">
+                    ${{opcionesUnidades}}
+                </select>
+                <button onclick="eliminarFilaUnidadPrioritaria(this)" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;" title="Quitar esta unidad">❌</button>
+            </div>
+        `;
+    }}
+
+    function agregarFilaUnidadPrioritaria(btn) {{
+        let contenedor = btn.closest('div').nextElementSibling;
+        if (contenedor) {{
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = obtenerHTMLSelectorUnidad();
+            contenedor.appendChild(tempDiv.firstElementChild);
+        }}
+    }}
+
+    function eliminarFilaUnidadPrioritaria(btn) {{
+        let fila = btn.closest('.fila-unidad-prioritaria');
+        let contenedor = fila ? fila.parentElement : null;
+        if (fila && contenedor) {{
+            if (contenedor.querySelectorAll('.fila-unidad-prioritaria').length > 1) {{
+                fila.remove();
+            }} else {{
+                // Si es la última, solo resetea la opción
+                let select = fila.querySelector('select');
+                if (select) select.value = "";
+            }}
+        }}
     }}
 
     async function guardarNuevoRuteoCompleto() {{
@@ -2356,33 +2370,38 @@ app_html = f"""
             let chk = div.querySelector(".chk-flota-unidad");
             if (chk && chk.checked) {{
                 let nombreUnidad = chk.value;
-                let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
-                let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
+                let sprMin = parseInt(div.querySelector(`.spr-min-${idx}`)?.value) || 0;
+                let sprMax = parseInt(div.querySelector(`.spr-max-${idx}`)?.value) || 0;
                 flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
             }}
         }});
 
-        if (flotaElegida.length === 0) {{ alert("⚠️ Debes seleccionar al menos una unidad para la flota."); return; }}
+        if (flotaElegida.length === 0) { alert("⚠️ Debes seleccionar al menos una unidad para la flota."); return; }}
 
         let planesElegidos = [];
-        let divsPlanes = document.querySelectorAll("#contenedor-lista-planes > div");
-        let inputsPrioridad = document.querySelectorAll(".input-prioridad-plan");
+        let bloquesPlanes = document.querySelectorAll("#contenedor-lista-planes .bloque-config-plan");
         
-        divsPlanes.forEach((div, idx) => {{
-            let nombrePlan = div.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
-            let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
-            let unidadPrioritaria = div.querySelector(".input-unidad-prioritaria-plan")?.value || "";
-            let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
+        bloquesPlanes.forEach((bloque) => {{
+            let nombrePlan = bloque.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
+            let filasPlan = parseInt(bloque.querySelector(".input-filas-plan")?.value) || 3;
             
-            planesElegidos.push({{
+            // Capturar TODAS las unidades prioritarias seleccionadas para este plan
+            let unidadesPrioritarias = [];
+            bloque.querySelectorAll(".input-unidad-prioritaria-plan").forEach(select => {{
+                let val = select.value.trim();
+                if (val && !unidadesPrioritarias.includes(val)) {{
+                    unidadesPrioritarias.push(val);
+                }}
+            }});
+            
+            planesElegidos.push({ {
                 nombre: nombrePlan, 
                 filas: filasPlan, 
-                prioridad: prioridadPlan,
-                unidadPrioritaria: unidadPrioritaria
+                unidadesPrioritarias: unidadesPrioritarias // Array de unidades en orden
             }});
         }});
 
-        let datosEstructura = {{
+        let datosEstructura = { {
             flota: flotaElegida, 
             planes: planesElegidos, 
             incluirORH: incluirORH, 
