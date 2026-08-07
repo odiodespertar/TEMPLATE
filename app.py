@@ -3427,13 +3427,13 @@ app_html = f"""
         }}
     }});
 
-    document.addEventListener("DOMContentLoaded", function() {{
+    document.addEventListener("DOMContentLoaded", function() {
         const selector = document.getElementById("ciclo-selector");
-        if (selector) {{
+        if (selector) {
             cambiarCiclo(selector.value);
-        }}
+        }
         setTimeout(cargarRuteosDesdeSupabase, 500);
-    }});
+    });
 
     function toggleExcelView() {{
         const isExcel = !document.body.classList.contains("excel-view");
@@ -4465,25 +4465,27 @@ app_html = f"""
 </html>
 """
 
-# INYECCIÓN DE RUTEOS DESDE BD
+# ==============================================================================
+# INYECCIÓN DE RUTEOS DESDE SUPABASE Y RENDERIZADO PRINCIPAL
+# ==============================================================================
 ruteos_bd = cargar_ruteos_bd()
 
 if ruteos_bd:
     ruteos_json_str = json.dumps(ruteos_bd)
-    script_cargas = f"""
+    script_cargas = """
     <script>
-        document.addEventListener("DOMContentLoaded", function() {{
-            let ruteosCargados = {ruteos_json_str};
-            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {{
+        document.addEventListener("DOMContentLoaded", function() {
+            let ruteosCargados = """ + ruteos_json_str + """;
+            if (window.restaurarRuteosDesdeBD && Array.isArray(ruteosCargados)) {
                 window.restaurarRuteosDesdeBD(ruteosCargados);
-            }}
-        }});
+            }
+        });
     </script>
     </body>
     """
     app_html = app_html.replace("</body>", script_cargas)
 
-# Renderizado principal de la app HTML/JS
+# Renderizado del componente principal de Streamlit
 html(app_html, height=1200, scrolling=True)
 
 
@@ -4491,34 +4493,34 @@ html(app_html, height=1200, scrolling=True)
 # 8. COMPONENTE FINAL DE STREAMLIT (CONSOLA + MAPA OPERATIVO)
 # ==============================================================================
 ID_IMAGEN = "1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ"
-url_final = f"https://drive.google.com/thumbnail?id={ID_IMAGEN}&sz=w1000"
+url_final = "https://drive.google.com/thumbnail?id=" + ID_IMAGEN + "&sz=w1000"
 
-html_limpio = f"""
+html_limpio = """
 <style>
-    body {{ background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }}
-    .main-box {{ background: #25282b; padding: 10px; display: flex; flex-direction: column; align-items: center; }}
+    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+    .main-box { background: #25282b; padding: 10px; display: flex; flex-direction: column; align-items: center; }
     
-    .unified-console {{
+    .unified-console {
         background: #25282b; border-radius: 15px; padding: 15px; 
         margin-bottom: 20px; border: 1px solid #25282b; text-align: center; width: 100%; max-width: 500px;
-    }}
-    .display-screen {{
+    }
+    .display-screen {
         background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
-    }}
-    .btn-3d {{
+    }
+    .btn-3d {
         background: linear-gradient(145deg, #1e90ff, #1c82e6);
         color: white; border: none; padding: 12px 25px; border-radius: 10px;
         font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
-    }}
-    .btn-3d:active {{ box-shadow: 0 2px #0a56a3; transform: translateY(3px); }}
+    }
+    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
     
-    .map-container {{
+    .map-container {
         background: #1e1e1e; border-radius: 12px; padding: 15px; 
         width: 100%; max-width: 900px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }}
-    .map-container img {{
+    }
+    .map-container img {
         max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #444;
-    }}
+    }
 </style>
 
 <div class="main-box">
@@ -4541,9 +4543,23 @@ html_limpio = f"""
     <!-- Imagen del Mapa Operativo -->
     <div class="map-container">
         <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
-        <img src="{url_final}" alt="Mapa de regiones">
+        <img src='""" + url_final + """' alt="Mapa de regiones">
     </div>
 </div>
 
 <script>
-    functionI seem to be encountering an error. Can I try something else for you?
+    function ejecutarTodo() {
+        const mins = document.getElementById('minInput').value || 0;
+        const ahora = new Date();
+        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
+        const h = String(nuevaFecha.getHours()).padStart(2, '0');
+        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
+        document.getElementById('horaReal').innerText = h + ":" + m;
+    }
+    ejecutarTodo();
+</script>
+"""
+
+# Renderizado final del componente inferior
+st.markdown("---")
+html(html_limpio, height=850, scrolling=True)
