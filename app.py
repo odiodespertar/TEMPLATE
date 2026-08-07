@@ -2021,18 +2021,136 @@ app_html = f"""
 
     let contadorPestanaDinamica = 900;
 
-    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {{
-        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${{nombreRuteo}}"?`)) return;
+
+
+    // ==============================================================================
+    // 🗑️ GESTIÓN Y ELIMINACIÓN MASIVA EN TEMPO REAL DE RUTEOS DINÁMICOS
+    // ==============================================================================
+    
+    // Abrir Modal de Eliminación Masiva
+    async function abrirGestorEliminacionMasiva() {{
+        let modal = document.getElementById("modal-eliminar-masivo");
+        if (!modal) return;
+        modal.style.display = "block";
+
+        let contenedor = document.getElementById("lista-ruteos-eliminar");
+        contenedor.innerHTML = "<p style='color:#aaa;'>Cargando ruteos de Supabase...</p>";
+
+        if (supabaseClient) {{
+            try {{
+                const { data, error } = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: false }});
+                if (error) {{
+                    contenedor.innerHTML = `<p style='color:red;'>Error al cargar: ${error.message}</p>`;
+                    return;
+                }}
+                if (!data || data.length === 0) {{
+                    contenedor.innerHTML = "<p style='color:#7CFFB2;'>No hay ruteos personalizados creados en la base de datos.</p>";
+                    return;
+                }}
+
+                let htmlLista = "";
+                data.forEach(r => {{
+                    htmlLista += `
+                        <div style="background: #1a1c1e; border: 1px solid #444; padding: 10px 14px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                            <label style="display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 13px; cursor: pointer;">
+                                <input type="checkbox" class="chk-eliminar-ruteo" value="${{r.id}}" data-nombre="${{r.nombre}}" style="transform: scale(1.3); accent-color: #dc3545;">
+                                🟣 ${{r.nombre.toUpperCase()}}
+                            </label>
+
+                            <button onclick="eliminarRuteoIndividualRealTime('${{r.id}}', '${{r.nombre}}')" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ Eliminar</button>
+                        </div>
+                    `;
+                }});
+                contenedor.innerHTML = htmlLista;
+            }} catch (err) {{
+                contenedor.innerHTML = `<p style='color:red;'>Error de conexión.</p>`;
+            }}
+        }}
+    }}
+
+    function cerrarGestorEliminacionMasiva() {{
+        let modal = document.getElementById("modal-eliminar-masivo");
+        if (modal) modal.style.display = "none";
+    }}
+
+    // ELIMINACIÓN MASIVA SELECCIONANDO VARIOS DE GOLPE
+    async function ejecutarEliminacionMasiva() {{
+        let seleccionados = document.querySelectorAll(".chk-eliminar-ruteo:checked");
+        if (seleccionados.length === 0) {{
+            alert("⚠️ Selecciona al menos un ruteo para eliminar.");
+            return;
+        }}
+
+        let idsAEliminar = Array.from(seleccionados).map(cb => cb.value);
+        let nombres = Array.from(seleccionados).map(cb => cb.getAttribute("data-nombre")).join(", ");
+
+        if (!confirm(`¿Estás seguro de eliminar masivamente (${{seleccionados.length}}) ruteo(s):\n\n${{nombres}}?`)) return;
+
+        if (supabaseClient) {{
+            try {{
+                const {{ error }} = await supabaseClient.from('ruteos_guardados').delete().in('id', idsAEliminar);
+                if (error) {{
+                    alert("⚠️ Error al eliminar en lote: " + error.message);
+                    return;
+                }}
+
+                // Remover en tiempo real de la pantalla y selector sin reiniciar
+                idsAEliminar.forEach(id => removerRuteoDePantallaPorId(id));
+
+                alert(`✅ Se eliminaron ${seleccionados.length} ruteo(s) correctamente.`);
+                abrirGestorEliminacionMasiva(); // Refrescar modal
+            }} catch (err) {{
+                console.error("Error al eliminar masivamente:", err);
+            }}
+        }}
+    }}
+
+    // ELIMINAR INDIVIDUAL CON LIMPIEZA INMEDIATA
+    async function eliminarRuteoIndividualRealTime(idRuteoBD, nombreRuteo) {{
+        if (!confirm(`¿Eliminar el ruteo "${{nombreRuteo}}"?`)) return;
 
         if (supabaseClient) {{
             try {{
                 const {{ error }} = await supabaseClient.from('ruteos_guardados').delete().eq('id', idRuteoBD);
-                if (error) {{ alert("⚠️ Error al eliminar: " + error.message); return; }}
-                alert(`Ruteo "${{nombreRuteo}}" eliminado con éxito.`);
-                window.location.reload();
-            }} catch (err) {{ console.error("Error al eliminar en Supabase:", err); }}
+                if (error) {{
+                    alert("⚠️ Error al eliminar: " + error.message);
+                    return;
+                }}
+
+                removerRuteoDePantallaPorId(idRuteoBD);
+                alert(`✅ Ruteo "${nombreRuteo}" eliminado.`);
+                abrirGestorEliminacionMasiva(); // Refrescar modal
+            }} catch (err) {{
+                console.error("Error al eliminar:", err);
+            }}
         }}
     }}
+
+    // Función auxiliar para quitar elementos HTML/Selector en tiempo real
+    function removerRuteoDePantallaPorId(idBD) {{
+        // 1. Remover del selector desplegable
+        let selectorCiclos = document.getElementById("ciclo-selector");
+        if (selectorCiclos) {{
+            Array.from(selectorCiclos.options).forEach(opt => {{
+                if (opt.getAttribute("data-id-bd") == idBD) {{
+                    opt.remove();
+                }}
+            }});
+            // Cambiar a Extendido o C1 por defecto si estaba seleccionado el borrado
+            if (selectorCiclos.options.length > 0) {{
+                selectorCiclos.selectedIndex = 0;
+                cambiarCiclo(selectorCiclos.value);
+            }}
+        }}
+
+        // 2. Remover elementos del DOM
+        let divFlota = document.querySelector(`.t-content[data-id-bd="${{idBD}}"]`);
+        if (divFlota) divFlota.remove();
+
+        let divPoly = document.querySelector(`.p-content[data-id-bd="${{idBD}}"]`);
+        if (divPoly) divPoly.remove();
+    }}
+
 
     async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {{
         if (!supabaseClient) return;
