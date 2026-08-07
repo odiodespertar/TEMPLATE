@@ -5095,28 +5095,36 @@ function iniciarArrastreFlotante(e) {{
 
 
     #menu-lateral-ruteos {{
-        position: fixed;
+       position: fixed;
 
-        top: 0;
-        left: -310px;
+       top: 0;
+       left: -310px;
 
-        width: 290px;
-        height: 100vh;
+       width: 290px;
+       height: 100vh;
 
-        background: #1e2022;
+       background: #1e2022;
 
-        z-index: 9999998;
+       z-index: 9999998;
 
-        box-shadow: 5px 0 20px rgba(0,0,0,0.65);
+       /* Bordes redondeados del lado derecho */
+       border-radius: 0 18px 18px 0;
 
-        transition: left 0.3s ease;
+       /* Volumen / profundidad */
+       box-shadow:
+           6px 0 18px rgba(0, 0, 0, 0.55),
+           2px 0 4px rgba(255, 255, 255, 0.04);
 
-        padding: 20px 15px;
+       transition: left 0.3s ease;
 
-        box-sizing: border-box;
+       padding: 20px 15px;
 
-        color: white;
-    }}
+       box-sizing: border-box;
+
+       color: white;
+
+       overflow-y: auto;
+   }}
 
 
     #menu-lateral-ruteos.abierto {{
