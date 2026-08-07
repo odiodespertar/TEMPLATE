@@ -1603,7 +1603,7 @@ app_html = f"""
                 let nombreUnidad = chk.value;
                 let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
                 let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
-                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
+                flotaElegida.push({ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax });
             }}
         }});
 
@@ -1621,7 +1621,7 @@ app_html = f"""
             let filasPlan = parseInt(div.querySelector(".input-filas-plan")?.value) || 3;
             let prioridadPlan = inputsPrioridad[idx] ? parseInt(inputsPrioridad[idx].value) || 1 : 1;
             
-            planesElegidos.push({{ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan }});
+            planesElegidos.push({ nombre: nombrePlan, filas: filasPlan, prioridad: prioridadPlan });
         }});
 
         if (planesElegidos.length === 0) {{
@@ -1634,26 +1634,35 @@ app_html = f"""
             planes: planesElegidos
         }};
 
+        let nuevoIdBD = null;
+
+        // 💾 Inserción en Supabase pidiendo el registro retornado (.select())
         if (supabaseClient) {{
             try {{
                 const {{ data, error }} = await supabaseClient
                     .from('ruteos_guardados')
-                    .insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]);
+                    .insert([{{ nombre: nombreRuteo, datos: datosEstructura }}])
+                    .select();
 
                 if (error) {{
                     console.error("Error en Supabase:", error);
                     alert("⚠️ Ocurrió un error al guardar en la base de datos: " + error.message);
                     return;
                 }}
+
+                if (data && data.length > 0) {{
+                    nuevoIdBD = data[0].id;
+                }}
             }} catch (err) {{
                 console.error("Error al conectar con Supabase:", err);
             }}
         }}
 
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos);
+        // Dibujar en pantalla asociando el ID de Supabase
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD);
 
-        cerrarCreadorRuteo();
-        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente en la base de datos!`);
+        if (typeof cerrarCreadorRuteo === "function") cerrarCreadorRuteo();
+        alert(`¡Ruteo "${{nombreRuteo}}" guardado permanentemente en la base de datos!`);
     }}
 
 
@@ -1776,7 +1785,18 @@ app_html = f"""
             console.error("Error de conexión:", err);
         }}
     }}
-    
+
+    // Definición global para la inyección de Python
+    window.restaurarRuteosDesdeBD = function(ruteosCargados) {{
+        if (!Array.isArray(ruteosCargados)) return;
+        ruteosCargados.forEach(ruteo => {{
+            let idBD = ruteo.id;
+            let nombre = ruteo.nombre;
+            let flota = ruteo.datos.flota || [];
+            let planes = ruteo.datos.planes || [];
+            crearTabYContenidoEnPantalla(nombre, flota, planes, idBD);
+        }});
+    }}
 
     // ==============================================================================
     // 🗑️ 1. FUNCIÓN CREAR TAB Y CONTENIDO EN PANTALLA
