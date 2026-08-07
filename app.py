@@ -2941,16 +2941,18 @@ app_html = f"""
     }}
 
 
+    // ==============================================================================
+    // 🔴 RECALCULAR TOTALES, DELTAS Y BADGES DE EXCESO EN FLOTA
+    // ==============================================================================
     function recalc() {{
         let fleet = {{}};
         
-        // 🟢 Corrección de lectura dinámica del selector de ruteos/ciclos
         let selectorCiclos = document.getElementById("ciclo-selector");
         let tabId = selectorCiclos ? parseInt(selectorCiclos.value) : currentTab;
         if (!tabId) tabId = currentTab;
 
-        // 1. Capturar datos de la flota (Tabla superior)
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        // 1. Lectura de inventario de flota desde la tabla superior
+        document.querySelectorAll('#body-' + tabId + ' tr.master-row').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
             let name = nameCell.innerText.trim();
@@ -2978,7 +2980,7 @@ app_html = f"""
             }}
         }});
 
-        // 2. Mapeo de unidades asignadas desde los polígonos
+        // 2. Mapeo de unidades asignadas desde las tablas de polígonos
         let mapeoRuteadas = {{}};
         document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(row => {{
             let s = row.querySelector('.s-type')?.value;
@@ -2988,7 +2990,7 @@ app_html = f"""
             }}
         }});
 
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        document.querySelectorAll('#body-' + tabId + ' tr.master-row').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             let ruteadaCell = row.querySelector('.f-ruteadas');
             if (nameCell && ruteadaCell) {{
@@ -2997,7 +2999,7 @@ app_html = f"""
             }}
         }});
 
-        // 3. Recálculo por polígono
+        // 3. Recálculo por polígono y validaciones
         document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
             let vT = parseFloat(bl.querySelector('.v-total-val')?.innerText) || 0, vA = 0;
             let vCalcEl = bl.querySelector('.v-calculado-total');
@@ -3060,8 +3062,8 @@ app_html = f"""
             }}
         }});
 
-        // 4. Actualización Deltas
-        document.querySelectorAll('#body-' + tabId + ' tr').forEach(row => {{
+        // 4. Actualización Deltas y exceso en rojo
+        document.querySelectorAll('#body-' + tabId + ' tr.master-row').forEach(row => {{
             let nameCell = row.querySelector('.edit-name');
             if (!nameCell) return;
             
@@ -3104,11 +3106,89 @@ app_html = f"""
             }}
         }});
 
+        // 5. Generación de etiqueta/badge roja (+N) en las celdas de polígonos
+        let contadorAcumulado = {{}};
+        document.querySelectorAll('#polys-' + tabId + ' .calc-row').forEach(r => {{
+            let sel = r.querySelector('.s-type')?.value;
+            let uCell = r.querySelector('.u-manual-cell');
+            let divFlex = uCell ? uCell.querySelector('div') : null;
+            let spanU = r.querySelector('.u-manual');
+            let uManual = parseInt(spanU?.innerText) || 0;
+
+            if (!divFlex) return;
+
+            let badge = divFlex.querySelector('.badge-adicional');
+
+            if (sel && sel !== "Seleccionar..." && fleet[sel] && uManual > 0) {{
+                let stockInicial = fleet[sel].stock;
+                let usadasPrevias = contadorAcumulado[sel] || 0;
+
+                let cubiertasPorSchedule = Math.max(0, Math.min(uManual, stockInicial - usadasPrevias));
+                let excesoFila = uManual - cubiertasPorSchedule;
+
+                contadorAcumulado[sel] = usadasPrevias + uManual;
+
+                if (excesoFila > 0) {{
+                    if (!badge) {{
+                        badge = document.createElement('span');
+                        badge.className = 'badge-adicional';
+                        badge.style.cssText = 'font-size: 10px; background: #d32f2f; color: white; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;';
+                        if (spanU) spanU.after(badge);
+                    }}
+                    badge.innerText = `+${{excesoFila}}`;
+                    badge.style.display = 'inline-block';
+                    badge.title = `${{cubiertasPorSchedule}} de Schedule + ${{excesoFila}} adicionales en este plan`;
+                    uCell.style.backgroundColor = "#d3f0e5";
+                }} else {{
+                    if (badge) badge.style.display = 'none';
+                    uCell.style.backgroundColor = "#d3f0e5";
+                }}
+            }} else {{
+                if (badge) badge.style.display = 'none';
+                if (uCell) uCell.style.backgroundColor = "#d3f0e5";
+            }}
+        }});
+
+        // 6. Filtrado dinámico de las opciones de unidades en las listas desplegables
+        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+            const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h", "car 3h", "car - 3h"];
+
+            bl.querySelectorAll('.s-type').forEach(s => {{ 
+                let cur = s.value; 
+                let opt = '<option value="">Seleccionar...</option>';
+                
+                Object.keys(fleet).forEach(k => {{
+                    let nameLower = k.toLowerCase().trim();
+                    let stock = fleet[k].stock;
+                    let used = fleet[k].used;
+                    
+                    let esPermitida = permitidasSinStock.some(u => nameLower.includes(u));
+                    let tieneCapacidad = (stock - used > 0);
+                    
+                    // Se incluye solo si le queda stock, si es tipo Car permitida, o si ya está seleccionada actualmente
+                    if (tieneCapacidad || esPermitida || k === cur) {{
+                        opt += `<option value="${{k}}">${{k}}</option>`;
+                    }}
+                }});
+                
+                s.innerHTML = opt;
+                s.value = cur;
+                if (typeof updateSelectColor === "function") updateSelectColor(s);
+            }});
+        }});
+
         if (typeof updateFleetFloat === "function") updateFleetFloat();
         if (typeof actualizarDosPorciento === "function") actualizarDosPorciento();
-        if (typeof actualizarSelects === "function") actualizarSelects();
     }}
 
+    // ==============================================================================
+    // 🔴 EVENTO DE INPUT Y REFRESCADO AUTOMÁTICO AL CAMBIAR STOCK O UNIDADES
+    // ==============================================================================
+    document.addEventListener('input', (e) => {{
+        if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual') || e.target.classList.contains('edit-name')) {{
+            recalc(); 
+        }}
+    }});
 
 
     function focusCalc() {{
