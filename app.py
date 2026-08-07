@@ -1879,7 +1879,7 @@ app_html = f"""
             }}
         }});
 
-        let bloquesPolys = document.querySelectorAll(`#polys-${tabId} .poligono-bloque`);
+        let bloquesPolys = document.querySelectorAll(`#polys-${{tabId}} .poligono-bloque`);
         let planesElegidos = [];
         bloquesPolys.forEach(bloque => {{
             let nombre = bloque.querySelector('.plan-cell')?.innerText.trim() || "PLAN";
