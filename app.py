@@ -2034,6 +2034,37 @@ app_html = f"""
 </div> <!-- 👈 AQUÍ CIERRA COMPLETAMENTE EL MODAL 2 -->
 
 
+
+<!-- MODAL PARA EDITAR PLAN Y PRIORIDADES CON SELECTORES -->
+<div id="modalEditarPlan" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#1e2227; color:white; border:1px solid #3e4451; padding:20px; border-radius:8px; width:450px; max-width:90%;">
+        <h3 style="margin-top:0; color:#61afef; text-align:center;">✏️ Editar Configuración del Plan</h3>
+        
+        <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">Nombre del Plan:</label>
+        <input type="text" id="editPlanNombreInput" style="width:100%; padding:8px; border-radius:4px; border:1px solid #4b5263; background:#282c34; color:white; font-weight:bold; margin-bottom:15px;">
+
+        <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">Unidades Prioritarias (En orden de prioridad):</label>
+        <div id="contenedorPrioridadesEdit" style="max-height:200px; overflow-y:auto; margin-bottom:10px; padding-right:5px;">
+            <!-- Aquí se cargarán dinámicamente los selectores de unidades -->
+        </div>
+
+        <button type="button" onclick="agregarSelectorPrioridadEdit()" style="cursor:pointer; background:#98c379; color:#1e2227; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; width:100%; margin-bottom:15px;">
+            ➕ Añadir Otra Unidad Prioritaria
+        </button>
+
+        <div style="display:flex; justify-content:space-between; gap:10px;">
+            <button type="button" onclick="cerrarModalEditarPlan()" style="cursor:pointer; background:#e06c75; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:bold; flex:1;">
+                Cancelar
+            </button>
+            <button type="button" onclick="guardarCambiosModalPlan()" style="cursor:pointer; background:#61afef; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:bold; flex:1;">
+                💾 Guardar Cambios
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -2160,6 +2191,140 @@ app_html = f"""
             }}
         }}
     }}
+
+
+
+    // ==============================================================================
+    // ✏️ MODAL INTERACTIVO DE EDICIÓN CON SELECTORES
+    // ==============================================================================
+    let bloquePlanEnEdicion = null;
+
+    // Abrir el modal y cargar la información actual
+    window.abrirModalEditarPlan = function(btn) {{
+        let bloque = btn.closest('.poligono-bloque');
+        if (!bloque) return;
+
+        bloquePlanEnEdicion = bloque;
+
+        let celdaPlan = bloque.querySelector('.plan-cell');
+        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
+        let nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
+        
+        document.getElementById('editPlanNombreInput').value = nombreActual;
+
+        // Limpiar contenedor de selectores
+        let contenedor = document.getElementById('contenedorPrioridadesEdit');
+        contenedor.innerHTML = "";
+
+        // Obtener prioridades guardadas actualmente
+        let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
+                             bloque.getAttribute('data-prioridades') || "";
+        
+        let lista = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
+
+        if (lista.length === 0) {{
+            agregarSelectorPrioridadEdit(""); // Si no tiene, agrega un selector vacío por defecto
+        }} else {{
+            lista.forEach(prio => agregarSelectorPrioridadEdit(prio));
+        }}
+
+        document.getElementById('modalEditarPlan').style.display = 'flex';
+    }};
+
+    // Función para agregar un nuevo desplegable con las unidades de la flota activa
+    function agregarSelectorPrioridadEdit(valSeleccionado = "") {{
+        let contenedor = document.getElementById('contenedorPrioridadesEdit');
+
+        // Extraer lista de unidades de la tabla de flota activa
+        let opcionesFleet = [];
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
+            let nombre = row.querySelector('.edit-name')?.innerText.trim();
+            if (nombre && nombre !== "IGNORAR") {{
+                opcionesFleet.push(nombre);
+            }}
+        }});
+
+        let divFila = document.createElement('div');
+        divFila.style.cssText = "display:flex; gap:5px; margin-bottom:8px; align-items:center;";
+
+        let select = document.createElement('select');
+        select.className = "select-prioridad-modal";
+        select.style.cssText = "flex:1; padding:6px; border-radius:4px; border:1px solid #4b5263; background:#282c34; color:white; font-weight:bold;";
+
+        let optDefault = document.createElement('option');
+        optDefault.value = "";
+        optDefault.innerText = "-- Sin prioridad (Usar Flota Estándar) --";
+        select.appendChild(optDefault);
+
+        opcionesFleet.forEach(uNombre => {{
+            let opt = document.createElement('option');
+            opt.value = uNombre;
+            opt.innerText = uNombre;
+            if (uNombre.toLowerCase() === valSeleccionado.toLowerCase()) {{
+                opt.selected = true;
+            }}
+            select.appendChild(opt);
+        }});
+
+        let btnBorrar = document.createElement('button');
+        btnBorrar.type = "button";
+        btnBorrar.innerText = "❌";
+        btnBorrar.style.cssText = "cursor:pointer; background:#e06c75; color:white; border:none; padding:6px 10px; border-radius:4px;";
+        btnBorrar.onclick = function() {{
+            divFila.remove();
+        }};
+
+        divFila.appendChild(select);
+        divFila.appendChild(btnBorrar);
+        contenedor.appendChild(divFila);
+    }}
+
+    function cerrarModalEditarPlan() {{
+        document.getElementById('modalEditarPlan').style.display = 'none';
+        bloquePlanEnEdicion = null;
+    }}
+
+    // Guardar los cambios hechos en el modal
+    function guardarCambiosModalPlan() {{
+        if (!bloquePlanEnEdicion) return;
+
+        let nuevoNombre = document.getElementById('editPlanNombreInput').value.trim();
+        if (nuevoNombre === "") {{
+            alert("El nombre del plan no puede estar vacío.");
+            return;
+        }}
+
+        // Recolectar valores seleccionados en los dropdowns
+        let prioridadesSeleccionadas = [];
+        document.querySelectorAll('.select-prioridad-modal').forEach(sel => {{
+            if (sel.value && sel.value.trim() !== "") {{
+                prioridadesSeleccionadas.push(sel.value.trim());
+            }}
+        }});
+
+        let prioridadesStr = prioridadesSeleccionadas.join(', ');
+
+        // Actualizar el DOM del polígono
+        let celdaPlan = bloquePlanEnEdicion.querySelector('.plan-cell');
+        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
+
+        if (divNombre) {{
+            divNombre.innerText = nuevoNombre.toUpperCase();
+        }} else if (celdaPlan) {{
+            celdaPlan.innerText = nuevoNombre.toUpperCase();
+        }}
+
+        bloquePlanEnEdicion.setAttribute('data-unidad-prioritaria', prioridadesStr);
+        bloquePlanEnEdicion.setAttribute('data-prioridades', prioridadesStr);
+
+        if (typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+
+        cerrarModalEditarPlan();
+        alert("✅ ¡Plan " + nuevoNombre.toUpperCase() + " actualizado con éxito!\nPrioridades: " + (prioridadesStr || "Sin prioridad"));
+    }}
+
 
 
     function removerRuteoDePantallaPorId(idBD) {{
