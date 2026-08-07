@@ -4253,26 +4253,41 @@ app_html = f"""
         }}
     }}
 
+   // ==============================================================================
+    // 🔴 INICIO DE LA FUNCIÓN: actualizarSelects
+    // Llenado dinámico de las listas desplegables en las tablas de polígonos
+    // ==============================================================================
     function actualizarSelects() {{
         const listaPermitidas = [
             "Small Van MLP foráneo",
             "Car 8h",
-            "Car - 8h"
+            "Car - 8h",
+            "Large Van MLP"
         ];
 
-        document.querySelectorAll('.s-type').forEach(select => {{
+        let tabId = currentTab;
+        if (!tabId) {{
+            let selectorCiclos = document.getElementById("ciclo-selector");
+            if (selectorCiclos) tabId = selectorCiclos.value;
+        }}
+
+        document.querySelectorAll('#polys-' + tabId + ' .s-type').forEach(select => {{
             let valorActual = select.value;
             select.innerHTML = '<option value="">Seleccionar...</option>';
             
-            document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
-                let name = row.querySelector('.edit-name')?.innerText.trim();
-                if (!name || name === "IGNORAR") return;
+            let filasFlota = document.querySelectorAll('#body-' + tabId + ' tr');
+            filasFlota.forEach(row => {{
+                let nameCell = row.querySelector('.edit-name');
+                if (!nameCell) return;
+                
+                let name = nameCell.innerText.trim();
+                if (!name || name === "IGNORAR" || name === "NUEVA UNIDAD") return;
                 
                 let stock = parseInt(row.querySelector('.f-stock')?.innerText) || 0;
                 let left = parseInt(row.querySelector('.f-left')?.innerText) || 0;
                 let nameLower = name.toLowerCase();
 
-                let permiteSinStock = listaPermitidas.some(u => nameLower.includes(u));
+                let permiteSinStock = listaPermitidas.some(u => nameLower.includes(u.toLowerCase()));
                 
                 if (permiteSinStock || left > 0 || stock > 0) {{
                     let opt = document.createElement('option');
@@ -4281,19 +4296,27 @@ app_html = f"""
                     select.appendChild(opt);
                 }}
             }});
-            select.value = valorActual;
+
+            if (valorActual) select.value = valorActual;
+            updateSelectColor(select);
         }});
     }}
+    // ==============================================================================
+    // 🔴 FIN DE LA FUNCIÓN: actualizarSelects
+    // ==============================================================================
 
+
+    // EVENTO DE ESCUCHA PARA RECALCULAR AL INGRESAR STOCK O MANUALES
     document.addEventListener('input', (e) => {{
         if (e.target.classList.contains('f-stock') || e.target.classList.contains('u-manual')) {{
             recalc(); 
         }}
     }});
 
+    // INICIALIZACIÓN DE SELECTS AL CARGAR LA PÁGINA
     window.addEventListener('load', () => {{
         actualizarSelects();
-        agregarIndicadorSchedule();
+        if (typeof agregarIndicadorSchedule === "function") agregarIndicadorSchedule();
     }});
 
     actualizarDosPorciento();
@@ -4411,6 +4434,9 @@ app_html = f"""
     }}
     setInterval(actualizarRelojRuteos, 1000);
     actualizarRelojRuteos();
+
+
+
 
     /* CONTROL DE ARRASTRE FLOTANTE DE PANTALLA */
     function iniciarArrastreFlotante(e) {{
