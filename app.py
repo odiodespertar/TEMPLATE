@@ -3952,9 +3952,8 @@ app_html = f"""
     }}
 
 
-   
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO CONECTADO A CONSTRUCTOR DE NUEVOS RUTEOS
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO (CONEXIÓN EXACTA CON PRIORIDADES DE NUEVOS RUTEOS)
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -4002,25 +4001,30 @@ app_html = f"""
         }});
 
         // ==============================================================================
-        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE
+        // 🔴 CASO 1: C1 SJA1 (TAB 6) - LÓGICA MULTI-FASE EXACTA
         // ==============================================================================
         if (currentTab == 6) {{
             procesarAsignacionCompletaSJA1(polys, fleet);
         }} 
         
         // ==============================================================================
-        // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS (SCP1, PREC SMX5, ETC.)
+        // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS
         // ==============================================================================
         else {{
             
-            // 📌 FASE 0: ASIGNAR UNIDADES PRIORITARIAS CONFIGURADAS EN "AGREGAR NUEVO RUTEO"
+            // 📌 FASE 0: LECTURA Y APLICACIÓN DE UNIDADES PRIORITARIAS CONFIGURADAS
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
-                // Lee el atributo exacto de tu HTML
-                let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || "";
                 
-                if (prioridadesRaw.trim() !== "") {{
-                    let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "");
+                // Lee el atributo exacto del HTML
+                let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
+                                     bloque.getAttribute('data-prioridades') || "";
+                
+                if (prioridadesRaw.trim() !== "" && !prioridadesRaw.includes("Sin prioridad")) {{
+                    
+                    // Separar por comas por si se configuraron varias unidades prioritarias
+                    let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
+                    
                     let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                     let yaAsignado = 0;
@@ -4036,13 +4040,20 @@ app_html = f"""
                     for (let nombrePrio of listaPrioridades) {{
                         if (restante <= 0) break;
 
-                        let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombrePrio.toLowerCase());
+                        // Coincidencia flexible de nombres
+                        let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
                         
+                        // Si no la encuentra exacta, busca coincidencia parcial
+                        if (!unidad) {{
+                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombrePrio.toLowerCase()));
+                        }}
+
                         while (unidad && unidad.restante > 0 && restante > 0) {{
                             let necesarias = Math.ceil(restante / unidad.spr);
                             let usar = Math.min(necesarias, unidad.restante);
                             if (usar <= 0) break;
 
+                            // Buscar fila libre en el plan
                             let filaLibre = filas.find(f => {{
                                 let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                                 let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
@@ -4062,13 +4073,14 @@ app_html = f"""
                                 break;
                             }}
 
-                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombrePrio.toLowerCase());
+                            // Recomprobar si queda stock de esta unidad
+                            unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
                         }}
                     }}
                 }}
             }});
 
-            // 📌 FASE 1: REGLAS PREVIAS DE RUTEOS NATIVOS
+            // 📌 FASE 1: REGLAS PREVIAS DE RUTEOS NATIVOS (SCP1, PREC SMX5, PREC SMX2)
             if (currentTab == 2) {{
                 let largeVanMLP = fleet.find(f => f.nombre === "Large Van MLP");
                 if (largeVanMLP && largeVanMLP.restante > 0) {{
@@ -4332,7 +4344,7 @@ app_html = f"""
         }}
         recalc();
     }}
-
+   
 
    
 
