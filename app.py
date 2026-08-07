@@ -2605,7 +2605,12 @@ app_html = f"""
                         </thead>
                         <tbody>
                             <tr class="calc-row">
-                                <td class="plan-cell" rowspan="${{p.filas}}" contenteditable="true" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414;">${{p.nombre}}</td>
+                                <td class="plan-cell" rowspan="${{p.filas}}" style="background: #dcdcdc; font-weight: bold; text-align:center; border: 1px solid #25282b; color:#141414; padding: 4px;">
+                                    <div style="margin-bottom: 4px;">${{p.nombre}}</div>
+                                    <button type="button" onclick="window.abrirModalEditarPlan(this)" style="cursor:pointer; background: #343a40; color: white; border: 1px solid #495057; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: normal; display: block; margin: 0 auto;">
+                                        ✏️ Editar
+                                    </button>
+                                </td>
                                 <td class="vol-cell" rowspan="${{p.filas}}" style="color:#808080; font-weight:bold; text-align:center; border:1px solid #25282b; padding:5px;">
                                     ${{bloqueVolumenNodos}}
                                 </td>
