@@ -32,6 +32,144 @@ def cargar_ruteos_bd():
     return []
 
 
+
+# ==========================================
+# MENÚ LATERAL FLOTANTE (SOBREPUESTO / OVERLAY)
+# ==========================================
+menu_flotante_html = """
+<style>
+    /* Botón flotante inicial (Las 3 rayitas ☰) */
+    #btn-menu-flotante {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 99999;
+        background-color: #25282b;
+        color: #ffffff;
+        border: 1px solid #444;
+        padding: 8px 12px;
+        font-size: 18px;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        transition: background 0.2s;
+    }
+    #btn-menu-flotante:hover {
+        background-color: #383b3e;
+    }
+
+    /* Panel Lateral Flotante (Se sobrepone por encima de todo sin mover la pantalla) */
+    #panel-lateral-desplegable {
+        position: fixed;
+        top: 0;
+        left: -300px; /* Oculto totalmente a la izquierda */
+        width: 280px;
+        height: 100vh;
+        background-color: #1e2022;
+        color: #ffffff;
+        z-index: 100000; /* Siempre por encima del contenido */
+        box-shadow: 5px 0px 20px rgba(0,0,0,0.7);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        padding: 20px 15px;
+        box-sizing: border-box;
+        border-right: 1px solid #333;
+    }
+
+    /* Al activarse se desliza hacia la derecha flotando sobre la pantalla */
+    #panel-lateral-desplegable.abierto {
+        left: 0px;
+    }
+
+    /* Cabecera del menú con el botón de cerrar (Tacha ✕) */
+    .menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #333;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .menu-titulo {
+        font-size: 15px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: #66CDAA;
+    }
+
+    #btn-cerrar-menu {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 5px;
+    }
+    #btn-cerrar-menu:hover {
+        color: #ff6b6b;
+    }
+
+    /* Opciones del menú */
+    .menu-opcion {
+        padding: 12px 15px;
+        color: #cfd2d6;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        background-color: #2a2d32;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: block;
+        text-align: left;
+    }
+
+    .menu-opcion:hover {
+        background-color: #36393f;
+        color: #ffffff;
+        border-color: #66CDAA;
+        transform: translateX(4px);
+    }
+</style>
+
+<!-- Botón de las 3 rayitas -->
+<button id="btn-menu-flotante" onclick="toggleMenu()">☰</button>
+
+<!-- Panel Lateral Flotante -->
+<div id="panel-lateral-desplegable">
+    <div class="menu-header">
+        <span class="menu-titulo">MENÚ PRINCIPAL</span>
+        <button id="btn-cerrar-menu" onclick="toggleMenu()">✕</button>
+    </div>
+    
+    <!-- Opciones solicitadas -->
+    <a href="#" class="menu-opcion" onclick="ejecutarAccion('excel')">📊 Vista Excel</a>
+    <a href="#" class="menu-opcion" onclick="ejecutarAccion('nuevo')">➕ Crear nuevo ruteo</a>
+    <a href="#" class="menu-opcion" onclick="ejecutarAccion('gestionar')">⚙️ Gestionar / Borrar ruteos</a>
+    <a href="#" class="menu-opcion" onclick="ejecutarAccion('limpiar')">🧹 Limpiar pantalla</a>
+</div>
+
+<script>
+    function toggleMenu() {
+        const panel = document.getElementById('panel-lateral-desplegable');
+        panel.classList.toggle('abierto');
+    }
+
+    function ejecutarAccion(accion) {
+        toggleMenu();
+        console.log("Acción seleccionada: " + accion);
+    }
+</script>
+"""
+
+# Renderizar en la app de Streamlit
+st.markdown(menu_flotante_html, unsafe_allow_html=True)
+
+
+
 # ==========================================
 # ESTADO Y CONTROL DEL MODO FLOTANTE
 # ==========================================
@@ -1696,6 +1834,14 @@ app_html = f"""
                 <option value="9">🟣 C1 VACÍA</option>
             </select>
         </div>
+
+
+
+
+        
+
+
+
 
         <!-- TABLAS DE DISPONIBILIDAD -->
         <div id="tab-2" class="t-content" style="display:none;">
