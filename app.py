@@ -4865,8 +4865,8 @@ app_html = f"""
 
     #btn-menu-lateral {{
         position: fixed;
-        top: 5px;
-        left: 15px;
+        top: 0px;
+        left: 5px;
         z-index: 9999999;
 
         width: 42px;
