@@ -1994,13 +1994,7 @@ app_html = f"""
             </div>
         </div>
 
-        <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px; margin-top: 15px;">
-            <h3 style="color: #FFD700; margin-top: 0;">⚡ PRIORIDADES DE ASIGNACIÓN POR PLAN</h3>
-            <p style="color: #aaa; font-size: 12px; margin-bottom: 10px;">Define el orden o la prioridad en la que el sistema asignará las unidades a cada plan.</p>
-            <div id="contenedor-prioridades-planes" style="display: flex; flex-direction: column; gap: 8px;">
-                <p style="color: #888;">Genera los planes arriba para configurar sus prioridades aquí.</p>
-            </div>
-        </div>
+    
 
         <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
             <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">Cancelar</button>
