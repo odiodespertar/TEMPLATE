@@ -3953,7 +3953,7 @@ app_html = f"""
 
 
    // ==============================================================================
-    // 🧠 DISTRIBUIDOR AUTOMÁTICO (CONEXIÓN EXACTA CON PRIORIDADES DE NUEVOS RUTEOS)
+    // 🧠 DISTRIBUIDOR AUTOMÁTICO (RESPETO ESTRICTO Y BLOQUEO DE PLANES CON PRIORIDAD)
     // ==============================================================================
     function distribuirAutomatico() {{
         let fleet = [];
@@ -3972,7 +3972,7 @@ app_html = f"""
             }}
         }});
 
-        // Descontar lo ya asignado manualmente en la pestaña activa
+        // Descontar lo ya asignado manualmente
         document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(r => {{
             let tipo = r.querySelector('.s-type')?.value;
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
@@ -4011,20 +4011,18 @@ app_html = f"""
         // 🟢 CASO 2: RUTEOS DINÁMICOS/NUEVOS Y OTROS RUTEOS
         // ==============================================================================
         else {{
-            
-            // 📌 FASE 0: LECTURA Y APLICACIÓN DE UNIDADES PRIORITARIAS CONFIGURADAS
+            // Array para registrar qué planes ya fueron procesados por prioridades específicas
+            let planesConPrioridadProcesados = new Set();
+
+            // 📌 FASE 0: APLICACIÓN EXCLUSIVA DE UNIDADES PRIORITARIAS CONFIGURADAS
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
-                
-                // Lee el atributo exacto del HTML
                 let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
                                      bloque.getAttribute('data-prioridades') || "";
                 
                 if (prioridadesRaw.trim() !== "" && !prioridadesRaw.includes("Sin prioridad")) {{
                     
-                    // Separar por comas por si se configuraron varias unidades prioritarias
                     let listaPrioridades = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
-                    
                     let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
                     let yaAsignado = 0;
@@ -4033,17 +4031,12 @@ app_html = f"""
                     }});
 
                     let restante = objetivo - yaAsignado;
-                    if (restante <= 0) return;
-
                     let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
                     for (let nombrePrio of listaPrioridades) {{
                         if (restante <= 0) break;
 
-                        // Coincidencia flexible de nombres
                         let unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
-                        
-                        // Si no la encuentra exacta, busca coincidencia parcial
                         if (!unidad) {{
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombrePrio.toLowerCase()));
                         }}
@@ -4053,7 +4046,6 @@ app_html = f"""
                             let usar = Math.min(necesarias, unidad.restante);
                             if (usar <= 0) break;
 
-                            // Buscar fila libre en el plan
                             let filaLibre = filas.find(f => {{
                                 let tipo = f.querySelector('.s-type')?.value?.trim() || "";
                                 let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
@@ -4073,10 +4065,12 @@ app_html = f"""
                                 break;
                             }}
 
-                            // Recomprobar si queda stock de esta unidad
                             unidad = fleet.find(f => f.restante > 0 && f.nombre.toLowerCase().trim() === nombrePrio.toLowerCase().trim());
                         }}
                     }}
+
+                    // Marcar este bloque para que la Fase 2 general NO le meta unidades no deseadas
+                    planesConPrioridadProcesados.add(bloque);
                 }}
             }});
 
@@ -4249,9 +4243,13 @@ app_html = f"""
                 }}
             }}
 
-            // 📌 FASE 2: LLENADO GENERAL RESTANTE CON FLOTA ESTÁNDAR
+            // 📌 FASE 2: LLENADO GENERAL RESTANTE (SOLO PARA PLANES SIN PRIORIDAD PROCESADA)
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
+
+                // Si este plan ya fue asignado según su prioridad específica en la Fase 0, lo salta por completo
+                if (planesConPrioridadProcesados.has(bloque)) return;
+
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
 
