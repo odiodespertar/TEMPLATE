@@ -1941,7 +1941,10 @@ app_html = f"""
     </div>
 </div>
 
-<!-- 🏢 MODAL CREADOR DE RUTEO DINÁMICO -->
+
+<!-- ============================================================================== -->
+<!-- 🏢 MODAL 1: CREADOR DE RUTEO DINÁMICO -->
+<!-- ============================================================================== -->
 <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
         <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
@@ -1977,7 +1980,7 @@ app_html = f"""
                     <input type="checkbox" id="chk-incluir-ocup" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir % OCUPACIÓN
                 </label>
             </div>
-            
+        </div>
 
         <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
             <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
@@ -1993,18 +1996,18 @@ app_html = f"""
             </div>
         </div>
 
-    
-
         <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px;">
             <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #555; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 14px;">Cancelar</button>
             <button onclick="guardarNuevoRuteoCompleto()" style="cursor: pointer; background: #28a745; color: white; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; font-size: 14px; box-shadow: 0 4px 10px rgba(40,167,69,0.4);">💾 Guardar y Sincronizar Ruteo</button>
         </div>
     </div>
-</div>
+</div> <!-- 👈 AQUÍ CIERRA COMPLETAMENTE EL MODAL 1 -->
 
 
-        <!-- 🗑️ MODAL BORRADO MASIVO -->
-        <div id="modal-eliminar-masivo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+<!-- ============================================================================== -->
+<!-- 🗑️ MODAL 2: GESTOR DE ELIMINACIÓN MASIVA (COMPLETAMENTE INDEPENDIENTE) -->
+<!-- ============================================================================== -->
+<div id="modal-eliminar-masivo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
     <div style="max-width: 800px; margin: 0 auto; background: #25282b; border: 2px solid #dc3545; border-radius: 12px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px;">
             <h2 style="color: #FF7F7F; margin: 0; font-size: 20px;">🗑️ ELIMINACIÓN MASIVA DE RUTEOS PERSONALIZADOS</h2>
@@ -2022,7 +2025,7 @@ app_html = f"""
             <button onclick="cerrarGestorEliminacionMasiva()" style="cursor: pointer; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold;">Cerrar</button>
         </div>
     </div>
-</div>
+</div> <!-- 👈 AQUÍ CIERRA COMPLETAMENTE EL MODAL 2 -->
 
 
 <script>
@@ -2054,6 +2057,7 @@ app_html = f"""
     
     // Abrir Modal de Eliminación Masiva
     async function abrirGestorEliminacionMasiva() {{
+        cerrarCreadorRuteo();
         let modal = document.getElementById("modal-eliminar-masivo");
         if (!modal) return;
         modal.style.display = "block";
@@ -2207,6 +2211,7 @@ app_html = f"""
 
 
     function abrirCreadorRuteo() {{
+        cerrarGestorEliminacionMasiva();
         let modal = document.getElementById("modal-crear-ruteo");
         if (modal) {{
             modal.style.display = "block";
