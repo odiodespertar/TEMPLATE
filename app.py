@@ -6,16 +6,25 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
-st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
+# 🟢 Dejar una sola configuración de página al inicio:
+st.set_page_config(
+    page_title="Monitor Logístico - Liliana García", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+)
 
+# 2. Leer si viene un usuario desde la URL (ejemplo: ?usuario=Pedro)
+query_params = st.query_params
+usuario_defecto = query_params.get("usuario", "Usuario_1")
 
-# Identificador de usuario o estación
-usuario_activo = st.sidebar.text_input("👤 Usuario / Estación:", value="Usuario_1").strip().replace(" ", "_")
+# 3. Campo en la barra lateral para el usuario activo
+usuario_activo = st.sidebar.text_input("👤 Usuario / Estación:", value=usuario_defecto).strip().replace(" ", "_")
 
-# Validación: Si el usuario borra todo la casilla, asignamos un valor por defecto
+# 4. Validar que no quede vacío
 if not usuario_activo:
     usuario_activo = "Usuario_1"
 
+# 5. Guardar en el estado de sesión de Streamlit
 st.session_state["usuario_activo"] = usuario_activo
 
 
