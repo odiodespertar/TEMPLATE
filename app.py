@@ -1953,7 +1953,7 @@ app_html = f"""
 <div id="modal-crear-ruteo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8A2BE2; padding-bottom: 12px; margin-bottom: 20px;">
         <h2 style="color: #26d4ca; margin: 0; font-size: 22px; display: flex; align-items: center; gap: 8px;">🛠️ CREADOR DE NUEVO RUTEO DESDE CERO</h2>
-        <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 14px;">❌ CERRAR</button>
+        <button onclick="cerrarCreadorRuteo()" style="cursor: pointer; background: #d32f2f; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 16px;">❌ CERRAR</button>
     </div>
 
     <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
@@ -1961,27 +1961,27 @@ app_html = f"""
             <h3 style="color: #FFD700; margin-top: 0; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 8px;">1️⃣ CONFIGURACIÓN GENERAL</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
                 <div>
-                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Opción / Ruteo:</label>
-                    <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 14px; font-weight: bold;">
+                    <label style="color: #d0d0d0; font-size: 16px; font-weight: bold; display: block; margin-bottom: 5px;">Nombre de la Opción / Ruteo:</label>
+                    <input type="text" id="creador-nombre-ruteo" placeholder="Ej. C1 SMT1" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: white; font-size: 16px; font-weight: bold;">
                 </div>
                 <div>
-                    <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
+                    <label style="color: #d0d0d0; font-size: 16px; font-weight: bold; display: block; margin-bottom: 5px;">Número de Planes / Polígonos:</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="number" id="creador-cant-planes" value="5" min="1" max="25" style="width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #555; background: #1a1c1e; color: #26d4ca; font-size: 16px; font-weight: bold; text-align: center;">
-                        <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 13px;">⚙️ Generar Campos de Planes</button>
+                        <button onclick="generarCamposPlanes()" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 8px 15px; font-weight: bold; border-radius: 6px; font-size: 16px;">⚙️ Generar Campos de Planes</button>
                     </div>
                 </div>
             </div>
 
             <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
-                <span style="color: #aaa; font-size: 12px; font-weight: bold;">Configuración adicional:</span>
-                <label style="color: #FFD700; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <span style="color: #aaa; font-size: 14px; font-weight: bold;">Configuración adicional:</span>
+                <label style="color: #FFD700; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-nodos" style="transform: scale(1.2); accent-color: #FFD700;"> 📍 ¿Lleva Nodos?
                 </label>
-                <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <label style="color: #26d4ca; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-orh" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir ORH
                 </label>
-                <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <label style="color: #26d4ca; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <input type="checkbox" id="chk-incluir-ocup" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir % OCUPACIÓN
                 </label>
             </div>
