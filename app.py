@@ -4123,4 +4123,117 @@ info_operativa = {
             </div>
 
             <h4 style="color: #333333; margin: 15px 0 5px 0; font-weight: bold; font-size: 15px;">📢 REGLAS GENERALES </h4>
-            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1Soy una IA basada en texto y no tengo esa capacidad.
+            <div style="background: #fdfefe; border: 1px solid #d0d3d4; padding: 15px; border-radius: 6px; font-size: 13.5px; line-height: 1.6;">
+                <p style="margin-top:0; font-weight:bold;">Buenas noches, team. Les pido su apoyo considerando los siguientes puntos para el ruteo:</p>
+                • ✅ Contemplar toda la flota disponible en el schedule.<br>
+                • ✅ El polígono de Alchichica deberá operar con AM0 por temas de seguridad.<br>
+                • Procurar que las unidades Small no superen los 65 ID's en SPR o (300min = 5 hrs).<br>
+                • ✅ Utilizar todas las rentals disponibles y configurarlas como híbridas.<br>
+                • ✅ En el polígono Centro, cubrir primero la operación con rentals; si es necesario, complementar con crowd o MLP.<br>
+                • ✅ Considerar el Mega Nodo (TRUCK 3.5), ruteo de newbies y zonas extendidas con crowd, especialmente en Xico y Tuzamapan.<br><br>
+                
+                <div style="background: #fdf2f2; border: 1px solid #fadbd8; padding: 10px; border-radius: 4px; color: #c0392b; font-weight: bold; margin-top: 5px;">
+                    🚫 Las unidades CROWD NO pueden ir a Tezuitlán (zona muy alejada del SVC).<br>
+                    🚫 Las RENTALS NO pueden ir a zonas tan foráneas (Tlaltetela y Perote).
+                </div>
+            </div>
+        </div>
+    """,
+    "C2": (
+        "<div style='text-align:center; padding-top:100px;"
+        " color:#666;'><i>Información C2 pendiente...</i></div>"
+    ),
+    "PREC": (
+        "<div style='text-align:center; padding-top:100px;"
+        " color:#666;'><i>Información PRECARGA pendiente...</i></div>"
+    ),
+}
+
+html_notitas = """
+<style>
+    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+    .main-box { background: #25282b; padding: 10px; }
+    
+    .unified-console {
+        background: #25282b; border-radius: 15px; padding: 15px; 
+        margin-bottom: 20px; border: 1px solid #25282b; text-align: center;
+    }
+    .display-screen {
+        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
+    }
+    .btn-3d {
+        background: linear-gradient(145deg, #1e90ff, #1c82e6);
+        color: white; border: none; padding: 12px 25px; border-radius: 10px;
+        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
+    }
+    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
+
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+    .tab-btn {
+        background: #333; color: white; border: none; padding: 10px 18px;
+        border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;
+    }
+    .tab-btn.active { background: #add8e6; color: black; box-shadow: 0 0 12px #add8e6; }
+
+    body:not(.tab-2) #excel-btn { display: none !important; }
+
+    .content-area { background: #c8dee0; border-radius: 12px; padding: 20px; min-height: 600px; color: #000; }
+</style>
+
+<div class="main-box">
+    <div class="unified-console"> 
+        <div class="display-screen">
+            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
+            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+            <div>
+                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
+                <input type="number" id="minInput" value="10" 
+                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
+            </div>
+            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
+        </div>
+    </div>
+
+    <h3 style="color: #1E90FF; text-align: center; margin-bottom: 15px;">🍓 NOTITAS OPERATIVAS</h3>
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="changeTab(event, 'SDE')">SDE</button>
+        <button class="tab-btn" onclick="changeTab(event, 'C1')">C1</button>
+        <button class="tab-btn" onclick="changeTab(event, 'C2')">C2</button>
+        <button class="tab-btn" onclick="changeTab(event, 'PREC')">PREC</button>
+        <button class="tab-btn" onclick="changeTab(event, 'SIDE_LINE')">SIDE LINE</button>
+        <button class="tab-btn" onclick="changeTab(event, 'ENLACES')">ENLACES</button>
+    </div>
+    <div id="visor" class="content-area">
+        __SDE_CONTENT__
+    </div>
+</div>
+
+<script>
+    const allData = __ALL_DATA__;  
+
+    function changeTab(e, name) {
+        document.getElementById('visor').innerHTML = allData[name];
+        let btns = document.getElementsByClassName('tab-btn');
+        for (let b of btns) { b.classList.remove('active'); }
+        e.currentTarget.classList.add('active');
+    }
+    function ejecutarTodo() {
+        const mins = document.getElementById('minInput').value || 0;
+        const ahora = new Date();
+        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
+        const h = String(nuevaFecha.getHours()).padStart(2, '0');
+        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
+        document.getElementById('horaReal').innerText = h + ":" + m;
+    }
+    ejecutarTodo();
+</script>
+"""
+
+# Reemplazo seguro de variables en notitas
+html_notitas = html_notitas.replace("__SDE_CONTENT__", info_operativa["SDE"])
+html_notitas = html_notitas.replace("__ALL_DATA__", json.dumps(info_operativa))
+
+st.markdown("---")
+components.html(html_notitas, height=1200, scrolling=True)
