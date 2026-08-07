@@ -3968,7 +3968,7 @@ app_html = f"""
                     if (restante <= 0) break;
 
                     let unidad = null;
-                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {
+                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
                         unidad = fleet.find(f => f.nombre === "Rental Large Van");
                     }} else if (currentTab == 2) {{
                         unidad = fleet.find(f => f.restante > 0 && f.nombre !== "Rental Large Van");
