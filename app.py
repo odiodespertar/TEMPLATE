@@ -2139,6 +2139,7 @@ app_html = f"""
         }}
     }}
 
+
     function showTab(n, btn) {{
         const bloqueC1 = document.getElementById('contenedor-paquetes-c1');
         if (bloqueC1) {{
@@ -2195,7 +2196,7 @@ app_html = f"""
 
         const excelBtn = document.getElementById('excel-btn');
         if (excelBtn) {{
-            if (n === 2 || n === 6 || n === 7 || n === 8) {{
+            if (n === 2 || n === 6 || n === 7 || n === 8 || n >= 900) {{
                 excelBtn.style.setProperty('display', 'inline-block', 'important');
             }} else {{
                 excelBtn.style.setProperty('display', 'none', 'important');
@@ -2772,6 +2773,7 @@ app_html = f"""
         }}
     }});
 
+
     function toggleExcelView() {{
         const isExcel = !document.body.classList.contains("excel-view");
         document.body.classList.toggle("excel-view", isExcel);
@@ -2788,6 +2790,7 @@ app_html = f"""
             "total-no-car-1", "total-car-schedule-1", "total-car-real-1",
             "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
         ];
+
         if (isExcel) {{
             if (bPaquetes) {{
                 estadoPaquetesAntesDeExcel = bPaquetes.style.display;
@@ -2798,10 +2801,11 @@ app_html = f"""
             btn.innerHTML = "N";
             if(excel) excel.style.display = "block";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
-                let el = document.getElementById(id);
-                if(el) el.style.display = "none";
+            // Oculta TODOS los bloques de polígonos usando la clase .p-content (viejos y nuevos)
+            document.querySelectorAll('.p-content').forEach(el => {{
+                el.style.display = "none";
             }});
+
             idsAocultar.forEach(id => {{
                 let el = document.getElementById(id);
                 if(el) {{
@@ -2817,12 +2821,12 @@ app_html = f"""
             btn.innerHTML = "👁️";
             if(excel) excel.style.display = "none";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8"].forEach(id => {{
-                let el = document.getElementById(id);
-                if(el) el.style.display = (id === "polys-" + currentTab) ? "block" : "none";
+            // Muestra solo el polígono de la pestaña activa usando currentTab (funciona con dinámicos)
+            document.querySelectorAll('.p-content').forEach(el => {{
+                el.style.display = (el.id === "polys-" + currentTab) ? "block" : "none";
             }});
             
-            if (contScp1 && contSja1) {{
+            if (typeof contScp1 !== "undefined" && typeof contSja1 !== "undefined" && contScp1 && contSja1) {{
                 if (currentTab == 2) {{
                     contScp1.style.display = 'block';
                     contSja1.style.display = 'none';
@@ -2842,12 +2846,14 @@ app_html = f"""
                     if(fila) fila.style.removeProperty('display');
                 }}
             }});
+
             document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
                 fila.style.setProperty('display', 'table-row', 'important');
-                actualizarVisibilidadContador();
+                if (typeof actualizarVisibilidadContador === "function") actualizarVisibilidadContador();
             }});
         }}
     }}
+
 
     function generarExcelPolys() {{
         let body = document.getElementById("excel-polys-body");
