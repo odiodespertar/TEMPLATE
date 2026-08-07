@@ -2217,7 +2217,7 @@ app_html = f"""
         var prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
                              bloque.getAttribute('data-prioridades') || "";
         
-        var lista = prioridadesRaw.split(',').map(function(p) { return p.trim(); }).filter(function(p) {{ return p !== "" && p.indexOf("Sin prioridad") === -1; }});
+        var lista = prioridadesRaw.split(',').map(function(p) {{ return p.trim(); }}).filter(function(p) {{ return p !== "" && p.indexOf("Sin prioridad") === -1; }});
 
         if (lista.length === 0) {{
             agregarSelectorPrioridadEdit("");
