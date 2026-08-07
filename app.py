@@ -183,7 +183,7 @@ st.markdown("""
 
 
 # ==========================================
-# 🤖 ASISTENTE DE PRIORIDADES Y RESUMEN
+# 🤖 BOT DE PRIORIDADES Y RESUMEN
 # ==========================================
 with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
