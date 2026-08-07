@@ -4188,7 +4188,10 @@ app_html = f"""
         recalc();
     }}
 
-    // 🔴 REGLAS EXACTAS DE ASIGNACIÓN PARA C1 SJA1 CON BUCLE CONTINUO DE RENTALS
+
+    // ==============================================================================
+    // 🔴 MOTOR RECALIBRADO DE ASIGNACIÓN EXACTA PARA C1 SJA1
+    // ==============================================================================
     function procesarAsignacionUnidadSJA1(poly, fleetList) {{
         let bloque = poly.bloque;
         let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -4199,26 +4202,40 @@ app_html = f"""
             let unidades = parseInt(r.querySelector('.u-manual')?.innerText) || 0;
             let spr = parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0;
             yaAsignado += (unidades * spr);
-        }});
+        });
 
         let restante = objetivo - yaAsignado;
         if (restante <= 0) return;
 
         let filas = Array.from(bloque.querySelectorAll('.calc-row'));
 
-        if (nombrePlan === "⚠️ CENTRO 1") {{
-            const listaEspecialesC1 = ["Extra Large Van MLP H&B", "Truck 3.5 tons MLP", "Delivery Cell Large Van"];
-            for (let nombreEsp of listaEspecialesC1) {{
-                if (restante <= 0) break;
-                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreEsp.toLowerCase());
-                if (unidad) {{
-                    let usar = Math.min(1, unidad.restante);
-                    asentarUnidadEnPlan(filas, unidad, usar);
-                    restante -= (usar * unidad.spr);
+        // LISTA DE CROWD ORDENADAS POR PRIORIDAD EXACTA
+        const listaCrowdPrioridad = [
+            "Car Newbie",
+            "Car 8h",
+            "Car Zona Extendida",
+            "Small Van 9h",
+            "Small Van 9h Ext",
+            "Small Van Newbie"
+        ];
+
+        // 1. ASIGNACIÓN PARA CENTRO 1 Y CENTRO 2
+        if (nombrePlan === "⚠️ CENTRO 1" || nombrePlan === "⚠️ CENTRO 2") {{
+            if (nombrePlan === "⚠️ CENTRO 1") {{
+                const listaEspecialesC1 = ["Truck 3.5 tons MLP", "Delivery Cell Large Van"];
+                for (let nombreEsp of listaEspecialesC1) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreEsp.toLowerCase());
+                    if (unidad) {{
+                        let usar = Math.min(1, unidad.restante);
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                    }}
                 }}
             }}
 
-            const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
+            // Rentals prioritarias para Centro
+            const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement", "Extra Large Van MLP H&B"];
             for (let nombreRent of listaRental) {{
                 if (restante <= 0) break;
                 let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
@@ -4232,25 +4249,46 @@ app_html = f"""
                     unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
                 }}
             }}
-        }}
-        else if (nombrePlan === "⚠️ CENTRO 2") {{
-            const listaRental = ["Rental Electric Large Van", "Rental Large Van", "Rental Replacement"];
-            for (let nombreRent of listaRental) {{
-                if (restante <= 0) break;
-                let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
-                while (unidad && unidad.restante > 0 && restante > 0) {{
-                    let necesarias = Math.ceil(restante / unidad.spr);
-                    let usar = Math.min(necesarias, unidad.restante);
-                    if (usar <= 0) break;
 
-                    asentarUnidadEnPlan(filas, unidad, usar);
-                    restante -= (usar * unidad.spr);
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(nombreRent.toLowerCase()));
+            // Si aún queda volumen en Centro, se intenta cubrir con MLP remanente
+            if (restante > 0) {{
+                let listaMLPSobrante = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                for (let nombreMlp of listaMLPSobrante) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                    while (unidad && unidad.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar = Math.min(necesarias, unidad.restante);
+                        if (usar <= 0) break;
+
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                    }}
+                }}
+            }}
+
+            // Si sigue quedando volumen, se consume Crowd disponible
+            if (restante > 0) {{
+                for (let nombreCrowd of listaCrowdPrioridad) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                    while (unidad && unidad.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar = Math.min(necesarias, unidad.restante);
+                        if (usar <= 0) break;
+
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                    }}
                 }}
             }}
         }}
+
+        // 2. PLAN ESPECÍFICO: EJA1 SP
         else if (nombrePlan.includes("EJA1 SP") || nombrePlan.includes("EJA1")) {{
-            let unidad = fleetList.find(f => f.restante > 0 && (f.nombre.toLowerCase().includes("media milla sp") || f.nombre.toLowerCase().includes("media milla")));
+            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("media milla"));
             if (unidad) {{
                 let necesarias = Math.ceil(restante / unidad.spr);
                 let usar = Math.min(necesarias, unidad.restante);
@@ -4260,50 +4298,63 @@ app_html = f"""
                 }}
             }}
         }}
-        else if (nombrePlan === "XICO" || nombrePlan === "TUZAMAPA") {{
-            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
 
-            if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-            }}
-
-            if (!unidad) {{
-                let listaSustitutas = ["car 8h", "car newbie", "car zona extendida", "small van 9h", "small van 9h ext", "small van newbie", "moto 3h"];
-                for (let palabra of listaSustitutas) {{
-                    unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes(palabra));
-                    if (unidad) break;
-                }}
-            }}
-
-            if (unidad) {{
-                let necesarias = Math.ceil(restante / unidad.spr);
-                let usar = Math.min(necesarias, unidad.restante);
-                if (usar > 0) {{
-                    asentarUnidadEnPlan(filas, unidad, usar);
-                    restante -= (usar * unidad.spr);
-                }}
-            }}
-        }}
+        // 3. PLANES FORÁNEOS CON NODO DETECTADO
         else {{
-            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("large van mlp foráneo"));
+            let celdaNodo = bloque.querySelector('.nodos-val');
+            let cantidadNodos = celdaNodo ? (parseInt(celdaNodo.innerText) || 0) : 0;
 
-            if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase().includes("small van mlp foráneo"));
-            }}
-            if (!unidad) {{
-                unidad = fleetList.find(f => f.restante > 0);
+            // SI TIENE NODO: Se exige Large Van MLP foráneo obligatoriamente
+            if (cantidadNodos > 0) {{
+                let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                while (unidadLV && unidadLV.restante > 0 && restante > 0) {{
+                    let necesarias = Math.ceil(restante / unidadLV.spr);
+                    let usar = Math.min(necesarias, unidadLV.restante);
+                    if (usar <= 0) break;
+
+                    asentarUnidadEnPlan(filas, unidadLV, usar);
+                    restante -= (usar * unidadLV.spr);
+                    unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
+                }}
             }}
 
-            if (unidad) {{
-                let necesarias = Math.ceil(restante / unidad.spr);
-                let usar = Math.min(necesarias, unidad.restante);
-                if (usar > 0) {{
-                    asentarUnidadEnPlan(filas, unidad, usar);
-                    restante -= (usar * unidad.spr);
+            // CONSUMIR RESTO DE VOLUMEN CON LARGE VAN Y SMALL VAN MLP
+            if (restante > 0) {{
+                let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                for (let nombreMlp of listaMLPForaneo) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                    while (unidad && unidad.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar = Math.min(necesarias, unidad.restante);
+                        if (usar <= 0) break;
+
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                    }}
+                }}
+            }}
+
+            // 4. DESBORDE TOTAL A CROWD (Tuzamapa, Xico y resto)
+            if (restante > 0) {{
+                for (let nombreCrowd of listaCrowdPrioridad) {{
+                    if (restante <= 0) break;
+                    let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                    while (unidad && unidad.restante > 0 && restante > 0) {{
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar = Math.min(necesarias, unidad.restante);
+                        if (usar <= 0) break;
+
+                        asentarUnidadEnPlan(filas, unidad, usar);
+                        restante -= (usar * unidad.spr);
+                        unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreCrowd.toLowerCase());
+                    }}
                 }}
             }}
         }}
     }}
+
 
     function asentarUnidadEnPlan(filas, unidad, cantidad) {{
         if (cantidad <= 0) return;
