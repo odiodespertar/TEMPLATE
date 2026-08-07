@@ -2035,33 +2035,7 @@ app_html = f"""
 
 
 
-<!-- MODAL PARA EDITAR PLAN Y PRIORIDADES CON SELECTORES -->
-<div id="modalEditarPlan" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:#1e2227; color:white; border:1px solid #3e4451; padding:20px; border-radius:8px; width:450px; max-width:90%;">
-        <h3 style="margin-top:0; color:#61afef; text-align:center;">✏️ Editar Configuración del Plan</h3>
-        
-        <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">Nombre del Plan:</label>
-        <input type="text" id="editPlanNombreInput" style="width:100%; padding:8px; border-radius:4px; border:1px solid #4b5263; background:#282c34; color:white; font-weight:bold; margin-bottom:15px;">
 
-        <label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">Unidades Prioritarias (En orden de prioridad):</label>
-        <div id="contenedorPrioridadesEdit" style="max-height:200px; overflow-y:auto; margin-bottom:10px; padding-right:5px;">
-            <!-- Aquí se cargarán dinámicamente los selectores de unidades -->
-        </div>
-
-        <button type="button" onclick="agregarSelectorPrioridadEdit()" style="cursor:pointer; background:#98c379; color:#1e2227; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; width:100%; margin-bottom:15px;">
-            ➕ Añadir Otra Unidad Prioritaria
-        </button>
-
-        <div style="display:flex; justify-content:space-between; gap:10px;">
-            <button type="button" onclick="cerrarModalEditarPlan()" style="cursor:pointer; background:#e06c75; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:bold; flex:1;">
-                Cancelar
-            </button>
-            <button type="button" onclick="guardarCambiosModalPlan()" style="cursor:pointer; background:#61afef; color:white; border:none; padding:8px 15px; border-radius:4px; font-weight:bold; flex:1;">
-                💾 Guardar Cambios
-            </button>
-        </div>
-    </div>
-</div>
 
 
 
