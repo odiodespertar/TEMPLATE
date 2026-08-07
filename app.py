@@ -2407,6 +2407,7 @@ app_html = f"""
         nuevoContentFlota.className = "t-content";
         nuevoContentFlota.style.display = "none";
 
+        // BARRA DE ACCIONES PARA EDITAR / ELIMINAR RUTEO GUARDADO
         let botonesAccion = idBD ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
                 <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
@@ -2414,7 +2415,8 @@ app_html = f"""
             </div>
         ` : '';
 
-        let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important;">ORH</th>` : '';
+        // Encabezados con anchos compactos explícitos
+        let thORH = incluirORH ? `<th colspan="2" style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 105px;">ORH</th>` : '';
         let thOcup = incluirOcup ? `<th style="border-right: 0.5px solid #25282b; padding: 2px; font-size: 11px; color: #25282b !important; width: 45px;">% OCUP</th>` : '';
         let colspanFooter = 1 + (incluirORH ? 2 : 0) + (incluirOcup ? 1 : 0) + 3;
 
@@ -2441,19 +2443,19 @@ app_html = f"""
             ` : '';
 
             let tdOcup = incluirOcup ? `
-                <td contenteditable="true" class="edit-ocup" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:70px; background:#ffffff; color:#25282b;">0</td>
+                <td contenteditable="true" class="edit-ocup" oninput="recalc()" style="text-align:center; border:0.2px solid #25282b; width:45px; background:#ffffff; color:#25282b;">0</td>
             ` : '';
 
             htmlFlota += `
                 <tr class="master-row">
                     <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${{f.nombre}}</td>
-                    ${{tdORH}}
+                    ${{tdOR}H}
                     ${{tdOcup}}
-                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMin}}</td>
-                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff;">${{f.sprMax}}</td>
-                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold;">0</td>
-                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold;">0</td>
-                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold;">0</td>
+                    <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff; width: 45px;">${{f.sprMin}}</td>
+                    <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff; width: 45px;">${{f.sprMax}}</td>
+                    <td contenteditable="true" class="f-stock" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; font-weight: bold; width: 60px;">0</td>
+                    <td class="f-ruteadas" style="text-align: center; border: 0.2px solid #25282b; background-color: #ffffff; font-weight: bold; width: 57px;">0</td>
+                    <td class="f-left" style="text-align:center; border:0.2px solid #25282b; font-weight:bold; width: 50px;">0</td>
                 </tr>`;
         }});
 
