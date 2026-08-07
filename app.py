@@ -2449,7 +2449,7 @@ app_html = f"""
             htmlFlota += `
                 <tr class="master-row">
                     <td contenteditable="true" class="edit-name" oninput="recalc()" style="font-weight: bold; text-align: left; padding-left: 10px; border: 0.2px solid #25282b; color: #25282b;">${{f.nombre}}</td>
-                    ${{tdOR}H}
+                    ${{tdORH}}
                     ${{tdOcup}}
                     <td contenteditable="true" class="edit-spr-min" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff; width: 45px;">${{f.sprMin}}</td>
                     <td contenteditable="true" class="edit-spr-max" oninput="recalc()" style="text-align: center; border: 0.2px solid #25282b; background-color: #25282b; color: #ffffff; width: 45px;">${{f.sprMax}}</td>
