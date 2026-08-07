@@ -1349,7 +1349,22 @@ app_html = f"""
                             </div>
                         </div>
                     </div>
+
+                
+                <!-- 🟢 CASILLAS OPIONALES AGREGADAS AQUÍ -->
+                    <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #444; display: flex; gap: 25px; align-items: center;">
+                        <span style="color: #aaa; font-size: 12px; font-weight: bold;">Columnas adicionales opcionales:</span>
+                        <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="chk-incluir-orh" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir ORH
+                        </label>
+                        <label style="color: #26d4ca; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="chk-incluir-ocup" style="transform: scale(1.2); accent-color: #26d4ca;"> Incluir % OCUPACIÓN
+                        </label>
+                    </div>
                 </div>
+
+
+                
 
                 <div style="background: #25282b; border: 1px solid #454545; border-radius: 10px; padding: 18px;">
                     <h3 style="color: #FFD700; margin-top: 0;">2️⃣ CONFIGURACIÓN DE POLÍGONOS Y UNIDADES</h3>
