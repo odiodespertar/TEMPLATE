@@ -2167,44 +2167,7 @@ app_html = f"""
         }}
     }}
 
-    // ==============================================================================
-    // ✏️ MODAL INTERACTIVO DE EDICIÓN CON SELECTORES (LISTA DE FLOTA)
-    // ==============================================================================
-    var bloquePlanEnEdicion = null;
-
-    window.abrirModalEditarPlan = function(btn) {{
-        var bloque = btn.closest('.poligono-bloque');
-        if (!bloque) return;
-
-        bloquePlanEnEdicion = bloque;
-
-        var celdaPlan = bloque.querySelector('.plan-cell');
-        var divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
-        var nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
-        
-        var inputNom = document.getElementById('editPlanNombreInput');
-        if (inputNom) inputNom.value = nombreActual;
-
-        var contenedor = document.getElementById('contenedorPrioridadesEdit');
-        if (contenedor) contenedor.innerHTML = "";
-
-        var prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
-                             bloque.getAttribute('data-prioridades') || "";
-        
-        var lista = prioridadesRaw.split(',').map(function(p) {{ return p.trim(); }}).filter(function(p) {{ return p !== "" && p.indexOf("Sin prioridad") === -1; }});
-
-        if (lista.length === 0) {{
-            agregarSelectorPrioridadEdit("");
-        }} else {{
-            lista.forEach(function(prio) {{
-                agregarSelectorPrioridadEdit(prio);
-            }});
-        }}
-
-        var modal = document.getElementById('modalEditarPlan');
-        if (modal) modal.style.display = 'flex';
-    }};
-
+   
     function agregarSelectorPrioridadEdit(valSeleccionado) {{
         if (valSeleccionado === undefined) valSeleccionado = "";
         var contenedor = document.getElementById('contenedorPrioridadesEdit');
