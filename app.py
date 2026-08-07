@@ -2515,7 +2515,7 @@ app_html = f"""
 
         let contenedorPolysPadre = document.getElementById("polys-4")?.parentNode || document.body;
         let nuevoContentPolys = document.createElement("div");
-        nuevoContentPolys.id = `polys-${nuevoTabId}`;
+        nuevoContentPolys.id = `polys-${{nuevoTabId}}`;
         nuevoContentPolys.className = "p-content";
         if (idBD) nuevoContentPolys.setAttribute("data-id-bd", idBD);
         nuevoContentPolys.style.display = "none";
