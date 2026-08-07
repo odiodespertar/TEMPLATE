@@ -4283,8 +4283,8 @@ app_html = f"""
     }}
 
     
-    // ==============================================================================
-    // 🔴 MOTOR C1 SJA1 (BALANCEADO DE MLP EN FORÁNEOS Y NODOS PROTEGIDOS)
+   // ==============================================================================
+    // 🔴 MOTOR C1 SJA1 (BALANCEADO DE MLP SOLO PARA VOLÚMENES GRANDES Y TEZIUTLÁN)
     // ==============================================================================
     function procesarAsignacionCompletaSJA1(polys, fleetList) {{
         const listaCrowdPrioridad = [
@@ -4297,7 +4297,7 @@ app_html = f"""
         ];
 
         // ------------------------------------------------------------------
-        // FASE 1: NODOS, ESPECIALES, RENTALS Y REPARTO BALANCEADO DE MLP
+        // FASE 1: NODOS, ESPECIALES, RENTALS Y REPARTO DE MLP INTELIGENTE
         // ------------------------------------------------------------------
         polys.forEach(poly => {{
             let bloque = poly.bloque;
@@ -4373,12 +4373,12 @@ app_html = f"""
                     }}
                 }}
             }}
-            // 3. PLANES FORÁNEOS (TEZUITLAN, PEROTE, XICO, TUZAMAPA, ETC.)
+            // 3. PLANES FORÁNEOS
             else {{
                 let celdaNodo = bloque.querySelector('.nodos-val');
                 let cantidadNodos = celdaNodo ? (parseInt(celdaNodo.innerText) || 0) : 0;
 
-                // SI TIENE NODO: Exige acaparar Large Van MLP foráneo
+                // SI TIENE NODO: Exige acaparar Large Van MLP foráneo obligatoriamente
                 if (cantidadNodos > 0) {{
                     let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
                     while (unidadLV && unidadLV.restante > 0 && restante > 0) {{
@@ -4392,12 +4392,15 @@ app_html = f"""
                     }}
                 }}
 
-                // SI NO TIENE NODO: Reparto balanceado entre Large Van y Small Van MLP
-                if (restante > 0) {{
+                // CONDICIÓN PARA REPARTO MIXTO: VOLUMEN MAYOR A 1000 O QUE SEA TEZIUTLÁN
+                let esTeziutlan = (nombrePlan.includes("TEZIUTLAN") || nombrePlan.includes("TEZUITLAN"));
+                let esGranVolumen = (objetivo >= 1000) || esTeziutlan;
+
+                if (restante > 0 && esGranVolumen) {{
                     let unidadLV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "large van mlp foráneo");
                     let unidadSV = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === "small van mlp foráneo");
 
-                    // Si existen ambas unidades disponibles, asigna primero una fracción en Large Van y el remanente en Small Van
+                    // Dividir entre ambas unidades solo si existen y hay volumen alto
                     if (unidadLV && unidadSV && unidadLV.restante > 0 && unidadSV.restante > 0) {{
                         let usarLV = Math.min(Math.floor((restante * 0.65) / unidadLV.spr), unidadLV.restante);
                         if (usarLV > 0) {{
@@ -4411,22 +4414,22 @@ app_html = f"""
                             restante -= (usarSV * unidadSV.spr);
                         }}
                     }}
+                }}
 
-                    // Si aún resta volumen o faltaba alguna unidad, se consume en orden estándar
-                    if (restante > 0) {{
-                        let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
-                        for (let nombreMlp of listaMLPForaneo) {{
-                            if (restante <= 0) break;
-                            let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                            while (unidad && unidad.restante > 0 && restante > 0) {{
-                                let necesarias = Math.ceil(restante / unidad.spr);
-                                let usar = Math.min(necesarias, unidad.restante);
-                                if (usar <= 0) break;
+                // CONSUMIR RESTO (Aplica para planes < 1000 o volumen remanente)
+                if (restante > 0) {{
+                    let listaMLPForaneo = ["Large Van MLP foráneo", "Small Van MLP foráneo"];
+                    for (let nombreMlp of listaMLPForaneo) {{
+                        if (restante <= 0) break;
+                        let unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
+                        while (unidad && unidad.restante > 0 && restante > 0) {{
+                            let necesarias = Math.ceil(restante / unidad.spr);
+                            let usar = Math.min(necesarias, unidad.restante);
+                            if (usar <= 0) break;
 
-                                asentarUnidadEnPlan(filas, unidad, usar);
-                                restante -= (usar * unidad.spr);
-                                unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
-                            }}
+                            asentarUnidadEnPlan(filas, unidad, usar);
+                            restante -= (usar * unidad.spr);
+                            unidad = fleetList.find(f => f.restante > 0 && f.nombre.toLowerCase() === nombreMlp.toLowerCase());
                         }}
                     }}
                 }}
