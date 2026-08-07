@@ -2184,80 +2184,81 @@ app_html = f"""
                 }}
 
                 removerRuteoDePantallaPorId(idRuteoBD);
-                alert(`✅ Ruteo "${{nombreRuteo}}" eliminado.`);
+            alert("✅ Ruteo eliminado con éxito.");
+            if (typeof abrirGestorEliminacionMasiva === 'function') {
                 abrirGestorEliminacionMasiva(); // Refrescar modal
-            }} catch (err) {{
-                console.error("Error al eliminar:", err);
-            }}
-        }}
-    }}
-
-
+            }
+        } catch (err) {
+            console.error("Error al eliminar:", err);
+        }
+    }
 
     // ==============================================================================
-    // ✏️ MODAL INTERACTIVO DE EDICIÓN CON SELECTORES
+    // ✏️ MODAL INTERACTIVO DE EDICIÓN CON SELECTORES (LISTA DE FLOTA)
     // ==============================================================================
-    let bloquePlanEnEdicion = null;
+    var bloquePlanEnEdicion = null;
 
-    // Abrir el modal y cargar la información actual
     window.abrirModalEditarPlan = function(btn) {{
-        let bloque = btn.closest('.poligono-bloque');
+        var bloque = btn.closest('.poligono-bloque');
         if (!bloque) return;
 
         bloquePlanEnEdicion = bloque;
 
-        let celdaPlan = bloque.querySelector('.plan-cell');
-        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
-        let nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
+        var celdaPlan = bloque.querySelector('.plan-cell');
+        var divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
+        var nombreActual = divNombre ? divNombre.innerText.trim() : (celdaPlan ? celdaPlan.innerText.trim() : "");
         
-        document.getElementById('editPlanNombreInput').value = nombreActual;
+        var inputNom = document.getElementById('editPlanNombreInput');
+        if (inputNom) inputNom.value = nombreActual;
 
-        // Limpiar contenedor de selectores
-        let contenedor = document.getElementById('contenedorPrioridadesEdit');
-        contenedor.innerHTML = "";
+        var contenedor = document.getElementById('contenedorPrioridadesEdit');
+        if (contenedor) contenedor.innerHTML = "";
 
-        // Obtener prioridades guardadas actualmente
-        let prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
+        var prioridadesRaw = bloque.getAttribute('data-unidad-prioritaria') || 
                              bloque.getAttribute('data-prioridades') || "";
         
-        let lista = prioridadesRaw.split(',').map(p => p.trim()).filter(p => p !== "" && !p.includes("Sin prioridad"));
+        var lista = prioridadesRaw.split(',').map(function(p) { return p.trim(); }).filter(function(p) {{ return p !== "" && p.indexOf("Sin prioridad") === -1; }});
 
         if (lista.length === 0) {{
-            agregarSelectorPrioridadEdit(""); // Si no tiene, agrega un selector vacío por defecto
+            agregarSelectorPrioridadEdit("");
         }} else {{
-            lista.forEach(prio => agregarSelectorPrioridadEdit(prio));
+            lista.forEach(function(prio) {{
+                agregarSelectorPrioridadEdit(prio);
+            }});
         }}
 
-        document.getElementById('modalEditarPlan').style.display = 'flex';
+        var modal = document.getElementById('modalEditarPlan');
+        if (modal) modal.style.display = 'flex';
     }};
 
-    // Función para agregar un nuevo desplegable con las unidades de la flota activa
-    function agregarSelectorPrioridadEdit(valSeleccionado = "") {{
-        let contenedor = document.getElementById('contenedorPrioridadesEdit');
+    function agregarSelectorPrioridadEdit(valSeleccionado) {
+        if (valSeleccionado === undefined) valSeleccionado = "";
+        var contenedor = document.getElementById('contenedorPrioridadesEdit');
+        if (!contenedor) return;
 
-        // Extraer lista de unidades de la tabla de flota activa
-        let opcionesFleet = [];
-        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(row => {{
-            let nombre = row.querySelector('.edit-name')?.innerText.trim();
+        var opcionesFleet = [];
+        document.querySelectorAll('#body-' + currentTab + ' tr').forEach(function(row) {{
+            var nombreEl = row.querySelector('.edit-name');
+            var nombre = nombreEl ? nombreEl.innerText.trim() : "";
             if (nombre && nombre !== "IGNORAR") {{
                 opcionesFleet.push(nombre);
             }}
         }});
 
-        let divFila = document.createElement('div');
+        var divFila = document.createElement('div');
         divFila.style.cssText = "display:flex; gap:5px; margin-bottom:8px; align-items:center;";
 
-        let select = document.createElement('select');
+        var select = document.createElement('select');
         select.className = "select-prioridad-modal";
         select.style.cssText = "flex:1; padding:6px; border-radius:4px; border:1px solid #4b5263; background:#282c34; color:white; font-weight:bold;";
 
-        let optDefault = document.createElement('option');
+        var optDefault = document.createElement('option');
         optDefault.value = "";
         optDefault.innerText = "-- Sin prioridad (Usar Flota Estándar) --";
         select.appendChild(optDefault);
 
-        opcionesFleet.forEach(uNombre => {{
-            let opt = document.createElement('option');
+        opcionesFleet.forEach(function(uNombre) {{
+            var opt = document.createElement('option');
             opt.value = uNombre;
             opt.innerText = uNombre;
             if (uNombre.toLowerCase() === valSeleccionado.toLowerCase()) {{
@@ -2266,7 +2267,7 @@ app_html = f"""
             select.appendChild(opt);
         }});
 
-        let btnBorrar = document.createElement('button');
+        var btnBorrar = document.createElement('button');
         btnBorrar.type = "button";
         btnBorrar.innerText = "❌";
         btnBorrar.style.cssText = "cursor:pointer; background:#e06c75; color:white; border:none; padding:6px 10px; border-radius:4px;";
@@ -2280,33 +2281,32 @@ app_html = f"""
     }}
 
     function cerrarModalEditarPlan() {{
-        document.getElementById('modalEditarPlan').style.display = 'none';
+        var modal = document.getElementById('modalEditarPlan');
+        if (modal) modal.style.display = 'none';
         bloquePlanEnEdicion = null;
     }}
 
-    // Guardar los cambios hechos en el modal
     function guardarCambiosModalPlan() {{
         if (!bloquePlanEnEdicion) return;
 
-        let nuevoNombre = document.getElementById('editPlanNombreInput').value.trim();
+        var inputNom = document.getElementById('editPlanNombreInput');
+        var nuevoNombre = inputNom ? inputNom.value.trim() : "";
         if (nuevoNombre === "") {{
             alert("El nombre del plan no puede estar vacío.");
             return;
         }}
 
-        // Recolectar valores seleccionados en los dropdowns
-        let prioridadesSeleccionadas = [];
-        document.querySelectorAll('.select-prioridad-modal').forEach(sel => {{
+        var prioridadesSeleccionadas = [];
+        document.querySelectorAll('.select-prioridad-modal').forEach(function(sel) {{
             if (sel.value && sel.value.trim() !== "") {{
                 prioridadesSeleccionadas.push(sel.value.trim());
             }}
         }});
 
-        let prioridadesStr = prioridadesSeleccionadas.join(', ');
+        var prioridadesStr = prioridadesSeleccionadas.join(', ');
 
-        // Actualizar el DOM del polígono
-        let celdaPlan = bloquePlanEnEdicion.querySelector('.plan-cell');
-        let divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
+        var celdaPlan = bloquePlanEnEdicion.querySelector('.plan-cell');
+        var divNombre = celdaPlan ? celdaPlan.querySelector('div') : null;
 
         if (divNombre) {{
             divNombre.innerText = nuevoNombre.toUpperCase();
@@ -2322,7 +2322,7 @@ app_html = f"""
         }}
 
         cerrarModalEditarPlan();
-        alert("✅ ¡Plan " + nuevoNombre.toUpperCase() + " actualizado con éxito!\nPrioridades: " + (prioridadesStr || "Sin prioridad"));
+        alert("✅ ¡Plan " + nuevoNombre.toUpperCase() + " actualizado con éxito!");
     }}
 
 
