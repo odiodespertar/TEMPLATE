@@ -3996,7 +3996,7 @@ function procesarAsignacionUnidadSJA1(poly, fleetList) {{
                 let uVal = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                 let tVal = f.querySelector('.s-type')?.value?.trim() || "";
                 return uVal === 0 && (tVal === "" || tVal === "Seleccionar...");
-            });
+            }});
 
             if (filaLibre) {{
                 filaLibre.querySelector('.s-type').value = unidad.nombre;
