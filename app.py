@@ -4420,4 +4420,64 @@ html_limpio = """
     
     .unified-console {
         background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-No puedo ayudarte porque solo soy un modelo de lenguaje y no lo entiendo.
+        margin-bottom: 20px; border: 1px solid #25282b; text-align: center; width: 100%; max-width: 500px;
+    }
+    .display-screen {
+        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
+    }
+    .btn-3d {
+        background: linear-gradient(145deg, #1e90ff, #1c82e6);
+        color: white; border: none; padding: 12px 25px; border-radius: 10px;
+        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
+    }
+    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
+    
+    .map-container {
+        background: #1e1e1e; border-radius: 12px; padding: 15px; 
+        width: 100%; max-width: 900px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .map-container img {
+        max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #444;
+    }
+</style>
+
+<div class="main-box">
+    <!-- Reloj Restador / Consola -->
+    <div class="unified-console"> 
+        <div class="display-screen">
+            <div style="color: #ffffff; font-size: 10px; margin-bottom: 5px;">HORA / RESTADOR / CONVERTIDOR</div>
+            <div id="horaReal" style="font-size: 38px; color: #FF00FF; font-family: sans-serif; font-weight: bold;">--:--</div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+            <div>
+                <span style="color: #add8e6; font-size: 11px; display: block;">MINUTOS</span>
+                <input type="number" id="minInput" value="10" 
+                    style="background: #222; color: #FFE4E1; border: none; padding: 8px; border-radius: 5px; width: 70px; text-align: center; font-size: 20px; font-weight: bold;">
+            </div>
+            <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
+        </div>
+    </div>
+
+    <!-- Imagen del Mapa Operativo -->
+    <div class="map-container">
+        <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
+        <img src='""" + url_final + """' alt="Mapa de regiones">
+    </div>
+</div>
+
+<script>
+    function ejecutarTodo() {
+        const mins = document.getElementById('minInput').value || 0;
+        const ahora = new Date();
+        const nuevaFecha = new Date(ahora.getTime() - (mins * 60000));
+        const h = String(nuevaFecha.getHours()).padStart(2, '0');
+        const m = String(nuevaFecha.getMinutes()).padStart(2, '0');
+        document.getElementById('horaReal').innerText = h + ":" + m;
+    }
+    ejecutarTodo();
+</script>
+"""
+
+# Renderizado final del componente inferior
+st.markdown("---")
+html(html_limpio, height=850, scrolling=True)
