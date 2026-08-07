@@ -8,10 +8,14 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
+
 # Identificador de usuario o estación
 usuario_activo = st.sidebar.text_input("👤 Usuario / Estación:", value="Usuario_1").strip().replace(" ", "_")
 
-# Se pasa esta variable al bloque donde generas el HTML/JS
+# Validación: Si el usuario borra todo la casilla, asignamos un valor por defecto
+if not usuario_activo:
+    usuario_activo = "Usuario_1"
+
 st.session_state["usuario_activo"] = usuario_activo
 
 
@@ -2044,10 +2048,11 @@ app_html = f"""
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
     
-    const usuarioActivo = "{usuario_activo}"; 
+    // 🟢 Agregamos respaldo si usuario_activo viene vacío
+    const usuarioActivo = ("{usuario_activo}".trim() || "Usuario_1").replace(/\s+/g, '_'); 
     
     function obtenerClaveUsuario(tabNombre) {{
-        return tabNombre + "_" + usuarioActivo;
+        return (tabNombre || currentTab) + "_" + usuarioActivo;
     }}
 
 
