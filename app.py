@@ -2391,7 +2391,6 @@ app_html = f"""
         let botonesAccion = idBD ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
                 <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #28a745; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
-                <button onclick="eliminarRuteoCompleto(${{idBD}}, '${{nombreRuteo}}')" style="cursor:pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ ELIMINAR RUTEO</button>
             </div>
         ` : '';
 
