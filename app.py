@@ -1408,52 +1408,52 @@ app_html = f"""
     // ==============================================================================
     // 🗑️ 1. FUNCIÓN PARA ELIMINAR UN RUTEO DE LA BD
     // ==============================================================================
-    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {
-        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${nombreRuteo}"?`)) {
+    async function eliminarRuteoCompleto(idRuteoBD, nombreRuteo) {{
+        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el ruteo "${{nombreRuteo}}"?`)) {{
             return;
-        }
+        }}
 
-        if (supabaseClient) {
-            try {
-                const { error } = await supabaseClient
+        if (supabaseClient) {{
+            try {{
+                const {{ error }} = await supabaseClient
                     .from('ruteos_guardados')
                     .delete()
                     .eq('id', idRuteoBD);
 
-                if (error) {
+                if (error) {{
                     alert("⚠️ Error al eliminar de la base de datos: " + error.message);
                     return;
-                }
+                }}
 
-                alert(`Ruteo "${nombreRuteo}" eliminado con éxito.`);
+                alert(`Ruteo "${{nombreRuteo}}" eliminado con éxito.`);
                 window.location.reload();
-            } catch (err) {
+            }} catch (err) {{
                 console.error("Error al eliminar en Supabase:", err);
-            }
-        }
-    }
+            }}
+        }}
+    }}
 
     // ==============================================================================
     // 💾 2. FUNCIÓN PARA GUARDAR CAMBIOS EDITADOS DE UN RUTEO EXISTENTE
     // ==============================================================================
-    async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {
+    async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {{
         if (!supabaseClient) return;
 
-        try {
-            const { error } = await supabaseClient
+        try {{
+            const {{ error }} = await supabaseClient
                 .from('ruteos_guardados')
-                .update({ datos: nuevosDatos })
+                .update({{ datos: nuevosDatos }})
                 .eq('id', idRuteoBD);
 
-            if (error) {
+            if (error) {{
                 alert("⚠️ Error al guardar los cambios: " + error.message);
-            } else {
+            }} else {{
                 alert("✅ ¡Cambios guardados con éxito en la base de datos!");
-            }
-        } catch (err) {
+            }}
+        }} catch (err) {{
             console.error("Error al actualizar ruteo:", err);
-        }
-    }
+        }}
+    }}
     
 
     // ==============================================================================
