@@ -2155,29 +2155,48 @@ app_html = f"""
         }}
     }}
 
-    // Función auxiliar para quitar elementos HTML/Selector en tiempo real
+
+    // 🛠️ FUNCIÓN PARA ELIMINAR EL RUTEO DE LA PANTALLA EN TIEMPO REAL SIN RECARGAR
     function removerRuteoDePantallaPorId(idBD) {{
-        // 1. Remover del selector desplegable
         let selectorCiclos = document.getElementById("ciclo-selector");
+        let tabIdARemover = null;
+
+        // 1. Remover del selector desplegable buscando por ID de Supabase o por el Valor del Tab
         if (selectorCiclos) {{
             Array.from(selectorCiclos.options).forEach(opt => {{
-                if (opt.getAttribute("data-id-bd") == idBD) {{
+                if (opt.getAttribute("data-id-bd") == idBD || opt.value == idBD) {{
+                    tabIdARemover = opt.value;
                     opt.remove();
                 }}
             }});
-            // Cambiar a Extendido o C1 por defecto si estaba seleccionado el borrado
-            if (selectorCiclos.options.length > 0) {{
-                selectorCiclos.selectedIndex = 0;
-                cambiarCiclo(selectorCiclos.value);
+
+            if (selectorCiclos.value == tabIdARemover || !selectorCiclos.value) {{
+                if (selectorCiclos.options.length > 0) {{
+                    selectorCiclos.selectedIndex = 0;
+                    cambiarCiclo(selectorCiclos.value);
+                }}
             }}
         }}
 
-        // 2. Remover elementos del DOM
-        let divFlota = document.querySelector(`.t-content[data-id-bd="${{idBD}}"]`);
-        if (divFlota) divFlota.remove();
+        // 2. Remover tabla de flota del DOM
+        let divsFlota = document.querySelectorAll(`.t-content`);
+        divsFlota.forEach(el => {{
+            if (el.getAttribute("data-id-bd") == idBD || el.id == `tab-${tabIdARemover}`) {{
+                el.remove();
+            }}
+        }});
 
-        let divPoly = document.querySelector(`.p-content[data-id-bd="${{idBD}}"]`);
-        if (divPoly) divPoly.remove();
+        // 3. Remover bloque de polígonos del DOM
+        let divsPoly = document.querySelectorAll(`.p-content`);
+        divsPoly.forEach(el => {{
+            if (el.getAttribute("data-id-bd") == idBD || el.id == `polys-${tabIdARemover}`) {{
+                el.remove();
+            }}
+        }});
+
+        if (typeof recalc === 'function') {{
+            recalc();
+        }}
     }}
 
 
@@ -2189,6 +2208,7 @@ app_html = f"""
             else alert("✅ ¡Cambios guardados con éxito en la base de datos!");
         }} catch (err) {{ console.error("Error al actualizar ruteo:", err); }}
     }}
+
 
     function abrirCreadorRuteo() {{
         let modal = document.getElementById("modal-crear-ruteo");
