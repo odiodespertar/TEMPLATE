@@ -3197,7 +3197,7 @@ app_html = f"""
                         let yaAsignado = 0;
                         polyPlan.bloque.querySelectorAll('.calc-row').forEach(r => {{
                             yaAsignado += (parseInt(r.querySelector('.u-manual')?.innerText) || 0) * (parseFloat(r.querySelector('.spr-real-val')?.innerText) || 0);
-                        });
+                        }});
 
                         let restante = objetivo - yaAsignado;
                         if (restante <= 0) return;
