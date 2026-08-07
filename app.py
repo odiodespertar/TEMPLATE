@@ -2401,7 +2401,7 @@ app_html = f"""
             }});
         }});
 
-        let datosEstructura = { {
+        let datosEstructura = {{
             flota: flotaElegida, 
             planes: planesElegidos, 
             incluirORH: incluirORH, 
