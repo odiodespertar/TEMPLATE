@@ -2938,6 +2938,7 @@ app_html = f"""
         }}
     }}
 
+
     function recalc() {{
         let fleet = {{}};
         let tabId = currentTab;
@@ -3097,6 +3098,9 @@ app_html = f"""
         if (typeof actualizarDosPorciento === "function") actualizarDosPorciento();
     }}
 
+        actualizarSelects();
+    }}
+
     document.addEventListener('keydown', function(event) {{
         if (event.key !== 'Enter') return;
 
@@ -3130,9 +3134,13 @@ app_html = f"""
         }}
     }});
 
+
+
     function focusCalc() {{
         document.getElementById('calc_wrapper').focus();
     }}
+
+
 
     function filterRows(onlyActive) {{
         const rows = document.querySelectorAll('#body-' + currentTab + ' .master-row');
