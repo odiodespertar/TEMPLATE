@@ -3945,7 +3945,7 @@ app_html = f"""
             }}
 
             // Asignación de flota general para resto de pestañas
-            polys.forEach(poly => {
+            polys.forEach(poly => {{
                 let bloque = poly.bloque;
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
                 let objetivo = parseFloat(bloque.querySelector('.v-total-val')?.innerText) || 0;
