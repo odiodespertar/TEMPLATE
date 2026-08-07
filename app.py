@@ -1651,9 +1651,12 @@ app_html = f"""
             🧠 AUTO-CALCULAR
         </button>
 
-        <button id="excel-btn" onclick="toggleExcelView()">
-            VISTA EXCEL
-        </button>
+        <div class="btn-tooltip-container" style="display:none;">
+    <button id="excel-btn"
+            onclick="toggleExcelView()">
+        VISTA EXCEL
+    </button>
+</div>
         
         <button class="filter-btn" onclick="filterRows(true)" style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1px solid #25282b; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
             ACTIVAS
