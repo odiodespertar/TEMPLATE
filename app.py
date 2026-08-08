@@ -2832,6 +2832,8 @@ app_html = f"""
         }}
     }}
 
+
+
     async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
@@ -2864,7 +2866,6 @@ app_html = f"""
             let nombrePlan = bloque.querySelector(".input-nombre-plan")?.value.trim().toUpperCase() || "PLAN";
             let filasPlan = parseInt(bloque.querySelector(".input-filas-plan")?.value) || 3;
             
-            // Capturar TODAS las unidades prioritarias seleccionadas para este plan
             let unidadesPrioritarias = [];
             bloque.querySelectorAll(".input-unidad-prioritaria-plan").forEach(select => {{
                 let val = select.value.trim();
@@ -2876,53 +2877,20 @@ app_html = f"""
             planesElegidos.push({{
                 nombre: nombrePlan, 
                 filas: filasPlan, 
-                unidadesPrioritarias: unidadesPrioritarias // Array de unidades en orden
+                unidadesPrioritarias: unidadesPrioritarias
             }});
         }});
 
-        let datosEstructura = {{
-            flota: flotaElegida, 
-            planes: planesElegidos, 
-            incluirORH: incluirORH, 
-            incluirOcup: incluirOcup,
-            llevaNodos: llevaNodos
-        }};
-
-        let nuevoIdBD = null;
-
-        if (supabaseClient) {{
-            try {{
-                const res = await supabaseClient
-                    .from('ruteos_guardados')
-                    .insert([{{ 
-                        user_id: '{user_id_auth}', 
-                        nombre: nombreRuteo, 
-                        datos: datosEstructura 
-                    }}])
-                    .select();
-
-                if (res.error) {{ 
-                    alert("⚠️ Error al guardar en BD: " + res.error.message); 
-                    return; 
-                }}
-                
-                if (res.data && res.data.length > 0) {{
-                    nuevoIdBD = res.data[0].id;
-                }}
-            }} catch (err) {{ 
-                console.error("Error Supabase:", err); 
-            }}
-        }}
-
-        // Renderiza el nuevo ruteo usando el ID devuelto por Supabase
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
+        // Renderizado e integración inmediata en la pantalla
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, null, incluirORH, incluirOcup, llevaNodos);
         cerrarCreadorRuteo();
         
+        // Guardar estado en vivo del usuario en su navegador
         if (typeof guardarEstadoEnVivo === 'function') {{
             guardarEstadoEnVivo();
         }}
         
-        alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado exitosamente!`);
+        alert(`¡Ruteo "${{nombreRuteo}}" creado y activado exitosamente!`);
     }}
     
 
