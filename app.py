@@ -204,7 +204,22 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
             color: #0f172a !important;
             font-weight: 600 !important;
         }
+
+    .bot-animado {
+        text-align: center;
+        font-size: 42px;
+        margin: 5px 0 10px 0;
+        animation: moverCamion 2s ease-in-out infinite;
+    }
+
+    @keyframes moverCamion {
+        0% { transform: translateX(-15px); }
+        50% { transform: translateX(15px); }
+        100% { transform: translateX(-15px); }
+    }
+
     </style>
+	<div class="bot-animado">🚚</div>
     """, unsafe_allow_html=True)
 
     st.write("👉 Consulta un SVC para indicaciones 🔍")
