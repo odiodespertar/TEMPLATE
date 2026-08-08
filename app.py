@@ -39,6 +39,22 @@ def cargar_ruteos_bd():
     return []
 
 
+# 🟢 FUNCIÓN SEGURA PARA GUARDAR RUTEOS DESDE PYTHON CON SESIÓN ACTIVA
+def guardar_nuevo_ruteo_bd(nombre, datos):
+    if supabase and st.session_state.get("usuario_auth"):
+        try:
+            user_id_actual = st.session_state.usuario_auth.id
+            res = supabase.table("ruteos_guardados").insert({
+                "user_id": user_id_actual,
+                "nombre": nombre,
+                "datos": datos
+            }).execute()
+            return True, res.data
+        except Exception as e:
+            return False, str(e)
+    return False, "Usuario no autenticado."
+
+
 # ==============================================================================
 # 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
 # ==============================================================================
