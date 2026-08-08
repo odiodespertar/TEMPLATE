@@ -22,11 +22,10 @@ def init_supabase():
 
 supabase = init_supabase()
 
-# 🟢 Se MODIFICA únicamente esta función para filtrar por user_id
+# 🟢 Función para cargar ruteos filtrados por user_id
 def cargar_ruteos_bd():
     if supabase and st.session_state.get("usuario_auth"):
         try:
-            # Trae únicamente los ruteos que le pertenecen al user_id del usuario conectado
             user_id_actual = st.session_state.usuario_auth.id
             res = supabase.table("ruteos_guardados") \
                 .select("*") \
@@ -38,8 +37,7 @@ def cargar_ruteos_bd():
             return []
     return []
 
-
-# 🟢 FUNCIÓN SEGURA PARA GUARDAR RUTEOS DESDE PYTHON CON SESIÓN ACTIVA
+# 🟢 Función segura para guardar ruteos desde Python con sesión activa
 def guardar_nuevo_ruteo_bd(nombre, datos):
     if supabase and st.session_state.get("usuario_auth"):
         try:
@@ -53,6 +51,23 @@ def guardar_nuevo_ruteo_bd(nombre, datos):
         except Exception as e:
             return False, str(e)
     return False, "Usuario no autenticado."
+
+
+def guardar_ruteo_servidor(nombre, datos_json_str):
+    if supabase and st.session_state.get("usuario_auth"):
+        try:
+            u_id = st.session_state.usuario_auth.id
+            datos_obj = json.loads(datos_json_str)
+            res = supabase.table("ruteos_guardados").insert({
+                "user_id": u_id,
+                "nombre": nombre,
+                "datos": datos_obj
+            }).execute()
+            return True
+        except Exception as e:
+            print("Error al guardar:", e)
+            return False
+    return False
 
 
 # ==============================================================================
@@ -2875,21 +2890,16 @@ app_html = f"""
 
         let nuevoIdBD = null;
 
-        if (supabaseClient) {{
-            try {{
-                const {{ data, error }} = await supabaseClient
-                    .from('ruteos_guardados')
-                    .insert([{{ user_id: '{user_id_auth}', nombre: nombreRuteo, datos: datosEstructura }}])
-                    .select();
-
-                if (error) {{ alert("⚠️ Error al guardar en BD: " + error.message); return; }}
-                if (data && data.length > 0) nuevoIdBD = data[0].id;
-            }} catch (err) {{ console.error("Error Supabase:", err); }}
-        }}
-
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
+        // 🟢 Creador y renderizado inmediato en la pantalla del usuario
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, null, incluirORH, incluirOcup, llevaNodos);
         cerrarCreadorRuteo();
-        alert(`¡Ruteo "${{nombreRuteo}}" guardado exitosamente!`);
+        
+        // Disparar el guardado local del usuario activo
+        if (typeof guardarEstadoEnVivo === 'function') {{
+            guardarEstadoEnVivo();
+        }}
+        
+        alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado exitosamente!`);
     }}
     
 
