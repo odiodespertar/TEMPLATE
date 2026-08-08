@@ -2,6 +2,7 @@ import json
 import io
 import pandas as pd
 import streamlit as st 
+import extra_streamlit_components as stx
 from streamlit.components.v1 import html  
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
@@ -73,10 +74,28 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
 # ==============================================================================
 # 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
 # ==============================================================================
+# Inicializar gestor de cookies
+cookie_manager = stx.CookieManager(key="cookie_manager_auth")
 
+# 1. Recuperar sesión almacenada en cookies si no existe en session_state
 if "usuario_auth" not in st.session_state:
     st.session_state.usuario_auth = None
 
+if st.session_state.usuario_auth is None:
+    session_id_cookie = cookie_manager.get(cookie="sb_refresh_token")
+    if session_id_cookie and supabase:
+        try:
+            # Re-autenticar automáticamente usando el Refresh Token guardado
+            res_refresh = supabase.auth.refresh_session(session_id_cookie)
+            if res_refresh and res_refresh.user:
+                st.session_state.usuario_auth = res_refresh.user
+                st.session_state.supabase_session = res_refresh.session
+                st.session_state["usuario_activo"] = res_refresh.user.email.split("@")[0].replace(".", "_")
+                st.rerun()
+        except Exception:
+            pass
+
+# 2. Si sigue sin estar autenticado, mostrar formulario de Login
 if st.session_state.usuario_auth is None:
     st.markdown("<h1 style='text-align: center; color: white;'>🚚 MONITOR LOGÍSTICO</h1>", unsafe_allow_html=True)
     
@@ -100,6 +119,11 @@ if st.session_state.usuario_auth is None:
                         st.session_state.usuario_auth = res.user
                         st.session_state.supabase_session = res.session
                         st.session_state["usuario_activo"] = res.user.email.split("@")[0].replace(".", "_")
+                        
+                        # Guardar el token en la cookie por 7 días
+                        if res.session and res.session.refresh_token:
+                            cookie_manager.set("sb_refresh_token", res.session.refresh_token, max_age=7*24*3600)
+                        
                         st.rerun()
                     except Exception as e:
                         st.error("❌ Credenciales inválidas. Verifica tu correo y contraseña.")
