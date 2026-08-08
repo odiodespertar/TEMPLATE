@@ -22,16 +22,74 @@ def init_supabase():
 
 supabase = init_supabase()
 
+# 🟢 Se MODIFICA únicamente esta función para filtrar por user_id
 def cargar_ruteos_bd():
-    if supabase:
+    if supabase and st.session_state.get("usuario_auth"):
         try:
-            res = supabase.table("ruteos_guardados").select("*").order("created_at").execute()
+            # Trae únicamente los ruteos que le pertenecen al user_id del usuario conectado
+            user_id_actual = st.session_state.usuario_auth.id
+            res = supabase.table("ruteos_guardados") \
+                .select("*") \
+                .eq("user_id", user_id_actual) \
+                .order("created_at") \
+                .execute()
             return res.data
-        except Exception:
+        except Exception as e:
             return []
     return []
 
 
+# ==============================================================================
+# 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
+# ==============================================================================
+
+if "usuario_auth" not in st.session_state:
+    st.session_state.usuario_auth = None
+
+if st.session_state.usuario_auth is None:
+    st.markdown("<h1 style='text-align: center; color: white;'>🚚 MONITOR LOGÍSTICO</h1>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("form_login"):
+            st.subheader("🔑 Iniciar Sesión")
+            email_input = st.text_input("Correo electrónico:")
+            password_input = st.text_input("Contraseña:", type="password")
+            btn_login = st.form_submit_button("ENTRAR", use_container_width=True)
+            
+            if btn_login:
+                if not email_input or not password_input:
+                    st.error("⚠️ Ingrese correo y contraseña.")
+                else:
+                    try:
+                        res = supabase.auth.sign_in_with_password({
+                            "email": email_input.strip(),
+                            "password": password_input.strip()
+                        })
+                        st.session_state.usuario_auth = res.user
+                        st.session_state.supabase_session = res.session
+                        st.session_state["usuario_activo"] = res.user.email.split("@")[0].replace(".", "_")
+                        st.rerun()
+                    except Exception as e:
+                        st.error("❌ Credenciales inválidas. Verifica tu correo y contraseña.")
+    st.stop()
+
+# ==============================================================================
+# 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
+# ==============================================================================
+
+st.sidebar.markdown(f"👤 **Usuario Conectado:** `{st.session_state['usuario_activo']}`")
+if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
+    try:
+        supabase.auth.sign_out()
+    except Exception:
+        pass
+    st.session_state.usuario_auth = None
+    st.session_state.supabase_session = None
+    st.rerun()
+
+usuario_activo = st.session_state["usuario_activo"]
+user_id_auth = st.session_state.usuario_auth.id
 
 
 
@@ -2803,7 +2861,7 @@ app_html = f"""
 
         if (supabaseClient) {{
             try {{
-                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]).select();
+                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').insert([{{ nombre: nombreRuteo, datos: datosEstructura }}]).select();const { data, error } = await supabaseClient.from('ruteos_guardados').insert([{ user_id: '{user_id_auth}', nombre: nombreRuteo, datos: datosEstructura }]).select();
                 if (error) {{ alert("⚠️ Error al guardar en BD: " + error.message); return; }}
                 if (data && data.length > 0) nuevoIdBD = data[0].id;
             }} catch (err) {{ console.error("Error Supabase:", err); }}
