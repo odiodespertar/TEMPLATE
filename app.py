@@ -122,6 +122,15 @@ if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
 usuario_activo = st.session_state["usuario_activo"]
 user_id_auth = st.session_state.usuario_auth.id
 
+# Extracción segura de token para evitar errores de sintaxis en JS
+token_auth = ""
+if "supabase_session" in st.session_state and st.session_state.supabase_session:
+    session_obj = st.session_state.supabase_session
+    if hasattr(session_obj, "access_token"):
+        token_auth = session_obj.access_token
+    elif isinstance(session_obj, dict):
+        token_auth = session_obj.get("access_token", "")
+
 
 
 
@@ -2841,7 +2850,7 @@ app_html = f"""
 
 
 
-    async function guardarNuevoRuteoCompleto() {{
+   async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         if (!inputNombre) return;
 
@@ -2888,29 +2897,46 @@ app_html = f"""
             }});
         }});
 
-        // Renderizado e integración inmediata en la pantalla
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, null, incluirORH, incluirOcup, llevaNodos);
+        let datosEstructura = {{
+            flota: flotaElegida, 
+            planes: planesElegidos, 
+            incluirORH: incluirORH, 
+            incluirOcup: incluirOcup,
+            llevaNodos: llevaNodos
+        }};
+
+        let nuevoIdBD = Date.now(); // ID temporal para pintar en pantalla al instante
+
+        // 1. Dibuja la pestaña de inmediato en tu pantalla
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
         cerrarCreadorRuteo();
-        
-        // Guardar estado en vivo del usuario en su navegador
+
+        // 2. Intenta guardar en la base de datos de Supabase en segundo plano
+        if (supabaseClient) {{
+            try {{
+                const res = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{{ 
+                        user_id: '{user_id_auth}', 
+                        nombre: nombreRuteo, 
+                        datos: datosEstructura 
+                    }}])
+                    .select();
+
+                if (res.error) {{ 
+                    console.error("Error BD:", res.error);
+                    alert("⚠️ El ruteo se activó en pantalla pero hubo un detalle al guardar en BD: " + res.error.message); 
+                }} else {{
+                    alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
+                }}
+            }} catch (err) {{ 
+                console.error("Excepción Supabase:", err);
+            }}
+        }}
+
         if (typeof guardarEstadoEnVivo === 'function') {{
             guardarEstadoEnVivo();
         }}
-        
-        alert(`¡Ruteo "${{nombreRuteo}}" creado y activado exitosamente!`);
-    }}
-    
-
-    async function cargarRuteosDesdeSupabase() {{
-        if (!supabaseClient) return;
-        try {{
-            const {{ data, error }} = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: true }});
-            if (data && data.length > 0) {{
-                data.forEach(ruteo => {{
-                    crearTabYContenidoEnPantalla(ruteo.nombre, ruteo.datos.flota || [], ruteo.datos.planes || [], ruteo.id, ruteo.datos.incluirORH || false, ruteo.datos.incluirOcup || false);
-                }});
-            }}
-        }} catch (err) {{ console.error("Error de conexión:", err); }}
     }}
 
 
