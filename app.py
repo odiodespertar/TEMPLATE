@@ -2890,11 +2890,34 @@ app_html = f"""
 
         let nuevoIdBD = null;
 
-        // 🟢 Creador y renderizado inmediato en la pantalla del usuario
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, null, incluirORH, incluirOcup, llevaNodos);
+        if (supabaseClient) {{
+            try {{
+                const res = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{{ 
+                        user_id: '{user_id_auth}', 
+                        nombre: nombreRuteo, 
+                        datos: datosEstructura 
+                    }}])
+                    .select();
+
+                if (res.error) {{ 
+                    alert("⚠️ Error al guardar en BD: " + res.error.message); 
+                    return; 
+                }}
+                
+                if (res.data && res.data.length > 0) {{
+                    nuevoIdBD = res.data[0].id;
+                }}
+            }} catch (err) {{ 
+                console.error("Error Supabase:", err); 
+            }}
+        }}
+
+        // Renderiza el nuevo ruteo usando el ID devuelto por Supabase
+        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
         cerrarCreadorRuteo();
         
-        // Disparar el guardado local del usuario activo
         if (typeof guardarEstadoEnVivo === 'function') {{
             guardarEstadoEnVivo();
         }}
