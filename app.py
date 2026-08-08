@@ -546,7 +546,7 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
     <div class="bot-status">
         <span class="bot-status-dot"></span>
-        BOT DE RUTEO OPERATIVO
+        ROUTING
     </div>
     """, unsafe_allow_html=True)
 
