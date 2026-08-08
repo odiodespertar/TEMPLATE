@@ -195,31 +195,41 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
             border: 1px solid #cbd5e1 !important;
             font-weight: 600 !important;
         }
+
         div[data-testid="stExpander"] button:hover {
             background-color: #e2e8f0 !important;
             color: #0284c7 !important;
             border-color: #0284c7 !important;
         }
+
         div[data-testid="stExpander"] label p {
             color: #0f172a !important;
             font-weight: 600 !important;
         }
 
-    .bot-animado {
-        text-align: center;
-        font-size: 42px;
-        margin: 5px 0 10px 0;
-        animation: moverCamion 2s ease-in-out infinite;
-    }
+        .bot-animado {
+            text-align: center;
+            font-size: 42px;
+            margin: 5px 0 10px 0;
+            animation: moverCamion 2s ease-in-out infinite;
+        }
 
-    @keyframes moverCamion {
-        0% { transform: translateX(-15px); }
-        50% { transform: translateX(15px); }
-        100% { transform: translateX(-15px); }
-    }
-
+        @keyframes moverCamion {
+            0% {
+                transform: translateX(-15px);
+            }
+            50% {
+                transform: translateX(15px);
+            }
+            100% {
+                transform: translateX(-15px);
+            }
+        }
     </style>
-	<div class="bot-animado">🚚</div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="bot-animado">🚚</div>
     """, unsafe_allow_html=True)
 
     st.write("👉 Consulta un SVC para indicaciones 🔍")
