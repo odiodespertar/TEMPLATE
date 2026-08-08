@@ -3272,10 +3272,17 @@ app_html = f"""
         }}
     }}
 
+
     function restaurarEstadoEnVivo() {{
         try {{
             let dataRaw = localStorage.getItem('monitor_logistico_estado_vivo');
-            if (!dataRaw) return;
+            if (!dataRaw) {{
+                // Si no hay datos guardados, forzar el selector y la vista en EXTENDIDO (ID 4)
+                let selectorCiclos = document.getElementById("ciclo-selector");
+                if (selectorCiclos) selectorCiclos.value = "4";
+                cambiarCiclo(4);
+                return;
+            }}
 
             let estado = JSON.parse(dataRaw);
 
@@ -3296,7 +3303,6 @@ app_html = f"""
                 if (Array.isArray(filasData)) {{
                     let filasHTML = bloque.querySelectorAll('.calc-row');
                     
-                    // Si el usuario tenía más filas agregadas que las por defecto, creamos las que falten
                     while (filasHTML.length < filasData.length) {{
                         let btnAgregar = bloque.querySelector('button[onclick*="agregarFilaPlan"]');
                         if (btnAgregar) agregarFilaPlan(btnAgregar);
@@ -3337,9 +3343,15 @@ app_html = f"""
                 if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
             }});
 
+            // 🟢 FORZAR SIEMPRE EL RUTEO "EXTENDIDO" (ID 4) POR DEFECTO
+            let selectorCiclos = document.getElementById("ciclo-selector");
+            if (selectorCiclos) selectorCiclos.value = "4";
+            cambiarCiclo(4);
+
             if (typeof recalc === 'function') recalc();
         }} catch (e) {{
             console.error("Error al restaurar estado local:", e);
+            cambiarCiclo(4);
         }}
     }}
 
