@@ -2655,16 +2655,31 @@ app_html = f"""
         let selectorCiclos = document.getElementById("ciclo-selector");
         let tabIdARemover = null;
 
-        // 1. Quitar la opción del menú desplegable
         if (selectorCiclos) {{
+            // 1. Buscar y remover la opción del selector por ID de BD o por el atributo guardado
             Array.from(selectorCiclos.options).forEach(opt => {{
-                if (opt.getAttribute("data-id-bd") == idBD || opt.value == idBD) {{
+                let attrId = opt.getAttribute("data-id-bd");
+                if (attrId == idBD || opt.value == idBD) {{
                     tabIdARemover = opt.value;
                     opt.remove();
                 }}
             }});
 
-            // Si el ruteo eliminado era el seleccionado actualmente, cambiar de vista
+            // 2. Si no la encontró por ID estricto, buscar en las opciones del modal la que coincida
+            let chkEliminado = document.querySelector(`.chk-eliminar-ruteo[value="${{idBD}}"]`);
+            if (chkEliminado) {{
+                let nombreBuscado = chkEliminado.getAttribute("data-nombre")?.toUpperCase();
+                if (nombreBuscado) {{
+                    Array.from(selectorCiclos.options).forEach(opt => {{
+                        if (opt.innerText.toUpperCase().includes(nombreBuscado)) {{
+                            tabIdARemover = opt.value;
+                            opt.remove();
+                        }}
+                    }});
+                }}
+            }}
+
+            // 3. Si el ruteo que borraste era el que tenías abierto en pantalla, cambiar a otro activo
             if (selectorCiclos.value == tabIdARemover || !selectorCiclos.value) {{
                 if (selectorCiclos.options.length > 0) {{
                     selectorCiclos.selectedIndex = 0;
@@ -2673,21 +2688,26 @@ app_html = f"""
             }}
         }}
 
-        // 2. Remover la tabla de flota de la pantalla en tiempo real
+        // 4. Remover la tabla de la flota del DOM en tiempo real
         let divsFlota = document.querySelectorAll(".t-content");
         divsFlota.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id == `tab-${{tabIdARemover}}`)) {{
+            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `tab-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
 
-        // 3. Remover los polígonos de la pantalla en tiempo real
+        // 5. Remover los bloques de polígonos del DOM en tiempo real
         let divsPoly = document.querySelectorAll(".p-content");
         divsPoly.forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id == `polys-${{tabIdARemover}}`)) {{
+            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `polys-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
+
+        // 6. Refrescar el submenú lateral si está abierto
+        if (typeof cargarRuteosEnMenuLateral === 'function') {{
+            cargarRuteosEnMenuLateral();
+        }}
 
         if (typeof recalc === 'function') {{
             recalc();
