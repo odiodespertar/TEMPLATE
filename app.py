@@ -3343,6 +3343,8 @@ app_html = f"""
         }}
     }}
 
+
+
     function limpiarPantallaCompleta() {{
         if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
         
@@ -4342,7 +4344,8 @@ app_html = f"""
     document.addEventListener("DOMContentLoaded", function() {{
         const selector = document.getElementById("ciclo-selector");
         if (selector) {{
-            cambiarCiclo(selector.value);
+            selector.value = "4";
+			cambiarCiclo("4");
         }}
     }});
 
