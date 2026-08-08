@@ -2518,8 +2518,15 @@ app_html = f"""
     const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
     
+    // 🟢 Inicializamos el cliente inyectando el token Bearer de la sesión de Python
     const supabaseClient = (window.supabase && window.supabase.createClient) 
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {{
+            global: {{
+                headers: {{
+                    Authorization: 'Bearer {st.session_state.supabase_session.access_token}'
+                }}
+            }}
+        }}) 
         : null;
 
     let contadorPestanaDinamica = 900;
