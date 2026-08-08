@@ -187,70 +187,412 @@ st.markdown("""
 # ==========================================
 with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
+    # ============================================================
+    # 🎨 ESTILO DEL BOT
+    # ============================================================
+
     st.markdown("""
     <style>
+	
+        /* CABECERA / EXPANDER */
+
         div[data-testid="stExpander"] button {
-            background-color: #f1f5f9 !important;
+            background: linear-gradient(
+                135deg,
+                #f8fafc,
+                #eef6fb
+            ) !important;
+
             color: #0f172a !important;
             border: 1px solid #cbd5e1 !important;
-            font-weight: 600 !important;
+            border-radius: 12px !important;
+            font-weight: 700 !important;
+            transition: all 0.2s ease !important;
         }
 
         div[data-testid="stExpander"] button:hover {
-            background-color: #e2e8f0 !important;
+            background: linear-gradient(
+                135deg,
+                #e0f2fe,
+                #f8fafc
+            ) !important;
+
             color: #0284c7 !important;
             border-color: #0284c7 !important;
+
+            box-shadow:
+                0 4px 12px rgba(2, 132, 199, 0.12) !important;
         }
 
         div[data-testid="stExpander"] label p {
             color: #0f172a !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
         }
+
+
+        /* 🚚 CAMIONCITO ANIMADO */
 
         .bot-animado {
             text-align: center;
             font-size: 42px;
-            margin: 5px 0 10px 0;
-            animation: moverCamion 2s ease-in-out infinite;
+            margin: 5px 0 4px 0;
+
+            filter: drop-shadow(
+                0 4px 5px rgba(15, 23, 42, 0.15)
+            );
+
+            animation:
+                moverCamion 2s ease-in-out infinite;
         }
 
         @keyframes moverCamion {
+
             0% {
                 transform: translateX(-15px);
             }
+
             50% {
                 transform: translateX(15px);
             }
+
             100% {
                 transform: translateX(-15px);
             }
+
         }
+
+
+        /* 🟢 ESTADO DEL BOT */
+
+        .bot-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin: 0 auto 8px auto;
+            font-size: 11px;
+            font-weight: 700;
+            color: #15803d;
+            letter-spacing: 0.4px;
+        }
+
+        .bot-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 4px rgba(34, 197, 94, 0.12);
+
+            animation: pulsoBot 1.8s infinite;
+        }
+
+        @keyframes pulsoBot {
+
+            0% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0.35);
+            }
+
+            70% {
+                box-shadow:
+                    0 0 0 7px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0);
+            }
+
+        }
+
+
+        /* 💬 MENSAJES */
+
+        div[data-testid="stChatMessage"] {
+            border-radius: 16px !important;
+            padding: 12px 16px !important;
+            margin: 8px 4px !important;
+
+            border:
+                1px solid rgba(148, 163, 184, 0.20) !important;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.06) !important;
+
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatMessage"]:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 5px 16px rgba(15, 23, 42, 0.10) !important;
+        }
+
+
+        /* 🤖 MENSAJES DEL ASISTENTE */
+
+        div[data-testid="stChatMessage"]:has(
+            [data-testid="chatAvatarIcon-assistant"]
+        ) {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc 0%,
+                    #eef6fb 100%
+                ) !important;
+
+            border-left:
+                4px solid #0284c7 !important;
+        }
+
+
+        /* 👤 MENSAJES DEL USUARIO */
+
+        div[data-testid="stChatMessage"]:has(
+            [data-testid="chatAvatarIcon-user"]
+        ) {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eff6ff 0%,
+                    #f8fafc 100%
+                ) !important;
+
+            border-right:
+                4px solid #38bdf8 !important;
+        }
+
+
+        /* 📝 TEXTO */
+
+        div[data-testid="stChatMessage"] p {
+            font-size: 14px !important;
+            line-height: 1.55 !important;
+            color: #1e293b !important;
+        }
+
+        div[data-testid="stChatMessage"] strong {
+            color: #0f172a !important;
+        }
+
+
+        /* 🔵 BOTONES */
+
+        div[data-testid="stChatMessage"] button {
+            border-radius: 12px !important;
+
+            border:
+                1px solid #bae6fd !important;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f0f9ff
+                ) !important;
+
+            color: #0369a1 !important;
+            font-weight: 700 !important;
+
+            transition:
+                all 0.2s ease !important;
+
+            box-shadow:
+                0 2px 6px rgba(2, 132, 199, 0.08) !important;
+        }
+
+        div[data-testid="stChatMessage"] button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #e0f2fe,
+                    #bae6fd
+                ) !important;
+
+            border-color:
+                #0284c7 !important;
+
+            color:
+                #075985 !important;
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 5px 12px rgba(2, 132, 199, 0.16) !important;
+        }
+
+
+        /* ☑️ CHECKBOX */
+
+        div[data-testid="stChatMessage"] label {
+            border-radius: 10px !important;
+        }
+
+        div[data-testid="stChatMessage"] label p {
+            font-weight: 600 !important;
+            color: #334155 !important;
+        }
+
+
+        /* 🔽 SELECTBOX */
+
+        div[data-testid="stChatMessage"]
+        div[data-baseweb="select"] > div {
+            border-radius: 11px !important;
+
+            border:
+                1px solid #cbd5e1 !important;
+
+            background:
+                #ffffff !important;
+
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatMessage"]
+        div[data-baseweb="select"] > div:hover {
+            border-color:
+                #0284c7 !important;
+
+            box-shadow:
+                0 0 0 2px rgba(2, 132, 199, 0.08) !important;
+        }
+
+
+        /* ➖ SEPARADORES */
+
+        div[data-testid="stChatMessage"] hr {
+            border: none !important;
+
+            border-top:
+                1px dashed #cbd5e1 !important;
+
+            margin:
+                14px 0 !important;
+        }
+
+
+        /* ✏️ CAJA DE ESCRITURA */
+
+        div[data-testid="stChatInput"] {
+            margin-top: 10px !important;
+        }
+
+        div[data-testid="stChatInput"] > div {
+            border-radius: 16px !important;
+
+            border:
+                2px solid #cbd5e1 !important;
+
+            background:
+                #ffffff !important;
+
+            box-shadow:
+                0 4px 14px rgba(15, 23, 42, 0.08) !important;
+
+            transition:
+                all 0.25s ease !important;
+        }
+
+        div[data-testid="stChatInput"] > div:focus-within {
+            border-color:
+                #0284c7 !important;
+
+            box-shadow:
+                0 0 0 3px rgba(2, 132, 199, 0.12),
+                0 6px 18px rgba(15, 23, 42, 0.10) !important;
+        }
+
+        div[data-testid="stChatInput"] textarea {
+            font-size: 14px !important;
+            color: #0f172a !important;
+        }
+
+        div[data-testid="stChatInput"]
+        textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+
+
+        /* 🚀 BOTÓN ENVIAR */
+
+        div[data-testid="stChatInput"] button {
+            border-radius: 10px !important;
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatInput"] button:hover {
+            transform:
+                scale(1.08);
+        }
+
     </style>
     """, unsafe_allow_html=True)
 
+
+    # ============================================================
+    # 🚚 CABECERA DEL ASISTENTE
+    # ============================================================
+
     st.markdown("""
     <div class="bot-animado">🚚</div>
+
+    <div class="bot-status">
+        <span class="bot-status-dot"></span>
+        BOT DE RUTEO OPERATIVO
+    </div>
     """, unsafe_allow_html=True)
+
 
     st.write("👉 Consulta un SVC para indicaciones 🔍")
 
+
+    # ============================================================
+    # 🧠 VARIABLES DEL BOT
+    # ============================================================
+
     if "main_chat_messages" not in st.session_state:
         st.session_state.main_chat_messages = []
+
     if "esperando_subtipo_smx5" not in st.session_state:
         st.session_state.esperando_subtipo_smx5 = False
+
     if "flujo_resumen" not in st.session_state:
         st.session_state.flujo_resumen = False
+
     if "paso_resumen" not in st.session_state:
         st.session_state.paso_resumen = 0
+
     if "paso_historial" not in st.session_state:
         st.session_state.paso_historial = []
+
     if "data_resumen" not in st.session_state:
         st.session_state.data_resumen = {}
 
+
+    # ============================================================
+    # 💬 VENTANA DEL CHAT
+    # ============================================================
+
     with st.container(height=480):
-        for idx, msg in enumerate(st.session_state.main_chat_messages):
+
+        for idx, msg in enumerate(
+            st.session_state.main_chat_messages
+        ):
+
             with st.chat_message(msg["role"]):
-                st.markdown(msg["content"], unsafe_allow_html=True)
+
+                st.markdown(
+                    msg["content"],
+                    unsafe_allow_html=True
+                )
                 
                 if st.session_state.flujo_resumen and idx == len(st.session_state.main_chat_messages) - 1:
                     paso = st.session_state.paso_resumen
