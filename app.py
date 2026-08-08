@@ -2593,7 +2593,8 @@ app_html = f"""
         if (modal) modal.style.display = "none";
     }}
 
-    // ELIMINACIÓN MASIVA SELECCIONANDO VARIOS DE GOLPE
+
+    // ELIMINACIÓN MASIVA CON ACTUALIZACIÓN EN VIVO (SIN F5)
     async function ejecutarEliminacionMasiva() {{
         let seleccionados = document.querySelectorAll(".chk-eliminar-ruteo:checked");
         if (seleccionados.length === 0) {{
@@ -2610,22 +2611,23 @@ app_html = f"""
             try {{
                 const {{ error }} = await supabaseClient.from('ruteos_guardados').delete().in('id', idsAEliminar);
                 if (error) {{
-                    alert("⚠️ Error al eliminar en lote: " + error.message);
+                    alert("⚠️ Error al eliminar en la BD: " + error.message);
                     return;
                 }}
 
-                // Remover en tiempo real de la pantalla y selector sin reiniciar
+                // 🟢 REQUISITO CLAVE: Remover de la pantalla y del selector al instante
                 idsAEliminar.forEach(id => removerRuteoDePantallaPorId(id));
 
                 alert(`✅ Se eliminaron ${{seleccionados.length}} ruteo(s) correctamente.`);
-                abrirGestorEliminacionMasiva(); // Refrescar modal
+                abrirGestorEliminacionMasiva(); // Refrescar la lista dentro del modal
             }} catch (err) {{
                 console.error("Error al eliminar masivamente:", err);
             }}
         }}
     }}
 
-    // ELIMINAR INDIVIDUAL CON LIMPIEZA INMEDIATA
+
+    // ELIMINACIÓN INDIVIDUAL CON ACTUALIZACIÓN EN VIVO (SIN F5)
     async function eliminarRuteoIndividualRealTime(idRuteoBD, nombreRuteo) {{
         if (!confirm(`¿Eliminar el ruteo "${{nombreRuteo}}"?`)) return;
 
@@ -2637,9 +2639,11 @@ app_html = f"""
                     return;
                 }}
 
+                // 🟢 REQUISITO CLAVE: Remover de la pantalla y del selector al instante
                 removerRuteoDePantallaPorId(idRuteoBD);
+                
                 alert(`✅ Ruteo "${{nombreRuteo}}" eliminado.`);
-                abrirGestorEliminacionMasiva(); // Refrescar modal
+                abrirGestorEliminacionMasiva(); // Refrescar la lista dentro del modal
             }} catch (err) {{
                 console.error("Error al eliminar:", err);
             }}
