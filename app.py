@@ -2877,7 +2877,11 @@ app_html = f"""
 
         if (supabaseClient) {{
             try {{
-                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').insert([{{ user_id: '{user_id_auth}', nombre: nombreRuteo, datos: datosEstructura }}]).select();
+                const {{ data, error }} = await supabaseClient
+                    .from('ruteos_guardados')
+                    .insert([{{ user_id: '{user_id_auth}', nombre: nombreRuteo, datos: datosEstructura }}])
+                    .select();
+
                 if (error) {{ alert("⚠️ Error al guardar en BD: " + error.message); return; }}
                 if (data && data.length > 0) nuevoIdBD = data[0].id;
             }} catch (err) {{ console.error("Error Supabase:", err); }}
