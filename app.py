@@ -5379,7 +5379,7 @@ function iniciarArrastreFlotante(e) {{
         let consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        // Limpiar sub-botones temporales anteriores si existían
+        // Limpiar sub-botones temporales
         let subBotonesviejos = box.querySelectorAll(".bloque-subtipo-smx5");
         subBotonesviejos.forEach(el => el.remove());
 
@@ -5484,7 +5484,6 @@ function iniciarArrastreFlotante(e) {{
             if (q.includes("smx5")) {{
                 claveReglaEncontrada = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
             }} else {{
-                // Mapeo flexible de términos
                 let mapeo = {{
                     "smx9": "smx9_extendido", "sgd2": "sgd2_extendido", "smx4": "smx4_extendido",
                     "smx2": "smx2_extendido", "smt2": "smt2_extendido", "scp1": "scp1",
@@ -5499,7 +5498,6 @@ function iniciarArrastreFlotante(e) {{
             if (claveReglaEncontrada && REGLAS_RUTEO[claveReglaEncontrada]) {{
                 let textoRegla = REGLAS_RUTEO[claveReglaEncontrada];
                 
-                // Convertir Markdown simple a HTML para la vista del bot
                 let textoHTML = textoRegla
                     .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
                     .replace(/\n/g, '<br>');
@@ -5527,7 +5525,6 @@ function iniciarArrastreFlotante(e) {{
             box.scrollTop = box.scrollHeight;
         }}, 150);
     }}
-
     // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
     // =========================================================================
