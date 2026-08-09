@@ -6063,6 +6063,16 @@ function iniciarArrastreFlotante(e) {{
         🧹 &nbsp; LIMPIAR PANTALLA
     </button>
 
+    <!-- ASISTENTE DE RUTEO -->
+
+    <button
+        class="opcion-menu-ruteos"
+        onclick="accionMenuRuteos('bot')">
+        🤖 &nbsp; ASISTENTE DE RUTEO
+    </button>
+
+	
+
 </div>
 
 
@@ -6218,6 +6228,10 @@ function iniciarArrastreFlotante(e) {{
         }} else if (accion === 'limpiar') {{
 
             limpiarPantallaCompleta();
+
+		}} else if (accion === 'bot') {{
+
+            abrirBotRuteo();
 
         }}
     }}
