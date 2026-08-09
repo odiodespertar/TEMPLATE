@@ -1132,6 +1132,10 @@ def gen_poligonos(data_target=None):
 PERFILES = {}
 perfil_actual = "LUNES"
 
+# 🟢 Convertimos los diccionarios de reglas.py a JSON para que JavaScript los lea completos
+reglas_json = json.dumps(reglas_ruteo)
+mapa_origenes_json = json.dumps(MAPA_ORIGENES)
+preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
 
 app_html = f"""
 <!DOCTYPE html>
@@ -5351,46 +5355,182 @@ function iniciarArrastreFlotante(e) {{
 <script>
 
 
+   // 🟢 Carga de datos completos desde reglas.py
+    const REGLAS_RUTEO = {reglas_json};
+    const MAPA_ORIGENES = {mapa_origenes_json};
+    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
+
+    let flujoResumen = false;
+    let pasoResumen = 0;
+    let dataResumen = {{}};
+
     function togglePanelBotLateral() {{
         const panel = document.getElementById("panel-bot-lateral-contenido");
         if (!panel) return;
         panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
     }}
 
-    function enviarConsultaBotLateral() {{
+    function enviarConsultaBotLateral(opcionDirecta = null) {{
         const input = document.getElementById("input-bot-lateral");
         const box = document.getElementById("box-mensajes-bot");
-        if (!input || !box) return;
+        if (!box) return;
 
-        const consulta = input.value.trim();
+        let consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        // Mostrar mensaje del usuario
+        // Mostrar consulta del usuario
         box.innerHTML += `
-            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right;">
+            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
                 <b>Tú:</b> ${{consulta}}
             </div>
         `;
-        input.value = "";
+        if (input) input.value = "";
 
-        // Respuesta simulada o rápida
-        let respuesta = "🔍 Consulta recibida. Revisa los SVCs cargados en el sistema.";
         let q = consulta.toLowerCase();
+        let respuesta = "";
 
-        if (q.includes("sja1")) respuesta = "📌 <b>SJA1:</b> C1 Despacho 23:30h. Revisa unidades foráneas (Large Van MLP foráneo).";
-        else if (q.includes("scp1")) respuesta = "📌 <b>SCP1:</b> Revisa parámetros y cambios de unidades en Ciclo 2.";
-        else if (q.includes("smx5")) respuesta = "📌 <b>SMX5:</b> Requiere validar si es Extendido o Precarga (Despacho 17:20h).";
+        // =========================================================================
+        // 1. GENERADOR DE RESUMEN DE CIERRE INTERACTIVO PASO A PASO
+        // =========================================================================
+        if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
+            procesarFlujoResumen(q, box);
+            box.scrollTop = box.scrollHeight;
+            return;
+        }}
+
+        // =========================================================================
+        // 2. BÚSQUEDA DE ORIGEN Y VALIDACIÓN EN MAPA_ORIGENES
+        // =========================================================================
+        let svcEncontrado = null;
+        Object.keys(MAPA_ORIGENES).forEach(key => {{
+            if (q.includes(key.toLowerCase())) svcEncontrado = key;
+        }});
+
+        if (svcEncontrado) {{
+            let info = MAPA_ORIGENES[svcEncontrado];
+            respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
+                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
+                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#e2e8f0; color:#0f172a; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
+                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+        }}
+
+        // =========================================================================
+        // 3. PREGUNTAS FRECUENTES (FAQ)
+        // =========================================================================
+        let faqsEncontradas = [];
+        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
+        if (q.includes("bulk")) {{
+            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
+            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
+        }}
+        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
+        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
+        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
+
+        if (faqsEncontradas.length > 0) {{
+            respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
+        }} else if (!svcEncontrado) {{
+            // =========================================================================
+            // 4. BÚSQUEDA EN REGLAS DE RUTEO
+            // =========================================================================
+            let claveRegla = null;
+            if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
+            else {{
+                Object.keys(REGLAS_RUTEO).forEach(k => {{
+                    let base = k.replace("_extendido","").replace("_precarga","");
+                    if (q.includes(base)) claveRegla = k;
+                }});
+            }}
+
+            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
+                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\n/g, "<br>")}}`;
+            }} else {{
+                respuesta = "⚠️ No encontré esa consulta en la base de datos de <b>reglas.py</b>. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presionar arriba para armar el resumen de cierre.";
+            }}
+        }}
 
         setTimeout(() => {{
             box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff;">
+                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
                     🤖 <b>Asistente:</b><br>${{respuesta}}
                 </div>
             `;
             box.scrollTop = box.scrollHeight;
-        }}, 200);
+        }}, 150);
     }}
 
+    // =========================================================================
+    // LÓGICA DE PREGUNTAS Y OPCIONES PASO A PASO PARA EL RESUMEN
+    // =========================================================================
+    function procesarFlujoResumen(q, box) {{
+        if (!flujoResumen) {{
+            flujoResumen = true;
+            pasoResumen = 1;
+            dataResumen = {{}};
+        }}
+
+        let htmlBot = "";
+
+        if (pasoResumen === 1) {{
+            htmlBot = `📋 <b>Generador de Cierre (Paso 1/4):</b><br>¿Qué tipo de ciclo fue?<br><br>` +
+                      `<button onclick="responderPasoResumen('ciclo', 'Uniciclo', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Uniciclo</button>` +
+                      `<button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ Ciclo 1</button>`;
+        }} else if (pasoResumen === 2) {{
+            htmlBot = `📋 <b>Generador de Cierre (Paso 2/4):</b><br>¿Hubo Bulk (H&B)?<br><br>` +
+                      `<button onclick="responderPasoResumen('bulk', true, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
+                      `<button onclick="responderPasoResumen('bulk', false, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
+        }} else if (pasoResumen === 3) {{
+            htmlBot = `📋 <b>Generador de Cierre (Paso 3/4):</b><br>¿Hubo dropeo de nodos?<br><br>` +
+                      `<button onclick="responderPasoResumen('dropeo', true, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
+                      `<button onclick="responderPasoResumen('dropeo', false, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
+        }} else if (pasoResumen === 4) {{
+            htmlBot = `📋 <b>Generador de Cierre (Paso 4/4):</b><br>¿Se cargó Alchichica ND en AM0?<br><br>` +
+                      `<button onclick="responderPasoResumen('alchichica', true, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
+                      `<button onclick="responderPasoResumen('alchichica', false, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
+        }} else if (pasoResumen === 5) {{
+            htmlBot = `📋 <b>Listo:</b> Presiona para generar el texto de publicación:<br><br>` +
+                      `<button onclick="generarReporteFinalResumen()" style="cursor:pointer; background:#28a745; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">🚀 Generar Resumen Completo</button>`;
+        }}
+
+        box.innerHTML += `
+            <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
+                🤖 <b>Asistente:</b><br>${{htmlBot}}
+            </div>
+        `;
+    }}
+
+    function responderPasoResumen(clave, valor, siguientePaso) {{
+        dataResumen[clave] = valor;
+        pasoResumen = siguientePaso;
+        const box = document.getElementById("box-mensajes-bot");
+        if (box) procesarFlujoResumen("", box);
+    }}
+
+    function generarReporteFinalResumen() {{
+        const box = document.getElementById("box-mensajes-bot");
+        let ciclo = dataResumen.ciclo || "C1";
+        let bulkTxt = dataResumen.bulk ? "📦 Se asignó H&B para el volumen Bulk.<br>" : "";
+        let dropeoTxt = dataResumen.dropeo ? "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia.<br>" : "👉 No hubo dropeo de nodo.<br>";
+        let alchichicaTxt = dataResumen.alchichica ? "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0.<br>" : "";
+
+        let resumenFinal = `<b>**Queda publicado ${{ciclo}} team**:</b><br><br>` +
+                           `📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>` +
+                           `📌 Se cargaron las Rentals como híbridas en Centro.<br>` +
+                           `${{bulkTxt}}` +
+                           `${{dropeoTxt}}` +
+                           `${{alchichicaTxt}}` +
+                           `<br><b>**¡Excelente turno! 👋**</b>`;
+
+        flujoResumen = false;
+        pasoResumen = 0;
+
+        box.innerHTML += `
+            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
+                📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
+            </div>
+        `;
+        box.scrollTop = box.scrollHeight;
+    }}
 
 
     function abrirCerrarMenuRuteos() {{
