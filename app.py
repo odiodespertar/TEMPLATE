@@ -24,7 +24,6 @@ def init_supabase():
 
 supabase = init_supabase()
 
-# 🟢 Función para cargar ruteos filtrados por user_id
 def cargar_ruteos_bd():
     if supabase and st.session_state.get("usuario_auth"):
         try:
@@ -39,7 +38,6 @@ def cargar_ruteos_bd():
             return []
     return []
 
-# 🟢 Función segura para guardar ruteos desde Python con sesión activa
 def guardar_nuevo_ruteo_bd(nombre, datos):
     if supabase and st.session_state.get("usuario_auth"):
         try:
@@ -53,7 +51,6 @@ def guardar_nuevo_ruteo_bd(nombre, datos):
         except Exception as e:
             return False, str(e)
     return False, "Usuario no autenticado."
-
 
 def guardar_ruteo_servidor(nombre, datos_json_str):
     if supabase and st.session_state.get("usuario_auth"):
@@ -71,65 +68,37 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
             return False
     return False
 
-
 # ==============================================================================
 # 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
 # ==============================================================================
-
-# Inicializar gestor de cookies
 cookie_manager = stx.CookieManager(key="cookie_manager_auth")
 
-# Inicializar estado de verificación de sesión
 if "usuario_auth" not in st.session_state:
     st.session_state.usuario_auth = None
 
 if "verificando_cookie" not in st.session_state:
     st.session_state.verificando_cookie = True
 
-
-# ==============================================================================
-# USUARIOS DEL SISTEMA
-# ==============================================================================
-
 USUARIOS_LOGIN = {
     "johan": "johanmichael.velazquezrangel@mercadolibre.com.mx",
     "lili": "odiodespertar@gmail.com",
 }
 
-
-# ==============================================================================
-# 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE
-# ==============================================================================
-
 if st.session_state.usuario_auth is None:
-
-    session_id_cookie = cookie_manager.get(
-        cookie="sb_refresh_token"
-    )
-
+    session_id_cookie = cookie_manager.get(cookie="sb_refresh_token")
     if session_id_cookie and supabase:
-
         try:
-            res_refresh = supabase.auth.refresh_session(
-                session_id_cookie
-            )
-
+            res_refresh = supabase.auth.refresh_session(session_id_cookie)
             if res_refresh and res_refresh.session and res_refresh.user:
                 st.session_state.usuario_auth = res_refresh.user
                 st.session_state.supabase_session = res_refresh.session
-
                 nuevo_refresh_token = res_refresh.session.refresh_token
 
                 if nuevo_refresh_token:
-                    cookie_manager.set(
-                        "sb_refresh_token",
-                        nuevo_refresh_token,
-                        max_age=30 * 24 * 3600
-                    )
+                    cookie_manager.set("sb_refresh_token", nuevo_refresh_token, max_age=30 * 24 * 3600)
 
                 usuario_email = res_refresh.user.email or ""
                 usuario_encontrado = None
-
                 for nombre_usuario, correo in USUARIOS_LOGIN.items():
                     if correo.lower() == usuario_email.lower():
                         usuario_encontrado = nombre_usuario
@@ -142,30 +111,19 @@ if st.session_state.usuario_auth is None:
 
                 st.session_state.verificando_cookie = False
                 st.rerun()
-
             else:
                 st.session_state.verificando_cookie = False
-
         except Exception as e:
             st.session_state.verificando_cookie = False
-
     else:
         if st.session_state.verificando_cookie:
             time.sleep(0.5)
             st.session_state.verificando_cookie = False
             st.rerun()
 
-
-# ==============================================================================
-# 2. MOSTRAR LOGIN
-# ==============================================================================
-
 if st.session_state.usuario_auth is None:
-
     st.markdown("🚚 MONITOR LOGÍSTICO", unsafe_allow_html=True)
-
     col1, col2, col3 = st.columns([1, 2, 1])
-
     with col2:
         with st.form("form_login"):
             st.subheader("🔑 Iniciar Sesión")
@@ -175,7 +133,6 @@ if st.session_state.usuario_auth is None:
 
             if btn_login:
                 usuario = usuario_input.strip().lower()
-
                 if not usuario or not password_input:
                     st.error("⚠️ Ingrese usuario y contraseña.")
                 elif usuario not in USUARIOS_LOGIN:
@@ -192,24 +149,16 @@ if st.session_state.usuario_auth is None:
                         st.session_state["usuario_activo"] = usuario
 
                         if res.session and res.session.refresh_token:
-                            cookie_manager.set(
-                                "sb_refresh_token",
-                                res.session.refresh_token,
-                                max_age=30 * 24 * 3600
-                            )
+                            cookie_manager.set("sb_refresh_token", res.session.refresh_token, max_age=30 * 24 * 3600)
 
                         st.rerun()
-
                     except Exception:
                         st.error("❌ Usuario o contraseña incorrectos.")
-
     st.stop()
 
-
 # ==============================================================================
-# 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
+# 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA
 # ==============================================================================
-
 st.sidebar.markdown(f"👤 **Usuario Conectado:** `{st.session_state['usuario_activo']}`")
 if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
     try:
@@ -222,15 +171,6 @@ if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
 
 usuario_activo = st.session_state["usuario_activo"]
 user_id_auth = st.session_state.usuario_auth.id
-
-token_auth = ""
-if "supabase_session" in st.session_state and st.session_state.supabase_session:
-    session_obj = st.session_state.supabase_session
-    if hasattr(session_obj, "access_token"):
-        token_auth = session_obj.access_token
-    elif isinstance(session_obj, dict):
-        token_auth = session_obj.get("access_token", "")
-
 
 # ==========================================
 # ESTADO Y CONTROL DEL MODO FLOTANTE
@@ -260,10 +200,9 @@ if st.session_state.flotar_activo:
         </style>
     """, unsafe_allow_html=True)
 
-
 # ==========================================
-# CSS GENERAL + ESTILO DE VENTANA FLOTANTE
-# ========================================== 
+# CSS GENERAL Y ESTILOS DEL BOT FLOTANTE
+# ==========================================
 st.markdown("""
     <style>
     .block-container {padding: 0rem !important;}
@@ -278,26 +217,9 @@ st.markdown("""
     #contenedor-padre { display: flex; flex-direction: column; }
     .delta { display: none !important; }
     #visor { padding-right: 210px !important; box-sizing: border-box; }
-    .tabla-flota-reducida {
-        max-width: 80% !important;
-        margin-left: 0 !important;
-        margin-right: auto;
-    }
-    table {
-        table-layout: fixed;
-        width: 100%;
-        word-wrap: break-word;
-    }
-    @media (max-width: 1200px) {
-        .calc-row td, .calc-row select, .calc-row span {
-            font-size: 12px !important;
-        }
-    }
-    @media screen and (-webkit-min-device-pixel-ratio:0) {
-        .poligono-bloque {
-            zoom: 0.95; 
-        }
-    }
+    table { table-layout: fixed; width: 100%; word-wrap: break-word; }
+
+    /* ESTILO VENTANA FLOTANTE AMARILLA BOT */
     div[data-testid="stExpander"] {
         position: fixed !important;
         bottom: 15px !important;
@@ -358,7 +280,7 @@ st.markdown("""
         color-scheme: light !important;
         color: #000000 !important;
         font-weight: 600 !important;
-        line-height: 1.8 !important; /* Interlineado cómodo y espaciado */
+        line-height: 1.8 !important; /* Interlineado amplio */
     }
 
     div[data-testid="stExpander"] div[data-testid="stVerticalBlock"] {
@@ -367,20 +289,11 @@ st.markdown("""
         display: flex !important;
         flex-direction: column !important;
     }
-
-    .fleet-floating .vista-excel-btn,
-    .fleet-floating .autocalcular-btn,
-    .fleet-floating .activas-btn,
-    .fleet-floating .todas-btn,
-    .fleet-floating .pestanas-container {
-        display: none !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-
 # ==========================================
-# 🤖 BOT FLOTANTE RESTAURADO NATIVO
+# 🤖 BOT FLOTANTE RESTAURADO
 # ==========================================
 with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
@@ -616,30 +529,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
                             st.session_state.paso_resumen = st.session_state.paso_historial.pop()
                             st.rerun()
 
-        # 2. OPCIONES INTERACTIVAS SMX5
-        if st.session_state.esperando_subtipo_smx5:
-            with st.chat_message("assistant"):
-                st.write("👇 **Selecciona una opción o escribe 1 ó 2:**")
-                col1, col2 = st.columns(2)
-                eleccion_btn = None
-                with col1:
-                    if st.button("1️⃣ Extendido", key="btn_smx5_1", use_container_width=True):
-                        eleccion_btn = "1"
-                with col2:
-                    if st.button("2️⃣ Precarga", key="btn_smx5_2", use_container_width=True):
-                        eleccion_btn = "2"
-
-                if eleccion_btn:
-                    st.session_state.esperando_subtipo_smx5 = False
-                    if eleccion_btn == "1":
-                        st.session_state.main_chat_messages.append({"role": "user", "content": "1️⃣ Extendido"})
-                        st.session_state.main_chat_messages.append({"role": "assistant", "content": MAPA_ORIGENES["smx5"]["reglas"]})
-                    else:
-                        st.session_state.main_chat_messages.append({"role": "user", "content": "2️⃣ Precarga"})
-                        st.session_state.main_chat_messages.append({"role": "assistant", "content": MAPA_ORIGENES["smx5"]["reglas"]})
-                    st.rerun()
-
-        # 3. CAMPO DE ENTRADA AL FINAL
         if query_main := st.chat_input("✏️ Escribe tu consulta...", key="main_chat_input"):
             st.session_state.main_chat_messages.append({"role": "user", "content": query_main})
             query_lower = query_main.lower().strip()
@@ -654,17 +543,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
                     "content": "📋 **Generador de Cierre.** Responde seleccionando las opciones de abajo:"
                 })
                 st.rerun()
-
-            elif st.session_state.esperando_subtipo_smx5:
-                st.session_state.esperando_subtipo_smx5 = False
-                if "extendido" in query_lower or "1" in query_lower or "precarga" in query_lower or "2" in query_lower:
-                    respuesta_main = MAPA_ORIGENES["smx5"]["reglas"]
-                else:
-                    respuesta_main = "⚠️ Opción no válida. Consulta escribiendo **SMX5** nuevamente."
-
-            elif query_lower == "smx5":
-                st.session_state.esperando_subtipo_smx5 = True
-                respuesta_main = "🔍 Detecté **SMX5**. ¿De cuál requieres las prioridades?\n\n1️⃣ **Extendido**\n2️⃣ **Precarga**\n\n*(Elige dando clic en los botones superiores o escribe 1 ó 2)*"
 
             else:
                 partes_respuesta = []
@@ -715,7 +593,6 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
 
             st.session_state.main_chat_messages.append({"role": "assistant", "content": respuesta_main})
             st.rerun()
-
 
 # --- DATOS BASE DE ASIGNACIÓN DE FLOTA ---
 u_SDE = {"Moto Car - 3": [25, 30], "Moto Car Newbie": [25, 25], "Car - 5h": [25, 30], "Car - 5 Extendida": [25, 30], "Car - 3h": [25, 28]}
