@@ -108,7 +108,7 @@ reglas_ruteo = {
 # ==========================================
 MAPA_ORIGENES = {
     # 🔵 REGIÓN METRO (CDMX)
-    "smx2": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
+    "smx2": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No", "Último despacho": "de hoy (3 pm en adelante)"},
     "smx3": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
     "smx4": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
     "smx5": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
