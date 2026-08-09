@@ -93,7 +93,7 @@ if "verificando_cookie" not in st.session_state:
 # ==============================================================================
 
 USUARIOS_LOGIN = {
-    "JOHAN": "johanmichael.velazquezrangel@mercadolibre.com.mx",
+    "johan": "johanmichael.velazquezrangel@mercadolibre.com.mx",
     "LILI": "odiodespertar@gmail.com",
 }
 
