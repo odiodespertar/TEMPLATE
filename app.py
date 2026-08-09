@@ -8,10 +8,6 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
-import streamlit as st
-
-import streamlit as st
-
 hide_github_only_css = """
     <style>
     /* Ocultar el menú desplegable de GitHub / Deploy / Settings de la esquina superior derecha */
