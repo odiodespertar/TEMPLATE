@@ -149,8 +149,8 @@ PREGUNTAS_FRECUENTES = {
         "* 🟢 **Regla para resto de planes:** Asignar Large Van MLP (si el plan lleva nodo, se configura como híbrida)."
     ),
     "bulk_general": (
-        "📦 **Ubicación de unidades Bulk (General):**\n\n"
-        "* Las unidades Bulk se deben asignar en los polígonos que tengan **mayor cantidad de paquetes voluminosos**."
+        "📦 *Unidades Bulk*\n\n"
+        "* Se deben asignar en los polígonos que tengan *mayor cantidad de paquetes voluminosos* y se cargan después de lo NO RUT en Logis."
     ),
     "bulk_sja1": (
         "📦 **Bulk en SJA1 C1:**\n\n"
