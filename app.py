@@ -5333,20 +5333,39 @@ function iniciarArrastreFlotante(e) {{
     </button>
 
 	<!-- 🗺️ MAPA OPERATIVO -->
-    <button
-        class="opcion-menu-ruteos"
-        onclick="toggleMapaOperativo()">
-        🗺️ &nbsp; MAPA OPERATIVO
-    </button>
+<button class="opcion-menu-ruteos" onclick="toggleMapaOperativo()">
+    🗺️ &nbsp; MAPA OPERATIVO
+</button>
 
-    <!-- CONTENEDOR DE LA IMAGEN DEL MAPA -->
-    <div id="panel-mapa-operativo" style="display: none; margin-top: 10px; padding: 8px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; text-align: center;">
+<!-- CONTENEDOR DEL MAPA CON ZOOM -->
+<div id="panel-mapa-operativo" style="display: none; margin-top: 10px; padding: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; text-align: center;">
+    
+    <!-- Botones de Control de Zoom -->
+    <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 8px;">
+        <button onclick="aplicarZoomMapa(1.2)" style="background: #25282b; color: white; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 +</button>
+        <button onclick="aplicarZoomMapa(0.8)" style="background: #25282b; color: white; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">🔍 -</button>
+        <button onclick="resetearZoomMapa()" style="background: #25282b; color: white; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; cursor: pointer;">↺ Restablecer</button>
+        <button onclick="abrirMapaPantallaCompleta()" style="background: #20B2AA; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">⤢ Ampliar</button>
+    </div>
+
+    <!-- Contenedor con overflow para permitir Scroll cuando haya Zoom -->
+    <div id="contenedor-img-scroll" style="overflow: auto; max-height: 400px; border-radius: 8px; border: 1px solid #222;">
         <img 
+            id="img-mapa-operativo"
             src="https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000" 
             alt="Mapa Operativo" 
-            style="width: 100%; border-radius: 8px; height: auto;" 
+            onclick="abrirMapaPantallaCompleta()"
+            style="width: 100%; transition: transform 0.2s ease; transform-origin: top left; cursor: zoom-in;" 
+            title="Haz clic para abrir en pantalla completa"
         />
     </div>
+</div>
+
+<!-- MODAL / PANTALLA COMPLETA SUPERPUESTA -->
+<div id="modal-mapa-fullscreen" onclick="cerrarMapaPantallaCompleta()" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 99999999; justify-content: center; align-items: center; cursor: zoom-out;">
+    <span style="position: absolute; top: 15px; right: 25px; color: white; font-size: 35px; font-weight: bold;">✕</span>
+    <img src="https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.8);" />
+</div>
 
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
     <button
@@ -5744,10 +5763,42 @@ function iniciarArrastreFlotante(e) {{
         }}
     }}
 
+    let escalaMapaActual = 1.0;
+
     function toggleMapaOperativo() {{
         const panelMapa = document.getElementById("panel-mapa-operativo");
         if (!panelMapa) return;
         panelMapa.style.display = (panelMapa.style.display === "none" || panelMapa.style.display === "") ? "block" : "none";
+    }}
+
+    function aplicarZoomMapa(factor) {{
+        escalaMapaActual *= factor;
+        // Limitar el zoom mínimo a 1x y el máximo a 3x
+        if (escalaMapaActual < 1.0) escalaMapaActual = 1.0;
+        if (escalaMapaActual > 3.0) escalaMapaActual = 3.0;
+        
+        const img = document.getElementById("img-mapa-operativo");
+        if (img) {{
+            img.style.width = (100 * escalaMapaActual) + "%";
+        }}
+    }}
+
+    function resetearZoomMapa() {{
+        escalaMapaActual = 1.0;
+        const img = document.getElementById("img-mapa-operativo");
+        if (img) {{
+            img.style.width = "100%";
+        }}
+    }}
+
+    function abrirMapaPantallaCompleta() {{
+        const modal = document.getElementById("modal-mapa-fullscreen");
+        if (modal) modal.style.display = "flex";
+    }}
+
+    function cerrarMapaPantallaCompleta() {{
+        const modal = document.getElementById("modal-mapa-fullscreen");
+        if (modal) modal.style.display = "none";
     }}
 
 	
