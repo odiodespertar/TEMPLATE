@@ -1133,7 +1133,7 @@ PERFILES = {}
 perfil_actual = "LUNES"
 
 # 🟢 Convertimos los diccionarios de reglas.py a JSON para que JavaScript los lea completos
-reglas_ruteo__json = json.dumps(reglas_ruteo)
+reglas_json = json.dumps(reglas_ruteo)
 mapa_origenes_json = json.dumps(MAPA_ORIGENES)
 preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
 
@@ -5357,9 +5357,9 @@ function iniciarArrastreFlotante(e) {{
 
 <script>
     // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {{reglas_ruteo_json}};
-    const MAPA_ORIGENES = {{mapa_origenes_json}};
-    const PREGUNTAS_FRECUENTES = {{preguntas_faq_json}};
+    const REGLAS_RUTEO = {reglas_json};
+    const MAPA_ORIGENES = {mapa_origenes_json};
+    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
     let flujoResumen = false;
     let pasoResumen = 0;
