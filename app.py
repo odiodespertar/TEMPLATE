@@ -315,10 +315,11 @@ if st.session_state.usuario_auth is None:
                         # Guardar cookie
                         if res.session and res.session.refresh_token:
 
+                            st.write("TOKEN REAL:", res.session.refresh_token)
                             cookie_manager.set(
                                 "sb_refresh_token",
                                 res.session.refresh_token,
-                                max_age=30 * 24 * 3600
+								max_age=30 * 24 * 3600
                             )
 
                         # Entrar a la aplicación
