@@ -121,30 +121,63 @@ if st.session_state.usuario_auth is None:
     with col2:
         with st.form("form_login"):
             st.subheader("🔑 Iniciar Sesión")
-            email_input = st.text_input("Correo electrónico:")
+            usuario_input = st.text_input("Usuario:")
             password_input = st.text_input("Contraseña:", type="password")
             btn_login = st.form_submit_button("ENTRAR", use_container_width=True)
             
             if btn_login:
-                if not email_input or not password_input:
-                    st.error("⚠️ Ingrese correo y contraseña.")
+                if not usuario_input or not password_input:
+                    st.error("⚠️ Ingrese usuario y contraseña.")
                 else:
                     try:
-                        res = supabase.auth.sign_in_with_password({
-                            "email": email_input.strip(),
-                            "password": password_input.strip()
-                        })
-                        st.session_state.usuario_auth = res.user
-                        st.session_state.supabase_session = res.session
-                        st.session_state["usuario_activo"] = res.user.email.split("@")[0].replace(".", "_")
-                        
-                        if res.session and res.session.refresh_token:
-                            cookie_manager.set("sb_refresh_token", res.session.refresh_token, max_age=7*24*3600)
-                        
-                        st.rerun()
-                    except Exception as e:
-                        st.error("❌ Credenciales inválidas. Verifica tu correo y contraseña.")
+                        # Buscar el usuario y su correo en perfiles_usuarios
+                        perfil = (
+                            supabase
+                            .table("perfiles_usuarios")
+                            .select("user_id, email")
+                            .eq(
+                                "nombre_usuario",
+                                usuario_input.strip().upper()
+                            )
+                            .single()
+                            .execute()
+                        )
+
+                        if not perfil.data:
+                            st.error("❌ Usuario o contraseña incorrectos.")
+                        else:
+                            correo_usuario = perfil.data["email"]
+
+                            # Autenticar con Supabase Auth
+                            res = supabase.auth.sign_in_with_password({
+                                "email": correo_usuario,
+                                "password": password_input.strip()
+                            })
+
+                            # Guardar usuario autenticado
+                            st.session_state.usuario_auth = res.user
+                            st.session_state.supabase_session = res.session
+
+                            # Mostrar el nombre de usuario, no el correo
+                            st.session_state["usuario_activo"] = (
+                                usuario_input.strip().upper()
+                            )
+
+                            # Guardar refresh token para conservar la sesión
+                            if res.session and res.session.refresh_token:
+                                cookie_manager.set(
+                                    "sb_refresh_token",
+                                    res.session.refresh_token,
+                                    max_age=7 * 24 * 3600
+                                )
+
+                            st.rerun()
+
+                    except Exception:
+                        st.error("❌ Usuario o contraseña incorrectos.")
+
     st.stop()
+                
 
 # ==============================================================================
 # 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
