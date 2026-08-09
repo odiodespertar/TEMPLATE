@@ -5381,7 +5381,7 @@ function iniciarArrastreFlotante(e) {{
         if (!consulta) return;
 
         box.innerHTML += `
-            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
+            <div style="background: #20B2AA; border-right: 3px solid #66CDAA; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
                 <b>Tú:</b> ${{consulta}}
             </div>
         `;
@@ -5440,7 +5440,7 @@ function iniciarArrastreFlotante(e) {{
 
         setTimeout(() => {{
             box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; line-height: 1.6; color: #ffffff; margin-bottom: 6px;">
+                <div style="background: #000000; border-left: 3px solid #66CDAA; padding: 8px; border-radius: 6px; line-height: 1.6; color: #ffffff; margin-bottom: 6px;">
                     🤖 <b>Asistente:</b><br>${{respuesta}}
                 </div>
             `;
