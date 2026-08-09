@@ -10,25 +10,31 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 import streamlit as st
 
-hide_github_only = """
+import streamlit as st
+
+hide_github_only_css = """
     <style>
-    /* Ocultar el botón de GitHub, el lápiz de edición y compartir, manteniendo las flechitas del menú */
-    [data-testid="stToolbar"] {
+    /* Ocultar el menú desplegable de GitHub / Deploy / Settings de la esquina superior derecha */
+    #MainMenu {visibility: hidden;}
+    
+    /* Ocultar los botones específicos de GitHub, Share y Edit en el header superior derecho */
+    header [data-testid="stStatusWidget"] {
         display: none !important;
     }
     
-    /* Alternativa si la barra superior se mantiene: oculta específicamente el enlace de GitHub y elementos de la derecha */
-    header [data-testid="stDecoration"] {
-        display: none;
+    /* Ocultar los botones flotantes de la barra superior derecha manteniendo el contenedor de la izquierda */
+    div[data-testid="stToolbar"] {
+        visibility: hidden;
     }
     
-    /* Ocultar únicamente los elementos del lado derecho del header */
-    .stApp > header div:nth-child(1) > div:nth-child(3) {
-        display: none !important;
+    /* Asegurar que el botón para desplegar la barra lateral (las flechitas) siga completamente visible y funcional */
+    [data-testid="collapsedControl"] {
+        visibility: visible !important;
+        display: block !important;
     }
     </style>
 """
-st.markdown(hide_github_only, unsafe_allow_html=True)
+st.markdown(hide_github_only_css, unsafe_allow_html=True)
 
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
