@@ -5911,4 +5911,4 @@ html_limpio = """
 
 # Renderizado final del componente inferior
 st.markdown("---")
-html(html_limpio, height=850, scrolling=True)
+html(html_limpio, height=210, scrolling=True)
