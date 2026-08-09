@@ -1133,7 +1133,7 @@ PERFILES = {}
 perfil_actual = "LUNES"
 
 # 🟢 Convertimos los diccionarios de reglas.py a JSON para que JavaScript los lea completos
-reglas_ruteo__json = json.dumps(reglas_ruteo)
+reglas_json = json.dumps(reglas_ruteo)
 mapa_origenes_json = json.dumps(MAPA_ORIGENES)
 preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
 
@@ -5357,9 +5357,9 @@ function iniciarArrastreFlotante(e) {{
 
 <script>
     // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {{reglas_ruteo_json}};
-    const MAPA_ORIGENES = {{mapa_origenes_json}};
-    const PREGUNTAS_FRECUENTES = {{preguntas_faq_json}};
+    const REGLAS_RUTEO = {reglas_json};
+    const MAPA_ORIGENES = {mapa_origenes_json};
+    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
     let flujoResumen = false;
     let pasoResumen = 0;
@@ -5371,81 +5371,93 @@ function iniciarArrastreFlotante(e) {{
         panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
     }}
 
-    function enviarConsultaBotLateral(opcionDirecta = null) {{
-        const input = document.getElementById("input-bot-lateral");
-        const box = document.getElementById("box-mensajes-bot");
+    function enviarConsultaBotLateral(opcionDirecta) {{
+        var input = document.getElementById("input-bot-lateral");
+        var box = document.getElementById("box-mensajes-bot");
         if (!box) return;
 
-        let consulta = opcionDirecta || (input ? input.value.trim() : "");
+        var consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        box.innerHTML += `
-            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
-                <b>Tú:</b> ${{consulta}}
-            </div>
-        `;
+        // Mostrar mensaje del usuario
+        box.innerHTML += '<div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;"><b>Tú:</b> ' + consulta + '</div>';
         if (input) input.value = "";
 
-        let q = consulta.toLowerCase();
-        let respuesta = "";
+        var q = consulta.toLowerCase();
+        var partesRespuesta = [];
 
-        if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
+        // 1. Cierre / Resumen
+        if (q.indexOf("resumen") !== -1 || q.indexOf("cierre") !== -1 || q.indexOf("ciere") !== -1 || flujoResumen) {{
             procesarFlujoResumen(q, box);
             box.scrollTop = box.scrollHeight;
             return;
         }}
 
-        let svcEncontrado = null;
-        Object.keys(MAPA_ORIGENES).forEach(key => {{
-            if (q.includes(key.toLowerCase())) svcEncontrado = key;
+        // 2. BUSCAR EN MAPA_ORIGENES (Región, Origen y Validación)
+        var svcMapa = null;
+        Object.keys(MAPA_ORIGENES).forEach(function(key) {{
+            if (q.indexOf(key.toLowerCase()) !== -1) svcMapa = key;
+        });
+
+        if (svcMapa) {{
+            var info = MAPA_ORIGENES[svcMapa];
+            var origenTag = '<span style="background:#e2e8f0; color:#0f172a; padding:2px 6px; border-radius:4px; font-weight:bold; font-family:monospace;">' + info.origen + '</span>';
+            
+            var bloqueMapa = '📍 <b>Origen y Validación para ' + svcMapa.toUpperCase() + ':</b><br>' +
+                             '• 🗺️ <b>Región:</b> Región ' + info.region + '<br>' +
+                             '• 🏢 <b>Origen(es) On Way:</b> ' + origenTag + '<br>' +
+                             '• ✅ <b>Validación requerida:</b> ' + info.val;
+            
+            partesRespuesta.push(bloqueMapa);
+        }}
+
+        // 3. OBLIGAR A EXTRAER LAS REGLAS DE RUTEO (Busca por coincidencia de nombre)
+        var reglaEncontrada = null;
+        Object.keys(REGLAS_RUTEO).forEach(function(clave) {{
+            var claveL = clave.toLowerCase();
+            var claveLimpia = claveL.replace("_extendido", "").replace("_precarga", "");
+            
+            if (svcMapa && (claveL.indexOf(svcMapa) !== -1 || claveLimpia === svcMapa)) {{
+                reglaEncontrada = REGLAS_RUTEO[clave];
+            }} else if (!svcMapa && q.indexOf(claveLimpia) !== -1) {{
+                reglaEncontrada = REGLAS_RUTEO[clave];
+            }}
         }});
 
-        if (svcEncontrado) {{
-            let info = MAPA_ORIGENES[svcEncontrado];
-            respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
-                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#e2e8f0; color:#0f172a; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+        if (reglaEncontrada) {{
+            var textoHTML = reglaEncontrada.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            partesRespuesta.push('📋 <b>Indicaciones específicas:</b><br><br>' + textoHTML);
         }}
 
-        let faqsEncontradas = [];
-        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
-        if (q.includes("bulk")) {{
-            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
-            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
+        // 4. BÚSQUEDA DE PREGUNTAS FRECUENTES (FAQ)
+        var coincidenciasFaq = [];
+        if (q.indexOf("sdd") !== -1 || q.indexOf("large van sdd") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
+        if (q.indexOf("bulk") !== -1) {{
+            if (q.indexOf("sja1") !== -1 || q.indexOf("centro 1") !== -1 || q.indexOf("centro 2") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
+            else coincidenciasFaq.push(PREGUNTAS_FRECUENTES["bulk_general"]);
         }}
-        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
-        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
-        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
+        if (q.indexOf("alchichica") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["alchichica"]);
+        if (q.indexOf("xico") !== -1 || q.indexOf("tuzamapa") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
+        if (q.indexOf("dropeo") !== -1 || q.indexOf("drop") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
 
-        if (faqsEncontradas.length > 0) {{
-            respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
-        }} else if (!svcEncontrado) {{
-            let claveRegla = null;
-            if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
-            else {{
-                Object.keys(REGLAS_RUTEO).forEach(k => {{
-                    let base = k.replace("_extendido","").replace("_precarga","");
-                    if (q.includes(base)) claveRegla = k;
-                }});
-            }}
-
-            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
-            }} else {{
-                respuesta = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Prueba buscando por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona <b>'Armar Resumen de Cierre'</b>.";
-            }}
+        if (coincidenciasFaq.length > 0) {{
+            partesRespuesta.push(coincidenciasFaq.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>"));
         }}
 
-        setTimeout(() => {{
-            box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                    🤖 <b>Asistente:</b><br>${{respuesta}}
-                </div>
-            `;
+        // Despliegue de la respuesta final
+        var respuestaFinal = "";
+        if (partesRespuesta.length > 0) {{
+            respuestaFinal = partesRespuesta.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
+        }} else {{
+            respuestaFinal = "⚠️ No encontré esa consulta. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SGD2, SMX5, Bulk, Alchichica) o escribir **resumen** para armar el cierre.";
+        }}
+
+        setTimeout(function() {{
+            box.innerHTML += '<div style="background: #25282b; border-left: 3px solid #0284c7; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:13px; line-height: 1.4;">🤖 <b>Asistente:</b><br><br>' + respuestaFinal + '</div>';
             box.scrollTop = box.scrollHeight;
         }}, 150);
     }}
+	
 
     // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
