@@ -243,9 +243,13 @@ if st.session_state.usuario_auth is None:
                 f"❌ Error al recuperar la sesión: {e}"
             )
 
+            # El refresh token guardado ya no es válido
+            cookie_manager.delete("sb_refresh_token")
+
+            st.session_state.usuario_auth = None
             st.session_state.verificando_cookie = False
 
-    else:
+        else:
 
         # ==============================================================
         # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
