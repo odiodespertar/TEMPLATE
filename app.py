@@ -6235,6 +6235,29 @@ function iniciarArrastreFlotante(e) {{
         }}
     }}
 
+    function abrirBotRuteo() {{
+
+        const mensaje = document.createElement("div");
+
+        mensaje.id = "abrir-bot-ruteo-evento";
+
+        document.body.appendChild(mensaje);
+
+        setTimeout(function() {{
+            mensaje.remove();
+        }}, 100);
+
+    }}
+
+
+
+
+
+
+
+
+	
+
 </script>
 
 
