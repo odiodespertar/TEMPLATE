@@ -5395,7 +5395,7 @@ function iniciarArrastreFlotante(e) {{
         // Dibujar mensaje del usuario
         box.innerHTML += `
             <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
-                <b>Tú:</b> ${consulta}
+                <b>Tú:</b> ${{consulta}}
             </div>
         `;
         if (input) input.value = "";
