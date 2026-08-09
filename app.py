@@ -5450,12 +5450,12 @@ function iniciarArrastreFlotante(e) {{
     // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
     // =========================================================================
-    function procesarFlujoResumen(q, box) {
-        if (!flujoResumen) {
+    function procesarFlujoResumen(q, box) {{
+        if (!flujoResumen) {{
             flujoResumen = true;
             pasoResumen = 1;
             dataResumen = {};
-        }
+        }}
 
         // Limpiar botones de pasos anteriores
         let viejosBotones = box.querySelectorAll(".bloque-paso-resumen");
@@ -5463,7 +5463,7 @@ function iniciarArrastreFlotante(e) {{
 
         let htmlBot = "";
 
-        if (pasoResumen === 1) {
+        if (pasoResumen === 1) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 1/5):</b><br>
@@ -5473,7 +5473,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ Ciclo 1</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 2) {
+        }} else if (pasoResumen === 2) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 2/5):</b><br>
@@ -5483,7 +5483,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('logis_tomo_todas', false, 2.2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No (Dejó fuera)</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 2.2) {
+        }} else if (pasoResumen === 2.2) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 2.2):</b><br>
@@ -5494,7 +5494,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('unidades_fuera', 'ambas', 2.5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">❌ Ambas unidades</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 2.5) {
+        }} else if (pasoResumen === 2.5) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 3/5):</b><br>
@@ -5504,7 +5504,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('hubo_bulk', false, 3)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 3) {
+        }} else if (pasoResumen === 3) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 4/5):</b><br>
@@ -5514,7 +5514,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('dropeo_nodos', false, 4)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 3.5) {
+        }} else if (pasoResumen === 3.5) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 4.5):</b><br>
@@ -5524,7 +5524,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('dropeo_restriccion', false, 4)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 4) {
+        }} else if (pasoResumen === 4) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 5/5):</b><br>
@@ -5534,7 +5534,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('alchichica', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 4.5) {
+        }} else if (pasoResumen === 4.5) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Alchichica):</b><br>
@@ -5544,7 +5544,7 @@ function iniciarArrastreFlotante(e) {{
                         <button onclick="responderPasoResumen('alchichica_2sv', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
-        } else if (pasoResumen === 5) {
+        }} else if (pasoResumen === 5) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Preguntas completadas:</b><br>
@@ -5553,17 +5553,17 @@ function iniciarArrastreFlotante(e) {{
                         🚀 Generar Resumen Completo
                     </button>
                 </div>`;
-        }
+        }}
 
         box.innerHTML += `
             <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                🤖 <b>Asistente:</b><br>${htmlBot}
+                🤖 <b>Asistente:</b><br>${{htmlBot}}
             </div>
         `;
         box.scrollTop = box.scrollHeight;
-    }
+    }}
 
-    function responderPasoResumen(clave, valor, siguientePaso) {
+    function responderPasoResumen(clave, valor, siguientePaso) {{
         dataResumen[clave] = valor;
         pasoResumen = siguientePaso;
 
@@ -5573,12 +5573,12 @@ function iniciarArrastreFlotante(e) {{
         let textoConfirmacion = typeof valor === "boolean" ? (valor ? "Sí" : "No") : valor;
         box.innerHTML += `
             <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 6px 10px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px; font-size: 11px;">
-                ✔ Seleccionaste: <b>${textoConfirmacion}</b>
+                ✔ Seleccionaste: <b>${{textoConfirmacion}}</b>
             </div>
         `;
 
         procesarFlujoResumen("", box);
-    }
+    }}
 
     // =========================================================================
     // 📄 REPORTE FINAL CON LA REDACCIÓN COMPLETA EXACTA
