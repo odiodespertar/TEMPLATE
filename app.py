@@ -5359,9 +5359,9 @@ function iniciarArrastreFlotante(e) {{
 
 <script>
     // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {reglas_json};
-    const MAPA_ORIGENES = {mapa_origenes_json};
-    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
+    const REGLAS_RUTEO = {{reglas_json}};
+    const MAPA_ORIGENES = {{mapa_origenes_json}};
+    const PREGUNTAS_FRECUENTES = {{preguntas_faq_json}};
 
     let flujoResumen = false;
     let pasoResumen = 0;
