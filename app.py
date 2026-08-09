@@ -492,7 +492,6 @@ if "mostrar_asistente" not in st.session_state:
 # ============================================================
 # BOTÓN DE CONTROL DEL ASISTENTE
 # ============================================================
-
 if st.button(
     "ABRIR ASISTENTE",
     key="btn_abrir_asistente"
@@ -501,7 +500,6 @@ if st.button(
         not st.session_state.mostrar_asistente
     )
     st.rerun()
-
 
 if st.session_state.mostrar_asistente:
 
@@ -6093,7 +6091,7 @@ function iniciarArrastreFlotante(e) {{
         🤖 &nbsp; ASISTENTE DE RUTEO
     </button>
 
-    <!-- PANEL DEL ASISTENTE DE RUTEO -->
+    <!-- INDICADOR DEL ASISTENTE -->
 
     <div id="panel-asistente-ruteo">
 
@@ -6102,7 +6100,13 @@ function iniciarArrastreFlotante(e) {{
             <span class="asistente-online">● ROUTING</span>
         </div>
 
-        <div id="contenedor-chat-ruteo">
+        <div
+            style="
+                font-size: 11px;
+                color: #aeb4ba;
+                padding: 5px 4px 10px 4px;
+            ">
+            Asistente disponible
         </div>
 
     </div>
