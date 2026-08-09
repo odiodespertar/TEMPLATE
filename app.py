@@ -10,28 +10,6 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
-hide_github_only_css = """
-    <style>
-    /* Ocultar el botón de GitHub */
-    [data-testid="stToolbar"] > div:last-child {
-        display: none !important;
-    }
-    
-    /* Ocultar el botón de editar (lápiz) y compartir */
-    [data-testid="stStatusWidget"], 
-    [data-testid="stDecoration"] {
-        display: none !important;
-    }
-    
-    /* Asegurar que el menú de hamburguesa y las flechas de la barra lateral NO se oculten */
-    [data-testid="collapsedControl"] {
-        visibility: visible !important;
-        display: flex !important;
-    }
-    </style>
-"""
-st.markdown(hide_github_only_css, unsafe_allow_html=True)
-
 
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
