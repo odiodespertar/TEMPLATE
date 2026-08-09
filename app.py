@@ -8,7 +8,12 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
+
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
+
+URL_MAPA = (
+    "https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000"
+)
 
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
@@ -5327,6 +5332,22 @@ function iniciarArrastreFlotante(e) {{
         🧹 &nbsp; LIMPIAR PANTALLA
     </button>
 
+	<!-- 🗺️ MAPA OPERATIVO -->
+    <button
+        class="opcion-menu-ruteos"
+        onclick="toggleMapaOperativo()">
+        🗺️ &nbsp; MAPA OPERATIVO
+    </button>
+
+    <!-- CONTENEDOR DE LA IMAGEN DEL MAPA -->
+    <div id="panel-mapa-operativo" style="display: none; margin-top: 10px; padding: 8px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; text-align: center;">
+        <img 
+            src="https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000" 
+            alt="Mapa Operativo" 
+            style="width: 100%; border-radius: 8px; height: auto;" 
+        />
+    </div>
+
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
     <button
         class="opcion-menu-ruteos"
@@ -5722,6 +5743,14 @@ function iniciarArrastreFlotante(e) {{
             togglePanelBotLateral(); // ✅ Llamada 100% limpia sin errores
         }}
     }}
+
+    function toggleMapaOperativo() {{
+        const panelMapa = document.getElementById("panel-mapa-operativo");
+        if (!panelMapa) return;
+        panelMapa.style.display = (panelMapa.style.display === "none" || panelMapa.style.display === "") ? "block" : "none";
+    }}
+
+	
 </script>
 
 
