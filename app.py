@@ -5218,8 +5218,8 @@ function iniciarArrastreFlotante(e) {{
         display: none;
         margin-top: 10px;
         padding: 12px;
-        background: #17191b;
-        border: 1px solid #34383d;
+        background: #000000;
+        border: 1px solid #20B2AA;
         border-radius: 12px;
     }}
 
