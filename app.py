@@ -2567,6 +2567,8 @@ app_html = f"""
 
     const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
+    const USER_ID_AUTH = "{user_id_auth}";
+    const STORAGE_KEY = `monitor_logistico_estado_vivo_${USER_ID_AUTH}`;
     
     // 🟢 Inicializamos el cliente inyectando el token Bearer de la sesión de Python
     const supabaseClient = (window.supabase && window.supabase.createClient) 
@@ -3307,7 +3309,7 @@ app_html = f"""
             // Guardar pestaña/ciclo activo
             estado['currentTabActive'] = currentTab;
 
-            localStorage.setItem('monitor_logistico_estado_vivo', JSON.stringify(estado));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
         }} catch (e) {{
             console.error("Error al guardar estado local:", e);
         }}
@@ -3316,7 +3318,7 @@ app_html = f"""
 
     function restaurarEstadoEnVivo() {{
         try {{
-            let dataRaw = localStorage.getItem('monitor_logistico_estado_vivo');
+            let dataRaw = localStorage.getItem(STORAGE_KEY);
             if (!dataRaw) {{
                 // Si no hay datos guardados, forzar el selector y la vista en EXTENDIDO (ID 4)
                 let selectorCiclos = document.getElementById("ciclo-selector");
@@ -3401,7 +3403,7 @@ app_html = f"""
     function limpiarPantallaCompleta() {{
         if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
         
-        localStorage.removeItem('monitor_logistico_estado_vivo');
+        localStorage.removeItem(STORAGE_KEY);
 
         // Resetear volúmenes a 0
         document.querySelectorAll('.v-total-val, .nodos-val, .nodos-campeche').forEach(el => el.innerText = "0");
