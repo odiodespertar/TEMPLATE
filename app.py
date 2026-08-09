@@ -5351,7 +5351,7 @@ function iniciarArrastreFlotante(e) {{
 
         <div style="display: flex; gap: 6px; margin-top: 10px;">
             <input type="text" id="input-bot-lateral" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 8px 10px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 16px;">
-            <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">🚀</button>
+            <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #ffef40; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">🚀</button>
         </div>
     </div>
 </div>
