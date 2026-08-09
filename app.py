@@ -211,7 +211,8 @@ if st.session_state.flotar_activo:
 st.markdown("""
     <style>
     .block-container {padding: 0rem !important;}
-    footer, #MainMenu, header {visibility: hidden;}
+    footer, #MainMenu {visibility: hidden;}
+    header {visibility: visible !important;}
     body { background-color: #25282b; }
     .poligono-bloque {
         letter-spacing: -0.2px; 
