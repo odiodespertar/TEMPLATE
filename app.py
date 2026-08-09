@@ -6275,69 +6275,56 @@ function iniciarArrastreFlotante(e) {{
 
         if (!panel) return;
 
-        const estaAbierto =
+        const abierto =
             panel.classList.toggle("abierto");
 
-        if (estaAbierto) {{
+        if (abierto) {{
 
             const contenedor =
                 document.getElementById("contenedor-chat-ruteo");
 
-            if (contenedor) {{
+            if (!contenedor) return;
 
-                contenedor.innerHTML = `
-                    <div style="
-                        padding: 10px;
-                        color: #e4e6e8;
-                        font-size: 12px;
-                    ">
-
-                        <div style="
-                            margin-bottom: 10px;
-                            color: #66CDAA;
-                            font-weight: 700;
-                        ">
-                            ROUTING
-                        </div>
-
-                        <button
-                            class="ruteo-submenu-item"
-                            onclick="abrirBotRuteo()">
-                            🤖 &nbsp; Abrir asistente de ruteo
-                        </button>
-
-                    </div>
-                `;
-
-            }}
-
+            contenedor.innerHTML = `
+                <button
+                    class="ruteo-submenu-item"
+                    onclick="abrirBotRuteo()">
+                    🤖 &nbsp; ASISTENTE DE RUTEO ROUTING
+                </button>
+            `;
         }}
-
     }}
 
 
     function abrirBotRuteo() {{
 
         const botones =
-            window.parent.document.querySelectorAll('button');
+            window.parent.document.querySelectorAll(
+                'button'
+            );
 
         for (const botonStreamlit of botones) {{
 
+            const texto =
+                (botonStreamlit.innerText || "").trim();
+
+            const aria =
+                botonStreamlit.getAttribute("aria-label") || "";
+
             if (
-                botonStreamlit.innerText &&
-                botonStreamlit.innerText.includes(
-                    "¿INDICACIONES DE RUTEO?"
-                )
+                texto === "ABRIR ASISTENTE" ||
+                aria.includes("btn_abrir_asistente")
             ) {{
 
                 botonStreamlit.click();
 
                 return;
-
             }}
-
         }}
 
+        console.log(
+            "⚠️ No se encontró el botón ABRIR ASISTENTE de Streamlit"
+        );
     }}
 
     
