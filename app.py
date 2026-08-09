@@ -5370,9 +5370,9 @@ function iniciarArrastreFlotante(e) {{
 
 
     // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {{reglas_json}};
-    const MAPA_ORIGENES = {{mapa_origenes_json}};
-    const PREGUNTAS_FRECUENTES = {{preguntas_faq_json}};
+    const REGLAS_RUTEO = {reglas_json};
+    const MAPA_ORIGENES = {mapa_origenes_json};
+    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
     let flujoResumen = false;
     let pasoResumen = 0;
@@ -5392,7 +5392,6 @@ function iniciarArrastreFlotante(e) {{
         let consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        // Dibujar mensaje del usuario
         box.innerHTML += `
             <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
                 <b>Tú:</b> ${{consulta}}
@@ -5403,14 +5402,12 @@ function iniciarArrastreFlotante(e) {{
         let q = consulta.toLowerCase();
         let respuesta = "";
 
-        // 1. GENERADOR DE RESUMEN DE CIERRE INTERACTIVO
         if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
             procesarFlujoResumen(q, box);
             box.scrollTop = box.scrollHeight;
             return;
         }}
 
-        // 2. BUSCAR EN MAPA_ORIGENES (Orígenes On Way, Regiones, Validación)
         let svcEncontrado = null;
         Object.keys(MAPA_ORIGENES).forEach(key => {{
             if (q.includes(key.toLowerCase())) svcEncontrado = key;
@@ -5424,7 +5421,6 @@ function iniciarArrastreFlotante(e) {{
                          `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
         }}
 
-        // 3. BUSCAR EN PREGUNTAS FRECUENTES (FAQ)
         let faqsEncontradas = [];
         if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
         if (q.includes("bulk")) {{
@@ -5438,7 +5434,6 @@ function iniciarArrastreFlotante(e) {{
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }} else if (!svcEncontrado) {{
-            // 4. BUSCAR EN REGLAS GENERALES DE RUTEO
             let claveRegla = null;
             if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
             else {{
@@ -5465,7 +5460,6 @@ function iniciarArrastreFlotante(e) {{
         }}, 150);
     }}
 
-    // GENERADOR INTERACTIVO PASO A PASO PARA RESUMEN DE CIERRE
     function procesarFlujoResumen(q, box) {{
         if (!flujoResumen) {{
             flujoResumen = true;
@@ -5535,7 +5529,6 @@ function iniciarArrastreFlotante(e) {{
         `;
         box.scrollTop = box.scrollHeight;
     }}
-
 
     function abrirCerrarMenuRuteos() {{
 
