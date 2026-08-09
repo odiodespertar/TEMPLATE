@@ -122,7 +122,7 @@ USUARIOS_LOGIN = {
 
 
 # ==============================================================================
-# 1. INTENTAR RECUPERAR LA COOKIE
+# 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE
 # ==============================================================================
 
 if st.session_state.usuario_auth is None:
@@ -135,19 +135,43 @@ if st.session_state.usuario_auth is None:
 
         try:
 
+            # ==============================================================
+            # RECUPERAR SESIÓN USANDO EL REFRESH TOKEN
+            # ==============================================================
+
             res_refresh = supabase.auth.refresh_session(
                 session_id_cookie
             )
 
-            if res_refresh and res_refresh.user:
+            if res_refresh and res_refresh.session and res_refresh.user:
 
-                # Recuperar usuario
+                # ==========================================================
+                # GUARDAR NUEVA SESIÓN
+                # ==========================================================
+
                 st.session_state.usuario_auth = res_refresh.user
-
-                # Recuperar sesión completa
                 st.session_state.supabase_session = res_refresh.session
 
-                # Recuperar usuario a partir del correo
+                # ==========================================================
+                # IMPORTANTE:
+                # GUARDAR EL NUEVO REFRESH TOKEN
+                # SUPABASE ROTA EL TOKEN AL REFRESCAR LA SESIÓN
+                # ==========================================================
+
+                nuevo_refresh_token = res_refresh.session.refresh_token
+
+                if nuevo_refresh_token:
+
+                    cookie_manager.set(
+                        "sb_refresh_token",
+                        nuevo_refresh_token,
+                        max_age=30 * 24 * 3600
+                    )
+
+                # ==========================================================
+                # IDENTIFICAR USUARIO
+                # ==========================================================
+
                 usuario_email = res_refresh.user.email or ""
 
                 usuario_encontrado = None
@@ -158,29 +182,51 @@ if st.session_state.usuario_auth is None:
                         usuario_encontrado = nombre_usuario
                         break
 
-                # Guardar identificador del usuario
+                # ==========================================================
+                # GUARDAR USUARIO ACTIVO
+                # ==========================================================
+
                 if usuario_encontrado:
-                    st.session_state["usuario_activo"] = usuario_encontrado
+
+                    st.session_state["usuario_activo"] = (
+                        usuario_encontrado
+                    )
+
                 else:
+
                     st.session_state["usuario_activo"] = (
                         usuario_email
                         .split("@")[0]
                         .replace(".", "_")
                     )
 
+                # ==========================================================
+                # SESIÓN RECUPERADA CORRECTAMENTE
+                # ==========================================================
+
                 st.session_state.verificando_cookie = False
 
-                # Entrar nuevamente a la aplicación
                 st.rerun()
 
-        except Exception:
+            else:
 
-            # La cookie existe pero ya no es válida
+                # La cookie ya no corresponde a una sesión válida
+                st.session_state.verificando_cookie = False
+
+        except Exception as e:
+
+            # ==============================================================
+            # COOKIE INVÁLIDA O SESIÓN TERMINADA
+            # ==============================================================
+
             st.session_state.verificando_cookie = False
 
     else:
 
-        # La cookie todavía puede estar cargándose
+        # ==============================================================
+        # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
+        # ==============================================================
+
         if st.session_state.verificando_cookie:
 
             time.sleep(0.5)
@@ -267,7 +313,7 @@ if st.session_state.usuario_auth is None:
                             cookie_manager.set(
                                 "sb_refresh_token",
                                 res.session.refresh_token,
-                                max_age=7 * 24 * 3600
+                                max_age=30 * 24 * 3600
                             )
 
                         # Entrar a la aplicación
