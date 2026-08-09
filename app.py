@@ -6212,7 +6212,6 @@ function iniciarArrastreFlotante(e) {{
 
     function accionMenuRuteos(accion) {{
 
-
         if (accion === 'excel') {{
 
             toggleExcelView();
@@ -6229,7 +6228,7 @@ function iniciarArrastreFlotante(e) {{
 
             limpiarPantallaCompleta();
 
-		}} else if (accion === 'bot') {{
+        }} else if (accion === 'bot') {{
 
             abrirBotRuteo();
 
