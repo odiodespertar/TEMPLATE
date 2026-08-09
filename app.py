@@ -5381,7 +5381,7 @@ function iniciarArrastreFlotante(e) {{
         if (!consulta) return;
 
         box.innerHTML += `
-            <div style="background: #20B2AA; border-right: 3px solid #66CDAA; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
+            <div style="background: #008080; border-right: 3px solid #66CDAA; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
                 <b>Tú:</b> ${{consulta}}
             </div>
         `;
@@ -5405,7 +5405,7 @@ function iniciarArrastreFlotante(e) {{
             let info = MAPA_ORIGENES[svcEncontrado];
             respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
                          `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#e2e8f0; color:#0f172a; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
+                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#000000; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
                          `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
         }}
 
