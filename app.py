@@ -272,27 +272,27 @@ if st.session_state.usuario_auth is None:
                         "❌ Usuario no encontrado."
                     )
 
-                else:
+            else:
 
-                    try:
+                try:
 
-                        # Obtener correo asociado al usuario
-                        email_login = USUARIOS_LOGIN[usuario]
+                    # Obtener correo asociado al usuario
+                    email_login = USUARIOS_LOGIN[usuario]
 
-                        # Autenticar con Supabase
-                        res = supabase.auth.sign_in_with_password({
-                            "email": email_login,
-                            "password": password_input.strip()
-                        })
+                    # Autenticar con Supabase
+                    res = supabase.auth.sign_in_with_password({
+                        "email": email_login,
+                        "password": password_input.strip()
+                    })
 
-                        # Guardar usuario autenticado
-                        st.session_state.usuario_auth = res.user
+                    # Guardar usuario autenticado
+                    st.session_state.usuario_auth = res.user
 
-                        # Guardar sesión completa
-                        st.session_state.supabase_session = res.session
+                    # Guardar sesión completa
+                    st.session_state.supabase_session = res.session
 
-                        # Guardar nombre de usuario
-                        st.session_state["usuario_activo"] = usuario
+                    # Guardar nombre de usuario
+                    st.session_state["usuario_activo"] = usuario
 
                     # Guardar cookie
                     if res.session and res.session.refresh_token:
@@ -314,14 +314,13 @@ if st.session_state.usuario_auth is None:
                     # Entrar a la aplicación
                     st.rerun()
 
-                except Exception:
+                except Exception as e:
 
                     st.error(
-                        "❌ Usuario o contraseña incorrectos."
+                        f"❌ Error al iniciar sesión: {e}"
                     )
 
 st.stop()
-
 # ==============================================================================
 # 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
 # ==============================================================================
