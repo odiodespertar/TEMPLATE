@@ -5376,7 +5376,7 @@ function iniciarArrastreFlotante(e) {{
 
     let flujoResumen = false;
     let pasoResumen = 0;
-    let dataResumen = {};
+    let dataResumen = {{}};
 
     function togglePanelBotLateral() {{
         const panel = document.getElementById("panel-bot-lateral-contenido");
