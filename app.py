@@ -5440,7 +5440,7 @@ function iniciarArrastreFlotante(e) {{
 
         setTimeout(() => {{
             box.innerHTML += `
-                <div style="background: #000000; border-left: 3px solid #66CDAA; padding: 8px; border-radius: 6px; line-height: 1.6; color: #ffffff; margin-bottom: 6px;">
+                <div style="background: #ffffff; border-left: 3px solid #66CDAA; padding: 8px; border-radius: 6px; line-height: 1.6; color: #000000; margin-bottom: 6px;">
                     🤖 <b>Asistente:</b><br>${{respuesta}}
                 </div>
             `;
