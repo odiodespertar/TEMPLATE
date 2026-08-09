@@ -5355,15 +5355,17 @@ function iniciarArrastreFlotante(e) {{
 <script>
 
 
-   // 🟢 Carga de datos completos desde reglas.py
+   // 🟢 Carga de datos completos desde reglas.py (Llaves simples para Python)
     const REGLAS_RUTEO = {reglas_json};
     const MAPA_ORIGENES = {mapa_origenes_json};
     const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
+    // 🟢 Estado de JavaScript (Doble llave obligatoria en f-strings)
     let flujoResumen = false;
     let pasoResumen = 0;
-    let dataResumen = {};
+    let dataResumen = {{}};
 
+    // 🟢 Función única para abrir/cerrar el Bot
     function togglePanelBotLateral() {{
         const panel = document.getElementById("panel-bot-lateral-contenido");
         if (!panel) return;
