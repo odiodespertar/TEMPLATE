@@ -5895,12 +5895,6 @@ html_limpio = """
         </div>
     </div>
 
-    <!-- Imagen del Mapa -->
-    <div class="map-container">
-        <h3 style="color: #1E90FF; margin-top: 0; margin-bottom: 15px;">🗺️ MAPA OPERATIVO</h3>
-        <img src='""" + url_final + """' alt="Mapa de regiones">
-    </div>
-</div>
 
 <script>
     function ejecutarTodo() {
