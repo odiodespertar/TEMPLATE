@@ -8,6 +8,28 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
+import streamlit as st
+
+hide_github_only = """
+    <style>
+    /* Ocultar el botón de GitHub, el lápiz de edición y compartir, manteniendo las flechitas del menú */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    
+    /* Alternativa si la barra superior se mantiene: oculta específicamente el enlace de GitHub y elementos de la derecha */
+    header [data-testid="stDecoration"] {
+        display: none;
+    }
+    
+    /* Ocultar únicamente los elementos del lado derecho del header */
+    .stApp > header div:nth-child(1) > div:nth-child(3) {
+        display: none !important;
+    }
+    </style>
+"""
+st.markdown(hide_github_only, unsafe_allow_html=True)
+
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
