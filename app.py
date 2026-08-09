@@ -490,11 +490,8 @@ if "mostrar_asistente" not in st.session_state:
     st.session_state.mostrar_asistente = False
 
 # ============================================================
-# BOTÓN DE CONTROL DEL ASISTENTE
+# 🤖 ABRIR ASISTENTE DESDE EL MENÚ LATERAL
 # ============================================================
-if "mostrar_asistente" not in st.session_state:
-    st.session_state.mostrar_asistente = False
-
 
 if st.session_state.get("abrir_asistente_menu", False):
 
@@ -503,15 +500,9 @@ if st.session_state.get("abrir_asistente_menu", False):
     st.rerun()
 
 
-# BOTÓN TEMPORAL DE PRUEBA
-if st.button(
-    "ABRIR ASISTENTE",
-    key="btn_abrir_asistente"
-):
-    st.session_state.mostrar_asistente = (
-        not st.session_state.mostrar_asistente
-    )
-    st.rerun()
+# ============================================================
+# 🤖 MOSTRAR ASISTENTE
+# ============================================================
 
 if st.session_state.mostrar_asistente:
 
@@ -6278,10 +6269,12 @@ function iniciarArrastreFlotante(e) {{
 
         }} else if (accion === 'bot') {{
 
-            abrirCerrarAsistenteRuteo();
+            window.parent.postMessage({{
+                tipo: "abrir_asistente_menu"
+            }}, "*");
 
         }}
-    }}
+	}}
 
 
     function abrirCerrarAsistenteRuteo() {{
