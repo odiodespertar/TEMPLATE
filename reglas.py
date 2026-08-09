@@ -22,7 +22,7 @@ reglas_ruteo = {
         "<li>👉 Prefijo SD3 siempre</li>"
         "</ul>"
     ),
-    "smx5_precarga": (
+    "smx5_precarga": ( 
         "<b>Prioridades SMX5 (PRECARGA):</b><br><br>"
         "<ul>"
         "<li>📌 <b>Origen:</b> MXCD09 + onway</li>"
