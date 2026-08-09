@@ -5966,6 +5966,44 @@ function iniciarArrastreFlotante(e) {{
         transform: translateX(4px);
     }}
 
+
+
+    /* ============================================================
+   🤖 PANEL ASISTENTE DE RUTEO
+   ============================================================ */
+
+    #panel-asistente-ruteo {{
+        display: none;
+        margin-top: 10px;
+        padding: 12px;
+        background: #17191b;
+        border: 1px solid #34383d;
+        border-radius: 12px;
+    }}
+
+    #panel-asistente-ruteo.abierto {{
+        display: block;
+    }}
+
+    .asistente-header {{
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 5px 4px 10px 4px;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 14px;
+    }}
+
+    .asistente-online {{
+        color: #4ade80;
+        font-size: 11px;
+        font-weight: 700;
+    }}
+
+
+
+
 </style>
 
 
