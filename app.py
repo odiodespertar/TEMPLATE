@@ -5342,9 +5342,9 @@ function iniciarArrastreFlotante(e) {{
             📋 Armar Resumen de Cierre
         </button>
 
-        <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 16px; padding: 6px;">
+        <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
             <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff;">
-                🤖 <b>Asistente de Ruteo:</b><br>Consulta por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona arriba para armar el cierre de turno.
+                🤖 <b>Asistente de Ruteo:</b><br>Consulta el SVC o presiona arriba para cierre de turno.
             </div>
         </div>
 
@@ -5439,7 +5439,7 @@ function iniciarArrastreFlotante(e) {{
 
         setTimeout(() => {{
             box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; line-height: 1.8; color: #ffffff; margin-bottom: 6px;">
+                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; line-height: 1.6; color: #ffffff; margin-bottom: 6px;">
                     🤖 <b>Asistente:</b><br>${{respuesta}}
                 </div>
             `;
