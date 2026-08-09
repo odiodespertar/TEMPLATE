@@ -150,7 +150,7 @@ PREGUNTAS_FRECUENTES = {
     ),
     "bulk_general": (
         "📦 *Unidades Bulk*\n\n"
-        "<p>Se deben asignar en los polígonos que tengan <p>cantidad de paquetes voluminosos</b> y se cargan después de lo NO RUT en Logis."</p>
+        "Se deben asignar en los polígonos que tengan <b>bcantidad de paquetes voluminosos</b> y se cargan después de lo NO RUT en Logis."
     ),
     "bulk_sja1": (
         "📦 **Bulk en SJA1 C1:**\n\n"
