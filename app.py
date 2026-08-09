@@ -10,71 +10,71 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
+hide_github_only_css = """
+    <style>
+    /* Ocultar el botón de GitHub */
+    [data-testid="stToolbar"] > div:last-child {
+        display: none !important;
+    }
+    
+    /* Ocultar el botón de editar (lápiz) y compartir */
+    [data-testid="stStatusWidget"], 
+    [data-testid="stDecoration"] {
+        display: none !important;
+    }
+    
+    /* Asegurar que el menú de hamburguesa y las flechas de la barra lateral NO se oculten */
+    [data-testid="collapsedControl"] {
+        visibility: visible !important;
+        display: flex !important;
+    }
+    </style>
+"""
+st.markdown(hide_github_only_css, unsafe_allow_html=True)
+
 
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
 # ==========================================
-
 @st.cache_resource
 def init_supabase():
     try:
         url = st.secrets["SUPABASE_URL"]
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
-    except Exception as e:
-        st.error(f"❌ Error al conectar con Supabase: {e}")
+    except Exception:
         return None
-
 
 supabase = init_supabase()
 
-
 # 🟢 Función para cargar ruteos filtrados por user_id
-
 def cargar_ruteos_bd():
     if supabase and st.session_state.get("usuario_auth"):
         try:
             user_id_actual = st.session_state.usuario_auth.id
-
-            res = (
-                supabase.table("ruteos_guardados")
-                .select("*")
-                .eq("user_id", user_id_actual)
-                .order("created_at")
+            res = supabase.table("ruteos_guardados") \
+                .select("*") \
+                .eq("user_id", user_id_actual) \
+                .order("created_at") \
                 .execute()
-            )
-
             return res.data
-
         except Exception as e:
-            st.error(f"❌ Error al cargar los ruteos: {e}")
             return []
-
     return []
 
-
 # 🟢 Función segura para guardar ruteos desde Python con sesión activa
-
 def guardar_nuevo_ruteo_bd(nombre, datos):
     if supabase and st.session_state.get("usuario_auth"):
         try:
             user_id_actual = st.session_state.usuario_auth.id
-
-            res = (
-                supabase.table("ruteos_guardados")
-                .insert({
-                    "user_id": user_id_actual,
-                    "nombre": nombre,
-                    "datos": datos
-                })
-                .execute()
-            )
-
+            res = supabase.table("ruteos_guardados").insert({
+                "user_id": user_id_actual,
+                "nombre": nombre,
+                "datos": datos
+            }).execute()
             return True, res.data
-
         except Exception as e:
             return False, str(e)
-
     return False, "Usuario no autenticado."
 
 
@@ -83,23 +83,15 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
         try:
             u_id = st.session_state.usuario_auth.id
             datos_obj = json.loads(datos_json_str)
-
-            res = (
-                supabase.table("ruteos_guardados")
-                .insert({
-                    "user_id": u_id,
-                    "nombre": nombre,
-                    "datos": datos_obj
-                })
-                .execute()
-            )
-
+            res = supabase.table("ruteos_guardados").insert({
+                "user_id": u_id,
+                "nombre": nombre,
+                "datos": datos_obj
+            }).execute()
             return True
-
         except Exception as e:
             print("Error al guardar:", e)
             return False
-
     return False
 
 
@@ -129,10 +121,9 @@ USUARIOS_LOGIN = {
 }
 
 
-
-# ============================================================================
+# ==============================================================================
 # 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE
-# ============================================================================
+# ==============================================================================
 
 if st.session_state.usuario_auth is None:
 
@@ -140,78 +131,101 @@ if st.session_state.usuario_auth is None:
         cookie="sb_refresh_token"
     )
 
-    st.write("DEBUG COOKIE:", session_id_cookie)
-    st.write(
-        "DEBUG USUARIO:",
-        st.session_state.get("usuario_auth")
-    )
-    st.write(
-        "DEBUG VERIFICANDO:",
-        st.session_state.get("verificando_cookie")
-    )
-
     if session_id_cookie and supabase:
 
         try:
+
+            # ==============================================================
+            # RECUPERAR SESIÓN USANDO EL REFRESH TOKEN
+            # ==============================================================
+
             res_refresh = supabase.auth.refresh_session(
                 session_id_cookie
             )
 
             if res_refresh and res_refresh.session and res_refresh.user:
 
+                # ==========================================================
+                # GUARDAR NUEVA SESIÓN
+                # ==========================================================
+
                 st.session_state.usuario_auth = res_refresh.user
                 st.session_state.supabase_session = res_refresh.session
 
-                nuevo_refresh_token = (
-                    res_refresh.session.refresh_token
-                )
+                # ==========================================================
+                # IMPORTANTE:
+                # GUARDAR EL NUEVO REFRESH TOKEN
+                # SUPABASE ROTA EL TOKEN AL REFRESCAR LA SESIÓN
+                # ==========================================================
+
+                nuevo_refresh_token = res_refresh.session.refresh_token
 
                 if nuevo_refresh_token:
+
                     cookie_manager.set(
                         "sb_refresh_token",
                         nuevo_refresh_token,
                         max_age=30 * 24 * 3600
                     )
 
+                # ==========================================================
+                # IDENTIFICAR USUARIO
+                # ==========================================================
+
                 usuario_email = res_refresh.user.email or ""
 
                 usuario_encontrado = None
 
                 for nombre_usuario, correo in USUARIOS_LOGIN.items():
+
                     if correo.lower() == usuario_email.lower():
                         usuario_encontrado = nombre_usuario
                         break
 
+                # ==========================================================
+                # GUARDAR USUARIO ACTIVO
+                # ==========================================================
+
                 if usuario_encontrado:
+
                     st.session_state["usuario_activo"] = (
                         usuario_encontrado
                     )
+
                 else:
+
                     st.session_state["usuario_activo"] = (
                         usuario_email
                         .split("@")[0]
                         .replace(".", "_")
                     )
 
+                # ==========================================================
+                # SESIÓN RECUPERADA CORRECTAMENTE
+                # ==========================================================
+
                 st.session_state.verificando_cookie = False
 
                 st.rerun()
 
             else:
+
+                # La cookie ya no corresponde a una sesión válida
                 st.session_state.verificando_cookie = False
 
         except Exception as e:
 
-            st.error(
-                f"❌ Error al recuperar la sesión: {e}"
-            )
+            # ==============================================================
+            # COOKIE INVÁLIDA O SESIÓN TERMINADA
+            # ==============================================================
 
-            cookie_manager.delete("sb_refresh_token")
-
-            st.session_state.usuario_auth = None
             st.session_state.verificando_cookie = False
 
     else:
+
+        # ==============================================================
+        # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
+        # ==============================================================
 
         if st.session_state.verificando_cookie:
 
@@ -220,7 +234,6 @@ if st.session_state.usuario_auth is None:
             st.session_state.verificando_cookie = False
 
             st.rerun()
-
 
 
 # ==============================================================================
@@ -272,55 +285,50 @@ if st.session_state.usuario_auth is None:
                         "❌ Usuario no encontrado."
                     )
 
-            else:
+                else:
 
-                try:
+                    try:
 
-                    # Obtener correo asociado al usuario
-                    email_login = USUARIOS_LOGIN[usuario]
+                        # Obtener correo asociado al usuario
+                        email_login = USUARIOS_LOGIN[usuario]
 
-                    # Autenticar con Supabase
-                    res = supabase.auth.sign_in_with_password({
-                        "email": email_login,
-                        "password": password_input.strip()
-                    })
+                        # Autenticar con Supabase
+                        res = supabase.auth.sign_in_with_password({
+                            "email": email_login,
+                            "password": password_input.strip()
+                        })
 
-                    # Guardar usuario autenticado
-                    st.session_state.usuario_auth = res.user
+                        # Guardar usuario autenticado
+                        st.session_state.usuario_auth = res.user
 
-                    # Guardar sesión completa
-                    st.session_state.supabase_session = res.session
+                        # Guardar sesión completa
+                        st.session_state.supabase_session = res.session
 
-                    # Guardar nombre de usuario
-                    st.session_state["usuario_activo"] = usuario
+                        # Guardar nombre de usuario
+                        st.session_state["usuario_activo"] = usuario
 
-                    # Guardar cookie
-                    if res.session and res.session.refresh_token:
+                        # Guardar cookie
+                        if res.session and res.session.refresh_token:
 
-                        st.write(
-                            "TOKEN REAL:",
-                            res.session.refresh_token
+                            cookie_manager.set(
+                                "sb_refresh_token",
+                                res.session.refresh_token,
+                                max_age=30 * 24 * 3600
+                            )
+
+                        # Entrar a la aplicación
+                        st.rerun()
+
+                    except Exception:
+
+                        st.error(
+                            "❌ Usuario o contraseña incorrectos."
                         )
 
-                        cookie_manager.set(
-                            "sb_refresh_token",
-                            res.session.refresh_token,
-                            max_age=30 * 24 * 3600
-                        )
+    st.stop()
 
-                        # Dar tiempo al navegador para guardar la cookie
-                        time.sleep(2)
 
-                    # Entrar a la aplicación
-                    st.rerun()
 
-                except Exception as e:
-
-                    st.error(
-                        f"❌ Error al iniciar sesión: {e}"
-                    )
-
-st.stop()
 # ==============================================================================
 # 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
 # ==============================================================================
