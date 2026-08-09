@@ -5327,10 +5327,9 @@ function iniciarArrastreFlotante(e) {{
     </button>
 
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
-
     <button
         class="opcion-menu-ruteos"
-        onclick="togglePanelBotLateral()">
+        onclick="accionMenuRuteos('bot')">
         🤖 &nbsp; ASISTENTE DE RUTEO
     </button>
 
@@ -5339,33 +5338,33 @@ function iniciarArrastreFlotante(e) {{
         <div style="text-align: center; font-size: 26px;">🚚</div>
         <div style="text-align: center; font-size: 11px; font-weight: bold; color: #22c55e; margin-bottom: 8px;">● ROUTING ONLINE</div>
         
-        <div id="box-mensajes-bot" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 4px;">
+        <button onclick="enviarConsultaBotLateral('resumen')" style="width: 100%; cursor: pointer; background: #28a745; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 8px;">
+            📋 Armar Resumen de Cierre
+        </button>
+
+        <div id="box-mensajes-bot" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 4px;">
             <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff;">
-                🤖 <b>Asistente de Ruteo:</b><br>Escribe tu consulta por SVC (ej. SJA1, SCP1, SDD, Bulk, etc.)
+                🤖 <b>Asistente de Ruteo:</b><br>Consulta por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona arriba para armar el cierre de turno.
             </div>
         </div>
 
         <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <input type="text" id="input-bot-lateral" placeholder="Escribe aquí..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 12px;">
+            <input type="text" id="input-bot-lateral" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 12px;">
             <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 12px;">🚀</button>
         </div>
     </div>
-
+</div>
 
 <script>
-
-
-   // 🟢 Carga de datos completos desde reglas.py (Llaves simples para Python)
+    // 🟢 Carga de datos completos desde reglas.py
     const REGLAS_RUTEO = {reglas_json};
     const MAPA_ORIGENES = {mapa_origenes_json};
     const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
-    // 🟢 Estado de JavaScript (Doble llave obligatoria en f-strings)
     let flujoResumen = false;
     let pasoResumen = 0;
-    let dataResumen = {{}};
+    let dataResumen = {{}}; // ✅ Llevaba llaves simples y rompía Python
 
-    // 🟢 Función única para abrir/cerrar el Bot
     function togglePanelBotLateral() {{
         const panel = document.getElementById("panel-bot-lateral-contenido");
         if (!panel) return;
@@ -5380,7 +5379,6 @@ function iniciarArrastreFlotante(e) {{
         let consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        // Mostrar consulta del usuario
         box.innerHTML += `
             <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
                 <b>Tú:</b> ${{consulta}}
@@ -5391,18 +5389,12 @@ function iniciarArrastreFlotante(e) {{
         let q = consulta.toLowerCase();
         let respuesta = "";
 
-        // =========================================================================
-        // 1. GENERADOR DE RESUMEN DE CIERRE INTERACTIVO PASO A PASO
-        // =========================================================================
         if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
             procesarFlujoResumen(q, box);
             box.scrollTop = box.scrollHeight;
             return;
         }}
 
-        // =========================================================================
-        // 2. BÚSQUEDA DE ORIGEN Y VALIDACIÓN EN MAPA_ORIGENES
-        // =========================================================================
         let svcEncontrado = null;
         Object.keys(MAPA_ORIGENES).forEach(key => {{
             if (q.includes(key.toLowerCase())) svcEncontrado = key;
@@ -5416,9 +5408,6 @@ function iniciarArrastreFlotante(e) {{
                          `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
         }}
 
-        // =========================================================================
-        // 3. PREGUNTAS FRECUENTES (FAQ)
-        // =========================================================================
         let faqsEncontradas = [];
         if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
         if (q.includes("bulk")) {{
@@ -5432,9 +5421,6 @@ function iniciarArrastreFlotante(e) {{
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }} else if (!svcEncontrado) {{
-            // =========================================================================
-            // 4. BÚSQUEDA EN REGLAS DE RUTEO
-            // =========================================================================
             let claveRegla = null;
             if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
             else {{
@@ -5445,9 +5431,9 @@ function iniciarArrastreFlotante(e) {{
             }}
 
             if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\n/g, "<br>")}}`;
+                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
             }} else {{
-                respuesta = "⚠️ No encontré esa consulta en la base de datos de <b>reglas.py</b>. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presionar arriba para armar el resumen de cierre.";
+                respuesta = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Prueba buscando por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona <b>'Armar Resumen de Cierre'</b>.";
             }}
         }}
 
@@ -5461,9 +5447,6 @@ function iniciarArrastreFlotante(e) {{
         }}, 150);
     }}
 
-    // =========================================================================
-    // LÓGICA DE PREGUNTAS Y OPCIONES PASO A PASO PARA EL RESUMEN
-    // =========================================================================
     function procesarFlujoResumen(q, box) {{
         if (!flujoResumen) {{
             flujoResumen = true;
@@ -5474,19 +5457,19 @@ function iniciarArrastreFlotante(e) {{
         let htmlBot = "";
 
         if (pasoResumen === 1) {{
-            htmlBot = `📋 <b>Generador de Cierre (Paso 1/4):</b><br>¿Qué tipo de ciclo fue?<br><br>` +
+            htmlBot = `📋 <b>Generador de Cierre (1/4):</b><br>¿Qué tipo de ciclo fue?<br><br>` +
                       `<button onclick="responderPasoResumen('ciclo', 'Uniciclo', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Uniciclo</button>` +
                       `<button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ Ciclo 1</button>`;
         }} else if (pasoResumen === 2) {{
-            htmlBot = `📋 <b>Generador de Cierre (Paso 2/4):</b><br>¿Hubo Bulk (H&B)?<br><br>` +
+            htmlBot = `📋 <b>Generador de Cierre (2/4):</b><br>¿Hubo Bulk (H&B)?<br><br>` +
                       `<button onclick="responderPasoResumen('bulk', true, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
                       `<button onclick="responderPasoResumen('bulk', false, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
         }} else if (pasoResumen === 3) {{
-            htmlBot = `📋 <b>Generador de Cierre (Paso 3/4):</b><br>¿Hubo dropeo de nodos?<br><br>` +
+            htmlBot = `📋 <b>Generador de Cierre (3/4):</b><br>¿Hubo dropeo de nodos?<br><br>` +
                       `<button onclick="responderPasoResumen('dropeo', true, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
                       `<button onclick="responderPasoResumen('dropeo', false, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
         }} else if (pasoResumen === 4) {{
-            htmlBot = `📋 <b>Generador de Cierre (Paso 4/4):</b><br>¿Se cargó Alchichica ND en AM0?<br><br>` +
+            htmlBot = `📋 <b>Generador de Cierre (4/4):</b><br>¿Se cargó Alchichica ND en AM0?<br><br>` +
                       `<button onclick="responderPasoResumen('alchichica', true, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
                       `<button onclick="responderPasoResumen('alchichica', false, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
         }} else if (pasoResumen === 5) {{
@@ -5534,261 +5517,77 @@ function iniciarArrastreFlotante(e) {{
         box.scrollTop = box.scrollHeight;
     }}
 
-
     function abrirCerrarMenuRuteos() {{
-
-        const menu =
-            document.getElementById("menu-lateral-ruteos");
-
-        const boton =
-            document.getElementById("btn-menu-lateral");
-
+        const menu = document.getElementById("menu-lateral-ruteos");
+        const boton = document.getElementById("btn-menu-lateral");
         if (!menu || !boton) return;
-
         menu.classList.toggle("abierto");
-
         if (menu.classList.contains("abierto")) {{
-
-            // Ocultar ☰
             boton.style.display = "none";
-
         }} else {{
-
-            // Mostrar ☰
             boton.style.display = "block";
-
         }}
     }}
 
-
     function cerrarMenuRuteos() {{
-
-        const menu =
-            document.getElementById("menu-lateral-ruteos");
-
+        const menu = document.getElementById("menu-lateral-ruteos");
         if (!menu) return;
-
         menu.classList.remove("abierto");
     }}
 
-
     function toggleSubmenuRuteos() {{
-
-        const submenu =
-            document.getElementById("submenu-ruteos-lateral");
-
+        const submenu = document.getElementById("submenu-ruteos-lateral");
         if (!submenu) return;
-
         if (submenu.style.display === "block") {{
-
             submenu.style.display = "none";
-
         }} else {{
-
             cargarRuteosEnMenuLateral();
-
             submenu.style.display = "block";
-
         }}
     }}
 
-
     function cargarRuteosEnMenuLateral() {{
-
-        const selector =
-            document.getElementById("ciclo-selector");
-
-        const submenu =
-            document.getElementById("submenu-ruteos-lateral");
-
+        const selector = document.getElementById("ciclo-selector");
+        const submenu = document.getElementById("submenu-ruteos-lateral");
         if (!selector || !submenu) return;
-
-
-        // Limpiar la lista anterior
         submenu.innerHTML = "";
-
-
-        // Leer directamente las opciones reales
-        // del selector original
         Array.from(selector.options).forEach(opcion => {{
-
-            const boton =
-                document.createElement("button");
-
+            const boton = document.createElement("button");
             boton.type = "button";
-
             boton.className = "ruteo-submenu-item";
-
             boton.innerText = opcion.textContent;
-
             boton.setAttribute("data-valor", opcion.value);
-
-
-            // Marcar el ruteo actualmente seleccionado
             if (opcion.value === selector.value) {{
                 boton.classList.add("activo");
             }}
-
-
             boton.onclick = function() {{
-
                 seleccionarRuteoDesdeMenu(this.getAttribute("data-valor"));
-
             }};
-
-
             submenu.appendChild(boton);
-
         }});
     }}
 
-
     function seleccionarRuteoDesdeMenu(valor) {{
-
-        const selector =
-            document.getElementById("ciclo-selector");
-
+        const selector = document.getElementById("ciclo-selector");
         if (!selector) return;
-
-
-        // Cambiar el selector real
         selector.value = valor;
-
-
-        // Ejecutar EXACTAMENTE la función
-        // que ya utilizaba tu selector original
         cambiarCiclo(valor);
-
-
-        // Actualizar visualmente la lista
         cargarRuteosEnMenuLateral();
-
     }}
-
-
 
     function accionMenuRuteos(accion) {{
-
         if (accion === 'excel') {{
-
             toggleExcelView();
-
         }} else if (accion === 'nuevo') {{
-
             abrirCreadorRuteo();
-
         }} else if (accion === 'gestionar') {{
-
             abrirGestorEliminacionMasiva();
-
         }} else if (accion === 'limpiar') {{
-
             limpiarPantallaCompleta();
-
         }} else if (accion === 'bot') {{
-
-            togglePanelBotLateral();
-
-        }}
-	}}
-
-
-    function abrirCerrarAsistenteRuteo() {{
-
-        const panel =
-            document.getElementById("panel-asistente-ruteo");
-
-        if (!panel) return;
-
-        const abierto =
-            panel.classList.toggle("abierto");
-
-        // ========================================================
-        // 🤖 AVISAR A STREAMLIT QUE SE QUIERE ABRIR EL ASISTENTE
-        // ========================================================
-
-        if (abierto) {{
-
-            // Intentar localizar el componente padre de Streamlit
-            const inputs =
-                window.parent.document.querySelectorAll(
-                    'input[type="text"]'
-                );
-
-            for (const input of inputs) {{
-
-                if (
-                    input.getAttribute("data-testid") ===
-                    "stTextInput"
-                ) {{
-                    input.value = "__ABRIR_ASISTENTE__";
-                    input.dispatchEvent(
-                        new Event("input", {{ bubbles: true }})
-                    );
-                    break;
-                }}
-            }}
-
-            // También intentamos localizar el botón de prueba
-            const botones =
-                window.parent.document.querySelectorAll(
-                    'button'
-                );
-
-            for (const boton of botones) {{
-
-                const texto =
-                    (boton.innerText || "").trim();
-
-                if (texto === "ABRIR ASISTENTE") {{
-
-                    boton.click();
-
-                    break;
-                }}
-            }}
+            togglePanelBotLateral(); // ✅ Llamada 100% limpia sin errores
         }}
     }}
-
-
-    function abrirBotRuteo() {{
-
-        const botones =
-            window.parent.document.querySelectorAll(
-                'button'
-            );
-
-        for (const botonStreamlit of botones) {{
-
-            const texto =
-                (botonStreamlit.innerText || "").trim();
-
-            const aria =
-                botonStreamlit.getAttribute("aria-label") || "";
-
-            if (
-                texto === "ABRIR ASISTENTE" ||
-                aria.includes("btn_abrir_asistente")
-            ) {{
-
-                botonStreamlit.click();
-
-                return;
-            }}
-        }}
-
-        console.log(
-            "⚠️ No se encontró el botón ABRIR ASISTENTE de Streamlit"
-        );
-    }}
-
-    
-
-
-
-
-	
-
 </script>
 
 
