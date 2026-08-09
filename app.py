@@ -6237,16 +6237,42 @@ function iniciarArrastreFlotante(e) {{
 
     function abrirBotRuteo() {{
 
-        const mensaje = document.createElement("div");
+        const menu =
+            document.getElementById("menu-lateral-ruteos");
 
-        mensaje.id = "abrir-bot-ruteo-evento";
+        if (!menu) return;
 
-        document.body.appendChild(mensaje);
+        // Cerrar el menú principal
+        menu.classList.remove("abierto");
 
-        setTimeout(function() {{
-            mensaje.remove();
-        }}, 100);
+        // Mostrar nuevamente el botón ☰
+        const boton =
+            document.getElementById("btn-menu-lateral");
 
+        if (boton) {{
+            boton.style.display = "block";
+        }}
+
+        // Buscar el botón original del asistente de Streamlit
+        const botones =
+            window.parent.document.querySelectorAll(
+                'button'
+            );
+
+        for (const botonStreamlit of botones) {{
+
+            if (
+                botonStreamlit.innerText &&
+                botonStreamlit.innerText.includes(
+                    "¿INDICACIONES DE RUTEO?"
+                )
+            ) {{
+
+                botonStreamlit.click();
+
+                break;
+            }}
+        }}
     }}
 
 
