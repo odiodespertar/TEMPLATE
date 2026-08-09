@@ -1133,9 +1133,12 @@ PERFILES = {}
 perfil_actual = "LUNES"
 
 # 🟢 Convertimos los diccionarios de reglas.py a JSON para que JavaScript los lea completos
-reglas_json = json.dumps(reglas_ruteo)
-mapa_origenes_json = json.dumps(MAPA_ORIGENES)
-preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
+# Carga segura de datos sin conflictos con f-strings
+DATOS_BOT_JSON = json.dumps({
+    "reglas": reglas_ruteo,
+    "mapa": MAPA_ORIGENES,
+    "faq": PREGUNTAS_FRECUENTES
+})
 
 app_html = f"""
 <!DOCTYPE html>
@@ -5357,8 +5360,8 @@ function iniciarArrastreFlotante(e) {{
 
 <script>
     // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {reglas_json};
-    const MAPA_ORIGENES = {mapa_origenes_json};
+    const REGLAS_RUTEO = {{reglas_json}};
+    const MAPA_ORIGENES = {{mapa_origenes_json}};
     const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
 
     let flujoResumen = false;
@@ -5371,6 +5374,22 @@ function iniciarArrastreFlotante(e) {{
         panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
     }}
 
+    // Carga global unificada
+    const DB_BOT = {{DATOS_BOT_JSON}};
+    const REGLAS_RUTEO = DB_BOT.reglas || {{}};
+    const MAPA_ORIGENES = DB_BOT.mapa || {{}};
+    const PREGUNTAS_FRECUENTES = DB_BOT.faq || {{}};
+
+    let flujoResumen = false;
+    let pasoResumen = 0;
+    let dataResumen = {{}};
+
+    function togglePanelBotLateral() {{
+        var panel = document.getElementById("panel-bot-lateral-contenido");
+        if (!panel) return;
+        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+    }}
+
     function enviarConsultaBotLateral(opcionDirecta) {{
         var input = document.getElementById("input-bot-lateral");
         var box = document.getElementById("box-mensajes-bot");
@@ -5379,57 +5398,42 @@ function iniciarArrastreFlotante(e) {{
         var consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
-        // Mostrar mensaje del usuario
+        // Mostrar pregunta del usuario
         box.innerHTML += '<div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;"><b>Tú:</b> ' + consulta + '</div>';
         if (input) input.value = "";
 
         var q = consulta.toLowerCase();
         var partesRespuesta = [];
 
-        // 1. Cierre / Resumen
+        // 1. Resumen / Cierre
         if (q.indexOf("resumen") !== -1 || q.indexOf("cierre") !== -1 || q.indexOf("ciere") !== -1 || flujoResumen) {{
             procesarFlujoResumen(q, box);
             box.scrollTop = box.scrollHeight;
             return;
         }}
 
-        // 2. BUSCAR EN MAPA_ORIGENES (Región, Origen y Validación)
+        // 2. SMX5
+        if (q === "smx5" || q === "smx5?") {{
+            var htmlSmx5 = '<div class="bloque-subtipo-smx5">🔍 Detecté <b>SMX5</b>. ¿De cuál requieres las prioridades?<br><br><div style="display:flex; gap:6px;"><button onclick="enviarConsultaBotLateral(\'smx5 extendido\')" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Extendido</button><button onclick="enviarConsultaBotLateral(\'smx5 precarga\')" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ Precarga</button></div></div>';
+            box.innerHTML += '<div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">🤖 <b>Asistente:</b><br>' + htmlSmx5 + '</div>';
+            box.scrollTop = box.scrollHeight;
+            return;
+        }}
+
+        // 3. Mapa de Orígenes (SGD2, SJA1, etc.)
         var svcMapa = null;
         Object.keys(MAPA_ORIGENES).forEach(function(key) {{
             if (q.indexOf(key.toLowerCase()) !== -1) svcMapa = key;
-        });
+        }});
 
         if (svcMapa) {{
             var info = MAPA_ORIGENES[svcMapa];
             var origenTag = '<span style="background:#e2e8f0; color:#0f172a; padding:2px 6px; border-radius:4px; font-weight:bold; font-family:monospace;">' + info.origen + '</span>';
-            
-            var bloqueMapa = '📍 <b>Origen y Validación para ' + svcMapa.toUpperCase() + ':</b><br>' +
-                             '• 🗺️ <b>Región:</b> Región ' + info.region + '<br>' +
-                             '• 🏢 <b>Origen(es) On Way:</b> ' + origenTag + '<br>' +
-                             '• ✅ <b>Validación requerida:</b> ' + info.val;
-            
+            var bloqueMapa = '📍 <b>Origen y Validación para ' + svcMapa.toUpperCase() + ':</b><br>• 🗺️ <b>Región:</b> Región ' + info.region + '<br>• 🏢 <b>Origen(es) On Way:</b> ' + origenTag + '<br>• ✅ <b>Validación requerida:</b> ' + info.val;
             partesRespuesta.push(bloqueMapa);
         }}
 
-        // 3. OBLIGAR A EXTRAER LAS REGLAS DE RUTEO (Busca por coincidencia de nombre)
-        var reglaEncontrada = null;
-        Object.keys(REGLAS_RUTEO).forEach(function(clave) {{
-            var claveL = clave.toLowerCase();
-            var claveLimpia = claveL.replace("_extendido", "").replace("_precarga", "");
-            
-            if (svcMapa && (claveL.indexOf(svcMapa) !== -1 || claveLimpia === svcMapa)) {{
-                reglaEncontrada = REGLAS_RUTEO[clave];
-            }} else if (!svcMapa && q.indexOf(claveLimpia) !== -1) {{
-                reglaEncontrada = REGLAS_RUTEO[clave];
-            }}
-        }});
-
-        if (reglaEncontrada) {{
-            var textoHTML = reglaEncontrada.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-            partesRespuesta.push('📋 <b>Indicaciones específicas:</b><br><br>' + textoHTML);
-        }}
-
-        // 4. BÚSQUEDA DE PREGUNTAS FRECUENTES (FAQ)
+        // 4. Preguntas Frecuentes (FAQ)
         var coincidenciasFaq = [];
         if (q.indexOf("sdd") !== -1 || q.indexOf("large van sdd") !== -1) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
         if (q.indexOf("bulk") !== -1) {{
@@ -5444,12 +5448,33 @@ function iniciarArrastreFlotante(e) {{
             partesRespuesta.push(coincidenciasFaq.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>"));
         }}
 
-        // Despliegue de la respuesta final
+        // 5. Reglas de Ruteo (SGD2 extendido, etc.)
+        var claveReglaEncontrada = null;
+        if (q.indexOf("smx5") !== -1) {{
+            claveReglaEncontrada = q.indexOf("precarga") !== -1 ? "smx5_precarga" : "smx5_extendido";
+        }} else {{
+            var mapeo = {{
+                "smx9": "smx9_extendido", "sgd2": "sgd2_extendido", "smx4": "smx4_extendido",
+                "smx2": "smx2_extendido", "smt2": "smt2_extendido", "scp1": "scp1",
+                "smd1": "smd1", "sch1": "sch1", "sja1": "sja1"
+            }};
+            Object.keys(mapeo).forEach(function(term) {{
+                if (q.indexOf(term) !== -1) claveReglaEncontrada = mapeo[term];
+            }});
+        }}
+
+        if (claveReglaEncontrada && REGLAS_RUTEO[claveReglaEncontrada]) {{
+            var textoRegla = REGLAS_RUTEO[claveReglaEncontrada];
+            var textoHTML = textoRegla.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            partesRespuesta.push('📋 <b>Indicaciones específicas:</b><br><br>' + textoHTML);
+        }}
+
+        // Respuesta final
         var respuestaFinal = "";
         if (partesRespuesta.length > 0) {{
             respuestaFinal = partesRespuesta.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }} else {{
-            respuestaFinal = "⚠️ No encontré esa consulta. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SGD2, SMX5, Bulk, Alchichica) o escribir **resumen** para armar el cierre.";
+            respuestaFinal = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SGD2, SDD, Bulk, Alchichica) o presionar arriba para armar el resumen de cierre.";
         }}
 
         setTimeout(function() {{
@@ -5457,8 +5482,9 @@ function iniciarArrastreFlotante(e) {{
             box.scrollTop = box.scrollHeight;
         }}, 150);
     }}
-	
 
+
+	
     // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
     // =========================================================================
