@@ -5342,15 +5342,15 @@ function iniciarArrastreFlotante(e) {{
             📋 Armar Resumen de Cierre
         </button>
 
-        <div id="box-mensajes-bot" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 4px;">
+        <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 14px; padding: 6px;">
             <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff;">
                 🤖 <b>Asistente de Ruteo:</b><br>Consulta por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona arriba para armar el cierre de turno.
             </div>
         </div>
 
-        <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <input type="text" id="input-bot-lateral" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 12px;">
-            <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 12px;">🚀</button>
+        <div style="display: flex; gap: 6px; margin-top: 10px;">
+            <input type="text" id="input-bot-lateral" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 8px 10px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 14px;">
+            <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">🚀</button>
         </div>
     </div>
 </div>
@@ -5643,8 +5643,8 @@ function iniciarArrastreFlotante(e) {{
         pasoResumen = 0;
 
         box.innerHTML += `
-            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:12px;">
-                📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
+            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 12px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:14px; line-height: 1.5;">
+                📋 <b>REPORTE GENERADO:</b><br><br>${resumenFinal}
             </div>
         `;
         box.scrollTop = box.scrollHeight;
