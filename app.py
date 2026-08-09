@@ -485,7 +485,11 @@ st.markdown("""
 # ==========================================
 # 🤖 BOT DE PRIORIDADES Y RESUMEN
 # ==========================================
-with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
+
+if "mostrar_asistente" not in st.session_state:
+    st.session_state.mostrar_asistente = False
+
+if st.session_state.mostrar_asistente:
 
     # ============================================================
     # 🎨 ESTILO DEL BOT
@@ -494,41 +498,7 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
     st.markdown("""
     <style>
 	
-        /* CABECERA / EXPANDER */
-
-        div[data-testid="stExpander"] button {
-            background: linear-gradient(
-                135deg,
-                #f8fafc,
-                #eef6fb
-            ) !important;
-
-            color: #0f172a !important;
-            border: 1px solid #cbd5e1 !important;
-            border-radius: 12px !important;
-            font-weight: 700 !important;
-            transition: all 0.2s ease !important;
-        }
-
-        div[data-testid="stExpander"] button:hover {
-            background: linear-gradient(
-                135deg,
-                #e0f2fe,
-                #f8fafc
-            ) !important;
-
-            color: #0284c7 !important;
-            border-color: #0284c7 !important;
-
-            box-shadow:
-                0 4px 12px rgba(2, 132, 199, 0.12) !important;
-        }
-
-        div[data-testid="stExpander"] label p {
-            color: #0f172a !important;
-            font-weight: 700 !important;
-        }
-
+      
 
         /* 🚚 CAMIONCITO ANIMADO */
 
@@ -6230,8 +6200,20 @@ function iniciarArrastreFlotante(e) {{
 
         }} else if (accion === 'bot') {{
 
-            abrirBotRuteo();
+            cerrarMenuRuteos();
 
+            // Buscar el botón de Streamlit del asistente
+            const botones = Array.from(
+                window.parent.document.querySelectorAll('button')
+            );
+
+            const botonBot = botones.find(
+                b => b.innerText.includes('ABRIR ASISTENTE')
+            );
+
+            if (botonBot) {{
+                botonBot.click();
+            }}
         }}
     }}
 
