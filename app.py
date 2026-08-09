@@ -492,6 +492,18 @@ if "mostrar_asistente" not in st.session_state:
 # ============================================================
 # BOTÓN DE CONTROL DEL ASISTENTE
 # ============================================================
+if "mostrar_asistente" not in st.session_state:
+    st.session_state.mostrar_asistente = False
+
+
+if st.session_state.get("abrir_asistente_menu", False):
+
+    st.session_state.mostrar_asistente = True
+    st.session_state.abrir_asistente_menu = False
+    st.rerun()
+
+
+# BOTÓN TEMPORAL DE PRUEBA
 if st.button(
     "ABRIR ASISTENTE",
     key="btn_abrir_asistente"
@@ -6282,20 +6294,50 @@ function iniciarArrastreFlotante(e) {{
         const abierto =
             panel.classList.toggle("abierto");
 
+        // ========================================================
+        // 🤖 AVISAR A STREAMLIT QUE SE QUIERE ABRIR EL ASISTENTE
+        // ========================================================
+
         if (abierto) {{
 
-            const contenedor =
-                document.getElementById("contenedor-chat-ruteo");
+            // Intentar localizar el componente padre de Streamlit
+            const inputs =
+                window.parent.document.querySelectorAll(
+                    'input[type="text"]'
+                );
 
-            if (!contenedor) return;
+            for (const input of inputs) {{
 
-            contenedor.innerHTML = `
-                <button
-                    class="ruteo-submenu-item"
-                    onclick="abrirBotRuteo()">
-                    🤖 &nbsp; ASISTENTE DE RUTEO ROUTING
-                </button>
-            `;
+                if (
+                    input.getAttribute("data-testid") ===
+                    "stTextInput"
+                ) {{
+                    input.value = "__ABRIR_ASISTENTE__";
+                    input.dispatchEvent(
+                        new Event("input", {{ bubbles: true }})
+                    );
+                    break;
+                }}
+            }}
+
+            // También intentamos localizar el botón de prueba
+            const botones =
+                window.parent.document.querySelectorAll(
+                    'button'
+                );
+
+            for (const boton of botones) {{
+
+                const texto =
+                    (boton.innerText || "").trim();
+
+                if (texto === "ABRIR ASISTENTE") {{
+
+                    boton.click();
+
+                    break;
+                }}
+            }}
         }}
     }}
 
