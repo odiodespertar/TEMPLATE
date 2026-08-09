@@ -6273,7 +6273,16 @@ function iniciarArrastreFlotante(e) {{
     }}
 
 
+    function abrirCerrarAsistenteRuteo() {{
 
+        const panel =
+            document.getElementById("panel-asistente-ruteo");
+
+        if (!panel) return;
+
+        panel.classList.toggle("abierto");
+
+    }}
 
 
 
