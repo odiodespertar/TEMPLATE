@@ -72,9 +72,11 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
     return False
 
 
+
 # ==============================================================================
 # 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
 # ==============================================================================
+
 # Inicializar gestor de cookies
 cookie_manager = stx.CookieManager(key="cookie_manager_auth")
 
@@ -85,66 +87,178 @@ if "usuario_auth" not in st.session_state:
 if "verificando_cookie" not in st.session_state:
     st.session_state.verificando_cookie = True
 
-# 1. Intentar recuperar la cookie si no hay usuario en sesión
+
+# ==============================================================================
+# USUARIOS DEL SISTEMA
+# ==============================================================================
+
+USUARIOS_LOGIN = {
+    "johan": "johanmichael.velazquezrangel@mercadolibre.com.mx",
+    "odiodespertar": "odiodespertar@gmail.com",
+}
+
+
+# ==============================================================================
+# 1. INTENTAR RECUPERAR LA COOKIE
+# ==============================================================================
+
 if st.session_state.usuario_auth is None:
-    session_id_cookie = cookie_manager.get(cookie="sb_refresh_token")
+
+    session_id_cookie = cookie_manager.get(
+        cookie="sb_refresh_token"
+    )
+
     if session_id_cookie and supabase:
+
         try:
-            res_refresh = supabase.auth.refresh_session(session_id_cookie)
+
+            res_refresh = supabase.auth.refresh_session(
+                session_id_cookie
+            )
+
             if res_refresh and res_refresh.user:
+
                 # Recuperar usuario
                 st.session_state.usuario_auth = res_refresh.user
+
                 # Recuperar sesión completa
                 st.session_state.supabase_session = res_refresh.session
-                # Identificador de usuario
-                st.session_state["usuario_activo"] = (
-                    res_refresh.user.email.split("@")[0].replace(".", "_")
-                )
+
+                # Recuperar usuario a partir del correo
+                usuario_email = res_refresh.user.email or ""
+
+                usuario_encontrado = None
+
+                for nombre_usuario, correo in USUARIOS_LOGIN.items():
+
+                    if correo.lower() == usuario_email.lower():
+                        usuario_encontrado = nombre_usuario
+                        break
+
+                # Guardar identificador del usuario
+                if usuario_encontrado:
+                    st.session_state["usuario_activo"] = usuario_encontrado
+                else:
+                    st.session_state["usuario_activo"] = (
+                        usuario_email
+                        .split("@")[0]
+                        .replace(".", "_")
+                    )
+
                 st.session_state.verificando_cookie = False
+
                 # Entrar nuevamente a la aplicación
                 st.rerun()
+
         except Exception:
+
             # La cookie existe pero ya no es válida
             st.session_state.verificando_cookie = False
+
     else:
-        # La cookie todavía puede estar cargándose desde el navegador
+
+        # La cookie todavía puede estar cargándose
         if st.session_state.verificando_cookie:
+
             time.sleep(0.5)
+
             st.session_state.verificando_cookie = False
+
             st.rerun()
 
-# 2. Si no hay usuario y ya se confirmó que no hay cookie válida, mostrar Login
+
+# ==============================================================================
+# 2. MOSTRAR LOGIN
+# ==============================================================================
+
 if st.session_state.usuario_auth is None:
-    st.markdown("<h1 style='text-align: center; color: white;'>🚚 MONITOR LOGÍSTICO</h1>", unsafe_allow_html=True)
-    
+
+    st.markdown(
+        "🚚 MONITOR LOGÍSTICO",
+        unsafe_allow_html=True
+    )
+
     col1, col2, col3 = st.columns([1, 2, 1])
+
     with col2:
+
         with st.form("form_login"):
+
             st.subheader("🔑 Iniciar Sesión")
-            email_input = st.text_input("Correo electrónico:")
-            password_input = st.text_input("Contraseña:", type="password")
-            btn_login = st.form_submit_button("ENTRAR", use_container_width=True)
-            
+
+            usuario_input = st.text_input(
+                "Usuario:"
+            )
+
+            password_input = st.text_input(
+                "Contraseña:",
+                type="password"
+            )
+
+            btn_login = st.form_submit_button(
+                "ENTRAR",
+                use_container_width=True
+            )
+
             if btn_login:
-                if not email_input or not password_input:
-                    st.error("⚠️ Ingrese correo y contraseña.")
+
+                usuario = usuario_input.strip().lower()
+
+                if not usuario or not password_input:
+
+                    st.error(
+                        "⚠️ Ingrese usuario y contraseña."
+                    )
+
+                elif usuario not in USUARIOS_LOGIN:
+
+                    st.error(
+                        "❌ Usuario no encontrado."
+                    )
+
                 else:
+
                     try:
+
+                        # Obtener correo asociado al usuario
+                        email_login = USUARIOS_LOGIN[usuario]
+
+                        # Autenticar con Supabase
                         res = supabase.auth.sign_in_with_password({
-                            "email": email_input.strip(),
+                            "email": email_login,
                             "password": password_input.strip()
                         })
+
+                        # Guardar usuario autenticado
                         st.session_state.usuario_auth = res.user
+
+                        # Guardar sesión completa
                         st.session_state.supabase_session = res.session
-                        st.session_state["usuario_activo"] = res.user.email.split("@")[0].replace(".", "_")
-                        
+
+                        # Guardar nombre de usuario
+                        st.session_state["usuario_activo"] = usuario
+
+                        # Guardar cookie
                         if res.session and res.session.refresh_token:
-                            cookie_manager.set("sb_refresh_token", res.session.refresh_token, max_age=7*24*3600)
-                        
+
+                            cookie_manager.set(
+                                "sb_refresh_token",
+                                res.session.refresh_token,
+                                max_age=7 * 24 * 3600
+                            )
+
+                        # Entrar a la aplicación
                         st.rerun()
-                    except Exception as e:
-                        st.error("❌ Credenciales inválidas. Verifica tu correo y contraseña.")
+
+                    except Exception:
+
+                        st.error(
+                            "❌ Usuario o contraseña incorrectos."
+                        )
+
     st.stop()
+
+
 
 # ==============================================================================
 # 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
