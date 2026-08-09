@@ -8,6 +8,14 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
+# Ocultar la barra superior (header) y el menú de Streamlit
+hide_header_style = """
+    <style>
+    header {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_header_style, unsafe_allow_html=True)
+
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
