@@ -108,13 +108,9 @@ reglas_ruteo = {
 # ==========================================
 MAPA_ORIGENES = {
     # 🔵 REGIÓN METRO (CDMX)
-    "smx2": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No", "Último despacho": "de hoy (3 pm en adelante)"},
     "smx3": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx4": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx5": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
     "smx7": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
     "smx8": {"region": "Metro (CDMX)", "origen": "MXCD10", "val": "❌ No"},
-    "smx9": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
     "smx10": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06, MXCD20", "val": "❌ No"},
     "smx10 sd3": {"region": "Metro (CDMX)", "origen": "MXCD20", "val": "❌ No"},
     "stl1": {"region": "Metro (CDMX)", "origen": "MXCD02", "val": "❌ No"},
@@ -125,12 +121,10 @@ MAPA_ORIGENES = {
     "sbj1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No"},
     "sle1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No"},
     "sgd1": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
-    "sgd2": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
     "sgd3": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
 
     # 🩵 REGIÓN NORTE
     "smt1": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
-    "smt2": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
     "smt3": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
     "shm1": {"region": "Norte", "origen": "MXSO01", "val": "✔️ Sí"},
 
