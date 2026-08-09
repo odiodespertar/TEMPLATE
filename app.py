@@ -249,7 +249,7 @@ if st.session_state.usuario_auth is None:
             st.session_state.usuario_auth = None
             st.session_state.verificando_cookie = False
 
-        else:
+   else:
 
         # ==============================================================
         # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
