@@ -5687,9 +5687,7 @@ function iniciarArrastreFlotante(e) {{
 
         }} else if (accion === 'bot') {{
 
-            window.parent.postMessage({{
-                tipo: "abrir_asistente_menu"
-            }}, "*");
+            togglePanelBotLateral();
 
         }}
 	}}
