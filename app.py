@@ -129,6 +129,7 @@ USUARIOS_LOGIN = {
 }
 
 
+
 # ============================================================================
 # 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE
 # ============================================================================
@@ -152,108 +153,65 @@ if st.session_state.usuario_auth is None:
     if session_id_cookie and supabase:
 
         try:
-
-            # ==============================================================
-            # RECUPERAR SESIÓN USANDO EL REFRESH TOKEN
-            # ==============================================================
-
             res_refresh = supabase.auth.refresh_session(
                 session_id_cookie
             )
 
             if res_refresh and res_refresh.session and res_refresh.user:
 
-                # ==========================================================
-                # GUARDAR NUEVA SESIÓN
-                # ==========================================================
-
                 st.session_state.usuario_auth = res_refresh.user
                 st.session_state.supabase_session = res_refresh.session
-
-                # ==========================================================
-                # GUARDAR NUEVO REFRESH TOKEN
-                # ==========================================================
 
                 nuevo_refresh_token = (
                     res_refresh.session.refresh_token
                 )
 
                 if nuevo_refresh_token:
-
                     cookie_manager.set(
                         "sb_refresh_token",
                         nuevo_refresh_token,
                         max_age=30 * 24 * 3600
                     )
 
-                # ==========================================================
-                # IDENTIFICAR USUARIO
-                # ==========================================================
-
                 usuario_email = res_refresh.user.email or ""
 
                 usuario_encontrado = None
 
                 for nombre_usuario, correo in USUARIOS_LOGIN.items():
-
                     if correo.lower() == usuario_email.lower():
-
                         usuario_encontrado = nombre_usuario
                         break
 
-                # ==========================================================
-                # GUARDAR USUARIO ACTIVO
-                # ==========================================================
-
                 if usuario_encontrado:
-
                     st.session_state["usuario_activo"] = (
                         usuario_encontrado
                     )
-
                 else:
-
                     st.session_state["usuario_activo"] = (
                         usuario_email
                         .split("@")[0]
                         .replace(".", "_")
                     )
 
-                # ==========================================================
-                # SESIÓN RECUPERADA CORRECTAMENTE
-                # ==========================================================
-
                 st.session_state.verificando_cookie = False
 
                 st.rerun()
 
             else:
-
-                # La cookie ya no corresponde a una sesión válida
-
                 st.session_state.verificando_cookie = False
 
         except Exception as e:
-
-            # ==============================================================
-            # ERROR AL RECUPERAR LA SESIÓN
-            # ==============================================================
 
             st.error(
                 f"❌ Error al recuperar la sesión: {e}"
             )
 
-            # El refresh token guardado ya no es válido
             cookie_manager.delete("sb_refresh_token")
 
             st.session_state.usuario_auth = None
             st.session_state.verificando_cookie = False
 
-   else:
-
-        # ==============================================================
-        # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
-        # ==============================================================
+    else:
 
         if st.session_state.verificando_cookie:
 
@@ -262,6 +220,8 @@ if st.session_state.usuario_auth is None:
             st.session_state.verificando_cookie = False
 
             st.rerun()
+
+
 
 # ==============================================================================
 # 2. MOSTRAR LOGIN
