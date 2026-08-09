@@ -6055,7 +6055,17 @@ function iniciarArrastreFlotante(e) {{
         🤖 &nbsp; ASISTENTE DE RUTEO
     </button>
 
-	
+    <!-- PANEL DEL ASISTENTE DE RUTEO -->
+
+    <div id="panel-asistente-ruteo">
+
+        <div class="asistente-header">
+            <span>🤖 ASISTENTE DE RUTEO</span>
+            <span class="asistente-online">● ROUTING</span>
+        </div>
+
+        <div id="contenedor-chat-ruteo">
+        </div>	
 
 </div>
 
@@ -6214,22 +6224,13 @@ function iniciarArrastreFlotante(e) {{
 
         }} else if (accion === 'bot') {{
 
-            cerrarMenuRuteos();
+            abrirCerrarAsistenteRuteo();
 
-            // Buscar el botón de Streamlit del asistente
-            const botones = Array.from(
-                window.parent.document.querySelectorAll('button')
-            );
-
-            const botonBot = botones.find(
-                b => b.innerText.includes('ABRIR ASISTENTE')
-            );
-
-            if (botonBot) {{
-                botonBot.click();
-            }}
         }}
     }}
+
+
+
 
     function abrirBotRuteo() {{
 
