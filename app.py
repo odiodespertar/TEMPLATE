@@ -21,7 +21,9 @@ def init_supabase():
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
     except Exception:
-		st.error(f"❌ Error al conectar con Supabase: {e}")
+		st.error(
+			f"❌ Error al conectar con Supabase: {e}"
+		)
         return None
 
 supabase = init_supabase()
