@@ -5019,7 +5019,7 @@ function iniciarArrastreFlotante(e) {{
         left: 5px;
         z-index: 9999999;
 
-        width: 45px;
+        width: 42px;
         height: 42px;
 
         border: 1px solid #444;
@@ -5047,7 +5047,7 @@ function iniciarArrastreFlotante(e) {{
        top: 0;
        left: -310px;
 
-       width: 350px;
+       width: 290px;
        height: 100vh;
 
        background: #1e2022;
