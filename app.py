@@ -8,31 +8,6 @@ from streamlit.components.v1 import html
 from supabase import Client, create_client
 from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
-hide_github_only_css = """
-    <style>
-    /* Ocultar el menú desplegable de GitHub / Deploy / Settings de la esquina superior derecha */
-    #MainMenu {visibility: hidden;}
-    
-    /* Ocultar los botones específicos de GitHub, Share y Edit en el header superior derecho */
-    header [data-testid="stStatusWidget"] {
-        display: none !important;
-    }
-    
-    /* Ocultar los botones flotantes de la barra superior derecha manteniendo el contenedor de la izquierda */
-    div[data-testid="stToolbar"] {
-        visibility: hidden;
-    }
-    
-    /* Asegurar que el botón para desplegar la barra lateral (las flechitas) siga completamente visible y funcional */
-    [data-testid="collapsedControl"] {
-        visibility: visible !important;
-        display: block !important;
-    }
-    </style>
-"""
-st.markdown(hide_github_only_css, unsafe_allow_html=True)
-
-
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
