@@ -1134,9 +1134,8 @@ PERFILES = {}
 perfil_actual = "LUNES"
 
 # 🟢 Convertimos los diccionarios de reglas.py a JSON para que JavaScript los lea completos
-reglas_json = json.dumps(reglas_ruteo)
-mapa_origenes_json = json.dumps(MAPA_ORIGENES)
-preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
+datos_mapa_json = json.dumps(MAPA_ORIGENES)
+datos_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
 
 app_html = f"""
 <!DOCTYPE html>
