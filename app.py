@@ -774,7 +774,7 @@ with st.expander("🤖 ¿INDICACIONES DE RUTEO? Te ayudo", expanded=False):
                         unis_pre = st.session_state.data_resumen.get("unidades_centro", [])
                         
                         fuera_elegidas = []
-                        for i_idx, u in enumerate(unis_pre):
+                        for i_idx, u in enumerate(unis_pre): 
                             if st.checkbox(f"Dejó fuera: {u}", key=f"chk_fuera_{i_idx}"):
                                 fuera_elegidas.append(u)
                         
