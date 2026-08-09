@@ -5397,7 +5397,7 @@ function iniciarArrastreFlotante(e) {{
         var svcMapa = null;
         Object.keys(MAPA_ORIGENES).forEach(function(key) {{
             if (q.indexOf(key.toLowerCase()) !== -1) svcMapa = key;
-        });
+        }});
 
         if (svcMapa) {{
             var info = MAPA_ORIGENES[svcMapa];
