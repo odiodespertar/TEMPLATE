@@ -482,9 +482,773 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# ==========================================
+# 🤖 BOT DE PRIORIDADES Y RESUMEN
+# ==========================================
+
+if "mostrar_asistente" not in st.session_state:
+    st.session_state.mostrar_asistente = False
+
+# ============================================================
+# 🤖 ABRIR ASISTENTE DESDE EL MENÚ LATERAL
+# ============================================================
+
+if st.session_state.get("abrir_asistente_menu", False):
+
+    st.session_state.mostrar_asistente = True
+    st.session_state.abrir_asistente_menu = False
+    st.rerun()
 
 
+# ============================================================
+# 🤖 MOSTRAR ASISTENTE
+# ============================================================
 
+if st.session_state.mostrar_asistente:
+
+    # ============================================================
+    # 🎨 ESTILO DEL BOT
+    # ============================================================
+
+    st.markdown("""
+    <style>
+	
+      
+
+        /* 🚚 CAMIONCITO ANIMADO */
+
+        .bot-animado {
+            text-align: center;
+            font-size: 42px;
+            margin: 5px 0 4px 0;
+
+            filter: drop-shadow(
+                0 4px 5px rgba(15, 23, 42, 0.15)
+            );
+
+            animation:
+                moverCamion 2s ease-in-out infinite;
+        }
+
+        @keyframes moverCamion {
+
+            0% {
+                transform: translateX(-15px);
+            }
+
+            50% {
+                transform: translateX(15px);
+            }
+
+            100% {
+                transform: translateX(-15px);
+            }
+
+        }
+
+
+        /* 🟢 ESTADO DEL BOT */
+
+        .bot-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin: 0 auto 8px auto;
+            font-size: 11px;
+            font-weight: 700;
+            color: #15803d;
+            letter-spacing: 0.4px;
+        }
+
+        .bot-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 4px rgba(34, 197, 94, 0.12);
+
+            animation: pulsoBot 1.8s infinite;
+        }
+
+        @keyframes pulsoBot {
+
+            0% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0.35);
+            }
+
+            70% {
+                box-shadow:
+                    0 0 0 7px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0);
+            }
+
+        }
+
+
+        /* 💬 MENSAJES */
+
+        div[data-testid="stChatMessage"] {
+            border-radius: 16px !important;
+            padding: 12px 16px !important;
+            margin: 8px 4px !important;
+
+            border:
+                1px solid rgba(148, 163, 184, 0.20) !important;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.06) !important;
+
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatMessage"]:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 5px 16px rgba(15, 23, 42, 0.10) !important;
+        }
+
+
+        /* 🤖 MENSAJES DEL ASISTENTE */
+
+        div[data-testid="stChatMessage"]:has(
+            [data-testid="chatAvatarIcon-assistant"]
+        ) {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc 0%,
+                    #eef6fb 100%
+                ) !important;
+
+            border-left:
+                4px solid #0284c7 !important;
+        }
+
+
+        /* 👤 MENSAJES DEL USUARIO */
+
+        div[data-testid="stChatMessage"]:has(
+            [data-testid="chatAvatarIcon-user"]
+        ) {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eff6ff 0%,
+                    #f8fafc 100%
+                ) !important;
+
+            border-right:
+                4px solid #38bdf8 !important;
+        }
+
+
+        /* 📝 TEXTO */
+
+        div[data-testid="stChatMessage"] p {
+            font-size: 14px !important;
+            line-height: 1.55 !important;
+            color: #1e293b !important;
+        }
+
+        div[data-testid="stChatMessage"] strong {
+            color: #0f172a !important;
+        }
+
+
+        /* 🔵 BOTONES */
+
+        div[data-testid="stChatMessage"] button {
+            border-radius: 12px !important;
+
+            border:
+                1px solid #bae6fd !important;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f0f9ff
+                ) !important;
+
+            color: #0369a1 !important;
+            font-weight: 700 !important;
+
+            transition:
+                all 0.2s ease !important;
+
+            box-shadow:
+                0 2px 6px rgba(2, 132, 199, 0.08) !important;
+        }
+
+        div[data-testid="stChatMessage"] button:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #e0f2fe,
+                    #bae6fd
+                ) !important;
+
+            border-color:
+                #0284c7 !important;
+
+            color:
+                #075985 !important;
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 5px 12px rgba(2, 132, 199, 0.16) !important;
+        }
+
+
+        /* ☑️ CHECKBOX */
+
+        div[data-testid="stChatMessage"] label {
+            border-radius: 10px !important;
+        }
+
+        div[data-testid="stChatMessage"] label p {
+            font-weight: 600 !important;
+            color: #334155 !important;
+        }
+
+
+        /* 🔽 SELECTBOX */
+
+        div[data-testid="stChatMessage"]
+        div[data-baseweb="select"] > div {
+            border-radius: 11px !important;
+
+            border:
+                1px solid #cbd5e1 !important;
+
+            background:
+                #ffffff !important;
+
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatMessage"]
+        div[data-baseweb="select"] > div:hover {
+            border-color:
+                #0284c7 !important;
+
+            box-shadow:
+                0 0 0 2px rgba(2, 132, 199, 0.08) !important;
+        }
+
+
+        /* ➖ SEPARADORES */
+
+        div[data-testid="stChatMessage"] hr {
+            border: none !important;
+
+            border-top:
+                1px dashed #cbd5e1 !important;
+
+            margin:
+                14px 0 !important;
+        }
+
+
+        /* ✏️ CAJA DE ESCRITURA */
+
+        div[data-testid="stChatInput"] {
+            margin-top: 10px !important;
+        }
+
+        div[data-testid="stChatInput"] > div {
+            border-radius: 16px !important;
+
+            border:
+                2px solid #cbd5e1 !important;
+
+            background:
+                #ffffff !important;
+
+            box-shadow:
+                0 4px 14px rgba(15, 23, 42, 0.08) !important;
+
+            transition:
+                all 0.25s ease !important;
+        }
+
+        div[data-testid="stChatInput"] > div:focus-within {
+            border-color:
+                #0284c7 !important;
+
+            box-shadow:
+                0 0 0 3px rgba(2, 132, 199, 0.12),
+                0 6px 18px rgba(15, 23, 42, 0.10) !important;
+        }
+
+        div[data-testid="stChatInput"] textarea {
+            font-size: 14px !important;
+            color: #0f172a !important;
+        }
+
+        div[data-testid="stChatInput"]
+        textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+
+
+        /* 🚀 BOTÓN ENVIAR */
+
+        div[data-testid="stChatInput"] button {
+            border-radius: 10px !important;
+            transition:
+                all 0.2s ease !important;
+        }
+
+        div[data-testid="stChatInput"] button:hover {
+            transform:
+                scale(1.08);
+        }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+
+    # ============================================================
+    # 🚚 CABECERA DEL ASISTENTE
+    # ============================================================
+
+    st.markdown("""
+    <div class="bot-animado">🚚</div>
+
+    <div class="bot-status">
+        <span class="bot-status-dot"></span>
+        ROUTING
+    </div>
+    """, unsafe_allow_html=True)
+
+
+    st.write("👉 Consulta un SVC para indicaciones 🔍")
+
+
+    # ============================================================
+    # 🧠 VARIABLES DEL BOT
+    # ============================================================
+
+    if "main_chat_messages" not in st.session_state:
+        st.session_state.main_chat_messages = []
+
+    if "esperando_subtipo_smx5" not in st.session_state:
+        st.session_state.esperando_subtipo_smx5 = False
+
+    if "flujo_resumen" not in st.session_state:
+        st.session_state.flujo_resumen = False
+
+    if "paso_resumen" not in st.session_state:
+        st.session_state.paso_resumen = 0
+
+    if "paso_historial" not in st.session_state:
+        st.session_state.paso_historial = []
+
+    if "data_resumen" not in st.session_state:
+        st.session_state.data_resumen = {}
+
+
+    # ============================================================
+    # 💬 VENTANA DEL CHAT
+    # ============================================================
+
+    with st.container(height=480):
+
+        for idx, msg in enumerate(
+            st.session_state.main_chat_messages
+        ):
+
+            with st.chat_message(msg["role"]):
+
+                st.markdown(
+                    msg["content"],
+                    unsafe_allow_html=True
+                )
+                
+                if st.session_state.flujo_resumen and idx == len(st.session_state.main_chat_messages) - 1:
+                    paso = st.session_state.paso_resumen
+
+                    if paso == 1:
+                        st.write("👇 **¿Qué tipo de ciclo fue?:**")
+                        col1, col2 = st.columns(2)
+                        if col1.button("1️⃣ Uniciclo", key="btn_resumen_uniciclo", use_container_width=True):
+                            st.session_state.data_resumen["ciclo"] = "Uniciclo"
+                            st.session_state.paso_historial.append(1)
+                            st.session_state.paso_resumen = 2
+                            st.rerun()
+                        if col2.button("2️⃣ Ciclo 1", key="btn_resumen_c1", use_container_width=True):
+                            st.session_state.data_resumen["ciclo"] = "C1"
+                            st.session_state.paso_historial.append(1)
+                            st.session_state.paso_resumen = 2
+                            st.rerun()
+
+                    elif paso == 2:
+                        st.write("👇 **Unidades dedicadas para nodos (selecciona la casilla):**")
+                        
+                        u1 = st.checkbox("3.5 tons", key="chk_35")
+                        u2 = st.checkbox("Delivery Cell", key="chk_del")
+                        
+                        unidades_elegidas = []
+                        if u1: unidades_elegidas.append("3.5 tons")
+                        if u2: unidades_elegidas.append("Delivery Cell")
+                        
+                        st.write("¿Logis tomó todas?")
+                        col_s, col_n = st.columns(2)
+                        if col_s.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["unidades_centro"] = unidades_elegidas
+                            st.session_state.data_resumen["logis_tomo_todas"] = True
+                            st.session_state.paso_historial.append(2)
+                            st.session_state.paso_resumen = 2.5
+                            st.rerun()
+                        if col_n.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["unidades_centro"] = unidades_elegidas
+                            st.session_state.data_resumen["logis_tomo_todas"] = False
+                            st.session_state.paso_historial.append(2)
+                            st.session_state.paso_resumen = 2.2
+                            st.rerun()
+
+                    elif paso == 2.2:
+                        st.write("👇 **¿Cuál o cuáles unidades dejó fuera Logis?**")
+                        unis_pre = st.session_state.data_resumen.get("unidades_centro", [])
+                        
+                        fuera_elegidas = []
+                        for i_idx, u in enumerate(unis_pre): 
+                            if st.checkbox(f"Dejó fuera: {u}", key=f"chk_fuera_{i_idx}"):
+                                fuera_elegidas.append(u)
+                        
+                        if st.button("Continuar ➡️", use_container_width=True):
+                            st.session_state.data_resumen["unidades_fuera"] = fuera_elegidas
+                            st.session_state.paso_historial.append(2.2)
+                            st.session_state.paso_resumen = 2.5
+                            st.rerun()
+
+                    elif paso == 2.5:
+                        st.write("👇 **¿Hubo Bulk (H&B)?**")
+                        c1, c2 = st.columns(2)
+                        if c1.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["hubo_bulk"] = True
+                            st.session_state.paso_historial.append(2.5)
+                            st.session_state.paso_resumen = 3
+                            st.rerun()
+                        if c2.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["hubo_bulk"] = False
+                            st.session_state.paso_historial.append(2.5)
+                            st.session_state.paso_resumen = 3
+                            st.rerun()
+
+                    elif paso == 3:
+                        st.write("👇 **¿Hubo dropeo de nodos?**")
+                        c1, c2 = st.columns(2)
+                        if c1.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["dropeo_nodos"] = True
+                            st.session_state.paso_historial.append(3)
+                            st.session_state.paso_resumen = 3.5
+                            st.rerun()
+                        if c2.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["dropeo_nodos"] = False
+                            st.session_state.data_resumen["dropeo_restriccion"] = False
+                            st.session_state.paso_historial.append(3)
+                            st.session_state.paso_resumen = 4
+                            st.rerun()
+
+                    elif paso == 3.5:
+                        st.write("👇 **¿En la contingencia hubo dropeo de IDs por restricción?**")
+                        c1, c2 = st.columns(2)
+                        if c1.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["dropeo_restriccion"] = True
+                            st.session_state.paso_historial.append(3.5)
+                            st.session_state.paso_resumen = 4
+                            st.rerun()
+                        if c2.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["dropeo_restriccion"] = False
+                            st.session_state.paso_historial.append(3.5)
+                            st.session_state.paso_resumen = 4
+                            st.rerun()
+
+                    elif paso == 4:
+                        st.write("👇 **¿Se cargó Alchichica ND en AM0?**")
+                        c1, c2 = st.columns(2)
+                        if c1.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["alchichica"] = True
+                            st.session_state.paso_historial.append(4)
+                            st.session_state.paso_resumen = 4.5
+                            st.rerun()
+                        if c2.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["alchichica"] = False
+                            st.session_state.paso_historial.append(4)
+                            st.session_state.paso_resumen = 5
+                            st.rerun()
+
+                    elif paso == 4.5:
+                        st.write("👇 **¿Fue con 2 Small Van MLP?**")
+                        c1, c2 = st.columns(2)
+                        if c1.button("1️⃣ Sí", use_container_width=True):
+                            st.session_state.data_resumen["alchichica_2sv"] = True
+                            st.session_state.paso_historial.append(4.5)
+                            st.session_state.paso_resumen = 5
+                            st.rerun()
+                        if c2.button("2️⃣ No", use_container_width=True):
+                            st.session_state.data_resumen["alchichica_2sv"] = False
+                            st.session_state.paso_historial.append(4.5)
+                            st.session_state.paso_resumen = 5
+                            st.rerun()
+
+                    elif paso == 5:
+                        st.write("👇 **Día del ruteo:**")
+                        dia_sel = st.selectbox(
+                            "Selecciona:",
+                            ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"],
+                            index=4
+                        )
+                        
+                        if st.button("🚀 Generar Resumen", use_container_width=True):
+                            d = st.session_state.data_resumen
+                            ciclo_txt = d.get("ciclo", "C1")
+                            
+                            unis = d.get("unidades_centro", [])
+                            logis_tomo_todas = d.get("logis_tomo_todas", True)
+                            unis_fuera = d.get("unidades_fuera", [])
+
+                            if logis_tomo_todas or not unis_fuera:
+                                texto_unidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis tomó ambas."
+                            elif len(unis_fuera) == len(unis):
+                                texto_unidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ambas."
+                            else:
+                                fuera_str = " y ".join([", ".join(unis_fuera[:-1]), unis_fuera[-1]]) if len(unis_fuera) > 1 else unis_fuera[0]
+                                texto_unidades = f"👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera la {fuera_str}."
+
+                            if d.get("dropeo_nodos", False):
+                                if d.get("dropeo_restriccion", False):
+                                    texto_dropeo = f"👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción)."
+                                else:
+                                    texto_dropeo = f"👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia."
+                            else:
+                                texto_dropeo = "👉 No hubo dropeo de nodo."
+
+                            if d.get("alchichica", False):
+                                if d.get("alchichica_2sv", True):
+                                    texto_alchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0 con 2 unidades Small Van MLP."
+                                else:
+                                    texto_alchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0."
+                            else:
+                                texto_alchichica = ""
+
+                            texto_bulk = "📦 Se asignó H&B para el volumen Bulk." if d.get("hubo_bulk", False) else ""
+
+                            lineas_html = [
+                                f"**Queda publicado {ciclo_txt} team**:<br><br>",
+                                '<span style="font-weight: normal;">',
+                                "📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>",
+                                "📌 Se cargaron las Rentals como híbridas en Centro, pero el sistema no las consideró todas como híbridas.<br>",
+                                f"{texto_unidades}<br>"
+                            ]
+                            
+                            if texto_bulk:
+                                lineas_html.append(f"{texto_bulk}<br>")
+                                
+                            lineas_html.append(f"{texto_dropeo}<br>")
+                            
+                            if texto_alchichica:
+                                lineas_html.append(f"{texto_alchichica}<br>")
+                                
+                            lineas_html.append(f"📌 Se usaron los parámetros establecidos para C1 del día {dia_sel}.<br>")
+                            lineas_html.append("📋 Comparto template final.")
+                            lineas_html.append("</span><br><br>")
+                            lineas_html.append("<b>**¡Excelente turno! 👋**</b>")
+
+                            resumen_final = "".join(lineas_html)
+
+                            st.session_state.flujo_resumen = False
+                            st.session_state.paso_resumen = 0
+                            st.session_state.paso_historial = []
+                            st.session_state.main_chat_messages.append({"role": "assistant", "content": resumen_final})
+                            st.rerun()
+
+                    if len(st.session_state.paso_historial) > 0 and paso > 1:
+                        st.markdown("---")
+                        if st.button("↩️ Volver al paso anterior / Corregir", key="btn_atras_resumen"):
+                            st.session_state.paso_resumen = st.session_state.paso_historial.pop()
+                            st.rerun()
+
+        if st.session_state.esperando_subtipo_smx5:
+            with st.chat_message("assistant"):
+                st.write("👇 **Selecciona una opción o escribe 1 ó 2:**")
+                col1, col2 = st.columns(2)
+                eleccion_btn = None
+                with col1:
+                    if st.button("1️⃣ Extendido", key="btn_smx5_1", use_container_width=True):
+                        eleccion_btn = "1"
+                with col2:
+                    if st.button("2️⃣ Precarga", key="btn_smx5_2", use_container_width=True):
+                        eleccion_btn = "2"
+
+                if eleccion_btn:
+                    st.session_state.esperando_subtipo_smx5 = False
+                    if eleccion_btn == "1":
+                        st.session_state.main_chat_messages.append({"role": "user", "content": "1️⃣ Extendido"})
+                        st.session_state.main_chat_messages.append({"role": "assistant", "content": reglas_ruteo["smx5_extendido"]})
+                    else:
+                        st.session_state.main_chat_messages.append({"role": "user", "content": "2️⃣ Precarga"})
+                        st.session_state.main_chat_messages.append({"role": "assistant", "content": reglas_ruteo["smx5_precarga"]})
+                    st.rerun()
+
+        if query_main := st.chat_input("✏️ Escribe tu consulta...", key="main_chat_input"):
+            st.session_state.main_chat_messages.append({"role": "user", "content": query_main})
+            query_lower = query_main.lower().strip()
+
+            if "resumen" in query_lower or "cierre" in query_lower or "ciere" in query_lower:
+                st.session_state.flujo_resumen = True
+                st.session_state.paso_resumen = 1
+                st.session_state.paso_historial = []
+                st.session_state.data_resumen = {}
+                st.session_state.main_chat_messages.append({
+                    "role": "assistant", 
+                    "content": "📋 **Generador de Cierre.** Responde seleccionando las opciones de abajo:"
+                })
+                st.rerun()
+
+            elif st.session_state.esperando_subtipo_smx5:
+                st.session_state.esperando_subtipo_smx5 = False
+                if "extendido" in query_lower or "1" in query_lower:
+                    respuesta_main = reglas_ruteo["smx5_extendido"]
+                elif "precarga" in query_lower or "2" in query_lower:
+                    respuesta_main = reglas_ruteo["smx5_precarga"]
+                else:
+                    respuesta_main = "⚠️ Opción no válida. Consulta escribiendo **SMX5** nuevamente."
+
+            elif query_lower == "smx5":
+                st.session_state.esperando_subtipo_smx5 = True
+                respuesta_main = "🔍 Detecté **SMX5**. ¿De cuál requieres las prioridades?\n\n1️⃣ **Extendido**\n2️⃣ **Precarga**\n\n*(Elige dando clic en los botones superiores o escribe 1 ó 2)*"
+
+            else:
+                partes_respuesta = []
+
+                svc_mapa = None
+                for key in MAPA_ORIGENES.keys():
+                    if key in query_lower:
+                        svc_mapa = key
+                        break
+
+                if svc_mapa:
+                    info = MAPA_ORIGENES[svc_mapa]
+                    origen_tag = f"<span style='background-color: #e2e8f0; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-family: monospace;'>{info['origen']}</span>"
+                    
+                    bloque_mapa = (
+                        f"📍 **Origen y Validación para {svc_mapa.upper()}:**\n\n"
+                        f"* 🗺️ **Región:** Región {info['region']}\n"
+                        f"* 🏢 **Origen(es) On Way:** {origen_tag}\n"
+                        f"* ✅ **Validación requerida:** {info['val']}\n\n"
+                        f"*(Nota: Si el SVC solicita agregar blancos, se anexan)*"
+                    )
+                    partes_respuesta.append(bloque_mapa)
+
+                coincidencias_faq = []
+                
+                if any(w in query_lower for w in ["large van sdd", "sdd"]):
+                    coincidencias_faq.append(PREGUNTAS_FRECUENTES["large_van_sdd"])
+                
+                if "bulk" in query_lower:
+                    if "sja1" in query_lower or "centro 1" in query_lower or "centro 2" in query_lower:
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["bulk_sja1"])
+                    else:
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["bulk_general"])
+                
+                if "alchichica" in query_lower: 
+                    coincidencias_faq.append(PREGUNTAS_FRECUENTES["alchichica"])
+                
+                if any(w in query_lower for w in ["xico", "tuzamapa"]):
+                    coincidencias_faq.append(PREGUNTAS_FRECUENTES["tuzamapa_xico"])
+                
+                if "dropeo" in query_lower or "drop" in query_lower:
+                    coincidencias_faq.append(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"])
+                
+                if "prioridad" in query_lower or "prioridades" in query_lower or "asignacion" in query_lower or "asignación" in query_lower:
+                    if "sja1" in query_lower and any(w in query_lower for w in ["foraneo", "foráneo", "foraneos", "foráneos"]):
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["prioridades_foraneos_sja1"])
+                    elif "sja1" in query_lower:
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["prioridades_centro_sja1"])
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["prioridades_foraneos_sja1"])
+                    elif "smd1" in query_lower:
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["smd1_prioridad"])
+
+                if any(w in query_lower for w in ["quitar", "quitar unidades", "ciclo 2", "pasar a ciclo 2", "orh"]):
+                    if "scp1" in query_lower or not svc_mapa:
+                        coincidencias_faq.append(PREGUNTAS_FRECUENTES["scp1_cambios"])
+
+                if coincidencias_faq:
+                    partes_respuesta.append("\n\n---\n\n".join(coincidencias_faq))
+
+                if not coincidencias_faq:
+                    mapeo_centros = {
+                        "smx9": "smx9_extendido", "sgd2": "sgd2_extendido", "smx4": "smx4_extendido",
+                        "smx2": "smx2_extendido", "smt2": "smt2_extendido", "scp1": "scp1",
+                        "smd1": "smd1", "sch1": "sch1", "sja1": "sja1"
+                    }
+
+                    centro_encontrado = None
+                    clave_regla = None
+
+                    if "smx5" in query_lower:
+                        centro_encontrado = "SMX5"
+                        clave_regla = "smx5_precarga" if "precarga" in query_lower else "smx5_extendido"
+                    else:
+                        for termino, clave in mapeo_centros.items():
+                            if termino in query_lower:
+                                centro_encontrado = termino.upper()
+                                clave_regla = clave
+                                break
+
+                    busqueda_origen = any(w in query_lower for w in ["origen", "origenes", "orígenes", "de donde", "de dónde", "sale"])
+                    busqueda_hora = any(w in query_lower for w in ["despacho", "hora", "horario", "tiempo"])
+                    busqueda_unidad = any(w in query_lower for w in ["unidad", "unidades", "moto", "motos", "van", "crowd", "rental"])
+
+                    if clave_regla and clave_regla in reglas_ruteo:
+                        texto_regla = reglas_ruteo[clave_regla]
+                        lineas = [l.strip() for l in texto_regla.split("\n") if l.strip()]
+
+                        if svc_mapa:
+                            lineas = [l for l in lineas if not any(palabra in l.lower() for palabra in ["origen", "orígenes", "📌 origen"])]
+
+                        lineas_filtradas = []
+                        if busqueda_hora:
+                            lineas_filtradas = [l for l in lineas if any(h in l.lower() for h in ["despacho", "pm", "am", "hora"])]
+                        elif busqueda_unidad:
+                            lineas_filtradas = [l for l in lineas if any(u in l.lower() for u in ["moto", "van", "rental", "crowd", "mlp", "cell", "small"])]
+
+                        if lineas_filtradas:
+                            res = "\n".join(lineas_filtradas)
+                            bloque_regla = f"📌 **Indicaciones específicas ({centro_encontrado}):**\n\n{res}"
+                        else:
+                            res = "\n".join(lineas)
+                            bloque_regla = f"📋 **Indicaciones complementarias ({centro_encontrado}):**\n\n{res}"
+
+                        if lineas and not (svc_mapa and busqueda_origen):
+                            partes_respuesta.append(bloque_regla)
+
+                if partes_respuesta:
+                    respuesta_main = "\n\n---\n\n".join(partes_respuesta)
+                else:
+                    if "resumen" in query_lower:
+                        respuesta_main = "Aquí tienes la opción para armar tu reporte."
+                    else:
+                        respuesta_main = "⚠️ No encontré esa consulta en la base de datos. Puedes consultar por un SVC (ej. SJA1, SLE1, SCP1) o sobre temas específicos como **Alchichica, Xico, Dropeo, Bulk, SDD, etc.**"
+
+            st.session_state.main_chat_messages.append({"role": "assistant", "content": respuesta_main})
+            st.rerun()
 
 
 # --- DATOS BASE ---
@@ -1131,12 +1895,6 @@ def gen_poligonos(data_target=None):
 
 PERFILES = {}
 perfil_actual = "LUNES"
-
-
-# 🟢 1. Convertimos las reglas de Python a JSON para enviarlas a JavaScript
-reglas_json = json.dumps(reglas_ruteo)
-mapa_origenes_json = json.dumps(MAPA_ORIGENES)
-preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
 
 
 app_html = f"""
@@ -5328,207 +6086,36 @@ function iniciarArrastreFlotante(e) {{
         🧹 &nbsp; LIMPIAR PANTALLA
     </button>
 
-    <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
+    <!-- ASISTENTE DE RUTEO -->
 
     <button
         class="opcion-menu-ruteos"
-        onclick="togglePanelBotLateral()">
+        onclick="accionMenuRuteos('bot')">
         🤖 &nbsp; ASISTENTE DE RUTEO
     </button>
 
-    <!-- CAJA DE CHAT DEL BOT EN EL MENÚ -->
-    <div id="panel-bot-lateral-contenido" style="display: none; margin-top: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; padding: 10px;">
-        <div style="text-align: center; font-size: 26px;">🚚</div>
-        <div style="text-align: center; font-size: 11px; font-weight: bold; color: #22c55e; margin-bottom: 8px;">● ROUTING ONLINE</div>
-        
-        <button onclick="enviarConsultaBotLateral('resumen')" style="width: 100%; cursor: pointer; background: #28a745; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 8px;">
-            📋 Armar Resumen de Cierre
-        </button>
+    <!-- INDICADOR DEL ASISTENTE -->
 
-        <div id="box-mensajes-bot" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 4px;">
-            <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff;">
-                🤖 <b>Asistente de Ruteo:</b><br>Consulta por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona arriba para armar el cierre de turno.
-            </div>
+    <div id="panel-asistente-ruteo">
+
+        <div class="asistente-header">
+            <span>🤖 ASISTENTE DE RUTEO</span>
+            <span class="asistente-online">● ROUTING</span>
         </div>
 
-        <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <input type="text" id="input-bot-lateral" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter') enviarConsultaBotLateral()" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #444; background: #25282b; color: white; font-size: 12px;">
-            <button onclick="enviarConsultaBotLateral()" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 12px;">🚀</button>
+        <div
+            style="
+                font-size: 11px;
+                color: #aeb4ba;
+                padding: 5px 4px 10px 4px;
+            ">
+            Asistente disponible
         </div>
+
     </div>
 
 
 <script>
-
-
-    function togglePanelBotLateral() {{
-        const panel = document.getElementById("panel-bot-lateral-contenido");
-        if (!panel) return;
-        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
-    }}
-
-
-
-    // 🟢 Carga de datos completos desde reglas.py
-    const REGLAS_RUTEO = {reglas_json};
-    const MAPA_ORIGENES = {mapa_origenes_json};
-    const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
-
-    let flujoResumen = false;
-    let pasoResumen = 0;
-    let dataResumen = {{}};
-
-    function togglePanelBotLateral() {{
-        const panel = document.getElementById("panel-bot-lateral-contenido");
-        if (!panel) return;
-        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
-    }}
-
-    function enviarConsultaBotLateral(opcionDirecta = null) {{
-        const input = document.getElementById("input-bot-lateral");
-        const box = document.getElementById("box-mensajes-bot");
-        if (!box) return;
-
-        let consulta = opcionDirecta || (input ? input.value.trim() : "");
-        if (!consulta) return;
-
-        box.innerHTML += `
-            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
-                <b>Tú:</b> ${{consulta}}
-            </div>
-        `;
-        if (input) input.value = "";
-
-        let q = consulta.toLowerCase();
-        let respuesta = "";
-
-        if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
-            procesarFlujoResumen(q, box);
-            box.scrollTop = box.scrollHeight;
-            return;
-        }}
-
-        let svcEncontrado = null;
-        Object.keys(MAPA_ORIGENES).forEach(key => {{
-            if (q.includes(key.toLowerCase())) svcEncontrado = key;
-        }});
-
-        if (svcEncontrado) {{
-            let info = MAPA_ORIGENES[svcEncontrado];
-            respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
-                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#e2e8f0; color:#0f172a; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
-        }}
-
-        let faqsEncontradas = [];
-        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
-        if (q.includes("bulk")) {{
-            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
-            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
-        }}
-        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
-        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
-        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
-
-        if (faqsEncontradas.length > 0) {{
-            respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
-        }} else if (!svcEncontrado) {{
-            let claveRegla = null;
-            if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
-            else {{
-                Object.keys(REGLAS_RUTEO).forEach(k => {{
-                    let base = k.replace("_extendido","").replace("_precarga","");
-                    if (q.includes(base)) claveRegla = k;
-                }});
-            }}
-
-            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\n/g, "<br>")}}`;
-            }} else {{
-                respuesta = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Prueba buscando por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona <b>'Armar Resumen de Cierre'</b>.";
-            }}
-        }}
-
-        setTimeout(() => {{
-            box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                    🤖 <b>Asistente:</b><br>${{respuesta}}
-                </div>
-            `;
-            box.scrollTop = box.scrollHeight;
-        }}, 150);
-    }}
-
-    function procesarFlujoResumen(q, box) {{
-        if (!flujoResumen) {{
-            flujoResumen = true;
-            pasoResumen = 1;
-            dataResumen = {{}};
-        }}
-
-        let htmlBot = "";
-
-        if (pasoResumen === 1) {{
-            htmlBot = `📋 <b>Generador de Cierre (1/4):</b><br>¿Qué tipo de ciclo fue?<br><br>` +
-                      `<button onclick="responderPasoResumen('ciclo', 'Uniciclo', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Uniciclo</button>` +
-                      `<button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ Ciclo 1</button>`;
-        }} else if (pasoResumen === 2) {{
-            htmlBot = `📋 <b>Generador de Cierre (2/4):</b><br>¿Hubo Bulk (H&B)?<br><br>` +
-                      `<button onclick="responderPasoResumen('bulk', true, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('bulk', false, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 3) {{
-            htmlBot = `📋 <b>Generador de Cierre (3/4):</b><br>¿Hubo dropeo de nodos?<br><br>` +
-                      `<button onclick="responderPasoResumen('dropeo', true, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('dropeo', false, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 4) {{
-            htmlBot = `📋 <b>Generador de Cierre (4/4):</b><br>¿Se cargó Alchichica ND en AM0?<br><br>` +
-                      `<button onclick="responderPasoResumen('alchichica', true, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('alchichica', false, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 5) {{
-            htmlBot = `📋 <b>Listo:</b> Presiona para generar el texto de publicación:<br><br>` +
-                      `<button onclick="generarReporteFinalResumen()" style="cursor:pointer; background:#28a745; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">🚀 Generar Resumen Completo</button>`;
-        }}
-
-        box.innerHTML += `
-            <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                🤖 <b>Asistente:</b><br>${{htmlBot}}
-            </div>
-        `;
-    }}
-
-    function responderPasoResumen(clave, valor, siguientePaso) {{
-        dataResumen[clave] = valor;
-        pasoResumen = siguientePaso;
-        const box = document.getElementById("box-mensajes-bot");
-        if (box) procesarFlujoResumen("", box);
-    }}
-
-    function generarReporteFinalResumen() {{
-        const box = document.getElementById("box-mensajes-bot");
-        let ciclo = dataResumen.ciclo || "C1";
-        let bulkTxt = dataResumen.bulk ? "📦 Se asignó H&B para el volumen Bulk.<br>" : "";
-        let dropeoTxt = dataResumen.dropeo ? "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia.<br>" : "👉 No hubo dropeo de nodo.<br>";
-        let alchichicaTxt = dataResumen.alchichica ? "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0.<br>" : "";
-
-        let resumenFinal = `<b>**Queda publicado ${{ciclo}} team**:</b><br><br>` +
-                           `📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>` +
-                           `📌 Se cargaron las Rentals como híbridas en Centro.<br>` +
-                           `${{bulkTxt}}` +
-                           `${{dropeoTxt}}` +
-                           `${{alchichicaTxt}}` +
-                           `<br><b>**¡Excelente turno! 👋**</b>`;
-
-        flujoResumen = false;
-        pasoResumen = 0;
-
-        box.innerHTML += `
-            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
-            </div>
-        `;
-        box.scrollTop = box.scrollHeight;
-    }}
 
     function abrirCerrarMenuRuteos() {{
 
@@ -5682,7 +6269,9 @@ function iniciarArrastreFlotante(e) {{
 
         }} else if (accion === 'bot') {{
 
-            togglePanelBotLateral();
+            window.parent.postMessage({{
+                tipo: "abrir_asistente_menu"
+            }}, "*");
 
         }}
 	}}
