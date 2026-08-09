@@ -88,20 +88,26 @@ if "verificando_cookie" not in st.session_state:
 # 1. Intentar recuperar la cookie si no hay usuario en sesión
 if st.session_state.usuario_auth is None:
     session_id_cookie = cookie_manager.get(cookie="sb_refresh_token")
-    
     if session_id_cookie and supabase:
         try:
             res_refresh = supabase.auth.refresh_session(session_id_cookie)
             if res_refresh and res_refresh.user:
+                # Recuperar usuario
                 st.session_state.usuario_auth = res_refresh.user
+                # Recuperar sesión completa
                 st.session_state.supabase_session = res_refresh.session
-                st.session_state["usuario_activo"] = res_refresh.user.email.split("@")[0].replace(".", "_")
+                # Identificador de usuario
+                st.session_state["usuario_activo"] = (
+                    res_refresh.user.email.split("@")[0].replace(".", "_")
+                )
                 st.session_state.verificando_cookie = False
+                # Entrar nuevamente a la aplicación
                 st.rerun()
         except Exception:
+            # La cookie existe pero ya no es válida
             st.session_state.verificando_cookie = False
     else:
-        # Dar un pequeño margen para que el componente de cookies de JS termine de responder
+        # La cookie todavía puede estar cargándose desde el navegador
         if st.session_state.verificando_cookie:
             time.sleep(0.5)
             st.session_state.verificando_cookie = False
