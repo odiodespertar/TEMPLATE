@@ -5454,7 +5454,7 @@ function iniciarArrastreFlotante(e) {{
         if (!flujoResumen) {{
             flujoResumen = true;
             pasoResumen = 1;
-            dataResumen = {};
+            dataResumen = {{}};
         }}
 
         // Limpiar botones de pasos anteriores
