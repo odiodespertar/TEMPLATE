@@ -87,7 +87,7 @@ reglas_ruteo = {
         "* 🟤 Falta info"
     ),
     "sja1": (
-        "**Prioridades SJA1 C1:**\n\n"
+        "**Prioridades SJA1 C1:**\n\n" 
         "* 📌 Ellos envían el volumen a tomar /Apagado CP\n"
         "* 🟢 **Centro 1/2:** ➤ PRIORIDAD\n"
         "* 1. Rental Electric 2. Rental LV 3. Rental Replacement 4. MLP y Crowd\n"
