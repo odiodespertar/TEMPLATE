@@ -131,6 +131,11 @@ if st.session_state.usuario_auth is None:
         cookie="sb_refresh_token"
     )
 
+    st.write("DEBUG COOKIE:", session_id_cookie)
+    st.write("DEBUG USUARIO:", st.session_state.get("usuario_auth"))
+    st.write("DEBUG VERIFICANDO:", st.session_state.get("verificando_cookie"))
+
+	
     if session_id_cookie and supabase:
 
         try:
