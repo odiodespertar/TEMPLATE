@@ -104,38 +104,171 @@ reglas_ruteo = {
 
 
 # ==========================================
-# 🗺️ BASE DE DATOS DE ORIGENES (MAPA OPERATIVO)
+# 🗺️ BASE DE DATOS DE ORIGENES Y REGLAS UNIFICADAS
 # ==========================================
 MAPA_ORIGENES = {
     # 🔵 REGIÓN METRO (CDMX)
-    "smx2": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx3": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx4": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx5": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx7": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx8": {"region": "Metro (CDMX)", "origen": "MXCD10", "val": "❌ No"},
-    "smx9": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No"},
-    "smx10": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06, MXCD20", "val": "❌ No"},
-    "smx10 sd3": {"region": "Metro (CDMX)", "origen": "MXCD20", "val": "❌ No"},
-    "stl1": {"region": "Metro (CDMX)", "origen": "MXCD02", "val": "❌ No"},
-    "shp1": {"region": "Metro (CDMX)", "origen": "MXCD10", "val": "❌ No"},
+    "smx2": {
+        "region": "Metro (CDMX)", 
+        "origen": "MXCD02, MXCD06", 
+        "val": "❌ No",
+        "reglas": (
+            "**Prioridades SMX2:**\n\n"
+            "* 📌 Orígenes: MXCD02, MXCD06\n"
+            "* 👉 Último despacho de hoy (3 pm en adelante)\n"
+            "* 👉 fecha promesa + quemada + onway\n"
+            "* 👉 Rutear con parámetros precargados en logis SIN SPR"
+        )
+    },
+    "smx3": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No", "reglas": ""},
+    "smx4": {
+        "region": "Metro (CDMX)", 
+        "origen": "MXCD02, MXCD06", 
+        "val": "❌ No",
+        "reglas": (
+            "**Prioridades SMX4:**\n\n"
+            "* 👉 Preguntar si habrá ids a descartar\n"
+            "* 📌 Orígenes: MXCD02, MXCD06\n"
+            "* 👉 Último despacho de hoy (3 pm en adelante)\n"
+            "* 👉 Fecha promesa + onway\n"
+            "* 🏍️ Motos SPR 30"
+        )
+    },
+    "smx5": {
+        "region": "Metro (CDMX)", 
+        "origen": "MXCD02, MXCD06", 
+        "val": "❌ No",
+        "reglas": (
+            "**Prioridades SMX5 (EXTENDIDO):**\n\n"
+            "* 📌 Orígenes: MXCD02, MXCD06\n"
+            "* 👉 Último despacho de hoy (3 pm en adelante)\n"
+            "* 👉 Fecha promesa + fecha quemada + onway\n\n"
+            "**Prioridades SMX5 (PRECARGA):**\n\n"
+            "* 📌 Origen: MXCD09 + onway\n"
+            "* 👀 OJO: últimamente piden usar Small Van en Chalco y Xochimilco (revisar)\n"
+            "* 👀 OJO: con indicaciones de reducción de ORH en Xochimilco (u otro polígono)\n"
+            "* 👉 Resto de planes asignar Car 8h y Extendidas\n"
+            "* 👉 Revisar si mandan ids a agregar del origen 10\n"
+            "* 👉 **Cercanía de SVC:** Coyoacán, Iztapalapa, Tláhuac, Tlalpan nte, Tlalpan sur, Xochi, Chalco y Milpa Alta"
+        )
+    },
+    "smx7": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06", "val": "❌ No", "reglas": ""},
+    "smx8": {"region": "Metro (CDMX)", "origen": "MXCD10", "val": "❌ No", "reglas": ""},
+    "smx9": {
+        "region": "Metro (CDMX)", 
+        "origen": "MXCD02, MXCD06", 
+        "val": "❌ No",
+        "reglas": (
+            "**Prioridades SMX9 SD2:**\n\n"
+            "* 📌 Orígenes: MXCD02, MXCD06\n"
+            "* 👉 Último despacho de hoy (3 pm en adelante)\n"
+            "* 👉 Fecha promesa + fecha quemada + onway"
+        )
+    },
+    "smx10": {"region": "Metro (CDMX)", "origen": "MXCD02, MXCD06, MXCD20", "val": "❌ No", "reglas": ""},
+    "smx10 sd3": {"region": "Metro (CDMX)", "origen": "MXCD20", "val": "❌ No", "reglas": ""},
+    "stl1": {"region": "Metro (CDMX)", "origen": "MXCD02", "val": "❌ No", "reglas": ""},
+    "shp1": {"region": "Metro (CDMX)", "origen": "MXCD10", "val": "❌ No", "reglas": ""},
 
     # 🟡 REGIÓN CENTRO
-    "ssl1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No"},
-    "sbj1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No"},
-    "sle1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No"},
-    "sgd1": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
-    "sgd2": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
-    "sgd3": {"region": "Centro", "origen": "MXJC01", "val": "❌ No"},
+    "ssl1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No", "reglas": ""},
+    "sbj1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No", "reglas": ""},
+    "sle1": {"region": "Centro", "origen": "MXGT01", "val": "❌ No", "reglas": ""},
+    "sgd1": {"region": "Centro", "origen": "MXJC01", "val": "❌ No", "reglas": ""},
+    "sgd2": {
+        "region": "Centro", 
+        "origen": "MXJC01", 
+        "val": "❌ No",
+        "reglas": (
+            "**Prioridades SGD2 SD3:**\n\n"
+            "* 📌 Orígenes: MXJC01 para SD3 y MXJC02 para SD2 (en caso de que no hayan ruteado sd2 en la mañana)\n"
+            "* 👉 MXJC01 - último despacho de hoy (3 pm adelante) + fecha promesa + onway\n"
+            "* 👉 MXJC02 - último despacho de hoy (1 pm) + fecha promesa + onway // si salen poquitos, agarra todo el despacho del día + fecha promesa y quemada + todo at station y manda pivot para que SVC te valide vol.\n"
+            "* 👉 Revisar unidades con SVC (a veces indica usar Small Van con la cantidad indicada para las car 5h de schedule\n"
+            "* 👉 Puedes pedir validación (no es necesario)\n"
+            "* 👉 Prefijo SD3 siempre"
+        )
+    },
+    "sgd3": {"region": "Centro", "origen": "MXJC01", "val": "❌ No", "reglas": ""},
 
     # 🩵 REGIÓN NORTE
-    "smt1": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
-    "smt2": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
-    "smt3": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí"},
-    "shm1": {"region": "Norte", "origen": "MXSO01", "val": "✔️ Sí"},
+    "smt1": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí", "reglas": ""},
+    "smt2": {
+        "region": "Norte", 
+        "origen": "MXNL01", 
+        "val": "✔️ Sí",
+        "reglas": (
+            "**Prioridades SMT2:**\n\n"
+            "* 📌 Origen MXNL01\n"
+            "* 👉 Último despacho de hoy (3 pm en adelante)\n"
+            "* 👉 fecha promesa + quemada + onway\n"
+            "* 👉 Se pide validación"
+        )
+    },
+    "smt3": {"region": "Norte", "origen": "MXNL01", "val": "✔️ Sí", "reglas": ""},
+    "shm1": {"region": "Norte", "origen": "MXSO01", "val": "✔️ Sí", "reglas": ""},
 
-    # 🟠 REGIÓN SUR
-    "smd2": {"region": "Sur", "origen": "MXYU01", "val": "✔️ Sí"}
+    # 🟠 REGIÓN SUR / CICLO 1
+    "smd2": {"region": "Sur", "origen": "MXYU01", "val": "✔️ Sí", "reglas": ""},
+    "scp1": {
+        "region": "Sur", 
+        "origen": "MXYU01", 
+        "val": "✔️ Sí",
+        "reglas": (
+            "**Prioridades SCP1 C1:**\n\n"
+            "* 📌 Ellos envían el volumen a tomar\n"
+            "* 📌 Sale cherry (no olvidar compartir al SVC)\n"
+            "* 📌 Si no te especifican el despacho a excluir haz tu pivot con todo el volumen y ahí revisas cuál despacho o salida coincide con la cantidad a excluir, eso lo pones como NO RUT (recuerda que debe ser onway) y le pides validación al SVC antes de subirlo a logis\n"
+            "* 🔴 **Campeche:** ➤ Rental Large Van (excluír/sin nodos)\n"
+            "* 🔴 **Campeche:** ➤ Delivery Cell (Dedicada/lleva todos nodos/paradas=nodos)\n"
+            "* 🟣 **Delivery Cell** ➤ Parámetros de Large Van MLP\n"
+            "* 🟢 **Resto planes:** ➤ Large Van MLP (si hay nodo=híbrida)."
+        )
+    },
+    "smd1": {
+        "region": "Sur", 
+        "origen": "MXYU01", 
+        "val": "✔️ Sí",
+        "reglas": (
+            "**Prioridades SMD1 C1:**\n"
+            "* 📌 Sale cherry (no olvidar compartir al SVC-compartir captura de pantalla antes del cherry)\n"
+            "* 🔴 **Centro:** ➤ Prioridad = Rental (híbridas) / Crowd / LV (híbridas) / SV\n"
+            "* 🔴 **Centro:** ➤ Extra large van H&B (son 3 de 50 ids c/u = ciudad Mérida) / MLP Bulk (pueden ir 2 en un centro y 1 en otro /depende en cuál haya + voluminosos)\n"
+            "* 🟠 **Norte:** ➤ Prioridad = Crowd zon ext 10hrs / MLP\n"
+            "* 🟡 **Kanasin:** ➤ Si sobran crowd colocarlas aquí\n"
+            "* 🟣 **Resto de planes:** ➤ Large Van MLP\n"
+            "* 🔵 **Planes ND:** ➤ Tekax y ___ = Large Van MLP\n"
+            "* 🟤 Priorizar las LV y Rentals"
+        )
+    },
+    "sch1": {
+        "region": "Sur / Norte", 
+        "origen": "MXCH01", 
+        "val": "✔️ Sí",
+        "reglas": (
+            "**Prioridades SCH1 C1:**\n\n"
+            "* 🟢 Consultar actualización de reglas"
+        )
+    },
+    "sja1": {
+        "region": "Sur", 
+        "origen": "MXVE01", 
+        "val": "✔️ Sí",
+        "reglas": (
+            "**Prioridades SJA1 C1:**\n\n"
+            "* 📌 Ellos envían el volumen a tomar /Apagado CP\n"
+            "* 🟢 **Centro 1/2:** ➤ PRIORIDAD\n"
+            "* 1. Rental Electric 2. Rental LV 3. Rental Replacement 4. MLP y Crowd\n"
+            "* 🟢 **Centro 1/2:** ➤ 3.5 tons (dedicada=3 paradas) y delivery (dedicada=3 paradas)\n"
+            "* 🟢 **Centro 1/2:** ➤ H&B (bulk=híbrida)\n"
+            "* 🔴 **BULK:** ➤ 60 ids de Xalapa = Voluminosos se cargan después de lo no ruteado del ciclo\n"
+            "* 🚛 FORÁNEOS = Large Van MLP / Con Nodos = Híbrida\n"
+            "* 🚛 FORÁNEOS = Small Van MLP / Sin nodos\n"
+            "* 🚛 FORÁNEOS = Xico y Tuzamapa / Mlp, Crowd\n"
+            "* 🔵 **EJA1-SP:**➤  Media milla-ruteo fake\n"
+            "* 🟤 **Alchichica ND-AM0:** ➤ 2 unidades Small Van MLP/330 min ó 65 ids c/u."
+        )
+    }
 }
 
 
