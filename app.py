@@ -12,23 +12,21 @@ st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wi
 
 hide_github_only_css = """
     <style>
-    /* Ocultar el menú desplegable de GitHub / Deploy / Settings de la esquina superior derecha */
-    #MainMenu {visibility: hidden;}
-    
-    /* Ocultar los botones específicos de GitHub, Share y Edit en el header superior derecho */
-    header [data-testid="stStatusWidget"] {
+    /* Ocultar el botón de GitHub */
+    [data-testid="stToolbar"] > div:last-child {
         display: none !important;
     }
     
-    /* Ocultar los botones flotantes de la barra superior derecha manteniendo el contenedor de la izquierda */
-    div[data-testid="stToolbar"] {
-        visibility: hidden;
+    /* Ocultar el botón de editar (lápiz) y compartir */
+    [data-testid="stStatusWidget"], 
+    [data-testid="stDecoration"] {
+        display: none !important;
     }
     
-    /* Asegurar que el botón para desplegar la barra lateral (las flechitas) siga completamente visible y funcional */
+    /* Asegurar que el menú de hamburguesa y las flechas de la barra lateral NO se oculten */
     [data-testid="collapsedControl"] {
         visibility: visible !important;
-        display: block !important;
+        display: flex !important;
     }
     </style>
 """
