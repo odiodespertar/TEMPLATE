@@ -5447,70 +5447,203 @@ function iniciarArrastreFlotante(e) {{
         }}, 150);
     }}
 
-    function procesarFlujoResumen(q, box) {{
-        if (!flujoResumen) {{
+    // =========================================================================
+    // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
+    // =========================================================================
+    function procesarFlujoResumen(q, box) {
+        if (!flujoResumen) {
             flujoResumen = true;
             pasoResumen = 1;
-            dataResumen = {{}};
-        }}
+            dataResumen = {};
+        }
+
+        // Limpiar botones de pasos anteriores
+        let viejosBotones = box.querySelectorAll(".bloque-paso-resumen");
+        viejosBotones.forEach(el => el.remove());
 
         let htmlBot = "";
 
-        if (pasoResumen === 1) {{
-            htmlBot = `📋 <b>Generador de Cierre (1/4):</b><br>¿Qué tipo de ciclo fue?<br><br>` +
-                      `<button onclick="responderPasoResumen('ciclo', 'Uniciclo', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Uniciclo</button>` +
-                      `<button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ Ciclo 1</button>`;
-        }} else if (pasoResumen === 2) {{
-            htmlBot = `📋 <b>Generador de Cierre (2/4):</b><br>¿Hubo Bulk (H&B)?<br><br>` +
-                      `<button onclick="responderPasoResumen('bulk', true, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('bulk', false, 3)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 3) {{
-            htmlBot = `📋 <b>Generador de Cierre (3/4):</b><br>¿Hubo dropeo de nodos?<br><br>` +
-                      `<button onclick="responderPasoResumen('dropeo', true, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('dropeo', false, 4)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 4) {{
-            htmlBot = `📋 <b>Generador de Cierre (4/4):</b><br>¿Se cargó Alchichica ND en AM0?<br><br>` +
-                      `<button onclick="responderPasoResumen('alchichica', true, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:5px;">1️⃣ Sí</button>` +
-                      `<button onclick="responderPasoResumen('alchichica', false, 5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px;">2️⃣ No</button>`;
-        }} else if (pasoResumen === 5) {{
-            htmlBot = `📋 <b>Listo:</b> Presiona para generar el texto de publicación:<br><br>` +
-                      `<button onclick="generarReporteFinalResumen()" style="cursor:pointer; background:#28a745; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold;">🚀 Generar Resumen Completo</button>`;
-        }}
+        if (pasoResumen === 1) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 1/5):</b><br>
+                    <span style="color:#d0d0d0;">¿Qué tipo de ciclo fue?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('ciclo', 'Uniciclo', 2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Uniciclo</button>
+                        <button onclick="responderPasoResumen('ciclo', 'C1', 2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ Ciclo 1</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 2) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 2/5):</b><br>
+                    <span style="color:#d0d0d0;">Unidades dedicadas para Centro: ¿Logis tomó todas?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('logis_tomo_todas', true, 2.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí (Tomó todas)</button>
+                        <button onclick="responderPasoResumen('logis_tomo_todas', false, 2.2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No (Dejó fuera)</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 2.2) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 2.2):</b><br>
+                    <span style="color:#d0d0d0;">¿Cuál o cuáles unidades dejó fuera Logis?</span><br><br>
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <button onclick="responderPasoResumen('unidades_fuera', 'la 3.5 tons', 2.5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">🚛 La 3.5 tons</button>
+                        <button onclick="responderPasoResumen('unidades_fuera', 'la Delivery Cell', 2.5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">📦 La Delivery Cell</button>
+                        <button onclick="responderPasoResumen('unidades_fuera', 'ambas', 2.5)" style="cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">❌ Ambas unidades</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 2.5) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 3/5):</b><br>
+                    <span style="color:#d0d0d0;">¿Hubo Bulk (H&B)?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('hubo_bulk', true, 3)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('hubo_bulk', false, 3)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 3) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 4/5):</b><br>
+                    <span style="color:#d0d0d0;">¿Hubo dropeo de nodos?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('dropeo_nodos', true, 3.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('dropeo_nodos', false, 4)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 3.5) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 4.5):</b><br>
+                    <span style="color:#d0d0d0;">¿En la contingencia hubo dropeo por restricción?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('dropeo_restriccion', true, 4)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('dropeo_restriccion', false, 4)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 4) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Paso 5/5):</b><br>
+                    <span style="color:#d0d0d0;">¿Se cargó Alchichica ND en AM0?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('alchichica', true, 4.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('alchichica', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 4.5) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Generador de Cierre (Alchichica):</b><br>
+                    <span style="color:#d0d0d0;">¿Fue con 2 Small Van MLP?</span><br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="responderPasoResumen('alchichica_2sv', true, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('alchichica_2sv', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                    </div>
+                </div>`;
+        } else if (pasoResumen === 5) {
+            htmlBot = `
+                <div class="bloque-paso-resumen">
+                    📋 <b>Preguntas completadas:</b><br>
+                    <span style="color:#7CFFB2;">Genera la publicación final de cierre:</span><br><br>
+                    <button onclick="generarReporteFinalResumen()" style="width:100%; cursor:pointer; background:#28a745; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; font-size:13px; box-shadow:0 3px 6px rgba(0,0,0,0.3);">
+                        🚀 Generar Resumen Completo
+                    </button>
+                </div>`;
+        }
 
         box.innerHTML += `
             <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                🤖 <b>Asistente:</b><br>${{htmlBot}}
+                🤖 <b>Asistente:</b><br>${htmlBot}
             </div>
         `;
-    }}
+        box.scrollTop = box.scrollHeight;
+    }
 
-    function responderPasoResumen(clave, valor, siguientePaso) {{
+    function responderPasoResumen(clave, valor, siguientePaso) {
         dataResumen[clave] = valor;
         pasoResumen = siguientePaso;
-        const box = document.getElementById("box-mensajes-bot");
-        if (box) procesarFlujoResumen("", box);
-    }}
 
+        const box = document.getElementById("box-mensajes-bot");
+        if (!box) return;
+
+        let textoConfirmacion = typeof valor === "boolean" ? (valor ? "Sí" : "No") : valor;
+        box.innerHTML += `
+            <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 6px 10px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px; font-size: 11px;">
+                ✔ Seleccionaste: <b>${textoConfirmacion}</b>
+            </div>
+        `;
+
+        procesarFlujoResumen("", box);
+    }
+
+    // =========================================================================
+    // 📄 REPORTE FINAL CON LA REDACCIÓN COMPLETA EXACTA
+    // =========================================================================
     function generarReporteFinalResumen() {{
         const box = document.getElementById("box-mensajes-bot");
-        let ciclo = dataResumen.ciclo || "C1";
-        let bulkTxt = dataResumen.bulk ? "📦 Se asignó H&B para el volumen Bulk.<br>" : "";
-        let dropeoTxt = dataResumen.dropeo ? "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia.<br>" : "👉 No hubo dropeo de nodo.<br>";
-        let alchichicaTxt = dataResumen.alchichica ? "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0.<br>" : "";
+        let d = dataResumen;
+        
+        let cicloTxt = d.ciclo || "C1";
 
-        let resumenFinal = `<b>**Queda publicado ${{ciclo}} team**:</b><br><br>` +
-                           `📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>` +
-                           `📌 Se cargaron las Rentals como híbridas en Centro.<br>` +
-                           `${{bulkTxt}}` +
-                           `${{dropeoTxt}}` +
-                           `${{alchichicaTxt}}` +
-                           `<br><b>**¡Excelente turno! 👋**</b>`;
+        // Texto Unidades Centro
+        let textoUnidades = "";
+        if (d.logis_tomo_todas || !d.unidades_fuera) {{
+            textoUnidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis tomó ambas.";
+        }} else if (d.unidades_fuera === "ambas") {{
+            textoUnidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ambas.";
+        }} else {{
+            textoUnidades = `👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ${{d.unidades_fuera}}.`;
+        }}
+
+        // Texto Bulk
+        let textoBulk = d.hubo_bulk ? "📦 Se asignó H&B para el volumen Bulk.<br>" : "";
+
+        // Texto Dropeo
+        let textoDropeo = "";
+        if (d.dropeo_nodos) {{
+            if (d.dropeo_restriccion) {{
+                textoDropeo = "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción).";
+            }} else {{
+                textoDropeo = "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia.";
+            }}
+        }} else {{
+            textoDropeo = "👉 No hubo dropeo de nodo.";
+        }}
+
+        // Texto Alchichica
+        let textoAlchichica = "";
+        if (d.alchichica) {{
+            if (d.alchichica_2sv !== false) {{
+                textoAlchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0 con 2 unidades Small Van MLP.<br>";
+            }} else {{
+                textoAlchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0.<br>";
+            }}
+        }}
+
+        // Armado del mensaje final con la plantilla original
+        let resumenFinal = 
+            `<b>**Queda publicado ${cicloTxt} team**:</b><br><br>` +
+            `<span style="font-weight: normal;">` +
+            `📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>` +
+            `📌 Se cargaron las Rentals como híbridas en Centro, pero el sistema no las consideró todas como híbridas.<br>` +
+            `${textoUnidades}<br>` +
+            `${textoBulk}` +
+            `${textoDropeo}<br>` +
+            `${textoAlchichica}` +
+            `📌 Se usaron los parámetros establecidos.<br>` +
+            `📋 Comparto template final.` +
+            `</span><br><br>` +
+            `<b>**¡Excelente turno! 👋**</b>`;
 
         flujoResumen = false;
         pasoResumen = 0;
 
         box.innerHTML += `
-            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
+            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:12px;">
                 📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
             </div>
         `;
