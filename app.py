@@ -6103,9 +6103,9 @@ function iniciarArrastreFlotante(e) {{
         </div>
 
         <div id="contenedor-chat-ruteo">
-        </div>	
+        </div>
 
-</div>
+    </div>
 
 
 <script>
@@ -6268,31 +6268,58 @@ function iniciarArrastreFlotante(e) {{
     }}
 
 
+    function abrirCerrarAsistenteRuteo() {{
+
+        const panel =
+            document.getElementById("panel-asistente-ruteo");
+
+        if (!panel) return;
+
+        const estaAbierto =
+            panel.classList.toggle("abierto");
+
+        if (estaAbierto) {{
+
+            const contenedor =
+                document.getElementById("contenedor-chat-ruteo");
+
+            if (contenedor) {{
+
+                contenedor.innerHTML = `
+                    <div style="
+                        padding: 10px;
+                        color: #e4e6e8;
+                        font-size: 12px;
+                    ">
+
+                        <div style="
+                            margin-bottom: 10px;
+                            color: #66CDAA;
+                            font-weight: 700;
+                        ">
+                            ROUTING
+                        </div>
+
+                        <button
+                            class="ruteo-submenu-item"
+                            onclick="abrirBotRuteo()">
+                            🤖 &nbsp; Abrir asistente de ruteo
+                        </button>
+
+                    </div>
+                `;
+
+            }}
+
+        }}
+
+    }}
 
 
     function abrirBotRuteo() {{
 
-        const menu =
-            document.getElementById("menu-lateral-ruteos");
-
-        if (!menu) return;
-
-        // Cerrar el menú principal
-        menu.classList.remove("abierto");
-
-        // Mostrar nuevamente el botón ☰
-        const boton =
-            document.getElementById("btn-menu-lateral");
-
-        if (boton) {{
-            boton.style.display = "block";
-        }}
-
-        // Buscar el botón original del asistente de Streamlit
         const botones =
-            window.parent.document.querySelectorAll(
-                'button'
-            );
+            window.parent.document.querySelectorAll('button');
 
         for (const botonStreamlit of botones) {{
 
@@ -6305,23 +6332,15 @@ function iniciarArrastreFlotante(e) {{
 
                 botonStreamlit.click();
 
-                break;
+                return;
+
             }}
+
         }}
-    }}
-
-
-    function abrirCerrarAsistenteRuteo() {{
-
-        const panel =
-            document.getElementById("panel-asistente-ruteo");
-
-        if (!panel) return;
-
-        panel.classList.toggle("abierto");
 
     }}
 
+    
 
 
 
