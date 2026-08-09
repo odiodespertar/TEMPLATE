@@ -304,8 +304,11 @@ if st.session_state.usuario_auth is None:
 								max_age=30 * 24 * 3600
                             )
 
-                        # Entrar a la aplicación
-                        st.rerun()
+                        # Dar tiempo al navegador para guardar la cookie
+                        time.sleep(2)
+
+					# Entrar a la aplicación
+					st.rerun()
 
                     except Exception:
 
