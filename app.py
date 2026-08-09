@@ -5379,68 +5379,149 @@ function iniciarArrastreFlotante(e) {{
         let consulta = opcionDirecta || (input ? input.value.trim() : "");
         if (!consulta) return;
 
+        // Limpiar sub-botones temporales anteriores si existían
+        let subBotonesviejos = box.querySelectorAll(".bloque-subtipo-smx5");
+        subBotonesviejos.forEach(el => el.remove());
+
+        // Dibujar mensaje del usuario
         box.innerHTML += `
             <div style="background: #315c4f; border-right: 3px solid #38bdf8; padding: 8px; border-radius: 6px; color: #ffffff; text-align: right; margin-bottom: 6px;">
-                <b>Tú:</b> ${{consulta}}
+                <b>Tú:</b> ${consulta}
             </div>
         `;
         if (input) input.value = "";
 
         let q = consulta.toLowerCase();
-        let respuesta = "";
+        let partesRespuesta = [];
 
+        // =========================================================================
+        // 1. FLUJO INTERACTIVO DE CIERRE / RESUMEN
+        // =========================================================================
         if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
             procesarFlujoResumen(q, box);
             box.scrollTop = box.scrollHeight;
             return;
         }}
 
-        let svcEncontrado = null;
+        // =========================================================================
+        // 2. CASO ESPECIAL: SMX5 (Elección Extendido vs Precarga)
+        // =========================================================================
+        if (q === "smx5" || q === "smx5?") {{
+            let htmlSmx5 = `
+                <div class="bloque-subtipo-smx5">
+                    🔍 Detecté <b>SMX5</b>. ¿De cuál requieres las prioridades?<br><br>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="enviarConsultaBotLateral('smx5 extendido')" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Extendido</button>
+                        <button onclick="enviarConsultaBotLateral('smx5 precarga')" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ Precarga</button>
+                    </div>
+                </div>`;
+            box.innerHTML += `
+                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
+                    🤖 <b>Asistente:</b><br>${{htmlSmx5}}
+                </div>`;
+            box.scrollTop = box.scrollHeight;
+            return;
+        }}
+
+        // =========================================================================
+        // 3. MAPA DE ORIGENES (Lector de regiones, origen On Way y validación)
+        // =========================================================================
+        let svcMapa = null;
         Object.keys(MAPA_ORIGENES).forEach(key => {{
-            if (q.includes(key.toLowerCase())) svcEncontrado = key;
+            if (q.includes(key.toLowerCase())) svcMapa = key;
         }});
 
-        if (svcEncontrado) {{
-            let info = MAPA_ORIGENES[svcEncontrado];
-            respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
-                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#e2e8f0; color:#0f172a; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+        if (svcMapa) {{
+            let info = MAPA_ORIGENES[svcMapa];
+            let origenTag = `<span style="background:#e2e8f0; color:#0f172a; padding:2px 6px; border-radius:4px; font-weight:bold; font-family:monospace;">${{info.origen}}</span>`;
+            
+            let bloqueMapa = `📍 <b>Origen y Validación para ${{svcMapa.toUpperCase()}}:</b><br>` +
+                             `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
+                             `• 🏢 <b>Origen(es) On Way:</b> ${{origenTag}}<br>` +
+                             `• ✅ <b>Validación requerida:</b> ${{info.val}}<br><br>` +
+                             `<span style="font-size:11px; color:#aaa;">*(Nota: Si el SVC solicita agregar blancos, se anexan)*</span>`;
+            partesRespuesta.push(bloqueMapa);
         }}
 
-        let faqsEncontradas = [];
-        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
+        // =========================================================================
+        // 4. PREGUNTAS FRECUENTES (FAQ)
+        // =========================================================================
+        let coincidenciasFaq = [];
+        if (q.includes("sdd") || q.includes("large van sdd")) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
         if (q.includes("bulk")) {{
-            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
-            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
+            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
+            else coincidenciasFaq.push(PREGUNTAS_FRECUENTES["bulk_general"]);
         }}
-        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
-        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
-        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
+        if (q.includes("alchichica")) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["alchichica"]);
+        if (q.includes("xico") || q.includes("tuzamapa")) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
+        if (q.includes("dropeo") || q.includes("drop")) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
 
-        if (faqsEncontradas.length > 0) {{
-            respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
-        }} else if (!svcEncontrado) {{
-            let claveRegla = null;
-            if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
-            else {{
-                Object.keys(REGLAS_RUTEO).forEach(k => {{
-                    let base = k.replace("_extendido","").replace("_precarga","");
-                    if (q.includes(base)) claveRegla = k;
+        if (q.includes("prioridad") || q.includes("prioridades") || q.includes("asignacion") || q.includes("asignación")) {{
+            if (q.includes("sja1") && (q.includes("foraneo") || q.includes("foráneo") || q.includes("foraneos") || q.includes("foráneos"))) {{
+                coincidenciasFaq.push(PREGUNTAS_FRECUENTES["prioridades_foraneos_sja1"]);
+            }} else if (q.includes("sja1")) {{
+                coincidenciasFaq.push(PREGUNTAS_FRECUENTES["prioridades_centro_sja1"]);
+                coincidenciasFaq.push(PREGUNTAS_FRECUENTES["prioridades_foraneos_sja1"]);
+            }} else if (q.includes("smd1")) {{
+                coincidenciasFaq.push(PREGUNTAS_FRECUENTES["smd1_prioridad"]);
+            }}
+        }}
+
+        if (q.includes("quitar") || q.includes("quitar unidades") || q.includes("ciclo 2") || q.includes("orh")) {{
+            if (q.includes("scp1") || !svcMapa) coincidenciasFaq.push(PREGUNTAS_FRECUENTES["scp1_cambios"]);
+        }}
+
+        if (coincidenciasFaq.length > 0) {{
+            partesRespuesta.push(coincidenciasFaq.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>"));
+        }}
+
+        // =========================================================================
+        // 5. BÚSQUEDA FLEXIBLE EN DICCIONARIO REGLAS_RUTEO
+        // =========================================================================
+        if (coincidenciasFaq.length === 0) {{
+            let claveReglaEncontrada = null;
+
+            if (q.includes("smx5")) {{
+                claveReglaEncontrada = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
+            }} else {{
+                // Mapeo flexible de términos
+                let mapeo = {{
+                    "smx9": "smx9_extendido", "sgd2": "sgd2_extendido", "smx4": "smx4_extendido",
+                    "smx2": "smx2_extendido", "smt2": "smt2_extendido", "scp1": "scp1",
+                    "smd1": "smd1", "sch1": "sch1", "sja1": "sja1"
+                }};
+
+                Object.keys(mapeo).forEach(term => {{
+                    if (q.includes(term)) claveReglaEncontrada = mapeo[term];
                 }});
             }}
 
-            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
-            }} else {{
-                respuesta = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Prueba buscando por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona <b>'Armar Resumen de Cierre'</b>.";
+            if (claveReglaEncontrada && REGLAS_RUTEO[claveReglaEncontrada]) {{
+                let textoRegla = REGLAS_RUTEO[claveReglaEncontrada];
+                
+                // Convertir Markdown simple a HTML para la vista del bot
+                let textoHTML = textoRegla
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/\n/g, '<br>');
+
+                partesRespuesta.push(`📋 <b>Indicaciones específicas:</b><br><br>${{textoHTML}}`);
             }}
+        }}
+
+        // =========================================================================
+        // CONSTRUCCIÓN DE RESPUESTA FINAL
+        // =========================================================================
+        let respuestaFinal = "";
+        if (partesRespuesta.length > 0) {{
+            respuestaFinal = partesRespuesta.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
+        }} else {{
+            respuestaFinal = "⚠️ No encontré esa consulta en la base de datos de <b>reglas.py</b>. Puedes consultar por un SVC (ej. SJA1, SCP1, SMD1, SMX5, SDD, Bulk, Alchichica) o presionar arriba para armar el resumen de cierre.";
         }}
 
         setTimeout(() => {{
             box.innerHTML += `
-                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 8px; border-radius: 6px; color: #ffffff; margin-bottom: 6px;">
-                    🤖 <b>Asistente:</b><br>${{respuesta}}
+                <div style="background: #25282b; border-left: 3px solid #0284c7; padding: 10px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:13px; line-height: 1.4;">
+                    🤖 <b>Asistente:</b><br><br>${{respuestaFinal}}
                 </div>
             `;
             box.scrollTop = box.scrollHeight;
