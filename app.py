@@ -21,6 +21,7 @@ def init_supabase():
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
     except Exception:
+		st.error(f"❌ Error al conectar con Supabase: {e}")
         return None
 
 supabase = init_supabase()
@@ -37,6 +38,7 @@ def cargar_ruteos_bd():
                 .execute()
             return res.data
         except Exception as e:
+			st.error(f"❌ Error al cargar los ruteos: {e}")
             return []
     return []
 
@@ -199,10 +201,11 @@ if st.session_state.usuario_auth is None:
         except Exception as e:
 
             # ==============================================================
-            # COOKIE INVÁLIDA O SESIÓN TERMINADA
+            # ERROR AL RECUPERAR LA SESIÓN
             # ==============================================================
 
-            st.session_state.verificando_cookie = False
+            st.error(f"❌ Error al recuperar la sesión: {e}")
+			st.session_state.verificando_cookie = False
 
     else:
 
