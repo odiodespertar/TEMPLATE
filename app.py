@@ -14,49 +14,67 @@ st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wi
 # ==========================================
 # CONEXIÓN NATIVA A SUPABASE
 # ==========================================
+
 @st.cache_resource
 def init_supabase():
     try:
         url = st.secrets["SUPABASE_URL"]
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
-    except Exception:
-		st.error(
-			f"❌ Error al conectar con Supabase: {e}"
-		)
+    except Exception as e:
+        st.error(f"❌ Error al conectar con Supabase: {e}")
         return None
+
 
 supabase = init_supabase()
 
+
 # 🟢 Función para cargar ruteos filtrados por user_id
+
 def cargar_ruteos_bd():
     if supabase and st.session_state.get("usuario_auth"):
         try:
             user_id_actual = st.session_state.usuario_auth.id
-            res = supabase.table("ruteos_guardados") \
-                .select("*") \
-                .eq("user_id", user_id_actual) \
-                .order("created_at") \
+
+            res = (
+                supabase.table("ruteos_guardados")
+                .select("*")
+                .eq("user_id", user_id_actual)
+                .order("created_at")
                 .execute()
+            )
+
             return res.data
+
         except Exception as e:
-			st.error(f"❌ Error al cargar los ruteos: {e}")
+            st.error(f"❌ Error al cargar los ruteos: {e}")
             return []
+
     return []
 
+
 # 🟢 Función segura para guardar ruteos desde Python con sesión activa
+
 def guardar_nuevo_ruteo_bd(nombre, datos):
     if supabase and st.session_state.get("usuario_auth"):
         try:
             user_id_actual = st.session_state.usuario_auth.id
-            res = supabase.table("ruteos_guardados").insert({
-                "user_id": user_id_actual,
-                "nombre": nombre,
-                "datos": datos
-            }).execute()
+
+            res = (
+                supabase.table("ruteos_guardados")
+                .insert({
+                    "user_id": user_id_actual,
+                    "nombre": nombre,
+                    "datos": datos
+                })
+                .execute()
+            )
+
             return True, res.data
+
         except Exception as e:
             return False, str(e)
+
     return False, "Usuario no autenticado."
 
 
@@ -65,15 +83,23 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
         try:
             u_id = st.session_state.usuario_auth.id
             datos_obj = json.loads(datos_json_str)
-            res = supabase.table("ruteos_guardados").insert({
-                "user_id": u_id,
-                "nombre": nombre,
-                "datos": datos_obj
-            }).execute()
+
+            res = (
+                supabase.table("ruteos_guardados")
+                .insert({
+                    "user_id": u_id,
+                    "nombre": nombre,
+                    "datos": datos_obj
+                })
+                .execute()
+            )
+
             return True
+
         except Exception as e:
             print("Error al guardar:", e)
             return False
+
     return False
 
 
