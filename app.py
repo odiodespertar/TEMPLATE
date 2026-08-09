@@ -489,6 +489,20 @@ st.markdown("""
 if "mostrar_asistente" not in st.session_state:
     st.session_state.mostrar_asistente = False
 
+# ============================================================
+# BOTÓN DE CONTROL DEL ASISTENTE
+# ============================================================
+
+if st.button(
+    "ABRIR ASISTENTE",
+    key="btn_abrir_asistente"
+):
+    st.session_state.mostrar_asistente = (
+        not st.session_state.mostrar_asistente
+    )
+    st.rerun()
+
+
 if st.session_state.mostrar_asistente:
 
     # ============================================================
