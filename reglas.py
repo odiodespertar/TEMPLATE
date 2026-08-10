@@ -106,6 +106,21 @@ reglas_ruteo = {
         "<li>🟤 Falta info</li>"
         "</ul>"
     ),
+     "Nueva experiencia Exclusión": (
+        "🚐 <b>Pasar a próximo ciclo:</b><br><br>"
+        "<ul>"
+        "<li>⏩ Todo lo que pasa al siguiente ciclo.</li>"
+        "<li>Como lo que va para C2, SD ó para SD2</b>.</li>"
+        "</ul>"
+    ),
+    "Nueva experiencia Exclusión": (
+        "🚐 <b>Linehaul no coincide con el ciclo:</b><br><br>"
+        "<ul>"
+        "<li>📦 Todo lo no planificado para este ciclo y lo que llega inesperadamente.</li>"
+        "<li>✖️ Por ejemplo lo que no se rutea del extendido</b>.</li>"
+        "<li>Los paquetes salen como BLANCOS</b>.</li>"
+        "</ul>"
+    ),
     "sja1": (
         "<b>Prioridades SJA1 C1:</b><br><br>" 
         "<ul>"
