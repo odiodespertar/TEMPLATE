@@ -5438,15 +5438,6 @@ function iniciarArrastreFlotante(e) {{
     </button>
 
 
-    <!-- CREAR NUEVO RUTEO -->
-
-    <button
-        class="opcion-menu-ruteos"
-        onclick="accionMenuRuteos('nuevo')">
-        ➕ &nbsp; CREAR NUEVO RUTEO
-    </button>
-
-
     <!-- SELECCIONAR RUTEO -->
 
     <button
@@ -5459,6 +5450,14 @@ function iniciarArrastreFlotante(e) {{
         <!-- Aquí se cargarán automáticamente los ruteos -->
     </div>
 
+
+	<!-- CREAR NUEVO RUTEO -->
+
+    <button
+        class="opcion-menu-ruteos"
+        onclick="accionMenuRuteos('nuevo')">
+        ➕ &nbsp; CREAR NUEVO RUTEO
+    </button>
 
 
     <!-- GESTIONAR / BORRAR -->
