@@ -5597,6 +5597,24 @@ function iniciarArrastreFlotante(e) {{
             faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"]);
         }}
 
+        let faqsEncontradas = [];
+        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
+        if (q.includes("bulk")) {{
+            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
+            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
+        }}
+        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
+        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
+        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
+
+        // 🟢 AGREGA ESTAS DOS CONDICIONES AQUÍ:
+        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo") || q.includes("próximo ciclo")) {{
+            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"] || REGLAS_RUTEO["Por capacidad de procesamiento"]);
+        }}
+        if (q.includes("linehaul") || q.includes("no coincide") || q.includes("blancos") || q.includes("line haul")) {{
+            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"]);
+        }}
+
 
         let svcEncontrado = null;
         Object.keys(MAPA_ORIGENES).forEach(key => {{
