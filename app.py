@@ -5431,7 +5431,6 @@ function iniciarArrastreFlotante(e) {{
 
 
     <!-- SELECCIONAR RUTEO -->
-
     <button
         class="opcion-menu-ruteos"
         onclick="toggleSubmenuRuteos()">
@@ -5444,7 +5443,6 @@ function iniciarArrastreFlotante(e) {{
 
 
     <!-- VISTA EXCEL -->
-
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('excel')">
@@ -5453,7 +5451,6 @@ function iniciarArrastreFlotante(e) {{
 
 
 	<!-- CREAR NUEVO RUTEO -->
-
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('nuevo')">
@@ -5462,7 +5459,6 @@ function iniciarArrastreFlotante(e) {{
 
 
     <!-- GESTIONAR / BORRAR -->
-
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('gestionar')">
@@ -5471,12 +5467,21 @@ function iniciarArrastreFlotante(e) {{
 
 
     <!-- LIMPIAR -->
-
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('limpiar')">
         🧹 &nbsp; LIMPIAR PANTALLA
     </button>
+
+
+    <!-- 👁️ OCULTAR / MOSTRAR PLANES EXTRA -->
+    <button
+        id="btn-ocultar-extra-menu"
+        class="opcion-menu-ruteos"
+        onclick="accionMenuRuteos('ocultar_extra')">
+        👁️ &nbsp; OCULTAR PLANES EXTRA
+    </button>
+	
 
 	<!-- 🗺️ MAPA OPERATIVO -->
 <button class="opcion-menu-ruteos" onclick="toggleMapaOperativo()">
@@ -5906,6 +5911,8 @@ function iniciarArrastreFlotante(e) {{
             limpiarPantallaCompleta();
         }} else if (accion === 'bot') {{
             togglePanelBotLateral(); // ✅ Llamada 100% limpia sin errores
+        }} else if (accion === 'ocultar_extra') {{
+            togglePlanesExtra(); // 👈 Llamada limpia al ocultador
         }}
     }}
 
@@ -5945,6 +5952,36 @@ function iniciarArrastreFlotante(e) {{
     function cerrarMapaPantallaCompleta() {{
         const modal = document.getElementById("modal-mapa-fullscreen");
         if (modal) modal.style.display = "none";
+    }}
+
+
+    let planesExtraOcultos = false;
+
+    function togglePlanesExtra() {{
+        planesExtraOcultos = !planesExtraOcultos;
+        const btnMenu = document.getElementById("btn-ocultar-extra-menu");
+
+        // Evaluamos todos los bloques de polígonos de la pantalla
+        document.querySelectorAll(".poligono-bloque").forEach(bloque => {{
+            const tdPlan = bloque.querySelector("td.plan-cell");
+            if (tdPlan) {{
+                const nombrePlan = tdPlan.innerText.trim().toUpperCase();
+
+                // Expresión regular que detecta planes genéricos sin nombre real (PLAN 9, PLAN 10, PLAN 11, etc.)
+                const esPlanGenerico = /^PLAN\s+\d+$/i.test(nombrePlan);
+
+                if (esPlanGenerico) {{
+                    bloque.style.display = planesExtraOcultos ? "none" : "block";
+                }}
+            }}
+        }});
+
+        // Actualizamos el texto del botón en el menú lateral
+        if (btnMenu) {{
+            btnMenu.innerHTML = planesExtraOcultos 
+                ? "👁️ &nbsp; MOSTRAR PLANES EXTRA" 
+                : "👁️ &nbsp; OCULTAR PLANES EXTRA";
+        }}
     }}
 
 	
