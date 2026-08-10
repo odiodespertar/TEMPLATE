@@ -5586,17 +5586,8 @@ function iniciarArrastreFlotante(e) {{
             box.scrollTop = box.scrollHeight;
             return;
         }}
+
 		
-
-        // Detectar consultas para las nuevas reglas
-        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
-            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"]);
-        }}
-        if (q.includes("linehaul") || q.includes("no coincide") || q.includes("blancos")) {{
-            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"]);
-        }}
-
-
         if (q.includes("procesamiento") || q.includes("capacidad")) {{
             respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO["Por capacidad de procesamiento"]}}`;
         }}
