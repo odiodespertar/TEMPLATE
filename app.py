@@ -5522,7 +5522,7 @@ function iniciarArrastreFlotante(e) {{
     <!-- CAJA DE CHAT DEL BOT EN EL MENÚ -->
     <div id="panel-bot-lateral-contenido" style="display: none; margin-top: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; padding: 10px;">
         <div style="text-align: center; font-size: 26px;">🚚</div>
-        <div style="text-align: center; font-size: 11px; font-weight: bold; color: #22c55e; margin-bottom: 8px;">● ROUTING ONLINE</div>
+        <div style="text-align: center; font-size: 10px; font-weight: bold; color: #22c55e; margin-bottom: 8px;">● Routing online</div>
         
         <button onclick="enviarConsultaBotLateral('resumen')" style="width: 100%; cursor: pointer; background: #28a745; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 8px;">
             📋 Armar Resumen de Cierre
