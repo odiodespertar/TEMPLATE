@@ -5830,7 +5830,7 @@ function iniciarArrastreFlotante(e) {{
         pasoResumen = 0;
 
         box.innerHTML += `
-            <div style="background: #1a1c1e; border: 2px solid #28a745; padding: 12px; border-radius: 6px; color: #ffffff; margin-bottom: 6px; font-size:14px; line-height: 1.5;">
+            <div style="background: #86ad9c; border: 2px solid #28a745; padding: 12px; border-radius: 6px; color: #000000; margin-bottom: 6px; font-size:14px; line-height: 1.5;">
                 📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
             </div>
         `;
