@@ -5588,11 +5588,13 @@ function iniciarArrastreFlotante(e) {{
         }}
 
 		
-        if (q.includes("procesamiento") || q.includes("capacidad")) {{
-            respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO["Por capacidad de procesamiento"]}}`;
+        // Búsqueda inteligente para las nuevas reglas
+        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
+            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"] || REGLAS_RUTEO["Por capacidad de procesamiento"]);
         }}
-        if (q.includes("linehaul")) {{
-            respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO["Linehaul no coincide con el ciclo"]}}`;
+        
+        if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
+            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"]);
         }}
 
 
