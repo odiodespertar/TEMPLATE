@@ -1959,7 +1959,7 @@ app_html = f"""
 
     const SUPABASE_URL = "https://srhqffxstkcraqwdxkkz.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyaHFmZnhzdGtjcmFxd2R4a2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODIzMzQsImV4cCI6MjEwMTU1ODMzNH0.kWRQfjsw-o6-ZHUGQnENyE-DoQXd1HyV664rBPLXAOk";
-    const USER_ID_AUTH = "{user_id_auth}";
+    const USER_ID_AUTH = "${user_id_auth}";
     const STORAGE_KEY = "monitor_logistico_estado_vivo_" + USER_ID_AUTH;
     
     // 🟢 Inicializamos el cliente inyectando el token Bearer de la sesión de Python
@@ -2438,7 +2438,6 @@ app_html = f"""
         }}
     }}
 
-
     async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         let modal = document.getElementById("modal-crear-ruteo");
@@ -2447,7 +2446,7 @@ app_html = f"""
         let nombreRuteo = inputNombre.value.trim().toUpperCase();
         if (!nombreRuteo) {{ alert("⚠️ Por favor ingresa un nombre para el ruteo."); return; }}
 
-        let idEditando = modal.getAttribute("data-id-editando"); // Si existe, estamos editando
+        let idEditando = modal.getAttribute("data-id-editando");
 
         let incluirORH = document.getElementById("chk-incluir-orh")?.checked || false;
         let incluirOcup = document.getElementById("chk-incluir-ocup")?.checked || false;
@@ -2498,7 +2497,7 @@ app_html = f"""
         }};
 
         if (idEditando) {{
-            // 🔄 MODO EDICIÓN: Actualizar en BD y refrescar pantalla
+            // 🔄 MODO EDICIÓN
             if (supabaseClient) {{
                 try {{
                     const {{ error }} = await supabaseClient
@@ -2507,9 +2506,9 @@ app_html = f"""
                         .eq('id', idEditando);
 
                     if (error) {{
-                        alert("⚠️ Error al actualizar el ruteo en BD: " + error.message);
+                        alert("⚠️ Error al actualizar el ruteo en Supabase: " + error.message);
+                        return;
                     }} else {{
-                        // Remover versión anterior de pantalla y redibujar con los nuevos datos
                         removerRuteoDePantallaPorId(idEditando);
                         crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idEditando, incluirORH, incluirOcup, llevaNodos);
                         alert(`✅ ¡Ruteo "${{nombreRuteo}}" actualizado exitosamente!`);
@@ -2519,45 +2518,50 @@ app_html = f"""
                 }}
             }}
         }} else {{
-            // ➕ MODO CREACIÓN: Insertar nuevo ruteo en Supabase y capturar su ID real
+            // ➕ MODO CREACIÓN
             if (supabaseClient) {{
                 try {{
-                    const res = await supabaseClient
+                    const {{ data, error }} = await supabaseClient
                         .from('ruteos_guardados')
-                        .insert([{{ user_id: '{{user_id_auth}}', nombre: nombreRuteo, datos: datosEstructura }}])
+                        .insert([{{ 
+                            user_id: USER_ID_AUTH, 
+                            nombre: nombreRuteo, 
+                            datos: datosEstructura 
+                        }}])
                         .select();
 
-                    if (!res.error && res.data && res.data.length > 0) {{
-                        let idRealBD = res.data[0].id;
+                    if (error) {{
+                        alert("⚠️ Error de Supabase al guardar: " + error.message);
+                        console.error("Detalle error Supabase:", error);
+                        return;
+                    }}
+
+                    if (data && data.length > 0) {{
+                        let idRealBD = data[0].id;
                         crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idRealBD, incluirORH, incluirOcup, llevaNodos);
-                        alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
-                    }} else {{
-                        // Respaldo local en caso de falla de respuesta
-                        let idTemporal = Date.now();
-                        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
-                        if (res.error) alert("⚠️ Creado en pantalla local pero no se confirmó en BD: " + res.error.message);
+                        alert(`✅ ¡Ruteo "${{nombreRuteo}}" guardado en Supabase y activado!`);
                     }}
                 }} catch (err) {{
-                    console.error("Excepción Supabase:", err);
-                    let idTemporal = Date.now();
-                    crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
+                    console.error("Excepción Supabase al insertar:", err);
+                    alert("⚠️ Ocurrió una excepción al conectar con la BD.");
+                    return;
                 }}
             }} else {{
-                let idTemporal = Date.now();
-                crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
+                alert("⚠️ Error: Cliente Supabase no inicializado.");
+                return;
             }}
         }}
 
-        modal.removeAttribute("data-id-editando"); // Limpiar estado de edición
+        modal.removeAttribute("data-id-editando");
         cerrarCreadorRuteo();
 
-        // 🔄 Refrescar los selectores y la barra lateral para sincronizar la lista de ruteos
         if (typeof cargarRuteosEnMenuLateral === 'function') {{
             cargarRuteosEnMenuLateral();
         }}
 
         if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
     }}
+    
    
 
 
