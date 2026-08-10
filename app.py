@@ -5479,7 +5479,7 @@ function iniciarArrastreFlotante(e) {{
 
 	<!-- 🗺️ MAPA OPERATIVO -->
 <button class="opcion-menu-ruteos" onclick="toggleMapaOperativo()">
-    🗺️ &nbsp; MAPA OPERATIVO
+    🗺️ &nbsp; MAPA DE EXTENDIDO
 </button>
 
 <!-- CONTENEDOR DEL MAPA CON ZOOM -->
