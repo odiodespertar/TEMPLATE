@@ -5429,14 +5429,6 @@ function iniciarArrastreFlotante(e) {{
     </div>
 
 
-    <!-- VISTA EXCEL -->
-
-    <button
-        class="opcion-menu-ruteos"
-        onclick="accionMenuRuteos('excel')">
-        📊 &nbsp; VISTA EXCEL
-    </button>
-
 
     <!-- SELECCIONAR RUTEO -->
 
@@ -5449,6 +5441,15 @@ function iniciarArrastreFlotante(e) {{
     <div id="submenu-ruteos-lateral">
         <!-- Aquí se cargarán automáticamente los ruteos -->
     </div>
+
+
+    <!-- VISTA EXCEL -->
+
+    <button
+        class="opcion-menu-ruteos"
+        onclick="accionMenuRuteos('excel')">
+        📊 &nbsp; VISTA EXCEL
+    </button>
 
 
 	<!-- CREAR NUEVO RUTEO -->
