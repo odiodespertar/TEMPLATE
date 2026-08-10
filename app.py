@@ -2439,8 +2439,7 @@ app_html = f"""
     }}
 
 
-
-   async function guardarNuevoRuteoCompleto() {{
+    async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
         let modal = document.getElementById("modal-crear-ruteo");
         if (!inputNombre || !modal) return;
@@ -2504,7 +2503,7 @@ app_html = f"""
                 try {{
                     const {{ error }} = await supabaseClient
                         .from('ruteos_guardados')
-                        .update({{ nombre: nombreRuteo, datos: datosEstructura }})
+                        .update({ nombre: nombreRuteo, datos: datosEstructura }})
                         .eq('id', idEditando);
 
                     if (error) {{
@@ -2520,10 +2519,7 @@ app_html = f"""
                 }}
             }}
         }} else {{
-            // ➕ MODO CREACIÓN: Insertar nuevo ruteo
-            let nuevoIdBD = Date.now();
-            crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
-
+            // ➕ MODO CREACIÓN: Insertar nuevo ruteo en Supabase y capturar su ID real
             if (supabaseClient) {{
                 try {{
                     const res = await supabaseClient
@@ -2531,19 +2527,38 @@ app_html = f"""
                         .insert([{{ user_id: '{{user_id_auth}}', nombre: nombreRuteo, datos: datosEstructura }}])
                         .select();
 
-                    if (!res.error) alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
+                    if (!res.error && res.data && res.data.length > 0) {{
+                        let idRealBD = res.data[0].id;
+                        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idRealBD, incluirORH, incluirOcup, llevaNodos);
+                        alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
+                    }} else {{
+                        // Respaldo local en caso de falla de respuesta
+                        let idTemporal = Date.now();
+                        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
+                        if (res.error) alert("⚠️ Creado en pantalla local pero no se confirmó en BD: " + res.error.message);
+                    }}
                 }} catch (err) {{
                     console.error("Excepción Supabase:", err);
+                    let idTemporal = Date.now();
+                    crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
                 }}
+            }} else {{
+                let idTemporal = Date.now();
+                crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idTemporal, incluirORH, incluirOcup, llevaNodos);
             }}
         }}
 
         modal.removeAttribute("data-id-editando"); // Limpiar estado de edición
         cerrarCreadorRuteo();
 
+        // 🔄 Refrescar los selectores y la barra lateral para sincronizar la lista de ruteos
+        if (typeof cargarRuteosEnMenuLateral === 'function') {{
+            cargarRuteosEnMenuLateral();
+        }}
+
         if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
     }}
-
+   
 
 
 
