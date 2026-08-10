@@ -1922,16 +1922,16 @@ app_html = f"""
 
 
 <!-- ============================================================================== -->
-<!-- 🗑️ MODAL 2: GESTOR DE ELIMINACIÓN MASIVA (COMPLETAMENTE INDEPENDIENTE) -->
+<!-- 🗑️ MODAL: GESTOR DE EDICIÓN Y ELIMINACIÓN DE RUTEOS -->
 <!-- ============================================================================== -->
 <div id="modal-eliminar-masivo" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
-    <div style="max-width: 800px; margin: 0 auto; background: #25282b; border: 2px solid #dc3545; border-radius: 12px; padding: 20px;">
+    <div style="max-width: 800px; margin: 0 auto; background: #25282b; border: 2px solid #0284c7; border-radius: 12px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px;">
-            <h2 style="color: #FF7F7F; margin: 0; font-size: 20px;">🗑️ ELIMINACIÓN MASIVA DE RUTEOS PERSONALIZADOS</h2>
+            <h2 style="color: #38bdf8; margin: 0; font-size: 20px;">✏️ EDITAR Y ELIMINAR RUTEOS PERSONALIZADOS</h2>
             <button onclick="cerrarGestorEliminacionMasiva()" style="cursor: pointer; background: #555; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;">✕ CERRAR</button>
         </div>
 
-        <p style="color: #d0d0d0; font-size: 13px;">Marca la casilla de los ruteos repetidos o no deseados y presiona <b>"Eliminar Seleccionados"</b> para borrarlos todos de la base de datos y la pantalla en tiempo real:</p>
+        <p style="color: #d0d0d0; font-size: 13px;">Selecciona <b>"Editar"</b> para renombrar o cambiar los datos del ruteo, o marca la casilla para <b>"Eliminar Seleccionados"</b>:</p>
 
         <div id="lista-ruteos-eliminar" style="max-height: 350px; overflow-y: auto; margin: 15px 0; padding-right: 5px;"></div>
 
@@ -1942,7 +1942,7 @@ app_html = f"""
             <button onclick="cerrarGestorEliminacionMasiva()" style="cursor: pointer; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold;">Cerrar</button>
         </div>
     </div>
-</div> <!-- 👈 AQUÍ CIERRA COMPLETAMENTE EL MODAL 2 -->
+</div>
 
 
 <script>
@@ -1981,7 +1981,7 @@ app_html = f"""
     // 🗑️ GESTIÓN Y ELIMINACIÓN MASIVA EN TEMPO REAL DE RUTEOS DINÁMICOS
     // ==============================================================================
     
-    // Abrir Modal de Eliminación Masiva
+    // 1. ABRIR GESTOR Y MOSTRAR BOTÓN DE EDICIÓN COMPLETA
     async function abrirGestorEliminacionMasiva() {{
         cerrarCreadorRuteo();
         let modal = document.getElementById("modal-eliminar-masivo");
@@ -1993,7 +1993,7 @@ app_html = f"""
 
         if (supabaseClient) {{
             try {{
-                const {{ data, error }} = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: false }});
+                const { data, error } = await supabaseClient.from('ruteos_guardados').select('*').order('created_at', {{ ascending: false }});
                 if (error) {{
                     contenedor.innerHTML = `<p style='color:red;'>Error al cargar: ${{error.message}}</p>`;
                     return;
@@ -2005,6 +2005,9 @@ app_html = f"""
 
                 let htmlLista = "";
                 data.forEach(r => {{
+                    // Convertimos el objeto de datos a una cadena JSON limpia y segura para pasarla por el botón
+                    let datosJSON = JSON.stringify(r.datos).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
                     htmlLista += `
                         <div style="background: #1a1c1e; border: 1px solid #444; padding: 10px 14px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
                             <label style="display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 13px; cursor: pointer;">
@@ -2012,7 +2015,10 @@ app_html = f"""
                                 🟣 ${{r.nombre.toUpperCase()}}
                             </label>
 
-                            <button onclick="eliminarRuteoIndividualRealTime('${{r.id}}', '${{r.nombre}}')" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ Eliminar</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="cargarRuteoParaEdicion('${{r.id}}', '${{r.nombre}}', '${{datosJSON}}')" style="cursor: pointer; background: #0284c7; color: white; border: none; padding: 4px 12px; font-size: 11px; font-weight: bold; border-radius: 4px;" title="Editar toda la configuración">✏️ Editar Todo</button>
+                                <button onclick="eliminarRuteoIndividualRealTime('${{r.id}}', '${{r.nombre}}')" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px;">🗑️ Eliminar</button>
+                            </div>
                         </div>
                     `;
                 }});
@@ -2022,6 +2028,131 @@ app_html = f"""
             }}
         }}
     }}
+
+
+    // 2. CARGAR TODOS LOS DATOS PREVIOS EN EL CREADOR/EDITOR DE RUTEO
+    function cargarRuteoParaEdicion(idRuteoBD, nombreRuteo, datosJSONStr) {{
+        let datos;
+        try {{
+            datos = typeof datosJSONStr === "string" ? JSON.parse(datosJSONStr.replace(/&quot;/g, '"').replace(/&apos;/g, "'")) : datosJSONStr;
+        }} catch (e) {{
+            console.error("Error al parsear estructura del ruteo:", e);
+            alert("⚠️ No se pudieron cargar los detalles de este ruteo.");
+            return;
+        }}
+
+        // 1. Cerrar gestor y abrir modal creador/editor
+        cerrarGestorEliminacionMasiva();
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (modal) modal.style.display = "block";
+
+        // 2. Asignar Nombre y Guardar ID activo de edición en el modal
+        let inputNombre = document.getElementById("creador-nombre-ruteo");
+        if (inputNombre) inputNombre.value = nombreRuteo;
+        modal.setAttribute("data-id-editando", idRuteoBD);
+
+        // 3. Cargar estado de interruptores (Nodos, ORH, Ocupación)
+        let chkNodos = document.getElementById("chk-incluir-nodos");
+        let chkORH = document.getElementById("chk-incluir-orh");
+        let chkOcup = document.getElementById("chk-incluir-ocup");
+
+        if (chkNodos) chkNodos.checked = datos.llevaNodos || false;
+        if (chkORH) chkORH.checked = datos.incluirORH || false;
+        if (chkOcup) chkOcup.checked = datos.incluirOcup || false;
+
+        // 4. Cargar Flota Seleccionada con sus SPR Min y Max
+        inicializarCreadorFlota(); // Carga la base limpia
+        if (Array.isArray(datos.flota)) {{
+            let itemsFlota = document.querySelectorAll("#contenedor-lista-flota > div");
+            itemsFlota.forEach((div, idx) => {{
+                let chk = div.querySelector(".chk-flota-unidad");
+                if (chk) {{
+                    let unidadEncontrada = datos.flota.find(f => f.nombre === chk.value);
+                    if (unidadEncontrada) {{
+                        chk.checked = true;
+                        let inputMin = div.querySelector(`.spr-min-${{idx}}`);
+                        let inputMax = div.querySelector(`.spr-max-${{idx}}`);
+                        if (inputMin) inputMin.value = unidadEncontrada.sprMin;
+                        if (inputMax) inputMax.value = unidadEncontrada.sprMax;
+                    }} else {{
+                        chk.checked = false; // Desmarca si no fue seleccionada en el ruteo original
+                    }}
+                }}
+            }});
+        }}
+
+        // 5. Cargar Configuración de Planes, Nombres, Filas y Unidades Prioritarias
+        if (Array.isArray(datos.planes)) {{
+            let inputCantPlanes = document.getElementById("creador-cant-planes");
+            if (inputCantPlanes) inputCantPlanes.value = datos.planes.length;
+
+            let contPlanes = document.getElementById("contenedor-lista-planes");
+            if (contPlanes) {{
+                let htmlPlanes = "";
+                datos.planes.forEach((p, i) => {{
+                    let indicePlan = i + 1;
+                    
+                    // Reconstruir lista de unidades prioritarias por plan
+                    let htmlUnidadesPrioritarias = "";
+                    let listaPrioridades = Array.isArray(p.unidadesPrioritarias) ? p.unidadesPrioritarias : (p.unidadPrioritaria ? [p.unidadPrioritaria] : []);
+
+                    if (listaPrioridades.length > 0) {{
+                        listaPrioridades.forEach(uP => {{
+                            htmlUnidadesPrioritarias += obtenerHTMLSelectorUnidadConValor(uP);
+                        }});
+                    }} else {{
+                        htmlUnidadesPrioritarias = obtenerHTMLSelectorUnidad();
+                    }}
+
+                    htmlPlanes += `
+                        <div class="bloque-config-plan" style="background: #1a1c1e; border: 1px solid #3f4347; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${indicePlan}:</span>
+                                <input type="text" class="input-nombre-plan" value="${{p.nombre}}" placeholder="Nombre del Plan" 
+                                    style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
+                                <span style="font-size: 11px; color: #aaa;">Filas:</span>
+                                <input type="number" class="input-filas-plan" value="${{p.filas || 3}}" min="1" max="15" 
+                                    style="width: 45px; text-align: center; background: #25282b; color: #FFD700; border: 1px solid #555; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                            </div>
+                            
+                            <div style="background: #25282b; padding: 8px; border-radius: 4px; border: 1px dashed #555; display: flex; flex-direction: column; gap: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 11px; color: #FFD700; font-weight: bold;">🎯 Unidades Prioritarias / Requeridas:</span>
+                                    <button onclick="agregarFilaUnidadPrioritaria(this)" style="cursor: pointer; background: #26d4ca; color: #1a1c1e; border: none; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">➕ Añadir Unidad</button>
+                                </div>
+                                <div class="contenedor-unidades-prioritarias-plan" style="display: flex; flex-direction: column; gap: 6px;">
+                                    ${{htmlUnidadesPrioritarias}}
+                                </div>
+                            </div>
+                        </div>`;
+                }});
+                contPlanes.innerHTML = htmlPlanes;
+            }}
+        }}
+    }}
+
+
+    // Auxiliar para seleccionar la unidad previamente guardada
+    function obtenerHTMLSelectorUnidadConValor(valorSeleccionado) {{
+        let opcionesUnidades = `<option value="">-- Sin prioridad (Usar Flota Estándar) --</option>`;
+        Object.keys(BASE_FLOTA_MASTER).forEach(u => {{
+            let selected = (u === valorSeleccionado) ? "selected" : "";
+            opcionesUnidades += `<option value="${{u}}" ${{selected}}>${{u}}</option>`;
+        }});
+
+        return `
+            <div class="fila-unidad-prioritaria" style="display: flex; align-items: center; gap: 6px;">
+                <select class="input-unidad-prioritaria-plan" style="flex: 1; padding: 4px; border-radius: 4px; background: #1a1c1e; color: white; border: 1px solid #555; font-size: 12px;">
+                    ${{opcionesUnidades}}
+                </select>
+                <button onclick="eliminarFilaUnidadPrioritaria(this)" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;" title="Quitar esta unidad">❌</button>
+            </div>
+        `;
+    }}
+
+
+   
+	
 
     function cerrarGestorEliminacionMasiva() {{
         let modal = document.getElementById("modal-eliminar-masivo");
@@ -2311,10 +2442,13 @@ app_html = f"""
 
    async function guardarNuevoRuteoCompleto() {{
         let inputNombre = document.getElementById("creador-nombre-ruteo");
-        if (!inputNombre) return;
+        let modal = document.getElementById("modal-crear-ruteo");
+        if (!inputNombre || !modal) return;
 
         let nombreRuteo = inputNombre.value.trim().toUpperCase();
-        if (!nombreRuteo) {{ alert("⚠️ Por favor ingresa un nombre para el nuevo ruteo."); return; }}
+        if (!nombreRuteo) {{ alert("⚠️ Por favor ingresa un nombre para el ruteo."); return; }}
+
+        let idEditando = modal.getAttribute("data-id-editando"); // Si existe, estamos editando
 
         let incluirORH = document.getElementById("chk-incluir-orh")?.checked || false;
         let incluirOcup = document.getElementById("chk-incluir-ocup")?.checked || false;
@@ -2328,7 +2462,7 @@ app_html = f"""
                 let nombreUnidad = chk.value;
                 let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
                 let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
-                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
+                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax} });
             }}
         }});
 
@@ -2364,38 +2498,50 @@ app_html = f"""
             llevaNodos: llevaNodos
         }};
 
-        let nuevoIdBD = Date.now(); // ID temporal para pintar en pantalla al instante
+        if (idEditando) {{
+            // 🔄 MODO EDICIÓN: Actualizar en BD y refrescar pantalla
+            if (supabaseClient) {{
+                try {{
+                    const {{ error }} = await supabaseClient
+                        .from('ruteos_guardados')
+                        .update({{ nombre: nombreRuteo, datos: datosEstructura }})
+                        .eq('id', idEditando);
 
-        // 1. Dibuja la pestaña de inmediato en tu pantalla
-        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
-        cerrarCreadorRuteo();
-
-        // 2. Intenta guardar en la base de datos de Supabase en segundo plano
-        if (supabaseClient) {{
-            try {{
-                const res = await supabaseClient
-                    .from('ruteos_guardados')
-                    .insert([{{ 
-                        user_id: '{user_id_auth}', 
-                        nombre: nombreRuteo, 
-                        datos: datosEstructura 
-                    }}])
-                    .select();
-
-                if (res.error) {{ 
-                    console.error("Error BD:", res.error);
-                    alert("⚠️ El ruteo se activó en pantalla pero hubo un detalle al guardar en BD: " + res.error.message); 
-                }} else {{
-                    alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
+                    if (error) {{
+                        alert("⚠️ Error al actualizar el ruteo en BD: " + error.message);
+                    }} else {{
+                        // Remover versión anterior de pantalla y redibujar con los nuevos datos
+                        removerRuteoDePantallaPorId(idEditando);
+                        crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idEditando, incluirORH, incluirOcup, llevaNodos);
+                        alert(`✅ ¡Ruteo "${{nombreRuteo}}" actualizado exitosamente!`);
+                    }}
+                }} catch (err) {{
+                    console.error("Excepción al actualizar:", err);
                 }}
-            }} catch (err) {{ 
-                console.error("Excepción Supabase:", err);
+            }}
+        }} else {{
+            // ➕ MODO CREACIÓN: Insertar nuevo ruteo
+            let nuevoIdBD = Date.now();
+            crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, nuevoIdBD, incluirORH, incluirOcup, llevaNodos);
+
+            if (supabaseClient) {{
+                try {{
+                    const res = await supabaseClient
+                        .from('ruteos_guardados')
+                        .insert([{{ user_id: '{{user_id_auth}}', nombre: nombreRuteo, datos: datosEstructura }}])
+                        .select();
+
+                    if (!res.error) alert(`¡Ruteo "${{nombreRuteo}}" guardado y activado correctamente!`);
+                }} catch (err) {{
+                    console.error("Excepción Supabase:", err);
+                }}
             }}
         }}
 
-        if (typeof guardarEstadoEnVivo === 'function') {{
-            guardarEstadoEnVivo();
-        }}
+        modal.removeAttribute("data-id-editando"); // Limpiar estado de edición
+        cerrarCreadorRuteo();
+
+        if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
     }}
 
 
@@ -5320,7 +5466,7 @@ function iniciarArrastreFlotante(e) {{
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('gestionar')">
-        🗑️ &nbsp; GESTIONAR / BORRAR RUTEOS
+        🗑️ &nbsp; EDITAR / BORRAR RUTEOS
     </button>
 
 
@@ -5845,37 +5991,27 @@ html(app_html, height=1200, scrolling=True)
 
 
 # ==============================================================================
-# 8. COMPONENTE FINAL DE STREAMLIT (CONSOLA + MAPA OPERATIVO)
+# 8. COMPONENTE FINAL DE STREAMLIT (CONSOLA RESTADOR)
 # ==============================================================================
-ID_IMAGEN = "1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ"
-url_final = "https://drive.google.com/thumbnail?id=" + ID_IMAGEN + "&sz=w1000"
 
 html_limpio = """
 <style>
-    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
-    .main-box { background: #25282b; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+    body { background-color: #25282b; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
+    .main-box { background: #25282b; padding: 5px; display: flex; flex-direction: column; align-items: center; }
     
     .unified-console {
         background: #25282b; border-radius: 15px; padding: 15px; 
-        margin-bottom: 20px; border: 1px solid #25282b; text-align: center; width: 100%; max-width: 500px;
+        margin-bottom: 0px; border: 1px solid #25282b; text-align: center; width: 100%; max-width: 500px;
     }
     .display-screen {
-        background: #25282b; border-radius: 10px; padding: 10px; margin-bottom: 15px; border: 2px solid #25282b;
+        background: #25282b; border-radius: 10px; padding: 8px; margin-bottom: 10px; border: 2px solid #25282b;
     }
     .btn-3d {
         background: linear-gradient(145deg, #1e90ff, #1c82e6);
-        color: white; border: none; padding: 12px 25px; border-radius: 10px;
-        font-weight: bold; cursor: pointer; box-shadow: 0 5px #0a56a3; transition: 0.1s;
+        color: white; border: none; padding: 10px 20px; border-radius: 10px;
+        font-weight: bold; cursor: pointer; box-shadow: 0 4px #0a56a3; transition: 0.1s;
     }
-    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(3px); }
-    
-    .map-container {
-        background: #1e1e1e; border-radius: 12px; padding: 15px; 
-        width: 100%; max-width: 900px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .map-container img {
-        max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #444;
-    }
+    .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(2px); }
 </style>
 
 <div class="main-box">
@@ -5894,7 +6030,7 @@ html_limpio = """
             <button class="btn-3d" onclick="ejecutarTodo()">CALCULAR</button>
         </div>
     </div>
-
+</div>
 
 <script>
     function ejecutarTodo() {
@@ -5911,4 +6047,4 @@ html_limpio = """
 
 # Renderizado final del componente inferior
 st.markdown("---")
-html(html_limpio, height=210, scrolling=True)
+html(html_limpio, height=210, scrolling=False)
