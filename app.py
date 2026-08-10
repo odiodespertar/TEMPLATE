@@ -2107,7 +2107,7 @@ app_html = f"""
                     htmlPlanes += `
                         <div class="bloque-config-plan" style="background: #1a1c1e; border: 1px solid #3f4347; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${indicePlan}:</span>
+                                <span style="color: #26d4ca; font-weight: bold; font-size: 12px; width: 60px;">PLAN ${{indicePlan}}:</span>
                                 <input type="text" class="input-nombre-plan" value="${{p.nombre}}" placeholder="Nombre del Plan" 
                                     style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #25282b; color: white; font-weight: bold; font-size: 13px;">
                                 <span style="font-size: 11px; color: #aaa;">Filas:</span>
