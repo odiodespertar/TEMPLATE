@@ -2503,7 +2503,7 @@ app_html = f"""
                 try {{
                     const {{ error }} = await supabaseClient
                         .from('ruteos_guardados')
-                        .update({ nombre: nombreRuteo, datos: datosEstructura }})
+                        .update({{ nombre: nombreRuteo, datos: datosEstructura }})
                         .eq('id', idEditando);
 
                     if (error) {{
