@@ -106,14 +106,14 @@ reglas_ruteo = {
         "<li>🟤 Falta info</li>"
         "</ul>"
     ),
-     "Nueva experiencia Exclusión": (
+     "Por capacidad de procesamiento": (
         "🚐 <b>Pasar a próximo ciclo:</b><br><br>"
         "<ul>"
         "<li>⏩ Todo lo que pasa al siguiente ciclo.</li>"
         "<li>Como lo que va para C2, SD ó para SD2</b>.</li>"
         "</ul>"
     ),
-    "Nueva experiencia Exclusión": (
+    "Linehaul no coincide con el ciclo": (
         "🚐 <b>Linehaul no coincide con el ciclo:</b><br><br>"
         "<ul>"
         "<li>📦 Todo lo no planificado para este ciclo y lo que llega inesperadamente.</li>"
