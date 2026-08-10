@@ -5623,6 +5623,16 @@ function iniciarArrastreFlotante(e) {{
         if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
         if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
 
+        // 🟢 BÚSQUEDA SEGURA DE LAS NUEVAS REGLAS (SIN ROMPER EL MENÚ)
+        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
+            let resProc = PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"] || REGLAS_RUTEO["Por capacidad de procesamiento"];
+            if (resProc) faqsEncontradas.push(resProc);
+        }}
+        if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
+            let resLine = PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"];
+            if (resLine) faqsEncontradas.push(resLine);
+        }}
+
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }} else if (!svcEncontrado) {{
