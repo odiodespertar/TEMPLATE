@@ -2462,7 +2462,7 @@ app_html = f"""
                 let nombreUnidad = chk.value;
                 let sprMin = parseInt(div.querySelector(`.spr-min-${{idx}}`)?.value) || 0;
                 let sprMax = parseInt(div.querySelector(`.spr-max-${{idx}}`)?.value) || 0;
-                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax} });
+                flotaElegida.push({{ nombre: nombreUnidad, sprMin: sprMin, sprMax: sprMax }});
             }}
         }});
 
