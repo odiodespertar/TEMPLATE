@@ -4176,24 +4176,42 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para llevar el control de la reducción de horas en la interfaz
+    // Variable global para llevar el control de la reducción acumulada
     let reduccionGlobalHoras = 0;
 
     function reducirHoras(cambio) {{
-        // Modificar la reducción (asegurando que no baje de 0)
+        // 1. Modificar la reducción (evitando que baje de 0)
         reduccionGlobalHoras += cambio;
         if (reduccionGlobalHoras < 0) {{
             reduccionGlobalHoras = 0;
         }}
     
-        // Opcional: Actualizar visualmente algún indicador en pantalla si lo deseas
-        console.log("Horas reducidas:", reduccionGlobalHoras);
+        // 2. Actualizar el texto que muestra cuántas horas llevas reducidas (opcional)
+        console.log("Reducción actual:", reduccionGlobalHoras);
+
+        // 3. ACTUALIZAR LAS FILAS DE TU TABLA AUTOMÁTICAMENTE
+        // Buscamos todas las filas de la tabla para aplicar el cambio
+        const filas = document.querySelectorAll("tr"); // O ajusta el selector según tu clase de filas
     
-        // Aquí puedes llamar a tu función existente que redibuja o recalcula la tabla
-        // Por ejemplo, si tienes una función que actualiza las celdas:
-        if (typeof actualizarCalculosTabla === "function") {{
-            actualizarCalculosTabla(reduccionGlobalHoras);
-        }}
+        filas.forEach(fila => {{
+            // Aquí buscas la celda que contiene las horas (por ejemplo, la que dice 11:00)
+            let celdaHoras = fila.querySelector(".col-horas"); // Asegúrate de poner la clase o estructura de tus celdas
+            let celdaOrh = fila.querySelector(".col-orh");     // La celda de la izquierda (ej. 660)
+        
+            if (celdaHoras && celdaOrh) {{
+                // Suponiendo que el valor original base está guardado en un atributo o se calcula:
+                let horasBase = parseInt(fila.getAttribute("data-horas-base")) || 11; 
+                let factorOrh = parseInt(fila.getAttribute("data-factor-orh")) || 60; // Ej: 60 por hora
+            
+                // Calcular nuevas horas y nuevo ORH
+                let horasFinales = Math.max(0, horasBase - reduccionGlobalHoras);
+                let orhFinal = horasFinales * factorOrh;
+            
+                // Pintar los nuevos valores en la pantalla
+                celdaHoras.innerText = horasFinales + ":00";
+                celdaOrh.innerText = orhFinal;
+            }}
+        }});
     }}
 
    
