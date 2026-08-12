@@ -4184,7 +4184,7 @@ app_html = f"""
                 let orhActual = parseFloat(celdaOrh.innerText) || 0;
             
                 // 2. Si la celda tiene un valor mayor a 0, le restamos exactamente 1 hora (60 unidades de ORH)
-                if (orhActual >= 60) {{
+                if (orhActual >= 0) {{
                     let nuevoOrh = orhActual - (60 * horasAQuitar);
                     if (nuevoOrh < 0) nuevoOrh = 0;
                 
@@ -4195,7 +4195,6 @@ app_html = f"""
                     if (celdaHora) {{
                         let hInt = Math.floor(horasNuevas);
                         let mInt = Math.round((horasNuevas - hInt) * 60);
-                        // Asegurar formato de dos dígitos sin desbordarse
                         celdaHora.innerText = (hInt < 10 ? "0" + hInt : hInt) + ":" + (mInt < 10 ? "0" + mInt : mInt);
                     }}
                 }} else if (orhActual > 0 && orhActual < 60) {{
