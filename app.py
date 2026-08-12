@@ -4185,7 +4185,7 @@ app_html = f"""
         reduccionHorasGlobal += cambio;
         if (reduccionHorasGlobal < 0) {{
             reduccionHorasGlobal = 0;
-        }
+        }}
     
         // Recorremos cada fila de la tabla de forma independiente
         const filas = document.querySelectorAll("tr");
