@@ -1596,10 +1596,6 @@ app_html = f"""
         <button onclick="reducirHoras(-1)" style="cursor:pointer; background: #dc3545; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Reducir 1 hora">
             ➖ 1h
         </button>
-
-        <button onclick="reducirHoras(1)" style="cursor:pointer; background: #28a745; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Aumentar 1 hora">
-            ➕ 1h
-        </button>	
     </div>
 
 
@@ -4176,45 +4172,47 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para la reducción acumulada de horas
+    // Variable global para acumular las horas que vas restando
     let reduccionHorasGlobal = 0;
 
-    function reducirHoras(cambio) {{
-        // CORRECCIÓN DE SIGNOS: 
-        // Si pasamos -1, resta a la reducción global. Si pasamos +1, la disminuye.
-        reduccionHorasGlobal += cambio;
+    function reducirHoras(horasAQuitar) {{
+        // Cada vez que piques el botón, acumulamos 1 hora más de reducción
+        reduccionHorasGlobal += horasAQuitar;
         if (reduccionHorasGlobal < 0) {{
             reduccionHorasGlobal = 0;
         }}
     
-        // Recorremos cada fila de la tabla de forma independiente
+        // Buscamos ABSOLUTAMENTE TODAS las filas de la tabla
         const filas = document.querySelectorAll("tr");
     
         filas.forEach(fila => {{
             let celdaOrh = fila.querySelector(".edit-orh");
             let celdaHora = fila.querySelector(".orh-hora");
         
+            // Verificamos que sea una fila válida de datos
             if (celdaOrh && !fila.classList.contains("es-divisor")) {{
             
-                // Guardamos el valor original la primera vez para no perderlo en los siguientes clics
+                // Guardamos el valor ORH original la primera vez que se toca el botón
                 if (!fila.hasAttribute("data-orh-original")) {{
-                    let orhOriginalInicial = parseFloat(celdaOrh.innerText) || 0;
-                    fila.setAttribute("data-orh-original", orhOriginalInicial);
+                    let valorInicial = parseFloat(celdaOrh.innerText || celdaOrh.value) || 0;
+                    fila.setAttribute("data-orh-original", valorInicial);
                 }}
             
                 let orhOriginal = parseFloat(fila.getAttribute("data-orh-original")) || 0;
             
+                // Si la celda tiene un valor ingresado mayor a 0, aplicamos la resta
                 if (orhOriginal > 0) {{
                     let factor = 60; // Factor estándar por hora
                     let horasOriginales = orhOriginal / factor;
                 
-                    // Aplicamos la reducción global de forma limpia basada siempre en el original
+                    // Restamos las horas acumuladas al valor original de ESTA fila
                     let horasNuevas = Math.max(0, horasOriginales - reduccionHorasGlobal);
                     let nuevoOrh = horasNuevas * factor;
                 
-                    // Asignamos los valores corregidos con formato seguro de doble llave
+                    // Actualizamos la celda de ORH
                     celdaOrh.innerText = nuevoOrh;
                 
+                    // Actualizamos la celda de la hora correspondiente
                     if (celdaHora) {{
                         let hInt = Math.floor(horasNuevas);
                         let mInt = Math.round((horasNuevas - hInt) * 60);
@@ -4224,7 +4222,7 @@ app_html = f"""
             }}
         }});
 
-        // Disparar tu función de recálculo existente para actualizar totales
+        // Disparamos tu función de recálculo para actualizar totales generales
         if (typeof recalc === "function") {{
             recalc();
         }}
