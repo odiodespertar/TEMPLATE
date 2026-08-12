@@ -1591,7 +1591,17 @@ app_html = f"""
         <button class="filter-btn" onclick="filterRows(false)" style="cursor:pointer; background: #808080; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;">
             TODAS
         </button>
+
+        <!-- NUEVOS BOTONES DE REDUCCIÓN DE HORAS -->
+        <button onclick="reducirHoras(-1)" style="cursor:pointer; background: #dc3545; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Reducir 1 hora">
+            ➖ 1h
+        </button>
+
+        <button onclick="reducirHoras(1)" style="cursor:pointer; background: #28a745; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Aumentar 1 hora">
+            ➕ 1h
+        </button>	
     </div>
+
 
     <!-- CONTENEDOR PRINCIPAL FLOTANTE DE TABLAS -->
     <div id="fleet-sticky" class="fleet-normal">
