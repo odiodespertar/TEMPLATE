@@ -4176,7 +4176,7 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para la reducción global de horas
+    // Variable global para la reducción acumulada
     let reduccionHorasGlobal = 0;
 
     function reducirHoras(cambio) {{
@@ -4185,26 +4185,40 @@ app_html = f"""
             reduccionHorasGlobal = 0;
         }}
     
-        // Recorremos las filas para actualizar los valores usando tu estructura
+        // Recorremos cada fila de la tabla de forma independiente
         const filas = document.querySelectorAll("tr");
-     
+    
         filas.forEach(fila => {{
             let celdaOrh = fila.querySelector(".edit-orh");
             let celdaHora = fila.querySelector(".orh-hora");
         
+            // Verificamos que sea una fila de datos editable y no un divisor
             if (celdaOrh && !fila.classList.contains("es-divisor")) {{
-                let baseHoras = parseFloat(fila.getAttribute("data-horas-original")) || 11;
-                let horasNuevas = Math.max(0, baseHoras - reduccionHorasGlobal);
-                let nuevoOrh = horasNuevas * 60; // Factor de conversión
             
-                celdaOrh.innerText = nuevoOrh;
-                if (celdaHora) {{
-                    celdaHora.innerText = (horasNuevas < 10 ? "0" : "") + horasNuevas + ":00";
+                // 1. Tomamos el valor de ORH que ya ingresaste en la celda
+                let orhActual = parseFloat(celdaOrh.innerText) || parseFloat(celdaOrh.value) || 0;
+            
+                if (orhActual > 0) {{
+                    let factor = 60; // Factor estándar por hora
+                    let horasActuales = orhActual / factor;
+                
+                    // 2. Aplicamos la reducción de horas de forma independiente por fila
+                    let horasNuevas = Math.max(0, horasActuales - reduccionHorasGlobal);
+                    let nuevoOrh = horasNuevas * factor;
+                
+                    // 3. Asignamos el resultado exclusivo para esta fila con formato de doble llave seguro
+                    celdaOrh.innerText = nuevoOrh;
+                
+                    if (celdaHora) {{
+                        let hInt = Math.floor(horasNuevas);
+                        let mInt = Math.round((horasNuevas - hInt) * 60);
+                        celdaHora.innerText = (hInt < 10 ? "0" + hInt : hInt) + ":" + (mInt < 10 ? "0" + mInt : mInt);
+                    }}
                 }}
             }}
         }});
 
-        // Disparar tu función de recálculo existente
+        // Disparar tu función de recálculo existente para actualizar totales
         if (typeof recalc === "function") {{
             recalc();
         }}
