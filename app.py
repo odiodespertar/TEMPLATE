@@ -3239,6 +3239,7 @@ app_html = f"""
         document.getElementById('alert-msg').innerText = msg;
         document.getElementById('google-alert').classList.add('show');
     }}
+	
     function hideAlert() {{ document.getElementById('google-alert').classList.remove('show'); }}
 
     function stepVal(btn, delta, type) {{
@@ -4170,6 +4171,30 @@ app_html = f"""
 
 }}
 
+
+    // ==============================================================================
+    // 💾 REDUCIR ORH
+    // ==============================================================================
+
+    // Variable global para llevar el control de la reducción de horas en la interfaz
+    let reduccionGlobalHoras = 0;
+
+    function reducirHoras(cambio) {{
+        // Modificar la reducción (asegurando que no baje de 0)
+        reduccionGlobalHoras += cambio;
+        if (reduccionGlobalHoras < 0) {{
+            reduccionGlobalHoras = 0;
+        }}
+    
+        // Opcional: Actualizar visualmente algún indicador en pantalla si lo deseas
+        console.log("Horas reducidas:", reduccionGlobalHoras);
+    
+        // Aquí puedes llamar a tu función existente que redibuja o recalcula la tabla
+        // Por ejemplo, si tienes una función que actualiza las celdas:
+        if (typeof actualizarCalculosTabla === "function") {{
+            actualizarCalculosTabla(reduccionGlobalHoras);
+        }}
+    }}
 
    
 // ==============================================================================
