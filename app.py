@@ -4172,7 +4172,7 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    function reducirHoras(horasAQuitar) {{
+    function reducirHoras() {{
         const filas = document.querySelectorAll("tr");
     
         filas.forEach(fila => {{
@@ -4180,28 +4180,24 @@ app_html = f"""
             let celdaHora = fila.querySelector(".orh-hora");
         
             if (celdaOrh && !fila.classList.contains("es-divisor")) {{
-                // 1. Tomamos el valor que actualmente tiene la celda
-                let orhActual = parseFloat(celdaOrh.innerText) || 0;
+                // Limpiamos cualquier texto o espacios para quedarnos solo con el número puro
+                let textoLimpio = celdaOrh.innerText.replace(/[^0-9.]/g, '');
+                let orhActual = parseFloat(textoLimpio) || 0;
             
-                // 2. Si la celda tiene un valor mayor a 0, le restamos exactamente 1 hora (60 unidades de ORH)
-                if (orhActual >= 0) {{
-                    let nuevoOrh = orhActual - (60 * horasAQuitar);
+                // Si la celda tiene valor, obligatoriamente RESTAMOS 60 (1 hora)
+                if (orhActual > 0) {{
+                    let nuevoOrh = orhActual - 60;
                     if (nuevoOrh < 0) nuevoOrh = 0;
                 
+                    // Actualizamos el ORH con el valor restado
                     celdaOrh.innerText = nuevoOrh;
                 
-                    // 3. Calculamos la nueva hora de forma exacta sin decimales raros
+                    // Calculamos la hora correspondiente de forma exacta
                     let horasNuevas = nuevoOrh / 60;
                     if (celdaHora) {{
                         let hInt = Math.floor(horasNuevas);
                         let mInt = Math.round((horasNuevas - hInt) * 60);
                         celdaHora.innerText = (hInt < 10 ? "0" + hInt : hInt) + ":" + (mInt < 10 ? "0" + mInt : mInt);
-                    }}
-                }} else if (orhActual > 0 && orhActual < 60) {{
-                    // Si queda un sobrante menor a una hora completa
-                    celdaOrh.innerText = 0;
-                    if (celdaHora) {{
-                        celdaHora.innerText = "00:00";
                     }}
                 }}
             }}
