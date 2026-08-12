@@ -1593,7 +1593,7 @@ app_html = f"""
         </button>
 
         <!-- NUEVOS BOTONES DE REDUCCIÓN DE HORAS -->
-        <button onclick="reducirHoras(-1)" style="cursor:pointer; background: #dc3545; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Reducir 1 hora">
+        <button onclick="reducirHoras()" style="cursor:pointer; background: #dc3545; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Reducir 1 hora">
             ➖ 1h
         </button>
     </div>
