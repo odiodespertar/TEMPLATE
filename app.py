@@ -2563,11 +2563,7 @@ app_html = f"""
         if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
     }}
     
-   
-
-
-
-    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
+   function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
 
@@ -2662,6 +2658,11 @@ app_html = f"""
 
         let htmlPolys = "";
         planesElegidos.forEach(p => {{
+            // 🟢 Convertir la lista/arreglo de unidades prioritarias a texto separado por comas
+            let prioUnitsStr = Array.isArray(p.unidadesPrioritarias) 
+                ? p.unidadesPrioritarias.join(",") 
+                : (p.unidadPrioritaria || "");
+
             let bloqueVolumenNodos = llevaNodos ? `
                 <div style="text-align:center;">
                     <span class="v-total-val" contenteditable="true" oninput="recalc()" style="display:inline-block; min-width:55px; padding:2px 8px; border-radius:4px; background:#ededed; font-size:22px; font-weight:bold; color:#808080;">0</span>
@@ -2704,8 +2705,9 @@ app_html = f"""
                     </tr>`;
             }}
 
+            // 🟢 Inyección del atributo data-unidades-prioritarias en la celda principal
             htmlPolys += `
-                <div class="poligono-bloque" data-unidad-prioritaria="${{p.unidadPrioritaria || ''}}" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
+                <div class="poligono-bloque" data-unidades-prioritarias="${{prioUnitsStr}}" style="margin-bottom:12px; background: #ededed; border: 1.5px solid #25282b;">
                     <table style="width: 100%; min-width: 630px; border-collapse: collapse; border: 1.5px solid #25282b;">
                         <thead>
                             <tr style="background: #25282b; color: white; font-size: 12px; height: 28px;">
@@ -2730,7 +2732,7 @@ app_html = f"""
                                         <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, 1, 'u')">+</button>
                                     </div>
                                 </td>
-                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.5px solid #25282b; padding: 2px;">
+                                <td class="spr-real-cell" style="background: #FFFFFF; border: 0.6px solid #25282b; padding: 2px;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
                                         <button style="cursor:pointer; border:none; background:rgba(0,0,0,0.08); color:#25282b; font-weight:bold; width:24px; height:24px; border-radius:4px;" onclick="stepVal(this, -1, 's')">-</button>
                                         <span contenteditable="true" class="spr-real-val" oninput="manualEdit(this)" style="font-weight: bold; text-align: center; width: 38px; color: #25282b !important;">0</span>
@@ -2769,6 +2771,9 @@ app_html = f"""
         }}
     }}
 
+
+
+    
     
 
     async function guardarCambiosRuteoActual(tabId, idBD) {{
@@ -4134,7 +4139,7 @@ app_html = f"""
 
 
    
-   // ==============================================================================
+// ==============================================================================
     // 🧠 DISTRIBUIDOR AUTOMÁTICO COMPLETO (TODOS LOS RUTEOS + C1 SJA1 INTACTO)
     // ==============================================================================
     function distribuirAutomatico() {{
@@ -4477,7 +4482,7 @@ app_html = f"""
                 procesarAsignacionUnidadSJA1(poly);
             }});
         }} else {{
-            // 🔴 OPERACIÓN ORIGINAL PARA EL RESTO DE LAS PESTAÑAS (C1 SCP1, SDE, PREC)
+            // 🔴 OPERACIÓN PRINCIPAL PARA PESTAÑAS NATIVAS Y RUTEOS DINÁMICOS
             polys.forEach(poly => {{
                 let bloque = poly.bloque;
                 let nombrePlan = bloque.querySelector('td[rowspan]')?.innerText?.toUpperCase()?.trim() || "";
@@ -4492,91 +4497,136 @@ app_html = f"""
                 if (restante <= 0) return;
 
                 let filas = Array.from(bloque.querySelectorAll('.calc-row'));
-                for (let fila of filas) {{
-                    let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
-                    let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
-                    let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
 
-                    if (yaTieneUnidad || yaTieneTipo) continue;
-                    if (restante <= 0) break;
+                // 🟢 EVALUAR PRIORIDADES ÚNICAMENTE SI ES UN RUTEO CREADO O EDITADO DESDE EL MENÚ
+                let esRuteoPersonalizado = (currentTab >= 900 || (currentTab !== 1 && currentTab !== 2 && currentTab !== 4 && currentTab !== 5 && currentTab !== 6 && currentTab !== 7 && currentTab !== 8 && currentTab !== 9));
 
-                    let unidad = null;
+                if (esRuteoPersonalizado) {{
+                    let prioAttr = bloque.getAttribute("data-unidades-prioritarias") || bloque.getAttribute("data-unidad-prioritaria") || "";
+                    let prioUnits = prioAttr.split(",").map(s => s.trim()).filter(s => s.length > 0);
 
-                    // Regla Nativa de Flota para Pestaña 2 (Asignación General vs Campeche)
-                    if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
-                        unidad = fleet.find(f => f.nombre === "Rental Large Van");
-                    }} else if (currentTab == 2) {{
-                        unidad = fleet.find(f => f.restante > 0 && f.nombre !== "Rental Large Van");
-                    }} else {{
-                        unidad = fleet.find(f => f.restante > 0);
+                    if (prioUnits.length > 0) {{
+                        prioUnits.forEach(unitName => {{
+                            if (restante <= 0) return;
+
+                            let unidad = fleet.find(f => f.nombre.toLowerCase() === unitName.toLowerCase());
+                            if (!unidad || unidad.restante <= 0) return;
+
+                            let necesarias = Math.ceil(restante / unidad.spr);
+                            let usar = Math.min(necesarias, unidad.restante);
+                            if (usar <= 0) return;
+
+                            let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
+                            let filaLibre = filas.find(f => {{
+                                let val = f.querySelector('.s-type')?.value?.trim() || "";
+                                let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
+                                return u === 0 && (val === "" || val === "Seleccionar...");
+                            }});
+
+                            let filaTarget = filaExistente || filaLibre;
+
+                            if (filaTarget) {{
+                                let actual = parseInt(filaTarget.querySelector('.u-manual')?.innerText) || 0;
+                                filaTarget.querySelector('.s-type').value = unidad.nombre;
+                                filaTarget.querySelector('.u-manual').innerText = actual + usar;
+                                filaTarget.querySelector('.spr-real-val').innerText = unidad.spr;
+                                editedRowsPlan.add(filaTarget);
+
+                                unidad.restante -= usar;
+                                restante -= (usar * unidad.spr);
+                            }}
+                        }});
                     }}
+                }}
 
-                    // Desborde de Emergencia Tradicional Nativo (Si se vacía el stock principal)
-                    if (!unidad) {{
-                        if (currentTab == 4) {{ // SDE
-                            let options = ["Car - 5h", "Car - 3h"];
-                            for (let opt of options) {{
-                                unidad = fleet.find(f => f.nombre.includes(opt));
-                                if (unidad) break;
-                            }}
-                        }} else if (currentTab == 7) {{ // C1 SCH1
-                            let options = ["Car - 8h"];
-                            for (let opt of options) {{
-                                unidad = fleet.find(f => f.nombre.includes(opt));
-                                if (unidad) break;
-                            }}
-                        }} else if (currentTab == 8) {{ // C1 SMD2
-                            let options = ["Car - 8h"];
-                            for (let opt of options) {{
-                                unidad = fleet.find(f => f.nombre.includes(opt));
-                                if (unidad) break;
-                            }}
-                        }} else if (currentTab == 2) {{ // C1 SCP1
-                            let options = ["Large Van MLP", "Car - 8h", "Car - 5h"];
-                            for (let opt of options) {{
-                                unidad = fleet.find(f => f.nombre.includes(opt));
-                                if (unidad) break;
-                            }}
-                        }} else if (currentTab == 1 || currentTab == 5) {{ // PRECARGAS
-                            let options = ["Car - 8h", "Car - 5h"];
-                            for (let opt of options) {{
-                                unidad = fleet.find(f => f.nombre.includes(opt));
-                                if (unidad) break;
-                            }}
+                // 🔴 LÓGICA NATIVA ORIGINAL 100% INTACTA PARA PESTAÑAS DEL SISTEMA (Y RESIDUOS)
+                if (restante > 0) {{
+                    for (let fila of filas) {{
+                        let yaTieneUnidad = parseInt(fila.querySelector('.u-manual')?.innerText) > 0;
+                        let tipoActual = fila.querySelector('.s-type')?.value?.trim() || "";
+                        let yaTieneTipo = tipoActual !== "" && tipoActual !== "Seleccionar...";
+
+                        if (yaTieneUnidad || yaTieneTipo) continue;
+                        if (restante <= 0) break;
+
+                        let unidad = null;
+
+                        // Regla Nativa de Flota para Pestaña 2 (Asignación General vs Campeche)
+                        if (currentTab == 2 && nombrePlan == "CAMPECHE") {{
+                            unidad = fleet.find(f => f.nombre === "Rental Large Van");
+                        }} else if (currentTab == 2) {{
+                            unidad = fleet.find(f => f.restante > 0 && f.nombre !== "Rental Large Van");
+                        }} else {{
+                            unidad = fleet.find(f => f.restante > 0);
                         }}
-                        if (!unidad) break;
+
+                        // Desborde de Emergencia Tradicional Nativo (Si se vacía el stock principal)
+                        if (!unidad) {{
+                            if (currentTab == 4) {{ // SDE
+                                let options = ["Car - 5h", "Car - 3h"];
+                                for (let opt of options) {{
+                                    unidad = fleet.find(f => f.nombre.includes(opt));
+                                    if (unidad) break;
+                                }}
+                            }} else if (currentTab == 7) {{ // C1 SCH1
+                                let options = ["Car - 8h"];
+                                for (let opt of options) {{
+                                    unidad = fleet.find(f => f.nombre.includes(opt));
+                                    if (unidad) break;
+                                }}
+                            }} else if (currentTab == 8) {{ // C1 SMD2
+                                let options = ["Car - 8h"];
+                                for (let opt of options) {{
+                                    unidad = fleet.find(f => f.nombre.includes(opt));
+                                    if (unidad) break;
+                                }}
+                            }} else if (currentTab == 2) {{ // C1 SCP1
+                                let options = ["Large Van MLP", "Car - 8h", "Car - 5h"];
+                                for (let opt of options) {{
+                                    unidad = fleet.find(f => f.nombre.includes(opt));
+                                    if (unidad) break;
+                                }}
+                            }} else if (currentTab == 1 || currentTab == 5) {{ // PRECARGAS
+                                let options = ["Car - 8h", "Car - 5h"];
+                                for (let opt of options) {{
+                                    unidad = fleet.find(f => f.nombre.includes(opt));
+                                    if (unidad) break;
+                                }}
+                            }}
+                            if (!unidad) break;
+                        }}
+
+                        // MATEMÁTICA TRADICIONAL DE REPARTO REAL NATIVO
+                        let necesarias = Math.ceil(restante / unidad.spr);
+                        let usar;
+
+                        let permiteNegativo = unidad.nombre === "Car - 8h" || unidad.nombre === "Car - 5h" || unidad.nombre === "Car - 3h" || (currentTab == 2 && unidad.nombre === "Large Van MLP");
+                        if (unidad.restante > 0) {{
+                            usar = Math.min(necesarias, unidad.restante);
+                        }} else if (permiteNegativo) {{
+                            usar = necesarias;
+                        }} else {{
+                            usar = 0;
+                        }}
+
+                        if (usar <= 0) continue;
+
+                        let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
+                        if (filaExistente) {{
+                            let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
+                            filaExistente.querySelector('.u-manual').innerText = actual + usar;
+                            filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
+                            editedRowsPlan.add(filaExistente);
+                        }} else {{
+                            fila.querySelector('.s-type').value = unidad.nombre;
+                            fila.querySelector('.u-manual').innerText = usar;
+                            fila.querySelector('.spr-real-val').innerText = unidad.spr;
+                            editedRowsPlan.add(fila);
+                        }}
+
+                        unidad.restante -= usar;
+                        restante -= (usar * unidad.spr);
                     }}
-
-                    // MATEMÁTICA TRADICIONAL DE REPARTO REAL NATIVO
-                    let necesarias = Math.ceil(restante / unidad.spr);
-                    let usar;
-
-                    let permiteNegativo = unidad.nombre === "Car - 8h" || unidad.nombre === "Car - 5h" || unidad.nombre === "Car - 3h" || (currentTab == 2 && unidad.nombre === "Large Van MLP");
-                    if (unidad.restante > 0) {{
-                        usar = Math.min(necesarias, unidad.restante);
-                    }} else if (permiteNegativo) {{
-                        usar = necesarias;
-                    }} else {{
-                        usar = 0;
-                    }}
-
-                    if (usar <= 0) continue;
-
-                    let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
-                    if (filaExistente) {{
-                        let actual = parseInt(filaExistente.querySelector('.u-manual')?.innerText) || 0;
-                        filaExistente.querySelector('.u-manual').innerText = actual + usar;
-                        filaExistente.querySelector('.spr-real-val').innerText = unidad.spr;
-                        editedRowsPlan.add(filaExistente);
-                    }} else {{
-                        fila.querySelector('.s-type').value = unidad.nombre;
-                        fila.querySelector('.u-manual').innerText = usar;
-                        fila.querySelector('.spr-real-val').innerText = unidad.spr;
-                        editedRowsPlan.add(fila);
-                    }}
-
-                    unidad.restante -= usar;
-                    restante -= (usar * unidad.spr);
                 }}
             }});
         }}
@@ -4964,6 +5014,11 @@ window.addEventListener('load', () => {{
 
 actualizarDosPorciento();
 // ==============================================================================
+
+
+
+
+
 
 
 
