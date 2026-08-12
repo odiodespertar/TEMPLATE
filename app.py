@@ -5917,18 +5917,8 @@ function iniciarArrastreFlotante(e) {{
                     📋 <b>Generador de Cierre (Paso 5/5):</b><br>
                     <span style="color:#d0d0d0;">¿Se cargó Plan ND en AM0?</span><br><br>
                     <div style="display:flex; gap:6px;">
-                        <button onclick="responderPasoResumen('plan nd', true, 4.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
-                        <button onclick="responderPasoResumen('plan nd', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
-                    </div>
-                </div>`;
-        }} else if (pasoResumen === 4.5) {{
-            htmlBot = `
-                <div class="bloque-paso-resumen">
-                    📋 <b>Generador de Cierre (Plan ND):</b><br>
-                    <span style="color:#d0d0d0;">¿Fue con 2 Small Van MLP?</span><br><br>
-                    <div style="display:flex; gap:6px;">
-                        <button onclick="responderPasoResumen('plan nd_2sv', true, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
-                        <button onclick="responderPasoResumen('plan nd_2sv', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                        <button onclick="responderPasoResumen('plan_nd', true, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('plan_nd', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
         }} else if (pasoResumen === 5) {{
@@ -5983,7 +5973,7 @@ function iniciarArrastreFlotante(e) {{
         }} else if (d.unidades_fuera === "ambas") {{
             textoUnidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ambas.";
         }} else {{
-            textoUnidades = `👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ${{d.unidades_fuera}}.`;
+            textoUnidades = `👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ${d.unidades_fuera}.`;
         }}
 
         // Texto Bulk
@@ -6001,14 +5991,10 @@ function iniciarArrastreFlotante(e) {{
             textoDropeo = "👉 No hubo dropeo de nodo.";
         }}
 
-        // Texto Plan ND
+        // Texto Plan ND corregido
         let textoPlanND = "";
-        if (d.plannd) {{
-            if (d.plannd_2sv !== false) {{
-                textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0 con 2 unidades Small Van MLP.<br>";
-            }} else {{
-                textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0.<br>";
-            }}
+        if (d.plan_nd) {{
+            textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0.<br>";
         }}
 
         // Armado del mensaje final con la plantilla original
@@ -6036,6 +6022,8 @@ function iniciarArrastreFlotante(e) {{
         `;
         box.scrollTop = box.scrollHeight;
     }}
+
+
 
     function abrirCerrarMenuRuteos() {{
         const menu = document.getElementById("menu-lateral-ruteos");
