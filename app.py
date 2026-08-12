@@ -5864,7 +5864,7 @@ function iniciarArrastreFlotante(e) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 2/5):</b><br>
-                    <span style="color:#d0d0d0;">Unidades dedicadas para Centro: ¿Logis tomó todas?</span><br><br>
+                    <span style="color:#d0d0d0;">Unidades dedicadas para Nodos: ¿Logis tomó todas?</span><br><br>
                     <div style="display:flex; gap:6px;">
                         <button onclick="responderPasoResumen('logis_tomo_todas', true, 2.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí (Tomó todas)</button>
                         <button onclick="responderPasoResumen('logis_tomo_todas', false, 2.2)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No (Dejó fuera)</button>
