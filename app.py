@@ -5980,7 +5980,7 @@ function iniciarArrastreFlotante(e) {{
         let textoBulk = d.hubo_bulk ? "📦 Se asignó <b>H&B</b> para el volumen Bulk.<br>" : "";
 
         // Texto Dropeo
-        let textoDropeo = "";
+        let textoDropeo = ""; 
         if (d.dropeo_nodos) {{
             if (d.dropeo_restriccion) {{
                 textoDropeo = "👉 <b>Hubo dropeo de nodo</b> y se cargó en contingencia (logis nos dejó fuera ids por zona de restricción).";
