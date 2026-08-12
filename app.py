@@ -5977,7 +5977,7 @@ function iniciarArrastreFlotante(e) {{
         }}
 
         // Texto Bulk
-        let textoBulk = d.hubo_bulk ? "📦 Se asignó H&B para el volumen Bulk.<br>" : "";
+        let textoBulk = d.hubo_bulk ? "📦 Se asignó <b>H&B</b> para el volumen Bulk.<br>" : "";
 
         // Texto Dropeo
         let textoDropeo = "";
