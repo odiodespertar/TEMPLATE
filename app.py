@@ -1524,7 +1524,7 @@ app_html = f"""
 
     <!-- ENCABEZADO Y NOMBRE DEL RUTEO ACTIVO -->
 <div style="background-color: #25282b; color: white; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 10px; border: 1px solid #3b3f43; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-    <div style="font-size: 9px; color: #ffffff; letter-spacing: 1.5px; text-transform: uppercase;">
+    <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1.5px; text-transform: uppercase;">
         📌 RUTEO EN PANTALLA
     </div>
     <div id="nombre-ruteo-activo-header" style="font-size: 21px; color: #FFFF00; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
@@ -1538,7 +1538,7 @@ app_html = f"""
             <div style="font-size: 9px; color: #26d0ff; letter-spacing: 1px;">HORA ACTUAL</div>
         </div>
         <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px; min-width: 120px;">
-            <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #ff9b21; line-height: 1.1;">Sin tareas</div>
+            <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #8890fc; line-height: 1.1;">Sin tareas</div>
             <div id="hora-ruteo" style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 2px;">--</div>
             <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px; margin-top: 2px;">SIGUIENTE RUTEO</div>
         </div>
