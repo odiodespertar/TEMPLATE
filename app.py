@@ -5973,7 +5973,7 @@ function iniciarArrastreFlotante(e) {{
         }} else if (d.unidades_fuera === "ambas") {{
             textoUnidades = "👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ambas.";
         }} else {{
-            textoUnidades = `👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ${d.unidades_fuera}.`;
+            textoUnidades = `👉 <b>Unidades 3.5 tons y Delivery Cell</b>: se asignaron al polígono de Centro, logis dejó fuera ${{d.unidades_fuera}}.`;
         }}
 
         // Texto Bulk
