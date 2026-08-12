@@ -3352,29 +3352,6 @@ app_html = f"""
         }}
     }}
 
-
-    function ejecutarAccionNota() {{
-        const txtArea = document.getElementById('input-notas-ruteo');
-        if (!txtArea) return;
-
-        const textoNota = txtArea.value.trim();
-    
-        if (textoNota === "") {{
-            alert("Escribe una nota antes de agregarla."); // O usa tu función de alerta personalizada
-            return;
-        }}
-
-        // 1. Guardar en tu objeto de datos actual
-        if (typeof datosRuteoActual !== 'undefined') {{
-            datosRuteoActual.notas = textoNota;
-        }}
-
-        // 2. Feedback visual inmediato de que sí funcionó
-        console.log("Nota agregada:", textoNota);
-        alert("¡Nota agregada y guardada en el ruteo actual! 📌");
-    }}
-
-
     function recalc() {{
         let fleet = {{}};
         let tabId = currentTab;
@@ -5859,46 +5836,7 @@ function iniciarArrastreFlotante(e) {{
         }}, 150);
     }}
 
-   
-
-	// 🟢 Función para sincronizar al hacer clic en el botón
-    function ejecutarAccionNota() {{
-        const textoActual = obtenerNotasActuales();
-        if (!textoActual.trim()) {{
-            mostrarAlerta("Escribe contenido en el campo antes de agregar la nota.");
-            return;
-        }}
-    
-        // Si manejas un arreglo o historial de notas dentro del ruteo actual:
-        guardarNotasRuteo();
-        mostrarAlerta("Nota agregada correctamente al ruteo actual 📌");
-    }}
-
-    // 🟢 Captura el contenido actual del área de texto
-    function obtenerNotasActuales() {{
-        const txtArea = document.getElementById('input-notas-ruteo');
-        return txtArea ? txtArea.value : "";
-    }}
-
-    // 🟢 Carga o limpia las notas al cambiar de ruteo
-    function actualizarNotasEnPantalla(textoNotas) {{
-        const txtArea = document.getElementById('input-notas-ruteo');
-        if (txtArea) {{
-            txtArea.value = textoNotas || "";
-        }}
-    }}
-
-    function guardarNotasRuteo() {{
-        // Integra la nota en tu objeto de guardado manual actual
-        if (typeof datosRuteoActual !== 'undefined') {{
-            datosRuteoActual.notas = obtenerNotasActuales();
-        }}
-    }}
-
-
-
-
-// =========================================================================
+    // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
     // =========================================================================
     function procesarFlujoResumen(q, box) {{
