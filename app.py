@@ -1538,7 +1538,7 @@ app_html = f"""
             <div style="font-size: 9px; color: #26d0ff; letter-spacing: 1px;">HORA ACTUAL</div>
         </div>
         <div style="text-align: center; border-left: 1px solid #ffffff; padding-left: 20px; min-width: 120px;">
-            <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #F0E68C; line-height: 1.1;">Sin tareas</div>
+            <div id="proximo-ruteo" style="font-size: 16px; font-weight: bold; color: #6495ED; line-height: 1.1;">Sin tareas</div>
             <div id="hora-ruteo" style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 2px;">--</div>
             <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1px; margin-top: 2px;">SIGUIENTE RUTEO</div>
         </div>
