@@ -5934,7 +5934,7 @@ function iniciarArrastreFlotante(e) {{
 
         box.innerHTML += `
             <div style="background: #86ad9c; border: 2px solid #28a745; padding: 12px; border-radius: 6px; color: #000000; margin-bottom: 6px; font-size:14px; line-height: 1.5;">
-                📋 <b>REPORTE GENERADO:</b><br><br>${{resumenFinal}}
+                📋 <b></b><br><br>${{resumenFinal}}
             </div>
         `;
         box.scrollTop = box.scrollHeight;
