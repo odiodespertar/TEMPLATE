@@ -4172,62 +4172,47 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para acumular las horas que vas restando
-    let reduccionHorasGlobal = 0;
-
     function reducirHoras(horasAQuitar) {{
-        // Cada vez que piques el botón, acumulamos 1 hora más de reducción
-        reduccionHorasGlobal += horasAQuitar;
-        if (reduccionHorasGlobal < 0) {{
-            reduccionHorasGlobal = 0;
-        }}
-    
-        // Buscamos ABSOLUTAMENTE TODAS las filas de la tabla
         const filas = document.querySelectorAll("tr");
     
         filas.forEach(fila => {{
             let celdaOrh = fila.querySelector(".edit-orh");
             let celdaHora = fila.querySelector(".orh-hora");
         
-            // Verificamos que sea una fila válida de datos
             if (celdaOrh && !fila.classList.contains("es-divisor")) {{
+                // 1. Tomamos el valor que actualmente tiene la celda
+                let orhActual = parseFloat(celdaOrh.innerText) || 0;
             
-                // Guardamos el valor ORH original la primera vez que se toca el botón
-                if (!fila.hasAttribute("data-orh-original")) {{
-                    let valorInicial = parseFloat(celdaOrh.innerText || celdaOrh.value) || 0;
-                    fila.setAttribute("data-orh-original", valorInicial);
-                }}
-            
-                let orhOriginal = parseFloat(fila.getAttribute("data-orh-original")) || 0;
-            
-                // Si la celda tiene un valor ingresado mayor a 0, aplicamos la resta
-                if (orhOriginal > 0) {{
-                    let factor = 60; // Factor estándar por hora
-                    let horasOriginales = orhOriginal / factor;
+                // 2. Si la celda tiene un valor mayor a 0, le restamos exactamente 1 hora (60 unidades de ORH)
+                if (orhActual >= 60) {{
+                    let nuevoOrh = orhActual - (60 * horasAQuitar);
+                    if (nuevoOrh < 0) nuevoOrh = 0;
                 
-                    // Restamos las horas acumuladas al valor original de ESTA fila
-                    let horasNuevas = Math.max(0, horasOriginales - reduccionHorasGlobal);
-                    let nuevoOrh = horasNuevas * factor;
-                
-                    // Actualizamos la celda de ORH
                     celdaOrh.innerText = nuevoOrh;
                 
-                    // Actualizamos la celda de la hora correspondiente
+                    // 3. Calculamos la nueva hora de forma exacta sin decimales raros
+                    let horasNuevas = nuevoOrh / 60;
                     if (celdaHora) {{
                         let hInt = Math.floor(horasNuevas);
                         let mInt = Math.round((horasNuevas - hInt) * 60);
+                        // Asegurar formato de dos dígitos sin desbordarse
                         celdaHora.innerText = (hInt < 10 ? "0" + hInt : hInt) + ":" + (mInt < 10 ? "0" + mInt : mInt);
+                    }}
+                }} else if (orhActual > 0 && orhActual < 60) {{
+                    // Si queda un sobrante menor a una hora completa
+                    celdaOrh.innerText = 0;
+                    if (celdaHora) {{
+                        celdaHora.innerText = "00:00";
                     }}
                 }}
             }}
         }});
 
-        // Disparamos tu función de recálculo para actualizar totales generales
+        // Disparar tu función de recálculo existente
         if (typeof recalc === "function") {{
             recalc();
         }}
     }}
-
 
    
 // ==============================================================================
