@@ -1524,10 +1524,10 @@ app_html = f"""
 
     <!-- ENCABEZADO Y NOMBRE DEL RUTEO ACTIVO -->
 <div style="background-color: #25282b; color: white; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 10px; border: 1px solid #3b3f43; display: flex; flex-direction: column; align-items: center; gap: 4px;">
-    <div style="font-size: 11px; color: #66CDAA; letter-spacing: 1.5px; text-transform: uppercase;">
+    <div style="font-size: 9px; color: #66CDAA; letter-spacing: 1.5px; text-transform: uppercase;">
         📌 RUTEO EN PANTALLA
     </div>
-    <div id="nombre-ruteo-activo-header" style="font-size: 22px; color: #FFD700; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
+    <div id="nombre-ruteo-activo-header" style="font-size: 21px; color: #48D1CC; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
         🟠 C1 SCP1
     </div>
 </div>
