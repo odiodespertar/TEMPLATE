@@ -1522,7 +1522,15 @@ app_html = f"""
 <!-- PANEL SUPERIOR -->
 <div style="width:100%; padding:0; margin-bottom:10px;">
 
-    <div style="background-color: #25282b; color: white; padding: 10px; border-radius: 2px; font-weight: bold; text-align: center; margin-bottom: 10px;">🚚 🚚 DISPONIBILIDAD DE FLOTA 🚛 🚛</div>
+    <!-- ENCABEZADO Y NOMBRE DEL RUTEO ACTIVO -->
+<div style="background-color: #25282b; color: white; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 10px; border: 1px solid #3b3f43; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+    <div style="font-size: 11px; color: #66CDAA; letter-spacing: 1.5px; text-transform: uppercase;">
+        📌 RUTEO EN PANTALLA
+    </div>
+    <div id="nombre-ruteo-activo-header" style="font-size: 22px; color: #FFD700; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
+        🟠 C1 SCP1
+    </div>
+</div>
 
     <div id="panel-control-unico" style="display: flex; gap: 20px; background: #25282b; padding: 15px; border-radius: 10px; color: white; justify-content: center; align-items: center; margin: 20px 0;">
         <div style="text-align: center;">
@@ -2562,7 +2570,10 @@ app_html = f"""
 
         if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
     }}
-    
+
+
+
+
    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
         contadorPestanaDinamica++;
         let nuevoTabId = contadorPestanaDinamica;
@@ -2819,6 +2830,18 @@ app_html = f"""
         }}
 
         currentTab = parseInt(valorTab);
+
+        // 🟢 NUEVO: Actualizar el título dinámico en el encabezado
+        let selector = document.getElementById("ciclo-selector");
+        let headerNombre = document.getElementById("nombre-ruteo-activo-header");
+        if (selector && headerNombre) {{
+            let opcionSeleccionada = selector.options[selector.selectedIndex];
+            if (opcionSeleccionada) {{
+                // Limpia el emoji si lo tiene y pone el nombre en grande
+                let nombreLimpio = opcionSeleccionada.text.replace(/^[🟠🔴🟡🟢🟣]\s*/, '').trim();
+                headerNombre.innerText = nombreLimpio;
+            }}
+        }}
         
         if (typeof recalc === 'function') {{
             recalc();
@@ -5934,7 +5957,7 @@ function iniciarArrastreFlotante(e) {{
 
         box.innerHTML += `
             <div style="background: #86ad9c; border: 2px solid #28a745; padding: 12px; border-radius: 6px; color: #000000; margin-bottom: 6px; font-size:14px; line-height: 1.5;">
-                📋 <b></b><br><br>${{resumenFinal}}
+                <b></b><br><br>${{resumenFinal}}
             </div>
         `;
         box.scrollTop = box.scrollHeight;
