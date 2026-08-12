@@ -5915,20 +5915,20 @@ function iniciarArrastreFlotante(e) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
                     📋 <b>Generador de Cierre (Paso 5/5):</b><br>
-                    <span style="color:#d0d0d0;">¿Se cargó Alchichica ND en AM0?</span><br><br>
+                    <span style="color:#d0d0d0;">¿Se cargó Plan ND en AM0?</span><br><br>
                     <div style="display:flex; gap:6px;">
-                        <button onclick="responderPasoResumen('alchichica', true, 4.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
-                        <button onclick="responderPasoResumen('alchichica', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                        <button onclick="responderPasoResumen('plan nd', true, 4.5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('plan nd', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
         }} else if (pasoResumen === 4.5) {{
             htmlBot = `
                 <div class="bloque-paso-resumen">
-                    📋 <b>Generador de Cierre (Alchichica):</b><br>
+                    📋 <b>Generador de Cierre (Plan ND):</b><br>
                     <span style="color:#d0d0d0;">¿Fue con 2 Small Van MLP?</span><br><br>
                     <div style="display:flex; gap:6px;">
-                        <button onclick="responderPasoResumen('alchichica_2sv', true, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
-                        <button onclick="responderPasoResumen('alchichica_2sv', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
+                        <button onclick="responderPasoResumen('plan nd_2sv', true, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">1️⃣ Sí</button>
+                        <button onclick="responderPasoResumen('plan nd_2sv', false, 5)" style="flex:1; cursor:pointer; background:#0284c7; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">2️⃣ No</button>
                     </div>
                 </div>`;
         }} else if (pasoResumen === 5) {{
@@ -6001,13 +6001,13 @@ function iniciarArrastreFlotante(e) {{
             textoDropeo = "👉 No hubo dropeo de nodo.";
         }}
 
-        // Texto Alchichica
-        let textoAlchichica = "";
-        if (d.alchichica) {{
-            if (d.alchichica_2sv !== false) {{
-                textoAlchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0 con 2 unidades Small Van MLP.<br>";
+        // Texto Plan ND
+        let textoPlanND = "";
+        if (d.plannd) {{
+            if (d.plannd_2sv !== false) {{
+                textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0 con 2 unidades Small Van MLP.<br>";
             }} else {{
-                textoAlchichica = "🚛 Se cargó plan de <b>Alchichica ND</b> en AM0.<br>";
+                textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0.<br>";
             }}
         }}
 
@@ -6020,7 +6020,7 @@ function iniciarArrastreFlotante(e) {{
             `${{textoUnidades}}<br>` +
             `${{textoBulk}}` +
             `${{textoDropeo}}<br>` +
-            `${{textoAlchichica}}` +
+            `${{textoPlanND}}` +
             `📌 Se usaron los parámetros establecidos.<br>` +
             `📋 Comparto template final.` +
             `</span><br><br>` +
