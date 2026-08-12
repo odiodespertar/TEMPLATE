@@ -5704,9 +5704,7 @@ function iniciarArrastreFlotante(e) {{
             📋 Armar Resumen de Cierre
         </button>
 
-		<button onclick="activarModoNota()" style="flex: 1; cursor: pointer; background: #0284c7; color: white; border: none; padding: 6px 8px; border-radius: 6px; font-weight: bold; font-size: 12px; transition: background 0.2s;" title="Guardar nota permanente en Supabase">
-            ➕ Agregar Nota
-        </button>
+	
 
         <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
             <div style="background: #262626; border-left: 3px solid #008218; padding: 8px; border-radius: 6px; color: #ffffff;">
