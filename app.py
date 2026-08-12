@@ -1527,7 +1527,7 @@ app_html = f"""
     <div style="font-size: 9px; color: #d0d0d0; letter-spacing: 1.5px; text-transform: uppercase;">
         📌 RUTEO EN PANTALLA
     </div>
-    <div id="nombre-ruteo-activo-header" style="font-size: 21px; color: #00d1c0; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
+    <div id="nombre-ruteo-activo-header" style="font-size: 21px; color: #7FFFD4; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">
         🟠 C1 SCP1
     </div>
 </div>
