@@ -4176,43 +4176,40 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para llevar el control de la reducción acumulada
-    let reduccionGlobalHoras = 0;
+    // Variable global para la reducción global de horas
+    let reduccionHorasGlobal = 0;
 
     function reducirHoras(cambio) {{
-        // 1. Modificar la reducción (evitando que baje de 0)
-        reduccionGlobalHoras += cambio;
-        if (reduccionGlobalHoras < 0) {{
-            reduccionGlobalHoras = 0;
+        reduccionHorasGlobal += cambio;
+        if (reduccionHorasGlobal < 0) {{
+            reduccionHorasGlobal = 0;
         }}
     
-        // 2. Actualizar el texto que muestra cuántas horas llevas reducidas (opcional)
-        console.log("Reducción actual:", reduccionGlobalHoras);
-
-        // 3. ACTUALIZAR LAS FILAS DE TU TABLA AUTOMÁTICAMENTE
-        // Buscamos todas las filas de la tabla para aplicar el cambio
-        const filas = document.querySelectorAll("tr"); // O ajusta el selector según tu clase de filas
-    
+        // Recorremos las filas para actualizar los valores usando tu estructura
+        const filas = document.querySelectorAll("tr");
+     
         filas.forEach(fila => {{
-            // Aquí buscas la celda que contiene las horas (por ejemplo, la que dice 11:00)
-            let celdaHoras = fila.querySelector(".col-horas"); // Asegúrate de poner la clase o estructura de tus celdas
-            let celdaOrh = fila.querySelector(".col-orh");     // La celda de la izquierda (ej. 660)
+            let celdaOrh = fila.querySelector(".edit-orh");
+            let celdaHora = fila.querySelector(".orh-hora");
         
-            if (celdaHoras && celdaOrh) {{
-                // Suponiendo que el valor original base está guardado en un atributo o se calcula:
-                let horasBase = parseInt(fila.getAttribute("data-horas-base")) || 11; 
-                let factorOrh = parseInt(fila.getAttribute("data-factor-orh")) || 60; // Ej: 60 por hora
+            if (celdaOrh && !fila.classList.contains("es-divisor")) {{
+                let baseHoras = parseFloat(fila.getAttribute("data-horas-original")) || 11;
+                let horasNuevas = Math.max(0, baseHoras - reduccionHorasGlobal);
+                let nuevoOrh = horasNuevas * 60; // Factor de conversión
             
-                // Calcular nuevas horas y nuevo ORH
-                let horasFinales = Math.max(0, horasBase - reduccionGlobalHoras);
-                let orhFinal = horasFinales * factorOrh;
-            
-                // Pintar los nuevos valores en la pantalla
-                celdaHoras.innerText = horasFinales + ":00";
-                celdaOrh.innerText = orhFinal;
+                celdaOrh.innerText = nuevoOrh;
+                if (celdaHora) {{
+                    celdaHora.innerText = (horasNuevas < 10 ? "0" : "") + horasNuevas + ":00";
+                }}
             }}
         }});
+
+        // Disparar tu función de recálculo existente
+        if (typeof recalc === "function") {{
+            recalc();
+        }}
     }}
+
 
    
 // ==============================================================================
