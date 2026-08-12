@@ -4176,14 +4176,16 @@ app_html = f"""
     // 💾 REDUCIR ORH
     // ==============================================================================
 
-    // Variable global para la reducción acumulada
+    // Variable global para la reducción acumulada de horas
     let reduccionHorasGlobal = 0;
 
     function reducirHoras(cambio) {{
+        // CORRECCIÓN DE SIGNOS: 
+        // Si pasamos -1, resta a la reducción global. Si pasamos +1, la disminuye.
         reduccionHorasGlobal += cambio;
         if (reduccionHorasGlobal < 0) {{
             reduccionHorasGlobal = 0;
-        }}
+        }
     
         // Recorremos cada fila de la tabla de forma independiente
         const filas = document.querySelectorAll("tr");
@@ -4192,21 +4194,25 @@ app_html = f"""
             let celdaOrh = fila.querySelector(".edit-orh");
             let celdaHora = fila.querySelector(".orh-hora");
         
-            // Verificamos que sea una fila de datos editable y no un divisor
             if (celdaOrh && !fila.classList.contains("es-divisor")) {{
             
-                // 1. Tomamos el valor de ORH que ya ingresaste en la celda
-                let orhActual = parseFloat(celdaOrh.innerText) || parseFloat(celdaOrh.value) || 0;
+                // Guardamos el valor original la primera vez para no perderlo en los siguientes clics
+                if (!fila.hasAttribute("data-orh-original")) {{
+                    let orhOriginalInicial = parseFloat(celdaOrh.innerText) || 0;
+                    fila.setAttribute("data-orh-original", orhOriginalInicial);
+                }}
             
-                if (orhActual > 0) {{
+                let orhOriginal = parseFloat(fila.getAttribute("data-orh-original")) || 0;
+            
+                if (orhOriginal > 0) {{
                     let factor = 60; // Factor estándar por hora
-                    let horasActuales = orhActual / factor;
+                    let horasOriginales = orhOriginal / factor;
                 
-                    // 2. Aplicamos la reducción de horas de forma independiente por fila
-                    let horasNuevas = Math.max(0, horasActuales - reduccionHorasGlobal);
+                    // Aplicamos la reducción global de forma limpia basada siempre en el original
+                    let horasNuevas = Math.max(0, horasOriginales - reduccionHorasGlobal);
                     let nuevoOrh = horasNuevas * factor;
                 
-                    // 3. Asignamos el resultado exclusivo para esta fila con formato de doble llave seguro
+                    // Asignamos los valores corregidos con formato seguro de doble llave
                     celdaOrh.innerText = nuevoOrh;
                 
                     if (celdaHora) {{
