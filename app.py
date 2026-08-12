@@ -6002,7 +6002,7 @@ function iniciarArrastreFlotante(e) {{
             `<b>**Queda publicado ${{cicloTxt}} team**:</b><br><br>` +
             `<span style="font-weight: normal;">` +
             `📌 Se trabajó con el volumen disponible al momento de iniciar el ruteo.<br>` +
-            `📌 Se cargaron las Rentals como híbridas en Centro, pero el sistema no las consideró todas como híbridas.<br>` +
+            `📌 Se cargaron las Rentals como híbridas en Plan local, pero el sistema no las consideró todas como híbridas.<br>` +
             `${{textoUnidades}}<br>` +
             `${{textoBulk}}` +
             `${{textoDropeo}}<br>` +
