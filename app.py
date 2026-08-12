@@ -2993,47 +2993,71 @@ app_html = f"""
 
 
     function limpiarPantallaCompleta() {{
-        if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
+            if (!confirm("¿Deseas vaciar todos los valores editados de la pantalla para iniciar un nuevo ruteo de cero?")) return;
         
-        localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY);
 
-        // Resetear volúmenes a 0
-        document.querySelectorAll('.v-total-val, .nodos-val, .nodos-campeche').forEach(el => el.innerText = "0");
+            // Resetear volúmenes a 0
+            document.querySelectorAll('.v-total-val, .nodos-val, .nodos-campeche').forEach(el => el.innerText = "0");
         
-        // Resetear filas
-        document.querySelectorAll('.calc-row').forEach(row => {{
-            let uSpan = row.querySelector('.u-manual');
-            let sprSpan = row.querySelector('.spr-real-val');
-            let selectType = row.querySelector('.s-type');
-            let checkOk = row.querySelector('.ok-check');
+            // Resetear filas principales
+            document.querySelectorAll('.calc-row').forEach(row => {{
+                let uSpan = row.querySelector('.u-manual');
+                let sprSpan = row.querySelector('.spr-real-val');
+                let selectType = row.querySelector('.s-type');
+                let checkOk = row.querySelector('.ok-check');
 
-            if (uSpan) uSpan.innerText = "0";
-            if (sprSpan) sprSpan.innerText = "0";
-            if (selectType) {{
-                selectType.value = "";
-                updateSelectColor(selectType);
-            }}
-            if (checkOk) checkOk.checked = false;
+                if (uSpan) uSpan.innerText = "0";
+                if (sprSpan) sprSpan.innerText = "0";
+                if (selectType) {{
+                    selectType.value = "";
+                    updateSelectColor(selectType);
+                }}
+                if (checkOk) checkOk.checked = false;
+            }});
+
+            // RESETEAR CELDAS EDITABLES DE ORH, OCUPACIÓN Y HORA QUE AGREGAMOS
+            document.querySelectorAll('tr').forEach(fila => {{
+                let celdaOrh = fila.querySelector('.edit-orh');
+                let celdaOcup = fila.querySelector('.edit-ocup');
+                let celdaHora = fila.querySelector('.orh-hora');
+
+                if (celdaOrh) {{
+                    celdaOrh.innerText = "0";
+                    celdaOrh.value = "0";
+                }}
+                if (celdaOcup) {{
+                    celdaOcup.innerText = "0";
+                    celdaOcup.value = "0";
+                }}
+                if (celdaHora) {{
+                    celdaHora.innerText = "00:00";
+                }}
+            
+                // Limpiar también cualquier atributo de memoria de reducción de horas
+                if (fila.hasAttribute("data-orh-original")) {{
+                    fila.removeAttribute("data-orh-original");
+                }}
+            }});
+
+            // Resetear stock de flota
+            document.querySelectorAll('.f-stock').forEach(el => el.innerText = "0");
+
+            if (typeof recalc === 'function') recalc();
+        }}
+
+        // LISTENERS DE GUARDA Y RESTAURACIÓN AUTOMÁTICA
+        document.addEventListener('input', function(e) {{
+            guardarEstadoEnVivo();
         }});
 
-        // Resetear stock de flota
-        document.querySelectorAll('.f-stock').forEach(el => el.innerText = "0");
+        document.addEventListener('change', function(e) {{
+            guardarEstadoEnVivo();
+        }});
 
-        if (typeof recalc === 'function') recalc();
-    }}
-
-    // LISTENERS DE GUARDA Y RESTAURACIÓN AUTOMÁTICA
-    document.addEventListener('input', function(e) {{
-        guardarEstadoEnVivo();
-    }});
-
-    document.addEventListener('change', function(e) {{
-        guardarEstadoEnVivo();
-    }});
-
-    window.addEventListener('load', function() {{
-        restaurarEstadoEnVivo();
-    }});
+        window.addEventListener('load', function() {{
+            restaurarEstadoEnVivo();
+        }});
 
 
 
