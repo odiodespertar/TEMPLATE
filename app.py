@@ -3352,6 +3352,29 @@ app_html = f"""
         }}
     }}
 
+
+    function ejecutarAccionNota() {{
+        const txtArea = document.getElementById('input-notas-ruteo');
+        if (!txtArea) return;
+
+        const textoNota = txtArea.value.trim();
+    
+        if (textoNota === "") {{
+            alert("Escribe una nota antes de agregarla."); // O usa tu función de alerta personalizada
+            return;
+        }}
+
+        // 1. Guardar en tu objeto de datos actual
+        if (typeof datosRuteoActual !== 'undefined') {{
+            datosRuteoActual.notas = textoNota;
+        }}
+
+        // 2. Feedback visual inmediato de que sí funcionó
+        console.log("Nota agregada:", textoNota);
+        alert("¡Nota agregada y guardada en el ruteo actual! 📌");
+    }}
+
+
     function recalc() {{
         let fleet = {{}};
         let tabId = currentTab;
