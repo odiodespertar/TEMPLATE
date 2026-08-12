@@ -1506,7 +1506,7 @@ app_html = f"""
             white-space: nowrap !important;
             text-overflow: ellipsis !important;
             text-align: center !important;
-            vertical-align: middle !important;
+            vertical-align: middle !important; 
         }}
 
         body.excel-view .poligono-bloque th:nth-child(5) {{ width: 90px !important; }}
