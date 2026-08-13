@@ -22,8 +22,8 @@ reglas_ruteo = {
         "<li>👉 Prefijo SD3 siempre</li>"
         "</ul>"
     ),
-    "smx5_precarga": ( 
-        "<b>Prioridades SMX5 (PRECARGA):</b><br><br>"
+    "smx5_precarga": (
+        "<b>Prioridades SMX5 (PRECARGA):</b><br>"
         "<ul>"
         "<li>📌 <b>Origen:</b> MXCD09 + onway</li>"
         "<li>👀 <b>OJO:</b> Últimamente piden usar Small Van en Chalco y Xochimilco (revisar)</li>"
@@ -31,10 +31,29 @@ reglas_ruteo = {
         "<li>👉 Resto de planes asignar Car 8h y Extendidas</li>"
         "<li>👉 Revisar si mandan IDs a agregar del origen 10</li>"
         "<li>👉 <b>Cercanía de SVC:</b> Coyoacán, Iztapalapa, Tláhuac, Tlalpan Nte, Tlalpan Sur, Xochi, Chalco y Milpa Alta</li>"
-        "<li> <b>Prioridades SMX5 (EXTENDIDO):</b></li>"
+        "</ul><br>"
+        "<b>Prioridades SMX5 (EXTENDIDO):</b><br>"
+        "<ul>"
         "<li>📌 <b>Orígenes:</b> MXCD02, MXCD06</li>"
         "<li>👉 Último despacho de hoy (3 pm en adelante)</li>"
         "<li>👉 Fecha promesa + fecha quemada + onway</li>"
+        "</ul>"
+    ),
+    "smx5_extendido": (
+        "<b>Prioridades SMX5 (EXTENDIDO):</b><br>"
+        "<ul>"
+        "<li>📌 <b>Orígenes:</b> MXCD02, MXCD06</li>"
+        "<li>👉 Último despacho de hoy (3 pm en adelante)</li>"
+        "<li>👉 Fecha promesa + fecha quemada + onway</li>"
+        "</ul><br>"
+        "<b>Prioridades SMX5 (PRECARGA):</b><br>"
+        "<ul>"
+        "<li>📌 <b>Origen:</b> MXCD09 + onway</li>"
+        "<li>👀 <b>OJO:</b> Últimamente piden usar Small Van en Chalco y Xochimilco (revisar)</li>"
+        "<li>👀 <b>OJO:</b> Con indicaciones de reducción de ORH en Xochimilco (u otro polígono)</li>"
+        "<li>👉 Resto de planes asignar Car 8h y Extendidas</li>"
+        "<li>👉 Revisar si mandan IDs a agregar del origen 10</li>"
+        "<li>👉 <b>Cercanía de SVC:</b> Coyoacán, Iztapalapa, Tláhuac, Tlalpan Nte, Tlalpan Sur, Xochi, Chalco y Milpa Alta</li>"
         "</ul>"
     ),
     "smx4_extendido": (
