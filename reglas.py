@@ -31,11 +31,7 @@ reglas_ruteo = {
         "<li>👉 Resto de planes asignar Car 8h y Extendidas</li>"
         "<li>👉 Revisar si mandan IDs a agregar del origen 10</li>"
         "<li>👉 <b>Cercanía de SVC:</b> Coyoacán, Iztapalapa, Tláhuac, Tlalpan Nte, Tlalpan Sur, Xochi, Chalco y Milpa Alta</li>"
-        "</ul>"
-    ),
-    "smx5_extendido": (
         "<b>Prioridades SMX5 (EXTENDIDO):</b><br><br>"
-        "<ul>"
         "<li>📌 <b>Orígenes:</b> MXCD02, MXCD06</li>"
         "<li>👉 Último despacho de hoy (3 pm en adelante)</li>"
         "<li>👉 Fecha promesa + fecha quemada + onway</li>"
