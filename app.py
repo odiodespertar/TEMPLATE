@@ -2857,14 +2857,14 @@ app_html = f"""
 
 
     // ==============================================================================
-    // 💾 SISTEMA DE PERSISTENCIA EN TIEMPO REAL (LOCALSTORAGE)
+    // 💾 SISTEMA DE PERSISTENCIA COMPLETO EN TIEMPO REAL (LOCALSTORAGE)
     // ==============================================================================
     
     function guardarEstadoEnVivo() {{
         try {{
             let estado = {{}};
 
-            // 1. Guardar Volúmenes Totales y Nodos por Polígono
+            // 1. Guardar Volúmenes Totales, Nodos y FILAS DE ASIGNACIÓN por Polígono
             document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
                 let volEl = bloque.querySelector('.v-total-val');
                 let nodoEl = bloque.querySelector('.nodos-val') || bloque.querySelector('.nodos-campeche');
@@ -2874,7 +2874,7 @@ app_html = f"""
                     estado[`poly_nodo_${{idx}}`] = nodoEl.innerText.trim();
                 }}
 
-                // Guardar las filas calculadas dentro del polígono
+                // 🟢 GUARDA LAS ASIGNACIONES DE CADA PLAN
                 let filasData = [];
                 bloque.querySelectorAll('.calc-row').forEach(row => {{
                     let uVal = row.querySelector('.u-manual')?.innerText.trim() || "0";
@@ -2898,8 +2898,11 @@ app_html = f"""
                 if (ocupEl) estado[`flota_ocup_${{idx}}`] = ocupEl.innerText.trim();
             }});
 
-            // Guardar pestaña/ciclo activo
-            estado['currentTabActive'] = currentTab;
+            // 3. Guardar estado del filtro de pantalla (Activas/Todas) y ciclo activo
+            let selectorCiclos = document.getElementById("ciclo-selector");
+            if (selectorCiclos) {{
+                estado['currentTabActive'] = selectorCiclos.value;
+            }}
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
         }} catch (e) {{
@@ -2911,17 +2914,11 @@ app_html = f"""
     function restaurarEstadoEnVivo() {{
         try {{
             let dataRaw = localStorage.getItem(STORAGE_KEY);
-            if (!dataRaw) {{
-                // Si no hay datos guardados, forzar el selector y la vista en EXTENDIDO (ID 4)
-                let selectorCiclos = document.getElementById("ciclo-selector");
-                if (selectorCiclos) selectorCiclos.value = "4";
-                cambiarCiclo(4);
-                return;
-            }}
+            if (!dataRaw) return;
 
             let estado = JSON.parse(dataRaw);
 
-            // 1. Restaurar Volúmenes y Filas de Polígonos
+            // 1. Restaurar Volúmenes, Nodos y FILAS DE ASIGNACIÓN
             document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
                 let volEl = bloque.querySelector('.v-total-val');
                 let nodoEl = bloque.querySelector('.nodos-val') || bloque.querySelector('.nodos-campeche');
@@ -2933,11 +2930,12 @@ app_html = f"""
                     nodoEl.innerText = estado[`poly_nodo_${{idx}}`];
                 }}
 
-                // Restaurar filas calculadas
+                // 🟢 RESTAURAR FILAS ASIGNADAS EN EL PLAN
                 let filasData = estado[`poly_filas_${{idx}}`];
                 if (Array.isArray(filasData)) {{
                     let filasHTML = bloque.querySelectorAll('.calc-row');
                     
+                    // Si el plan guardado tenía más filas agregadas dinámicamente con (+), crearlas primero
                     while (filasHTML.length < filasData.length) {{
                         let btnAgregar = bloque.querySelector('button[onclick*="agregarFilaPlan"]');
                         if (btnAgregar) agregarFilaPlan(btnAgregar);
@@ -2978,15 +2976,16 @@ app_html = f"""
                 if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
             }});
 
-            // 🟢 FORZAR SIEMPRE EL RUTEO "EXTENDIDO" (ID 4) POR DEFECTO
-            let selectorCiclos = document.getElementById("ciclo-selector");
-            if (selectorCiclos) selectorCiclos.value = "4";
-            cambiarCiclo(4);
+            // 3. Restaurar pestaña activa
+            if (estado['currentTabActive']) {{
+                let selectorCiclos = document.getElementById("ciclo-selector");
+                if (selectorCiclos) selectorCiclos.value = estado['currentTabActive'];
+                cambiarCiclo(estado['currentTabActive']);
+            }}
 
             if (typeof recalc === 'function') recalc();
         }} catch (e) {{
             console.error("Error al restaurar estado local:", e);
-            cambiarCiclo(4);
         }}
     }}
 
