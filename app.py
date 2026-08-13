@@ -2918,7 +2918,21 @@ app_html = f"""
 
             let estado = JSON.parse(dataRaw);
 
-            // 1. Restaurar Volúmenes, Nodos y FILAS DE ASIGNACIÓN
+            // 1. Restaurar Tabla de Flota (Stock, ORH, Ocupación)
+            document.querySelectorAll('.master-row').forEach((row, idx) => {{
+                let stockEl = row.querySelector('.f-stock');
+                let orhEl = row.querySelector('.edit-orh');
+                let ocupEl = row.querySelector('.edit-ocup');
+
+                if (stockEl && estado[`flota_stock_${{idx}}`] !== undefined) stockEl.innerText = estado[`flota_stock_${{idx}}`];
+                if (orhEl && estado[`flota_orh_${{idx}}`] !== undefined) {{
+                    orhEl.innerText = estado[`flota_orh_${{idx}}`];
+                    actualizarHoraMinuto(orhEl);
+                }}
+                if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
+            }});
+
+            // 2. Restaurar Volúmenes, Nodos y FILAS DE ASIGNACIÓN
             document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
                 let volEl = bloque.querySelector('.v-total-val');
                 let nodoEl = bloque.querySelector('.nodos-val') || bloque.querySelector('.nodos-campeche');
@@ -2930,12 +2944,12 @@ app_html = f"""
                     nodoEl.innerText = estado[`poly_nodo_${{idx}}`];
                 }}
 
-                // 🟢 RESTAURAR FILAS ASIGNADAS EN EL PLAN
+                // RESTAURAR FILAS ASIGNADAS EN EL PLAN
                 let filasData = estado[`poly_filas_${{idx}}`];
                 if (Array.isArray(filasData)) {{
                     let filasHTML = bloque.querySelectorAll('.calc-row');
                     
-                    // Si el plan guardado tenía más filas agregadas dinámicamente con (+), crearlas primero
+                    // Si el plan tenía filas agregadas dinámicamente (+), crearlas primero
                     while (filasHTML.length < filasData.length) {{
                         let btnAgregar = bloque.querySelector('button[onclick*="agregarFilaPlan"]');
                         if (btnAgregar) agregarFilaPlan(btnAgregar);
@@ -2952,28 +2966,27 @@ app_html = f"""
 
                             if (uSpan) uSpan.innerText = fData.u;
                             if (sprSpan) sprSpan.innerText = fData.spr;
-                            if (selectType && fData.type) {{
+                            if (checkOk) checkOk.checked = fData.ok;
+
+                            if (selectType && fData.type && fData.type !== "" && fData.type !== "Seleccionar...") {{
+                                // Asegurar que el <option> exista antes de asignarlo
+                                let existeOpt = Array.from(selectType.options).some(o => o.value === fData.type);
+                                if (!existeOpt) {{
+                                    let optTemp = document.createElement('option');
+                                    optTemp.value = fData.type;
+                                    optTemp.innerText = fData.type;
+                                    selectType.appendChild(optTemp);
+                                }}
+
                                 selectType.value = fData.type;
                                 updateSelectColor(selectType);
+
+                                // 🟢 CRÍTICO: Registrar en editedRowsPlan para que recalc() NO la limpie
+                                editedRowsPlan.add(row);
                             }}
-                            if (checkOk) checkOk.checked = fData.ok;
                         }}
                     }});
                 }}
-            }});
-
-            // 2. Restaurar Tabla de Flota (Stock, ORH, Ocupación)
-            document.querySelectorAll('.master-row').forEach((row, idx) => {{
-                let stockEl = row.querySelector('.f-stock');
-                let orhEl = row.querySelector('.edit-orh');
-                let ocupEl = row.querySelector('.edit-ocup');
-
-                if (stockEl && estado[`flota_stock_${{idx}}`] !== undefined) stockEl.innerText = estado[`flota_stock_${{idx}}`];
-                if (orhEl && estado[`flota_orh_${{idx}}`] !== undefined) {{
-                    orhEl.innerText = estado[`flota_orh_${{idx}}`];
-                    actualizarHoraMinuto(orhEl);
-                }}
-                if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
             }});
 
             // 3. Restaurar pestaña activa
@@ -2981,9 +2994,9 @@ app_html = f"""
                 let selectorCiclos = document.getElementById("ciclo-selector");
                 if (selectorCiclos) selectorCiclos.value = estado['currentTabActive'];
                 cambiarCiclo(estado['currentTabActive']);
+            }} else {{
+                if (typeof recalc === 'function') recalc();
             }}
-
-            if (typeof recalc === 'function') recalc();
         }} catch (e) {{
             console.error("Error al restaurar estado local:", e);
         }}
