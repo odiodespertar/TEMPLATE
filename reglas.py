@@ -30,7 +30,6 @@ reglas_ruteo = {
         "<li>👀 <b>OJO:</b> Con indicaciones de reducción de ORH en Xochimilco (u otro polígono)</li>"
         "<li>👉 Resto de planes asignar Car 8h y Extendidas</li>"
         "<li>👉 Revisar si mandan IDs a agregar del origen 10</li>"
-        "<li>👉 <b>Cercanía de SVC:</b> Coyoacán, Iztapalapa, Tláhuac, Tlalpan Nte, Tlalpan Sur, Xochi, Chalco y Milpa Alta</li>"
         "</ul><br>"
         "<b>Prioridades SMX5 (EXTENDIDO):</b><br>"
         "<ul>"
