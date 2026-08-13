@@ -2856,6 +2856,11 @@ app_html = f"""
 
             let estado = JSON.parse(dataRaw);
 
+            // 🟢 CRÍTICO 1: Poblar primero las opciones de los <select> antes de intentar asignar sus valores
+            if (typeof actualizarSelects === 'function') {{
+                actualizarSelects();
+            }}
+
             // 1. Restaurar Tabla de Flota (Stock, ORH, Ocupación)
             document.querySelectorAll('.master-row').forEach((row, idx) => {{
                 let stockEl = row.querySelector('.f-stock');
@@ -2865,10 +2870,15 @@ app_html = f"""
                 if (stockEl && estado[`flota_stock_${{idx}}`] !== undefined) stockEl.innerText = estado[`flota_stock_${{idx}}`];
                 if (orhEl && estado[`flota_orh_${{idx}}`] !== undefined) {{
                     orhEl.innerText = estado[`flota_orh_${{idx}}`];
-                    actualizarHoraMinuto(orhEl);
+                    if (typeof actualizarHoraMinuto === 'function') actualizarHoraMinuto(orhEl);
                 }}
                 if (ocupEl && estado[`flota_ocup_${{idx}}`] !== undefined) ocupEl.innerText = estado[`flota_ocup_${{idx}}`];
             }});
+
+            // 🟢 CRÍTICO 2: Volver a refrescar los <select> para que incluyan el stock recién restaurado
+            if (typeof actualizarSelects === 'function') {{
+                actualizarSelects();
+            }}
 
             // 2. Restaurar Volúmenes, Nodos y FILAS DE ASIGNACIÓN
             document.querySelectorAll('.poligono-bloque').forEach((bloque, idx) => {{
@@ -2887,7 +2897,7 @@ app_html = f"""
                 if (Array.isArray(filasData)) {{
                     let filasHTML = bloque.querySelectorAll('.calc-row');
                     
-                    // Si el plan tenía filas agregadas dinámicamente (+), crearlas primero
+                    // Si el plan tenía filas agregadas dinámicamente con (+), crearlas primero
                     while (filasHTML.length < filasData.length) {{
                         let btnAgregar = bloque.querySelector('button[onclick*="agregarFilaPlan"]');
                         if (btnAgregar) agregarFilaPlan(btnAgregar);
@@ -2907,7 +2917,7 @@ app_html = f"""
                             if (checkOk) checkOk.checked = fData.ok;
 
                             if (selectType && fData.type && fData.type !== "" && fData.type !== "Seleccionar...") {{
-                                // Asegurar que el <option> exista antes de asignarlo
+                                // Inyectar temporalmente la opción si aún no existe en el DOM
                                 let existeOpt = Array.from(selectType.options).some(o => o.value === fData.type);
                                 if (!existeOpt) {{
                                     let optTemp = document.createElement('option');
@@ -2917,9 +2927,9 @@ app_html = f"""
                                 }}
 
                                 selectType.value = fData.type;
-                                updateSelectColor(selectType);
+                                if (typeof updateSelectColor === 'function') updateSelectColor(selectType);
 
-                                // 🟢 CRÍTICO: Registrar en editedRowsPlan para que recalc() NO la limpie
+                                // 🟢 CRÍTICO 3: Marcar la fila como editada manualmente para que recalc() no la vacíe
                                 editedRowsPlan.add(row);
                             }}
                         }}
@@ -2931,15 +2941,15 @@ app_html = f"""
             if (estado['currentTabActive']) {{
                 let selectorCiclos = document.getElementById("ciclo-selector");
                 if (selectorCiclos) selectorCiclos.value = estado['currentTabActive'];
-                cambiarCiclo(estado['currentTabActive']);
-            }} else {{
-                if (typeof recalc === 'function') recalc();
+                if (typeof cambiarCiclo === 'function') cambiarCiclo(estado['currentTabActive']);
             }}
+
+            // Recalcular para actualizar totales en pantalla
+            if (typeof recalc === 'function') recalc();
         }} catch (e) {{
             console.error("Error al restaurar estado local:", e);
         }}
     }}
-
 
 
     function limpiarPantallaCompleta() {{
