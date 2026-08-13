@@ -106,118 +106,56 @@ USUARIOS_LOGIN = {
 
 
 # ==============================================================================
-# 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE
+# 1. INTENTAR RECUPERAR LA SESIÓN DESDE LA COOKIE (ESTABLE SIN BOTEO)
 # ==============================================================================
+
+if "cookie_intentos" not in st.session_state:
+    st.session_state.cookie_intentos = 0
 
 if st.session_state.usuario_auth is None:
 
-    session_id_cookie = cookie_manager.get(
-        cookie="sb_refresh_token"
-    )
+    session_id_cookie = cookie_manager.get(cookie="sb_refresh_token")
+
+    # Si la cookie aún no ha cargado en el DOM, reintentar 2 veces de forma suave
+    if session_id_cookie is None and st.session_state.cookie_intentos < 2:
+        st.session_state.cookie_intentos += 1
+        time.sleep(0.3)
+        st.rerun()
 
     if session_id_cookie and supabase:
-
         try:
-
-            # ==============================================================
-            # RECUPERAR SESIÓN USANDO EL REFRESH TOKEN
-            # ==============================================================
-
-            res_refresh = supabase.auth.refresh_session(
-                session_id_cookie
-            )
+            res_refresh = supabase.auth.refresh_session(session_id_cookie)
 
             if res_refresh and res_refresh.session and res_refresh.user:
-
-                # ==========================================================
-                # GUARDAR NUEVA SESIÓN
-                # ==========================================================
-
                 st.session_state.usuario_auth = res_refresh.user
                 st.session_state.supabase_session = res_refresh.session
 
-                # ==========================================================
-                # IMPORTANTE:
-                # GUARDAR EL NUEVO REFRESH TOKEN
-                # SUPABASE ROTA EL TOKEN AL REFRESCAR LA SESIÓN
-                # ==========================================================
-
                 nuevo_refresh_token = res_refresh.session.refresh_token
-
                 if nuevo_refresh_token:
-
                     cookie_manager.set(
                         "sb_refresh_token",
                         nuevo_refresh_token,
                         max_age=30 * 24 * 3600
                     )
 
-                # ==========================================================
-                # IDENTIFICAR USUARIO
-                # ==========================================================
-
                 usuario_email = res_refresh.user.email or ""
-
                 usuario_encontrado = None
 
                 for nombre_usuario, correo in USUARIOS_LOGIN.items():
-
                     if correo.lower() == usuario_email.lower():
                         usuario_encontrado = nombre_usuario
                         break
 
-                # ==========================================================
-                # GUARDAR USUARIO ACTIVO
-                # ==========================================================
-
                 if usuario_encontrado:
-
-                    st.session_state["usuario_activo"] = (
-                        usuario_encontrado
-                    )
-
+                    st.session_state["usuario_activo"] = usuario_encontrado
                 else:
+                    st.session_state["usuario_activo"] = usuario_email.split("@")[0].replace(".", "_")
 
-                    st.session_state["usuario_activo"] = (
-                        usuario_email
-                        .split("@")[0]
-                        .replace(".", "_")
-                    )
-
-                # ==========================================================
-                # SESIÓN RECUPERADA CORRECTAMENTE
-                # ==========================================================
-
-                st.session_state.verificando_cookie = False
-
+                st.session_state.cookie_intentos = 0
                 st.rerun()
 
-            else:
-
-                # La cookie ya no corresponde a una sesión válida
-                st.session_state.verificando_cookie = False
-
         except Exception as e:
-
-            # ==============================================================
-            # COOKIE INVÁLIDA O SESIÓN TERMINADA
-            # ==============================================================
-
-            st.session_state.verificando_cookie = False
-
-    else:
-
-        # ==============================================================
-        # LA COOKIE TODAVÍA PUEDE ESTAR CARGANDO
-        # ==============================================================
-
-        if st.session_state.verificando_cookie:
-
-            time.sleep(0.5)
-
-            st.session_state.verificando_cookie = False
-
-            st.rerun()
+            st.session_state.cookie_intentos = 0
 
 
 # ==============================================================================
