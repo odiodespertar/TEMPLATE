@@ -27,6 +27,7 @@ reglas_ruteo = {
         "<ul>"
         "<li>📌 <b>Origen:</b> MXCD09 + onway</li>"
         "<li>👀 <b>OJO:</b> Últimamente piden usar Small Van en Chalco y Xochimilco (revisar)</li>"
+        "<li>👀 <b>OJO:</b> Algunos días agregan motos</li>"
         "<li>👀 <b>OJO:</b> Con indicaciones de reducción de ORH en Xochimilco (u otro polígono)</li>"
         "<li>👉 Resto de planes asignar Car 8h y Extendidas</li>"
         "<li>👉 Revisar si mandan IDs a agregar del origen 10</li>"
