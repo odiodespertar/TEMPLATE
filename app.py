@@ -5735,6 +5735,7 @@ function iniciarArrastreFlotante(e) {{
         panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
     }}
 
+
     function enviarConsultaBotLateral(opcionDirecta = null) {{
         const input = document.getElementById("input-bot-lateral");
         const box = document.getElementById("box-mensajes-bot");
@@ -5809,8 +5810,16 @@ function iniciarArrastreFlotante(e) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }} else if (!svcEncontrado) {{
             let claveRegla = null;
-            if (q.includes("smx5")) claveRegla = q.includes("precarga") ? "smx5_precarga" : "smx5_extendido";
-            else {{
+            if (q.includes("smx5")) {{
+                if (q.includes("precarga") && !q.includes("extendido")) {{
+                    claveRegla = "smx5_precarga";
+                }} else if (q.includes("extendido") && !q.includes("precarga")) {{
+                    claveRegla = "smx5_extendido";
+                }} else {{
+                    // Si escribe solo "smx5", mostrará amablemente ambas secciones
+                    claveRegla = "smx5_precarga"; 
+                }}
+            }} else {{
                 Object.keys(REGLAS_RUTEO).forEach(k => {{
                     let base = k.replace("_extendido","").replace("_precarga","");
                     if (q.includes(base)) claveRegla = k;
