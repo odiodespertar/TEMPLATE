@@ -5709,13 +5709,13 @@ svc_ingresado = st.text_input("Ingresa el SVC a consultar o buscar:")
 if svc_ingresado:
     # 1. Consultar notas en Supabase para este SVC específico
     try:
-        res_notas = supabase.table("notas_svc").select("*").ilike("svc", f"%{svc_ingresado.strip()}%").execute()
+        res_notas = supabase.table("notas_svc").select("*").ilike("svc", f"%{{svc_ingresado.strip()}}%").execute()
         notas_encontradas = res_notas.data
     except Exception as e:
         notas_encontradas = []
 
     # 2. Mostrar la información base que ya tienes del SVC
-    st.markdown(f"### 📍 Información Base para: `{svc_ingresado.upper()}`")
+    st.markdown(f"### 📍 Información Base para: `{{svc_ingresado.upper()}}`")
     # (Aquí va tu lógica previa de visualización del ruteo/SVC)
     st.info("Mostrando datos operativos estándar del ruteo...")
 
@@ -5723,7 +5723,7 @@ if svc_ingresado:
     if notas_encontradas:
         st.warning(f"⚠️ Se encontraron **{len(notas_encontradas)} nota(s) rápida(s)** asociadas a este SVC:")
         for nota in notas_encontradas:
-            st.markdown(f"> **Nota ID {nota.get('id')}**: {nota.get('contenido')}")
+            st.markdown(f"> **Nota ID {{nota.get('id')}}**: {{nota.get('contenido')}}")
     else:
         st.success("✅ No hay notas rápidas adicionales registradas para este SVC.")
 
