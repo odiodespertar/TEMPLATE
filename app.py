@@ -2781,8 +2781,9 @@ app_html = f"""
         if (selector && headerNombre) {{
             let opcionSeleccionada = selector.options[selector.selectedIndex];
             if (opcionSeleccionada) {{
+			    let texto = opcionSeleccionada.text;
                 // Limpia el emoji si lo tiene y pone el nombre en grande
-                let nombreLimpio = opcionSeleccionada.text.replace(/^[🟠🔴🟡🟢🟣]\s*/, '').trim();
+                let nombreLimpio = opcionSeleccionada.text.replace(/[\uFFFD\u200B-\u200D\uFEFF]/g, '').trim();
                 headerNombre.innerText = nombreLimpio;
             }}
         }}
