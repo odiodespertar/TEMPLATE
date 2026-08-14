@@ -1960,6 +1960,12 @@ app_html = f"""
         }}) 
         : null;
 
+        console.log(
+            "🔐 DEBUG TOKEN:",
+            "{st.session_state.supabase_session.access_token[:20]}..."
+        );
+
+
     let contadorPestanaDinamica = 900;
 
 
