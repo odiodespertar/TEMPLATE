@@ -5721,7 +5721,7 @@ if svc_ingresado:
 
     # 3. Complementar con las notas rápidas encontradas en Supabase
     if notas_encontradas:
-        st.warning(f"⚠️ Se encontraron **{len(notas_encontradas)} nota(s) rápida(s)** asociadas a este SVC:")
+        st.warning(f"⚠️ Se encontraron **{{len(notas_encontradas)}} nota(s) rápida(s)** asociadas a este SVC:")
         for nota in notas_encontradas:
             st.markdown(f"> **Nota ID {{nota.get('id')}}**: {{nota.get('contenido')}}")
     else:
