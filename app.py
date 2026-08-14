@@ -6050,8 +6050,20 @@ function iniciarArrastreFlotante(e) {{
     function togglePanelNotas() {{
         const panel = document.getElementById("panel-notas-lateral");
         if (!panel) return;
-        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+        
+        // Si el panel va a abrirse, cargamos lo último guardado en localStorage
+        if (panel.style.display === "none" || panel.style.display === "") {{
+            const notasGuardadas = localStorage.getItem("notas_turno_ruteo");
+            const inputNotas = document.getElementById("input-notas-turno");
+            if (notasGuardadas && inputNotas) {{
+                inputNotas.value = notasGuardadas;
+            }}
+            panel.style.display = "block";
+        }} else {{
+            panel.style.display = "none";
+        }}
     }}
+
 
     function guardarNotasTurno() {{
         const inputNotas = document.getElementById("input-notas-turno");
@@ -6071,6 +6083,9 @@ function iniciarArrastreFlotante(e) {{
             inputNotas.value = notasGuardadas;
         }}
     }});
+
+
+    
 
 
 
