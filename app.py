@@ -77,6 +77,39 @@ def guardar_ruteo_servidor(nombre, datos_json_str):
     return False
 
 
+# ==========================================
+# GESTIÓN DE NOTAS (TABLA 'notas_svc')
+# ==========================================
+
+def obtener_notas_svc():
+    """Consulta todas las notas almacenadas en Supabase."""
+    try:
+        response = supabase.table("notas_svc").select("*").execute()
+        return response.data
+    except Exception as e:
+        st.error(f"Error al obtener las notas: {e}")
+        return []
+
+def guardar_nota_svc(svc, contenido):
+    """Inserta una nueva nota asociada a un SVC."""
+    try:
+        data = {"svc": str(svc), "contenido": str(contenido)}
+        response = supabase.table("notas_svc").insert(data).execute()
+        return response.data
+    except Exception as e:
+        st.error(f"Error al guardar la nota: {e}")
+        return None
+
+def eliminar_nota_svc(nota_id):
+    """Elimina una nota usando su ID único."""
+    try:
+        response = supabase.table("notas_svc").delete().eq("id", nota_id).execute()
+        return response.data
+    except Exception as e:
+        st.error(f"Error al eliminar la nota: {e}")
+        return None
+
+
 
 # ==============================================================================
 # 🔑 LOGIN CON SUPABASE AUTH (BLOQUEO DE PANTALLA)
@@ -5649,6 +5682,26 @@ function iniciarArrastreFlotante(e) {{
     <img src="https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.8);" />
 </div>
 
+
+
+
+    <!-- 📝 NOTAS DE TURNO -->
+    <button
+        class="opcion-menu-ruteos"
+        onclick="togglePanelNotas()">
+        📝 &nbsp; NOTAS RÁPIDAS
+    </button>
+
+    <!-- CONTENEDOR DE NOTAS -->
+    <div id="panel-notas-lateral" style="display: none; margin-top: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; padding: 10px;">
+        <div style="font-size: 12px; font-weight: bold; color: #66CDAA; margin-bottom: 6px;">📌 Anotaciones del Turno</div>
+        <textarea id="input-notas-turno" placeholder="Escribe pendientes, incidencias o recordatorios..." style="width: 100%; height: 100px; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #141414; color: white; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
+        <button onclick="guardarNotasTurno()" style="width: 100%; margin-top: 6px; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px;">💾 Guardar Notas</button>
+    </div>
+
+
+
+
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
     <button
         class="opcion-menu-ruteos"
@@ -5992,6 +6045,32 @@ function iniciarArrastreFlotante(e) {{
         `;
         box.scrollTop = box.scrollHeight;
     }}
+
+
+    function togglePanelNotas() {{
+        const panel = document.getElementById("panel-notas-lateral");
+        if (!panel) return;
+        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+    }}
+
+    function guardarNotasTurno() {{
+        const inputNotas = document.getElementById("input-notas-turno");
+        if (!inputNotas) return;
+        
+        // Guardar en el navegador de forma local
+        localStorage.setItem("notas_turno_ruteo", inputNotas.value);
+        
+        alert("✅ ¡Notas guardadas correctamente!");
+    }}
+
+    // Cargar las notas guardadas al iniciar si existen
+    window.addEventListener("DOMContentLoaded", () => {{
+        const notasGuardadas = localStorage.getItem("notas_turno_ruteo");
+        const inputNotas = document.getElementById("input-notas-turno");
+        if (notasGuardadas && inputNotas) {{
+            inputNotas.value = notasGuardadas;
+        }}
+    }});
 
 
 
