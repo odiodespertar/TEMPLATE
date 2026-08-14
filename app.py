@@ -5565,7 +5565,7 @@ function iniciarArrastreFlotante(e) {{
     <button
         class="opcion-menu-ruteos"
         onclick="toggleSubmenuRuteos()">
-        🔽 &nbsp; SELECCIONAR RUTEO
+        👇 &nbsp; SELECCIONAR RUTEO
     </button>
 
     <div id="submenu-ruteos-lateral">
