@@ -1114,6 +1114,7 @@ perfil_actual = "LUNES"
 reglas_json = json.dumps(reglas_ruteo)
 mapa_origenes_json = json.dumps(MAPA_ORIGENES)
 preguntas_faq_json = json.dumps(PREGUNTAS_FRECUENTES)
+notas_svc_json = json.dumps(obtener_notas_svc())
 
 app_html = f"""
 <!DOCTYPE html>
@@ -5701,7 +5702,36 @@ function iniciarArrastreFlotante(e) {{
             📋 Armar Resumen de Cierre
         </button>
 
-	
+
+                <!-- 📝 APARTADO PARA AGREGAR INFORMACIÓN ADICIONAL DE SVC -->
+        <div style="margin-bottom: 10px; background: #202326; border: 1px solid #3a3f44; border-radius: 8px; padding: 10px;">
+
+            <div style="font-size: 13px; font-weight: bold; color: #20B2AA; margin-bottom: 8px;">
+                📝 AGREGAR INFORMACIÓN DE SVC
+            </div>
+
+            <input
+                type="text"
+                id="input-nota-svc"
+                placeholder="SVC (ej. SJA1)"
+                style="width: 100%; box-sizing: border-box; padding: 7px; margin-bottom: 6px; border-radius: 5px; border: 1px solid #444; background: #141414; color: white; font-size: 13px;"
+            >
+
+            <textarea
+                id="input-contenido-nota-svc"
+                placeholder="Escribe aquí la información adicional..."
+                rows="3"
+                style="width: 100%; box-sizing: border-box; padding: 7px; margin-bottom: 7px; border-radius: 5px; border: 1px solid #444; background: #141414; color: white; font-size: 13px; resize: vertical;"
+            ></textarea>
+
+            <button
+                onclick="guardarNotaDesdeBot()"
+                style="width: 100%; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 7px; border-radius: 6px; font-weight: bold; font-size: 12px;">
+                💾 GUARDAR INFORMACIÓN
+            </button>
+
+        </div>
+
 
         <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
             <div style="background: #262626; border-left: 3px solid #008218; padding: 8px; border-radius: 6px; color: #ffffff;">
@@ -5721,6 +5751,7 @@ function iniciarArrastreFlotante(e) {{
     const REGLAS_RUTEO = {reglas_json};
     const MAPA_ORIGENES = {mapa_origenes_json};
     const PREGUNTAS_FRECUENTES = {preguntas_faq_json};
+	const NOTAS_SVC = {notas_svc_json};
 
     let flujoResumen = false;
     let pasoResumen = 0;
@@ -5781,6 +5812,23 @@ function iniciarArrastreFlotante(e) {{
                          `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
                          `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
                          `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+						 
+            // 📝 Buscar información adicional guardada para este SVC
+            if (Array.isArray(NOTAS_SVC)) {{
+                let notasEncontradas = NOTAS_SVC.filter(nota =>
+                    String(nota.svc || "").toLowerCase() === svcEncontrado.toLowerCase()
+                );
+
+                if (notasEncontradas.length > 0) {{
+                    respuesta += `📝 <b>Información adicional:</b><br>`;
+
+                    notasEncontradas.forEach(nota => {{
+                        respuesta += `• ${{nota.contenido}}<br>`;
+                    }});
+
+                    respuesta += `<br>`;
+                }}
+            }}
         }}
 
         let faqsEncontradas = [];
@@ -5839,6 +5887,81 @@ function iniciarArrastreFlotante(e) {{
             box.scrollTop = box.scrollHeight;
         }}, 150);
     }}
+
+
+    // ==============================================================================
+// 📝 GUARDAR INFORMACIÓN ADICIONAL DE UN SVC
+// ==============================================================================
+    async function guardarNotaDesdeBot() {{
+        const inputSvc = document.getElementById("input-nota-svc");
+        const inputNota = document.getElementById("input-contenido-nota-svc");
+
+        if (!inputSvc || !inputNota) return;
+
+        const svc = inputSvc.value.trim().toUpperCase();
+        const contenido = inputNota.value.trim();
+
+        if (!svc) {{
+            alert("⚠️ Ingresa el SVC.");
+            inputSvc.focus();
+            return;
+        }}
+
+        if (!contenido) {{
+            alert("⚠️ Ingresa la información adicional.");
+            inputNota.focus();
+            return;
+        }}
+
+        if (!supabaseClient) {{
+            alert("⚠️ No hay conexión con Supabase.");
+            return;
+        }}
+
+        try {{
+            const {{ data, error }} = await supabaseClient
+                .from("notas_svc")
+                .insert([
+                    {{
+                        svc: svc,
+                        contenido: contenido
+                    }}
+                ])
+                .select();
+
+            if (error) {{
+                console.error("Error al guardar nota:", error);
+                alert("❌ No se pudo guardar la información: " + error.message);
+                return;
+            }}
+
+            // 🟢 Actualizar inmediatamente las notas disponibles para el asistente
+            if (!Array.isArray(NOTAS_SVC)) {{
+                NOTAS_SVC = [];
+            }}
+
+            if (data && data.length > 0) {{
+                NOTAS_SVC.push(data[0]);
+            }} else {{
+                NOTAS_SVC.push({{
+                    svc: svc,
+                    contenido: contenido
+                }});
+            }}
+
+            // Limpiar campos
+            inputSvc.value = "";
+            inputNota.value = "";
+
+            alert("✅ Información guardada correctamente para " + svc);
+
+        }} catch (err) {{
+            console.error("Error inesperado al guardar nota:", err);
+            alert("❌ Ocurrió un error al guardar la información.");
+        }}
+    }}
+
+
 
     // =========================================================================
     // LÓGICA PASO A PASO Y GENERACIÓN DE REPORTE COMPLETO
