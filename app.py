@@ -5685,23 +5685,6 @@ function iniciarArrastreFlotante(e) {{
 
 
 
-    <!-- 📝 NOTAS DE TURNO -->
-    <button
-        class="opcion-menu-ruteos"
-        onclick="togglePanelNotas()">
-        📝 &nbsp; NOTAS RÁPIDAS
-    </button>
-
-    <!-- CONTENEDOR DE NOTAS -->
-    <div id="panel-notas-lateral" style="display: none; margin-top: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; padding: 10px;">
-        <div style="font-size: 12px; font-weight: bold; color: #66CDAA; margin-bottom: 6px;">📌 Anotaciones del Turno</div>
-        <textarea id="input-notas-turno" placeholder="Escribe pendientes, incidencias o recordatorios..." style="width: 100%; height: 100px; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #141414; color: white; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
-        <button onclick="guardarNotasTurno()" style="width: 100%; margin-top: 6px; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px;">💾 Guardar Notas</button>
-    </div>
-
-
-
-
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
     <button
         class="opcion-menu-ruteos"
