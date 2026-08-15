@@ -5713,12 +5713,20 @@ function iniciarArrastreFlotante(e) {{
         </button>
 
 
-                <!-- 📝 APARTADO PARA AGREGAR INFORMACIÓN ADICIONAL DE SVC -->
-        <div style="margin-bottom: 10px; background: #202326; border: 1px solid #3a3f44; border-radius: 8px; padding: 10px;">
+    <!-- 📝 APARTADO PARA AGREGAR INFORMACIÓN ADICIONAL DE SVC -->
+    <div style="margin-bottom: 10px; background: #202326; border: 1px solid #3a3f44; border-radius: 8px; overflow: hidden;">
 
-            <div style="font-size: 13px; font-weight: bold; color: #20B2AA; margin-bottom: 8px;">
-                📝 AGREGAR INFORMACIÓN DE SVC
-            </div>
+        <!-- BOTÓN PARA MOSTRAR / OCULTAR -->
+        <div
+            onclick="toggleNotasSVC()"
+            style="padding: 10px; cursor: pointer; font-size: 13px; font-weight: bold; color: #20B2AA; display: flex; align-items: center; justify-content: space-between; user-select: none;"
+        >
+            <span>📝 AGREGAR INFORMACIÓN DE SVC</span>
+            <span id="flecha-notas-svc" style="font-size: 12px;">▸</span>
+        </div>
+
+        <!-- CONTENIDO DE NOTAS -->
+        <div id="contenido-notas-svc" style="display: none; padding: 0 10px 10px 10px;">
 
             <input
                 type="text"
@@ -5736,11 +5744,14 @@ function iniciarArrastreFlotante(e) {{
 
             <button
                 onclick="guardarNotaDesdeBot()"
-                style="width: 100%; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 7px; border-radius: 6px; font-weight: bold; font-size: 12px;">
+                style="width: 100%; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 7px; border-radius: 6px; font-weight: bold; font-size: 12px;"
+            >
                 💾 GUARDAR INFORMACIÓN
             </button>
 
         </div>
+
+    </div>
 
 
         <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
@@ -5766,6 +5777,26 @@ function iniciarArrastreFlotante(e) {{
     let flujoResumen = false;
     let pasoResumen = 0;
     let dataResumen = {{}}; // ✅ Llevaba llaves simples y rompía Python
+
+
+
+    // 📝 MOSTRAR / OCULTAR APARTADO DE NOTAS SVC
+    function toggleNotasSVC() {{
+        const contenido = document.getElementById("contenido-notas-svc");
+        const flecha = document.getElementById("flecha-notas-svc");
+
+        if (!contenido) return;
+
+        if (contenido.style.display === "none" || contenido.style.display === "") {{
+            contenido.style.display = "block";
+            if (flecha) flecha.textContent = "▾";
+        }} else {{
+            contenido.style.display = "none";
+            if (flecha) flecha.textContent = "▸";
+        }}
+    }}
+
+
 
     function togglePanelBotLateral() {{
         const panel = document.getElementById("panel-bot-lateral-contenido");
