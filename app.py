@@ -135,6 +135,7 @@ USUARIOS_LOGIN = {
     "lili": "odiodespertar@gmail.com",
 	"frida": "viajeinterestelar@gmail.com",
 	"bladi": "liliana.g.logisticaytransporte@gmail.com",
+	"boss": "huicholhiena@gmail.com",
 }
 
 
