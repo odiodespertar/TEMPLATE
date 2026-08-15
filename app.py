@@ -5936,8 +5936,8 @@ function iniciarArrastreFlotante(e) {{
                         svc: svc,
                         contenido: contenido
                     }}
-                ])
-                .select();
+                ]);
+				
 
             if (error) {{
                 console.error("Error al guardar nota:", error);
@@ -5950,14 +5950,13 @@ function iniciarArrastreFlotante(e) {{
                 NOTAS_SVC = [];
             }}
 
-            if (data && data.length > 0) {{
-                NOTAS_SVC.push(data[0]);
-            }} else {{
+
+				
                 NOTAS_SVC.push({{
                     svc: svc,
                     contenido: contenido
                 }});
-            }}
+            
 
             // Limpiar campos
             inputSvc.value = "";
