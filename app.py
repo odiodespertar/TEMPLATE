@@ -1965,6 +1965,10 @@ app_html = f"""
             "{st.session_state.supabase_session.access_token[:20]}..."
         );
 
+        supabaseClient.auth.getUser().then(({ data, error }) => {{
+            console.log("👤 DEBUG SUPABASE USER:", data?.user?.id || null);
+            console.log("❌ DEBUG AUTH ERROR:", error || null);
+        }});
 
     let contadorPestanaDinamica = 900;
 
