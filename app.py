@@ -6165,7 +6165,7 @@ function iniciarArrastreFlotante(e) {{
         // Texto Plan ND corregido
         let textoPlanND = "";
         if (d.plan_nd) {{
-            textoPlanND = "🚛 Se cargó plan de <b>Plan ND</b> en AM0.<br>";
+            textoPlanND = "🚛 Se cargó <b>Plan ND</b> en AM0.<br>";
         }}
 
         // Armado del mensaje final con la plantilla original
