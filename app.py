@@ -5758,7 +5758,7 @@ function iniciarArrastreFlotante(e) {{
 
         <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
             <div style="background: #262626; border-left: 3px solid #008218; padding: 8px; border-radius: 6px; color: #ffffff;">
-                🤖 <b>Asistente de Ruteo:</b><br>Consulta el SVC o presiona arriba para cierre de turno.
+                🤖 <b>Asistente de Ruteo:</b><br>Consulta el SVC o presiona arriba para cierre de ruteo.
             </div>
         </div>
 
