@@ -6567,6 +6567,18 @@ html_limpio = """
         font-weight: bold; cursor: pointer; box-shadow: 0 4px #0a56a3; transition: 0.1s;
     }
     .btn-3d:active { box-shadow: 0 2px #0a56a3; transform: translateY(2px); }
+
+    /* 🟢 OCULTAR AVATAR DE PERFIL Y CORONA DENTRO DE ESTE IFRAME */
+    [data-testid="stViewerBadge"],
+    .stAppViewerBlock,
+    div[class*="stViewerBadge"],
+    a[href*="streamlit.io"],
+    img[src*="avatar"],
+    svg,
+    iframe {
+        display: none !important;
+        visibility: hidden !important;
+    }
 </style>
 
 <div class="main-box">
@@ -6598,6 +6610,7 @@ html_limpio = """
     }
     ejecutarTodo();
 </script>
+"""cript>
 """
 
 # Renderizado final del componente inferior
