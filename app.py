@@ -11,30 +11,22 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
-# 🟢 INYECCIÓN LIMPIA DIRECTA AL DOM SIN USAR LIBRERÍAS EXTERNAS (NO DA NAMEERROR)
+# 2. Inyección para ocultar el footer y badges (CSS directo es más seguro que JS)
 st.markdown("""
-    <script>
-        try {
-            const css = `
-                [data-testid="stViewerBadge"],
-                .stAppViewerBlock,
-                div[class*="stViewerBadge"],
-                iframe[title="streamlit_badge"],
-                footer {
-                    display: none !important;
-                    visibility: hidden !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                }
-            `;
-            const style = window.parent.document.createElement('style');
-            style.type = 'text/css';
-            style.appendChild(window.parent.document.createTextNode(css));
-            window.parent.document.head.appendChild(style);
-        } catch (e) {
-            console.log("Ignorado");
+    <style>
+        /* Oculta marcas de agua, footers y badges de Streamlit */
+        [data-testid="stViewerBadge"],
+        .stAppViewerBlock,
+        div[class*="stViewerBadge"],
+        iframe[title="streamlit_badge"],
+        footer,
+        #MainMenu {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
-    </script>
+    </style>
 """, unsafe_allow_html=True)
 
 
