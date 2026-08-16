@@ -12,7 +12,7 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
 # 🟢 INYECCIÓN PARA BORRAR EL MANAGE APP SIN PROVOCAR NameError
-components.html("""
+st.markdown("""
     <script>
         try {
             const css = `
