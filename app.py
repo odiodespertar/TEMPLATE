@@ -408,7 +408,7 @@ if st.session_state.flotar_activo:
 
             /* 3. Estilos de tablas cuando la ventana está flotando */
             table, div[data-testid="stTable"], .js-plotly-plot {{
-                max-height: 300px !important;
+                max-height: 380px !important;
                 overflow-y: auto !important;
                 display: block !important;
             }}
@@ -441,13 +441,15 @@ st.markdown("""
         pointer-events: none !important;
     }
 
-    /* 🔴 2. RECORTE DE LA BARRA INFERIOR DE MANAGE APP (MARGEN NEGATIVO) */
+    /* 🔴 2. RECORTE DE LA BARRA INFERIOR Y CONTROL DE ESPACIO SUPERIOR */
     html, body, .stApp {
         overflow-x: hidden !important;
     }
     
-    .main .block-container {
-        padding-bottom: 3rem !important;
+    .main .block-container,
+    div[data-testid="stAppViewBlockContainer"] {
+        padding-top: 0rem !important;    /* 👈 Aumenta o reduce este valor para cambiar la altura */
+        padding-bottom: 0rem !important;
     }
 
     /* Empujar el viewport para cubrir la barra de Manage App */
