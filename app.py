@@ -448,7 +448,7 @@ st.markdown("""
     
     .main .block-container,
     div[data-testid="stAppViewBlockContainer"] {
-        margin-top: -2rem !important;    /* 👈 Aumenta o reduce este valor para cambiar la altura */
+        margin-top: -4rem !important;    /* 👈 Aumenta o reduce este valor para cambiar la altura */
         padding-bottom: 0rem !important;
     }
 
