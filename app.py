@@ -11,6 +11,35 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
+
+# 🟢 2. INYECCIÓN PARA OCULTAR LA BARRA "MANAGE APP" EN EL MARCO PADRE
+components.html("""
+    <script>
+        try {
+            const css = `
+                [data-testid="stViewerBadge"],
+                .stAppViewerBlock,
+                div[class*="stViewerBadge"],
+                iframe[title="streamlit_badge"],
+                footer {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            `;
+            const style = window.parent.document.createElement('style');
+            style.type = 'text/css';
+            style.appendChild(window.parent.document.createTextNode(css));
+            window.parent.document.head.appendChild(style);
+        } catch (e) {
+            console.log("Acceso al DOM padre bloqueado");
+        }
+    </script>
+""", height=0)
+
+
+
 URL_MAPA = (
     "https://drive.google.com/thumbnail?id=1M4GLEwFzhLrZjV-zmvGrdTQhC6IjwxOJ&sz=w1000"
 )
@@ -405,9 +434,14 @@ st.markdown("""
     [data-testid="stViewerBadge"],
     .stAppViewerBlock,
     div[class*="stViewerBadge"],
-    iframe[title="streamlit_badge"] {
+    [data-testid="stViewerBadge"],
+    .stAppViewerBlock,
+    iframe[title="streamlit_badge"],
+    footer {
         display: none !important;
         visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
 
     .block-container {padding: 0rem !important;}
@@ -2031,6 +2065,26 @@ app_html = f"""
         }});
 
     let contadorPestanaDinamica = 900;
+
+
+    // 🟢 DESTRUIR BARRA FLOTANTE "MANAGE APP" EN TIEMPO REAL
+    function ocultarManageApp() {{
+        try {{
+            const elementosOcultar = [
+                ...document.querySelectorAll('div[class*="stViewerBadge"], [data-testid="stViewerBadge"], .stAppViewerBlock, iframe[title="streamlit_badge"]'),
+                ...window.parent.document.querySelectorAll('div[class*="stViewerBadge"], [data-testid="stViewerBadge"], .stAppViewerBlock, iframe[title="streamlit_badge"]')
+            ];
+
+            elementosOcultar.forEach(el => {{
+                if (el) {{
+                    el.style.setProperty('display', 'none', 'important');
+                    el.style.setProperty('visibility', 'hidden', 'important');
+                    el.remove();
+                }}
+            }});
+        }} catch (e) {{}}
+    }}
+    setInterval(ocultarManageApp, 500);
 
 
 
