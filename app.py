@@ -2689,12 +2689,11 @@ app_html = f"""
 
    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
         contadorPestanaDinamica++;
-        // 🟢 Si viene de Supabase (idBD), usamos idBD como identificador único de la pestaña
-        let nuevoTabId = idBD ? idBD : contadorPestanaDinamica;
+        let nuevoTabId = contadorPestanaDinamica;
 
         let selectorCiclos = document.getElementById("ciclo-selector");
         if (selectorCiclos) {{
-            let existe = Array.from(selectorCiclos.options).some(opt => opt.value == nuevoTabId || opt.getAttribute("data-id-bd") == idBD);
+            let existe = Array.from(selectorCiclos.options).some(opt => opt.getAttribute("data-id-bd") == idBD || opt.value == nuevoTabId);
             if (!existe) {{
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
@@ -6499,9 +6498,9 @@ if ruteos_bd:
     ruteos_json_str = json.dumps(ruteos_bd)
     script_cargas = """
     <script>
-        function inicializarRuteosSupabase() {
+        document.addEventListener("DOMContentLoaded", function() {
             let ruteosCargados = """ + ruteos_json_str + """;
-            if (Array.isArray(ruteosCargados) && ruteosCargados.length > 0) {
+            if (Array.isArray(ruteosCargados)) {
                 ruteosCargados.forEach(ruteo => {
                     crearTabYContenidoEnPantalla(
                         ruteo.nombre, 
@@ -6513,38 +6512,14 @@ if ruteos_bd:
                         ruteo.datos.llevaNodos || false
                     );
                 });
-
-                // 🟢 FORZAR VISIBILIDAD DE LA ÚLTIMA OPCIÓN CARGADA
-                let selectorCiclos = document.getElementById("ciclo-selector");
-                if (selectorCiclos && selectorCiclos.options.length > 0) {
-                    let ultimoRuteo = ruteosCargados[ruteosCargados.length - 1];
-                    let targetVal = ultimoRuteo.id ? ultimoRuteo.id : selectorCiclos.options[selectorCiclos.options.length - 1].value;
-                    
-                    selectorCiclos.value = targetVal;
-                    if (typeof cambiarCiclo === 'function') {
-                        cambiarCiclo(targetVal);
-                    }
-                }
-                
-                // 🟢 RESTAURAR VALORES Y VOLÚMENES GUARDADOS
-                if (typeof restaurarEstadoEnVivo === 'function') {
-                    restaurarEstadoEnVivo();
-                }
             }
-        }
-
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", inicializarRuteosSupabase);
-        } else {
-            inicializarRuteosSupabase();
-        }
+        });
     </script>
     </body>
     """
     app_html = app_html.replace("</body>", script_cargas)
 
 html(app_html, height=1200, scrolling=True)
-
 
 
 # ==============================================================================
