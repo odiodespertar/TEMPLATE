@@ -393,9 +393,20 @@ if st.session_state.flotar_activo:
 # ========================================== 
 st.markdown("""
     <style>
+    /* 🔴 OCULTAR DE TAJO BARRA SUPERIOR, GITHUB, SHARE, AJUSTES Y SIDEBAR NATIVA */
+    header[data-testid="stHeader"],
+    div[data-testid="stToolbar"],
+    footer,
+    #MainMenu,
+    section[data-testid="stSidebar"],
+    button[title="View app source"],
+    button[title="Edit this app"],
+    a[href*="github.com"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
     .block-container {padding: 0rem !important;}
-    footer, #MainMenu {visibility: hidden;}
-    header {visibility: visible !important;}
     body { background-color: #25282b; }
     .poligono-bloque {
         letter-spacing: -0.2px; 
