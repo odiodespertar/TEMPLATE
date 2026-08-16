@@ -11,22 +11,30 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
-# 2. Inyección para ocultar el footer y badges (CSS directo es más seguro que JS)
+# 🟢 INYECCIÓN LIMPIA DIRECTA AL DOM SIN USAR LIBRERÍAS EXTERNAS (NO DA NAMEERROR)
 st.markdown("""
-    <style>
-        /* Oculta marcas de agua, footers y badges de Streamlit */
-        [data-testid="stViewerBadge"],
-        .stAppViewerBlock,
-        div[class*="stViewerBadge"],
-        iframe[title="streamlit_badge"],
-        footer,
-        #MainMenu {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
+    <script>
+        try {
+            const css = `
+                [data-testid="stViewerBadge"],
+                .stAppViewerBlock,
+                div[class*="stViewerBadge"],
+                iframe[title="streamlit_badge"],
+                footer {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            `;
+            const style = window.parent.document.createElement('style');
+            style.type = 'text/css';
+            style.appendChild(window.parent.document.createTextNode(css));
+            window.parent.document.head.appendChild(style);
+        } catch (e) {
+            console.log("Ignorado");
         }
-    </style>
+    </script>
 """, unsafe_allow_html=True)
 
 
@@ -5954,13 +5962,14 @@ function iniciarArrastreFlotante(e) {{
             return;
         }}
 
-        // 🟢 1. BÚSQUEDA EN MAPA_ORIGENES
+        // 🟢 1. BÚSQUEDA AVANZADA EN MAPA_ORIGENES (COINCIDENCIA PARCIAL)
         let claveOrigenMatch = null;
         let infoOrigenMatch = null;
 
         if (typeof MAPA_ORIGENES !== "undefined" && MAPA_ORIGENES) {{
             Object.keys(MAPA_ORIGENES).forEach(key => {{
                 let keyL = key.toLowerCase().trim();
+                // Coincide si lo buscado está dentro de la clave o la clave dentro de lo buscado (ej: "sja1" coincide con "SJA1 C1")
                 if (q === keyL || q.includes(keyL) || keyL.includes(q)) {{
                     claveOrigenMatch = key;
                     infoOrigenMatch = MAPA_ORIGENES[key];
@@ -5968,6 +5977,7 @@ function iniciarArrastreFlotante(e) {{
             }});
         }}
 
+        // Imprimir bloque de Origen y Validación si hubo coincidencia
         if (infoOrigenMatch) {{
             respuesta += `📍 <b>Origen y Validación para ${{claveOrigenMatch.toUpperCase()}}:</b><br>` +
                          `• 🗺️ <b>Región:</b> Región ${{infoOrigenMatch.region}}<br>` +
@@ -5975,22 +5985,7 @@ function iniciarArrastreFlotante(e) {{
                          `• ✅ <b>Validación:</b> ${{infoOrigenMatch.val}}<br><br>`;
         }}
 
-        // 🟢 2. BÚSQUEDA DE REGLAS DE RUTEO (REGLAS_RUTEO) - AHORA SIEMPRE SE EJECUTA
-        if (typeof REGLAS_RUTEO !== "undefined" && REGLAS_RUTEO) {{
-            let claveRegla = null;
-            Object.keys(REGLAS_RUTEO).forEach(k => {{
-                let kClean = k.toLowerCase().trim().replace("_extendido","").replace("_precarga","");
-                if (q.includes(kClean) || kClean.includes(q)) {{
-                    claveRegla = k;
-                }}
-            }});
-
-            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}<br><br>`;
-            }}
-        }}
-
-        // 🟢 3. BÚSQUEDA EN NOTAS ADICIONALES (NOTAS_SVC)
+        // 🟢 2. BÚSQUEDA EN NOTAS ADICIONALES (NOTAS_SVC)
         if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
             let notasEncontradas = NOTAS_SVC.filter(nota => {{
                 let nSvc = String(nota.svc || "").toLowerCase().trim();
@@ -6006,7 +6001,7 @@ function iniciarArrastreFlotante(e) {{
             }}
         }}
 
-        // 🟢 4. PREGUNTAS FRECUENTES (FAQS)
+        // 🟢 3. PREGUNTAS FRECUENTES (FAQS)
         let faqsEncontradas = [];
         if (typeof PREGUNTAS_FRECUENTES !== "undefined" && PREGUNTAS_FRECUENTES) {{
             if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
@@ -6021,6 +6016,25 @@ function iniciarArrastreFlotante(e) {{
 
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
+        }}
+
+        // 🟢 4. REGLAS ESPECÍFICAS DE REGLAS_RUTEO
+        if (!infoOrigenMatch && respuesta === "") {{
+            let claveRegla = null;
+            if (typeof REGLAS_RUTEO !== "undefined" && REGLAS_RUTEO) {{
+                if (q.includes("smx5")) {{
+                    claveRegla = q.includes("extendido") ? "smx5_extendido" : "smx5_precarga";
+                }} else {{
+                    Object.keys(REGLAS_RUTEO).forEach(k => {{
+                        let base = k.replace("_extendido","").replace("_precarga","");
+                        if (q.includes(base)) claveRegla = k;
+                    }});
+                }}
+
+                if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
+                    respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
+                }}
+            }}
         }}
 
         if (!respuesta) {{
