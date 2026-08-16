@@ -5962,7 +5962,7 @@ function iniciarArrastreFlotante(e) {{
             return;
         }}
 
-        // 1. BÚSQUEDA DE ORIGEN Y NOTAS DE SVC EN PARALELO
+        // 1. BUSCAR SVC EN MAPA DE ORIGENES
         let svcEncontrado = null;
         if (typeof MAPA_ORIGENES !== "undefined") {{
             Object.keys(MAPA_ORIGENES).forEach(key => {{
@@ -5970,7 +5970,7 @@ function iniciarArrastreFlotante(e) {{
             }});
         }}
 
-        // Si no está en el mapa pero el usuario escribió un SVC directamente (ej. "sja1")
+        // Buscar también si está guardado en NOTAS_SVC
         if (!svcEncontrado && typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
             NOTAS_SVC.forEach(nota => {{
                 let nSvc = String(nota.svc || "").trim().toLowerCase();
@@ -5978,16 +5978,20 @@ function iniciarArrastreFlotante(e) {{
             }});
         }}
 
+        // 2. CONSTRUIR RESPUESTA: INFORMACIÓN BASE + NOTAS GUARDADAS
         if (svcEncontrado) {{
+            let svcUpper = svcEncontrado.toUpperCase();
+
+            // A) Información Base de MAPA_ORIGENES
             if (typeof MAPA_ORIGENES !== "undefined" && MAPA_ORIGENES[svcEncontrado]) {{
                 let info = MAPA_ORIGENES[svcEncontrado];
-                respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
+                respuesta += `📍 <b>Origen y Validación para ${{svcUpper}}:</b><br>` +
                              `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
                              `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
                              `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
             }}
 
-            // 📝 EXTRAER NOTAS DE SUPABASE
+            // B) Información Adicional de Supabase (NOTAS_SVC)
             if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
                 let notasEncontradas = NOTAS_SVC.filter(nota =>
                     String(nota.svc || "").trim().toLowerCase() === svcEncontrado.trim().toLowerCase()
@@ -6003,7 +6007,7 @@ function iniciarArrastreFlotante(e) {{
             }}
         }}
 
-        // 2. BÚSQUEDA EN PREGUNTAS FRECUENTES (FAQS)
+        // 3. PREGUNTAS FRECUENTES (FAQS)
         let faqsEncontradas = [];
         if (typeof PREGUNTAS_FRECUENTES !== "undefined") {{
             if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
@@ -6014,19 +6018,13 @@ function iniciarArrastreFlotante(e) {{
             if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
             if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
             if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
-            if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
-                if (PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"]) faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"]);
-            }}
-            if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
-                if (PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"]) faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"]);
-            }}
         }}
 
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
         }}
 
-        // 3. REGLAS ESPECÍFICAS
+        // 4. REGLAS ESPECÍFICAS
         if (!svcEncontrado && faqsEncontradas.length === 0) {{
             let claveRegla = null;
             if (typeof REGLAS_RUTEO !== "undefined") {{
@@ -6046,7 +6044,7 @@ function iniciarArrastreFlotante(e) {{
         }}
 
         if (!respuesta) {{
-            respuesta = "⚠️ No encontré información para esa consulta. Verifica haber escrito bien el SVC o revisa en las notas guardadas.";
+            respuesta = "⚠️ No encontré información para esa consulta. Verifica haber escrito bien el SVC.";
         }}
 
         setTimeout(() => {{
