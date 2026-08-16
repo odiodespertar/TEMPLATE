@@ -328,18 +328,26 @@ def toggle_flotar():
 if st.session_state.flotar_activo:
     st.markdown("""
         <style>
-            div[data-testid="stHorizontalBlock"]:has(> div:has(h3)), 
-            div.element-container:has(div.stMetric),
-            div.element-container:has(text),
-            div[data-testid="stHorizontalBlock"] button:not(:has(p:contains("FLOTAR"))),
-            .row-widget.stButton:not(:has(button:contains("FLOTAR"))) {
+            div[data-testid="stToolbar"],
+            button[title="View app source"],
+            button[title="Edit this app"],
+            a[href*="github.com"],
+            #MainMenu,
+            footer {
                 display: none !important;
+                visibility: hidden !important;
             }
 
-            table, div[data-testid="stTable"], .js-plotly-plot {
-                max-height: 380px !important;
-                overflow-y: auto !important;
+            /* 2. Mantener SIEMPRE VISIBLE la barra superior izquierda y las flechas de la Sidebar */
+            header[data-testid="stHeader"] {
+                background: transparent !important;
+                z-index: 99999 !important;
+            }
+
+            button[data-testid="stHeaderNavStateButton"],
+            button[data-testid="stSidebarCollapseButton"] {
                 display: block !important;
+                visibility: visible !important;
             }
         </style>
     """, unsafe_allow_html=True)
