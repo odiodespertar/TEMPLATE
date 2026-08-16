@@ -421,10 +421,11 @@ if st.session_state.flotar_activo:
 # ========================================== 
 st.markdown("""
     <style>
-    /* 🔴 OCULTAR BARRA SUPERIOR, GITHUB, SHARE, AJUSTES, SIDEBAR NATIVA Y MANAGE APP BADGE */
+    /* 🔴 1. OCULTAR ELEMENTOS NATIVOS DE INTERFAZ */
     header[data-testid="stHeader"],
     div[data-testid="stToolbar"],
     footer,
+    .stAppFooter,
     #MainMenu,
     section[data-testid="stSidebar"],
     button[title="View app source"],
@@ -433,14 +434,25 @@ st.markdown("""
     [data-testid="stViewerBadge"],
     .stAppViewerBlock,
     div[class*="stViewerBadge"],
-    [data-testid="stViewerBadge"],
-    .stAppViewerBlock,
-    iframe[title="streamlit_badge"],
-    footer {
+    iframe[title="streamlit_badge"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
+    }
+
+    /* 🔴 2. RECORTE DE LA BARRA INFERIOR DE MANAGE APP (MARGEN NEGATIVO) */
+    html, body, .stApp {
+        overflow-x: hidden !important;
+    }
+    
+    .main .block-container {
+        padding-bottom: 3rem !important;
+    }
+
+    /* Empujar el viewport para cubrir la barra de Manage App */
+    iframe[src*="streamlit"] {
+        margin-bottom: -50px !important;
     }
 
     .block-container {padding: 0rem !important;}
