@@ -5962,101 +5962,97 @@ function iniciarArrastreFlotante(e) {{
             return;
         }}
 
-		
-        // Búsqueda inteligente para las nuevas reglas
-        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
-            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"] || REGLAS_RUTEO["Por capacidad de procesamiento"]);
-        }}
-        
-        if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
-            faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"]);
-        }}
-
-    
-
-
+        // 1. BÚSQUEDA DE ORIGEN Y NOTAS DE SVC EN PARALELO
         let svcEncontrado = null;
-        Object.keys(MAPA_ORIGENES).forEach(key => {{
-            if (q.includes(key.toLowerCase())) svcEncontrado = key;
-        }});
+        if (typeof MAPA_ORIGENES !== "undefined") {{
+            Object.keys(MAPA_ORIGENES).forEach(key => {{
+                if (q.includes(key.toLowerCase().trim())) svcEncontrado = key;
+            }});
+        }}
+
+        // Si no está en el mapa pero el usuario escribió un SVC directamente (ej. "sja1")
+        if (!svcEncontrado && typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
+            NOTAS_SVC.forEach(nota => {{
+                let nSvc = String(nota.svc || "").trim().toLowerCase();
+                if (nSvc && q.includes(nSvc)) svcEncontrado = nota.svc;
+            }});
+        }}
 
         if (svcEncontrado) {{
-            let info = MAPA_ORIGENES[svcEncontrado];
-            respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
-                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
-						 
-            // 📝 Buscar información adicional guardada para este SVC
-            if (Array.isArray(NOTAS_SVC)) {{
-                // Cambia esta línea de búsqueda:
+            if (typeof MAPA_ORIGENES !== "undefined" && MAPA_ORIGENES[svcEncontrado]) {{
+                let info = MAPA_ORIGENES[svcEncontrado];
+                respuesta += `📍 <b>Origen y Validación para ${{svcEncontrado.toUpperCase()}}:</b><br>` +
+                             `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
+                             `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
+                             `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+            }}
+
+            // 📝 EXTRAER NOTAS DE SUPABASE
+            if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
                 let notasEncontradas = NOTAS_SVC.filter(nota =>
-                    String(nota.svc || "").trim().toLowerCase() === svcEncontrado.toLowerCase().trim()
+                    String(nota.svc || "").trim().toLowerCase() === svcEncontrado.trim().toLowerCase()
                 );
 
                 if (notasEncontradas.length > 0) {{
-                    respuesta += `📝 <b>Información adicional:</b><br>`;
-
+                    respuesta += `📝 <b>Información adicional guardada:</b><br>`;
                     notasEncontradas.forEach(nota => {{
                         respuesta += `• ${{nota.contenido}}<br>`;
                     }});
-
                     respuesta += `<br>`;
                 }}
             }}
         }}
 
+        // 2. BÚSQUEDA EN PREGUNTAS FRECUENTES (FAQS)
         let faqsEncontradas = [];
-        if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
-        if (q.includes("bulk")) {{
-            if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
-            else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
-        }}
-        if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
-        if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
-        if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
-
-        // 🟢 BÚSQUEDA SEGURA DE LAS NUEVAS REGLAS (SIN ROMPER EL MENÚ)
-        if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
-            let resProc = PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"] || REGLAS_RUTEO["Por capacidad de procesamiento"];
-            if (resProc) faqsEncontradas.push(resProc);
-        }}
-        if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
-            let resLine = PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"] || REGLAS_RUTEO["Linehaul no coincide con el ciclo"];
-            if (resLine) faqsEncontradas.push(resLine);
+        if (typeof PREGUNTAS_FRECUENTES !== "undefined") {{
+            if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
+            if (q.includes("bulk")) {{
+                if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
+                else faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_general"]);
+            }}
+            if (q.includes("alchichica")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["alchichica"]);
+            if (q.includes("xico") || q.includes("tuzamapa")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["tuzamapa_xico"]);
+            if (q.includes("dropeo") || q.includes("drop")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["dropeo_nodos_sja1"]);
+            if (q.includes("procesamiento") || q.includes("capacidad") || q.includes("proximo ciclo")) {{
+                if (PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"]) faqsEncontradas.push(PREGUNTAS_FRECUENTES["Por capacidad de procesamiento"]);
+            }}
+            if (q.includes("linehaul") || q.includes("coincide") || q.includes("blancos")) {{
+                if (PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"]) faqsEncontradas.push(PREGUNTAS_FRECUENTES["Linehaul no coincide con el ciclo"]);
+            }}
         }}
 
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
-        }} else if (!svcEncontrado) {{
-            let claveRegla = null;
-            if (q.includes("smx5")) {{
-                if (q.includes("precarga") && !q.includes("extendido")) {{
-                    claveRegla = "smx5_precarga";
-                }} else if (q.includes("extendido") && !q.includes("precarga")) {{
-                    claveRegla = "smx5_extendido";
-                }} else {{
-                    // Si escribe solo "smx5", mostrará amablemente ambas secciones
-                    claveRegla = "smx5_precarga"; 
-                }}
-            }} else {{
-                Object.keys(REGLAS_RUTEO).forEach(k => {{
-                    let base = k.replace("_extendido","").replace("_precarga","");
-                    if (q.includes(base)) claveRegla = k;
-                }});
-            }}
+        }}
 
-            if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
-            }} else {{
-                respuesta = "⚠️ No encontré esa consulta en <b>reglas.py</b>. Prueba buscando por un SVC (ej. SJA1, SCP1, SMD1, SDD, Bulk, Alchichica) o presiona <b>'Armar Resumen de Cierre'</b>.";
+        // 3. REGLAS ESPECÍFICAS
+        if (!svcEncontrado && faqsEncontradas.length === 0) {{
+            let claveRegla = null;
+            if (typeof REGLAS_RUTEO !== "undefined") {{
+                if (q.includes("smx5")) {{
+                    claveRegla = q.includes("extendido") ? "smx5_extendido" : "smx5_precarga";
+                }} else {{
+                    Object.keys(REGLAS_RUTEO).forEach(k => {{
+                        let base = k.replace("_extendido","").replace("_precarga","");
+                        if (q.includes(base)) claveRegla = k;
+                    }});
+                }}
+
+                if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
+                    respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
+                }}
             }}
+        }}
+
+        if (!respuesta) {{
+            respuesta = "⚠️ No encontré información para esa consulta. Verifica haber escrito bien el SVC o revisa en las notas guardadas.";
         }}
 
         setTimeout(() => {{
             box.innerHTML += `
                 <div style="background: #cae8e2; border-left: 3px solid #66CDAA; padding: 8px; border-radius: 6px; line-height: 1.6; color: #000000; margin-bottom: 6px;">
-                    🤖 <b>let notasEncontra:</b><br>${{respuesta}}
+                    🤖 <b>Asistente:</b><br>${{respuesta}}
                 </div>
             `;
             box.scrollTop = box.scrollHeight;
