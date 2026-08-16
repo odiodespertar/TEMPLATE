@@ -11,8 +11,7 @@ from reglas import reglas_ruteo, MAPA_ORIGENES, PREGUNTAS_FRECUENTES
 
 st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wide", initial_sidebar_state="expanded")
 
-
-# 🟢 2. INYECCIÓN PARA OCULTAR LA BARRA "MANAGE APP" EN EL MARCO PADRE
+# 🟢 INYECCIÓN PARA BORRAR EL MANAGE APP SIN PROVOCAR NameError
 components.html("""
     <script>
         try {
@@ -33,7 +32,7 @@ components.html("""
             style.appendChild(window.parent.document.createTextNode(css));
             window.parent.document.head.appendChild(style);
         } catch (e) {
-            console.log("Acceso al DOM padre bloqueado");
+            console.log("Ignorado");
         }
     </script>
 """, height=0)
