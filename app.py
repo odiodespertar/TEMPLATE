@@ -5989,8 +5989,9 @@ function iniciarArrastreFlotante(e) {{
 						 
             // 📝 Buscar información adicional guardada para este SVC
             if (Array.isArray(NOTAS_SVC)) {{
+                // Cambia esta línea de búsqueda:
                 let notasEncontradas = NOTAS_SVC.filter(nota =>
-                    String(nota.svc || "").toLowerCase() === svcEncontrado.toLowerCase()
+                    String(nota.svc || "").trim().toLowerCase() === svcEncontrado.toLowerCase().trim()
                 );
 
                 if (notasEncontradas.length > 0) {{
@@ -6055,7 +6056,7 @@ function iniciarArrastreFlotante(e) {{
         setTimeout(() => {{
             box.innerHTML += `
                 <div style="background: #cae8e2; border-left: 3px solid #66CDAA; padding: 8px; border-radius: 6px; line-height: 1.6; color: #000000; margin-bottom: 6px;">
-                    🤖 <b>Asistente:</b><br>${{respuesta}}
+                    🤖 <b>let notasEncontra:</b><br>${{respuesta}}
                 </div>
             `;
             box.scrollTop = box.scrollHeight;
