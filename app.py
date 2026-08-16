@@ -64,15 +64,19 @@ def cargar_ruteos_bd():
             return []
     return []
 
-# 🟢 Función segura para guardar ruteos desde Python con sesión activa
+
+# 🟢 1. Guardar con el nombre del usuario activo en Python
 def guardar_nuevo_ruteo_bd(nombre, datos):
     if supabase and st.session_state.get("usuario_auth"):
         try:
             user_id_actual = st.session_state.usuario_auth.id
+            usuario_nombre = st.session_state.get("usuario_activo", "")
+            
             res = supabase.table("ruteos_guardados").insert({
                 "user_id": user_id_actual,
                 "nombre": nombre,
-                "datos": datos
+                "datos": datos,
+                "usuario_nombre": usuario_nombre  # 👈 Guardamos el nombre aquí
             }).execute()
             return True, res.data
         except Exception as e:
@@ -80,15 +84,19 @@ def guardar_nuevo_ruteo_bd(nombre, datos):
     return False, "Usuario no autenticado."
 
 
+# 🟢 2. Guardar desde el servidor
 def guardar_ruteo_servidor(nombre, datos_json_str):
     if supabase and st.session_state.get("usuario_auth"):
         try:
             u_id = st.session_state.usuario_auth.id
+            usuario_nombre = st.session_state.get("usuario_activo", "")
             datos_obj = json.loads(datos_json_str)
+            
             res = supabase.table("ruteos_guardados").insert({
                 "user_id": u_id,
                 "nombre": nombre,
-                "datos": datos_obj
+                "datos": datos_obj,
+                "usuario_nombre": usuario_nombre  # 👈 Guardamos el nombre aquí
             }).execute()
             return True
         except Exception as e:
