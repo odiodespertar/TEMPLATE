@@ -393,7 +393,7 @@ if st.session_state.flotar_activo:
 # ========================================== 
 st.markdown("""
     <style>
-    /* 🔴 OCULTAR DE TAJO BARRA SUPERIOR, GITHUB, SHARE, AJUSTES Y SIDEBAR NATIVA */
+    /* 🔴 OCULTAR BARRA SUPERIOR, GITHUB, SHARE, AJUSTES, SIDEBAR NATIVA Y MANAGE APP BADGE */
     header[data-testid="stHeader"],
     div[data-testid="stToolbar"],
     footer,
@@ -401,7 +401,11 @@ st.markdown("""
     section[data-testid="stSidebar"],
     button[title="View app source"],
     button[title="Edit this app"],
-    a[href*="github.com"] {
+    a[href*="github.com"],
+    [data-testid="stViewerBadge"],
+    .stAppViewerBlock,
+    div[class*="stViewerBadge"],
+    iframe[title="streamlit_badge"] {
         display: none !important;
         visibility: hidden !important;
     }
