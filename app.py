@@ -561,6 +561,14 @@ st.markdown("""
     .fleet-floating .pestanas-container {
         display: none !important;
     }
+	/* 🟢 OCULTAR AVATAR DE PERFIL Y BOTÓN ROJO DE CROWNS EN EL PIE DE PÁGINA */
+    div[data-testid="stStatusWidget"],
+    div[class*="stViewerBadge"],
+    div[class*="viewerBadge"],
+    [data-testid="stViewerBadge"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
