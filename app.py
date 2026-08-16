@@ -408,7 +408,7 @@ if st.session_state.flotar_activo:
 
             /* 3. Estilos de tablas cuando la ventana está flotando */
             table, div[data-testid="stTable"], .js-plotly-plot {{
-                max-height: 380px !important;
+                max-height: 300px !important;
                 overflow-y: auto !important;
                 display: block !important;
             }}
