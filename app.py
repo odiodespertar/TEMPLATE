@@ -15,7 +15,7 @@ st.set_page_config(page_title="Monitor Logístico - Liliana García", layout="wi
 st.markdown("""
     <script>
         try {
-            const css = `
+            const css = html, body, .stApp {
                 [data-testid="stViewerBadge"],
                 .stAppViewerBlock,
                 div[class*="stViewerBadge"],
@@ -448,7 +448,7 @@ st.markdown("""
     
     .main .block-container,
     div[data-testid="stAppViewBlockContainer"] {
-        padding-top: 0rem !important;    /* 👈 Aumenta o reduce este valor para cambiar la altura */
+        padding-top: -2rem !important;    /* 👈 Aumenta o reduce este valor para cambiar la altura */
         padding-bottom: 0rem !important;
     }
 
