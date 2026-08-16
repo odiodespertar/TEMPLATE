@@ -5953,7 +5953,7 @@ function iniciarArrastreFlotante(e) {{
         `;
         if (input) input.value = "";
 
-        let q = consulta.toLowerCase();
+        let q = consulta.toLowerCase().trim();
         let respuesta = "";
 
         if (q.includes("resumen") || q.includes("cierre") || q.includes("ciere") || flujoResumen) {{
@@ -5962,52 +5962,47 @@ function iniciarArrastreFlotante(e) {{
             return;
         }}
 
-        // 1. BUSCAR SVC EN MAPA DE ORIGENES
-        let svcEncontrado = null;
+        // 🟢 1. BÚSQUEDA INSENSIBLE EN MAPA_ORIGENES (MAYÚSCULAS Y MINÚSCULAS)
+        let claveOrigenMatch = null;
+        let nombreSvcMostrar = q.toUpperCase();
+
         if (typeof MAPA_ORIGENES !== "undefined") {{
             Object.keys(MAPA_ORIGENES).forEach(key => {{
-                if (q.includes(key.toLowerCase().trim())) svcEncontrado = key;
-            }});
-        }}
-
-        // Buscar también si está guardado en NOTAS_SVC
-        if (!svcEncontrado && typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
-            NOTAS_SVC.forEach(nota => {{
-                let nSvc = String(nota.svc || "").trim().toLowerCase();
-                if (nSvc && q.includes(nSvc)) svcEncontrado = nota.svc;
-            }});
-        }}
-
-        // 2. CONSTRUIR RESPUESTA: INFORMACIÓN BASE + NOTAS GUARDADAS
-        if (svcEncontrado) {{
-            let svcUpper = svcEncontrado.toUpperCase();
-
-            // A) Información Base de MAPA_ORIGENES
-            if (typeof MAPA_ORIGENES !== "undefined" && MAPA_ORIGENES[svcEncontrado]) {{
-                let info = MAPA_ORIGENES[svcEncontrado];
-                respuesta += `📍 <b>Origen y Validación para ${{svcUpper}}:</b><br>` +
-                             `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                             `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                             `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
-            }}
-
-            // B) Información Adicional de Supabase (NOTAS_SVC)
-            if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
-                let notasEncontradas = NOTAS_SVC.filter(nota =>
-                    String(nota.svc || "").trim().toLowerCase() === svcEncontrado.trim().toLowerCase()
-                );
-
-                if (notasEncontradas.length > 0) {{
-                    respuesta += `📝 <b>Información adicional guardada:</b><br>`;
-                    notasEncontradas.forEach(nota => {{
-                        respuesta += `• ${{nota.contenido}}<br>`;
-                    }});
-                    respuesta += `<br>`;
+                let keyLower = key.toLowerCase().trim();
+                // Coincidencia exacta o parcial de ambas partes
+                if (q.includes(keyLower) || keyLower.includes(q)) {{
+                    claveOrigenMatch = key;
+                    nombreSvcMostrar = key.toUpperCase();
                 }}
+            }});
+        }}
+
+        // 🟢 2. IMPRIMIR INFORMACIÓN BASE DEL MAPA SI EXISTE
+        if (claveOrigenMatch && MAPA_ORIGENES[claveOrigenMatch]) {{
+            let info = MAPA_ORIGENES[claveOrigenMatch];
+            respuesta += `📍 <b>Origen y Validación para ${{nombreSvcMostrar}}:</b><br>` +
+                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
+                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
+                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+        }}
+
+        // 🟢 3. IMPRIMIR NOTAS ADICIONALES DE SUPABASE (NOTAS_SVC)
+        if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
+            let notasEncontradas = NOTAS_SVC.filter(nota => {{
+                let nSvc = String(nota.svc || "").toLowerCase().trim();
+                return q.includes(nSvc) || nSvc.includes(q);
+            }});
+
+            if (notasEncontradas.length > 0) {{
+                respuesta += `📝 <b>Información adicional guardada:</b><br>`;
+                notasEncontradas.forEach(nota => {{
+                    respuesta += `• ${{nota.contenido}}<br>`;
+                }});
+                respuesta += `<br>`;
             }}
         }}
 
-        // 3. PREGUNTAS FRECUENTES (FAQS)
+        // 4. PREGUNTAS FRECUENTES (FAQS)
         let faqsEncontradas = [];
         if (typeof PREGUNTAS_FRECUENTES !== "undefined") {{
             if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
@@ -6022,25 +6017,6 @@ function iniciarArrastreFlotante(e) {{
 
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
-        }}
-
-        // 4. REGLAS ESPECÍFICAS
-        if (!svcEncontrado && faqsEncontradas.length === 0) {{
-            let claveRegla = null;
-            if (typeof REGLAS_RUTEO !== "undefined") {{
-                if (q.includes("smx5")) {{
-                    claveRegla = q.includes("extendido") ? "smx5_extendido" : "smx5_precarga";
-                }} else {{
-                    Object.keys(REGLAS_RUTEO).forEach(k => {{
-                        let base = k.replace("_extendido","").replace("_precarga","");
-                        if (q.includes(base)) claveRegla = k;
-                    }});
-                }}
-
-                if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
-                    respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
-                }}
-            }}
         }}
 
         if (!respuesta) {{
