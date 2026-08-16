@@ -328,27 +328,26 @@ def toggle_flotar():
 if st.session_state.flotar_activo:
     st.markdown("""
         <style>
-            div[data-testid="stToolbar"],
-            button[title="View app source"],
-            button[title="Edit this app"],
-            a[href*="github.com"],
+            /* 1. Ocultar de tajo la barra superior completa (GitHub, Lápiz, Settings) */
+            header[data-testid="stHeader"],
+            footer,
             #MainMenu,
-            footer {
+            div[data-testid="stToolbar"] {{
                 display: none !important;
                 visibility: hidden !important;
-            }
+            }}
 
-            /* 2. Mantener SIEMPRE VISIBLE la barra superior izquierda y las flechas de la Sidebar */
-            header[data-testid="stHeader"] {
-                background: transparent !important;
-                z-index: 99999 !important;
-            }
+            /* 2. Ocultar la barra lateral nativa de Streamlit */
+            section[data-testid="stSidebar"] {{
+                display: none !important;
+            }}
 
-            button[data-testid="stHeaderNavStateButton"],
-            button[data-testid="stSidebarCollapseButton"] {
+            /* 3. Estilos de tablas cuando la ventana está flotando */
+            table, div[data-testid="stTable"], .js-plotly-plot {{
+                max-height: 380px !important;
+                overflow-y: auto !important;
                 display: block !important;
-                visibility: visible !important;
-            }
+            }}
         </style>
     """, unsafe_allow_html=True)
 
