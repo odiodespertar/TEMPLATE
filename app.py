@@ -289,15 +289,51 @@ if st.session_state.usuario_auth is None:
 # ==============================================================================
 # 👤 MOSTRAR USUARIO ACTIVO Y BOTÓN DE SALIDA EN LA BARRA LATERAL
 # ==============================================================================
+st.markdown(f"""
+    <div style="
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        z-index: 9999999;
+        background: #1e2022;
+        border: 1px solid #3b3f43;
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    ">
+        <span style="color: #ffffff; font-size: 13px; font-weight: bold;">
+            👤 <span style="color: #66CDAA;">{st.session_state['usuario_activo']}</span>
+        </span>
+        <form action="" method="get" style="margin:0; padding:0;">
+            <button type="submit" name="btn_logout_action" value="1" style="
+                cursor: pointer;
+                background: #dc3545;
+                color: white;
+                border: none;
+                padding: 4px 10px;
+                border-radius: 5px;
+                font-size: 11px;
+                font-weight: bold;
+            ">
+                🚪 Salir
+            </button>
+        </form>
+    </div>
+""", unsafe_allow_html=True)
 
-st.sidebar.markdown(f"👤 **Usuario Conectado:** `{st.session_state['usuario_activo']}`")
-if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
+# Lógica para procesar la salida si presiona "Salir"
+if st.query_params.get("btn_logout_action") == "1":
+    st.query_params.clear()
     try:
         supabase.auth.sign_out()
     except Exception:
         pass
     st.session_state.usuario_auth = None
     st.session_state.supabase_session = None
+    cookie_manager.delete("sb_refresh_token")
     st.rerun()
 
 usuario_activo = st.session_state["usuario_activo"]
