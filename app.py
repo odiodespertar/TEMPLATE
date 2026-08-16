@@ -6499,9 +6499,9 @@ if ruteos_bd:
     ruteos_json_str = json.dumps(ruteos_bd)
     script_cargas = """
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function inicializarRuteosSupabase() {
             let ruteosCargados = """ + ruteos_json_str + """;
-            if (Array.isArray(ruteosCargados)) {
+            if (Array.isArray(ruteosCargados) && ruteosCargados.length > 0) {
                 ruteosCargados.forEach(ruteo => {
                     crearTabYContenidoEnPantalla(
                         ruteo.nombre, 
@@ -6514,23 +6514,37 @@ if ruteos_bd:
                     );
                 });
 
-                // 🟢 ACTIVAR Y HACER VISIBLE EN PANTALLA EL RUTEO RECUPERADO
+                // 🟢 FORZAR VISIBILIDAD DE LA ÚLTIMA OPCIÓN CARGADA
                 let selectorCiclos = document.getElementById("ciclo-selector");
                 if (selectorCiclos && selectorCiclos.options.length > 0) {
-                    let ultimoValor = selectorCiclos.options[selectorCiclos.options.length - 1].value;
-                    selectorCiclos.value = ultimoValor;
+                    let ultimoRuteo = ruteosCargados[ruteosCargados.length - 1];
+                    let targetVal = ultimoRuteo.id ? ultimoRuteo.id : selectorCiclos.options[selectorCiclos.options.length - 1].value;
+                    
+                    selectorCiclos.value = targetVal;
                     if (typeof cambiarCiclo === 'function') {
-                        cambiarCiclo(ultimoValor);
+                        cambiarCiclo(targetVal);
                     }
                 }
+                
+                // 🟢 RESTAURAR VALORES Y VOLÚMENES GUARDADOS
+                if (typeof restaurarEstadoEnVivo === 'function') {
+                    restaurarEstadoEnVivo();
+                }
             }
-        });
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", inicializarRuteosSupabase);
+        } else {
+            inicializarRuteosSupabase();
+        }
     </script>
     </body>
     """
     app_html = app_html.replace("</body>", script_cargas)
 
 html(app_html, height=1200, scrolling=True)
+
 
 
 # ==============================================================================
