@@ -6512,6 +6512,16 @@ if ruteos_bd:
                         ruteo.datos.llevaNodos || false
                     );
                 });
+
+                // 🟢 ACTIVAR Y HACER VISIBLE EN PANTALLA EL RUTEO RECUPERADO
+                let selectorCiclos = document.getElementById("ciclo-selector");
+                if (selectorCiclos && selectorCiclos.options.length > 0) {
+                    let ultimoValor = selectorCiclos.options[selectorCiclos.options.length - 1].value;
+                    selectorCiclos.value = ultimoValor;
+                    if (typeof cambiarCiclo === 'function') {
+                        cambiarCiclo(ultimoValor);
+                    }
+                }
             }
         });
     </script>
