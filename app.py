@@ -2689,11 +2689,12 @@ app_html = f"""
 
    function crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idBD = null, incluirORH = false, incluirOcup = false, llevaNodos = false) {{
         contadorPestanaDinamica++;
-        let nuevoTabId = contadorPestanaDinamica;
+        // 🟢 Si viene de Supabase (idBD), usamos idBD como identificador único de la pestaña
+        let nuevoTabId = idBD ? idBD : contadorPestanaDinamica;
 
         let selectorCiclos = document.getElementById("ciclo-selector");
         if (selectorCiclos) {{
-            let existe = Array.from(selectorCiclos.options).some(opt => opt.getAttribute("data-id-bd") == idBD || opt.value == nuevoTabId);
+            let existe = Array.from(selectorCiclos.options).some(opt => opt.value == nuevoTabId || opt.getAttribute("data-id-bd") == idBD);
             if (!existe) {{
                 let opt = document.createElement("option");
                 opt.value = nuevoTabId;
