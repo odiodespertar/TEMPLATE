@@ -421,8 +421,10 @@ if st.session_state.flotar_activo:
 # ========================================== 
 st.markdown("""
     <style>
-    /* 🔴 1. OCULTAR ELEMENTOS NATIVOS DE INTERFAZ */
+    /* 🔴 1. OCULTAR Y COLAPSAR ENCABEZADO SUPERIOR */
+    header,
     header[data-testid="stHeader"],
+    .stAppHeader,
     div[data-testid="stToolbar"],
     footer,
     .stAppFooter,
@@ -437,8 +439,25 @@ st.markdown("""
     iframe[title="streamlit_badge"] {
         display: none !important;
         visibility: hidden !important;
+        height: 0px !important;
+        min-height: 0px !important;
+        max-height: 0px !important;
+        padding: 0px !important;
+        margin: 0px !important;
         opacity: 0 !important;
         pointer-events: none !important;
+    }
+
+    /* Ocultar el espacio residual superior de la app */
+    .stApp > header {
+        display: none !important;
+        height: 0px !important;
+    }
+
+    .main .block-container,
+    div[data-testid="stAppViewBlockContainer"] {
+        padding-top: 0.5rem !important;
+        margin-top: 0px !important;
     }
 
     /* 🔴 2. RECORTE DE LA BARRA INFERIOR Y CONTROL DE ESPACIO SUPERIOR */
