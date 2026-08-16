@@ -5938,7 +5938,7 @@ function iniciarArrastreFlotante(e) {{
     }}
 
 
-    function enviarConsultaBotLateral(opcionDirecta = null) {{
+   function enviarConsultaBotLateral(opcionDirecta = null) {{
         const input = document.getElementById("input-bot-lateral");
         const box = document.getElementById("box-mensajes-bot");
         if (!box) return;
@@ -5962,35 +5962,34 @@ function iniciarArrastreFlotante(e) {{
             return;
         }}
 
-        // 🟢 1. BÚSQUEDA INSENSIBLE EN MAPA_ORIGENES (MAYÚSCULAS Y MINÚSCULAS)
+        // 🟢 1. BÚSQUEDA AVANZADA EN MAPA_ORIGENES (COINCIDENCIA PARCIAL)
         let claveOrigenMatch = null;
-        let nombreSvcMostrar = q.toUpperCase();
+        let infoOrigenMatch = null;
 
-        if (typeof MAPA_ORIGENES !== "undefined") {{
+        if (typeof MAPA_ORIGENES !== "undefined" && MAPA_ORIGENES) {{
             Object.keys(MAPA_ORIGENES).forEach(key => {{
-                let keyLower = key.toLowerCase().trim();
-                // Coincidencia exacta o parcial de ambas partes
-                if (q.includes(keyLower) || keyLower.includes(q)) {{
+                let keyL = key.toLowerCase().trim();
+                // Coincide si lo buscado está dentro de la clave o la clave dentro de lo buscado (ej: "sja1" coincide con "SJA1 C1")
+                if (q === keyL || q.includes(keyL) || keyL.includes(q)) {{
                     claveOrigenMatch = key;
-                    nombreSvcMostrar = key.toUpperCase();
+                    infoOrigenMatch = MAPA_ORIGENES[key];
                 }}
             }});
         }}
 
-        // 🟢 2. IMPRIMIR INFORMACIÓN BASE DEL MAPA SI EXISTE
-        if (claveOrigenMatch && MAPA_ORIGENES[claveOrigenMatch]) {{
-            let info = MAPA_ORIGENES[claveOrigenMatch];
-            respuesta += `📍 <b>Origen y Validación para ${{nombreSvcMostrar}}:</b><br>` +
-                         `• 🗺️ <b>Región:</b> Región ${{info.region}}<br>` +
-                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{info.origen}}</span><br>` +
-                         `• ✅ <b>Validación:</b> ${{info.val}}<br><br>`;
+        // Imprimir bloque de Origen y Validación si hubo coincidencia
+        if (infoOrigenMatch) {{
+            respuesta += `📍 <b>Origen y Validación para ${{claveOrigenMatch.toUpperCase()}}:</b><br>` +
+                         `• 🗺️ <b>Región:</b> Región ${{infoOrigenMatch.region}}<br>` +
+                         `• 🏢 <b>Origen(es) On Way:</b> <span style="background:#ffffff; color:#20B2AA; padding:1px 5px; border-radius:3px; font-weight:bold;">${{infoOrigenMatch.origen}}</span><br>` +
+                         `• ✅ <b>Validación:</b> ${{infoOrigenMatch.val}}<br><br>`;
         }}
 
-        // 🟢 3. IMPRIMIR NOTAS ADICIONALES DE SUPABASE (NOTAS_SVC)
+        // 🟢 2. BÚSQUEDA EN NOTAS ADICIONALES (NOTAS_SVC)
         if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
             let notasEncontradas = NOTAS_SVC.filter(nota => {{
                 let nSvc = String(nota.svc || "").toLowerCase().trim();
-                return q.includes(nSvc) || nSvc.includes(q);
+                return q === nSvc || q.includes(nSvc) || nSvc.includes(q);
             }});
 
             if (notasEncontradas.length > 0) {{
@@ -6002,9 +6001,9 @@ function iniciarArrastreFlotante(e) {{
             }}
         }}
 
-        // 4. PREGUNTAS FRECUENTES (FAQS)
+        // 🟢 3. PREGUNTAS FRECUENTES (FAQS)
         let faqsEncontradas = [];
-        if (typeof PREGUNTAS_FRECUENTES !== "undefined") {{
+        if (typeof PREGUNTAS_FRECUENTES !== "undefined" && PREGUNTAS_FRECUENTES) {{
             if (q.includes("sdd") || q.includes("large van sdd")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["large_van_sdd"]);
             if (q.includes("bulk")) {{
                 if (q.includes("sja1") || q.includes("centro 1") || q.includes("centro 2")) faqsEncontradas.push(PREGUNTAS_FRECUENTES["bulk_sja1"]);
@@ -6017,6 +6016,25 @@ function iniciarArrastreFlotante(e) {{
 
         if (faqsEncontradas.length > 0) {{
             respuesta += faqsEncontradas.join("<br><hr style='border:0; border-top:1px dashed #555;'><br>");
+        }}
+
+        // 🟢 4. REGLAS ESPECÍFICAS DE REGLAS_RUTEO
+        if (!infoOrigenMatch && respuesta === "") {{
+            let claveRegla = null;
+            if (typeof REGLAS_RUTEO !== "undefined" && REGLAS_RUTEO) {{
+                if (q.includes("smx5")) {{
+                    claveRegla = q.includes("extendido") ? "smx5_extendido" : "smx5_precarga";
+                }} else {{
+                    Object.keys(REGLAS_RUTEO).forEach(k => {{
+                        let base = k.replace("_extendido","").replace("_precarga","");
+                        if (q.includes(base)) claveRegla = k;
+                    }});
+                }}
+
+                if (claveRegla && REGLAS_RUTEO[claveRegla]) {{
+                    respuesta += `📋 <b>Indicaciones específicas:</b><br>${{REGLAS_RUTEO[claveRegla].replace(/\\n/g, "<br>")}}`;
+                }}
+            }}
         }}
 
         if (!respuesta) {{
