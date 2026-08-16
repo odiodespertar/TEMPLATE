@@ -2653,7 +2653,7 @@ app_html = f"""
                 try {{
                     const {{ data, error }} = await supabaseClient
                         .from('ruteos_guardados')
-                        .insert([{{
+                        .insert([{{ 
                             user_id: USER_ID_AUTH, 
                             nombre: nombreRuteo, 
                             datos: datosEstructura 
@@ -2670,7 +2670,7 @@ app_html = f"""
                         let idRealBD = data[0].id;
                         crearTabYContenidoEnPantalla(nombreRuteo, flotaElegida, planesElegidos, idRealBD, incluirORH, incluirOcup, llevaNodos);
                         alert(`✅ ¡Ruteo "${{nombreRuteo}}" guardado en Supabase y activado!`);
-                   }}
+                    }}
                 }} catch (err) {{
                     console.error("Excepción Supabase al insertar:", err);
                     alert("⚠️ Ocurrió una excepción al conectar con la BD.");
@@ -2680,15 +2680,17 @@ app_html = f"""
                 alert("⚠️ Error: Cliente Supabase no inicializado.");
                 return;
             }}
+        }}
 
-            modal.removeAttribute("data-id-editando");
-            cerrarCreadorRuteo();
+        modal.removeAttribute("data-id-editando");
+        cerrarCreadorRuteo();
 
-            if (typeof cargarRuteosEnMenuLateral === 'function') {{
-                cargarRuteosEnMenuLateral();
-            }}
+        if (typeof cargarRuteosEnMenuLateral === 'function') {{
+            cargarRuteosEnMenuLateral();
+        }}
 
-            if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
+        if (typeof guardarEstadoEnVivo === 'function') guardarEstadoEnVivo();
+    }}
 
 
 
