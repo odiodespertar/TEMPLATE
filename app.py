@@ -6064,8 +6064,8 @@ function iniciarArrastreFlotante(e) {{
 
 
     // ==============================================================================
-// 📝 GUARDAR INFORMACIÓN ADICIONAL DE UN SVC
-// ==============================================================================
+    // 📝 GUARDAR INFORMACIÓN ADICIONAL DE UN SVC (CON LLAVES DOBLES CORREGIDAS)
+    // ==============================================================================
     async function guardarNotaDesdeBot() {{
         const inputSvc = document.getElementById("input-nota-svc");
         const inputNota = document.getElementById("input-contenido-nota-svc");
@@ -6101,7 +6101,6 @@ function iniciarArrastreFlotante(e) {{
                         contenido: contenido
                     }}
                 ]);
-				
 
             if (error) {{
                 console.error("Error al guardar nota:", error);
@@ -6109,18 +6108,13 @@ function iniciarArrastreFlotante(e) {{
                 return;
             }}
 
-            // 🟢 Actualizar inmediatamente las notas disponibles para el asistente
-            if (!Array.isArray(NOTAS_SVC)) {{
-                NOTAS_SVC = [];
-            }}
-
-
-				
+            // 🟢 Sincronizar arreglo en vivo
+            if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
                 NOTAS_SVC.push({{
                     svc: svc,
                     contenido: contenido
                 }});
-            
+            }}
 
             // Limpiar campos
             inputSvc.value = "";
