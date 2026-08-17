@@ -5659,9 +5659,9 @@ function iniciarArrastreFlotante(e) {{
        position: fixed;
 
        top: 0;
-       left: -420px;
+       left: -520px;
 
-       width: 400px;
+       width: 500px;
        height: 100vh;
 
        background: #1e2022;
