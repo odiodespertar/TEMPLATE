@@ -5482,305 +5482,143 @@ document.addEventListener("focusin", function(e) {{
     }}, 0);
 }});
 
+
 // ======================================================
-// RELOJ Y RUTEOS
+// RELOJ Y RUTEOS (UNIFICADO Y CORREGIDO)
 // ======================================================
 
 const ruteos = [
-
-    {{
-        nombre:"STJ1 SD",
-        hora:"16:30"
-    }},
-
-    {{
-        nombre:"SEN1 SD",
-        hora:"16:30"
-    }},
-
-    {{
-        nombre:"SMX3 SD2",
-        hora:"16:30"
-    }},
-
-    {{
-        nombre:"SMX20 SD2",
-        hora:"16:30"
-    }},
-
-    {{
-        nombre:"SBJ1 SD2",
-        hora:"16:30"
-    }},
-
-    {{
-        nombre:"SMX9 SD2",
-        hora:"16:40"
-    }},
-
-    {{
-        nombre:"SMX11 SD2",
-        hora:"17:00"
-    }},
-
-    {{
-        nombre:"SGD1 SD2",
-        hora:"17:00"
-    }},
-
-    {{
-        nombre:"SCQ1 SD2",
-        hora:"17:00"
-    }},
-
-    {{
-        nombre:"SGD2 SD3",
-        hora:"17:00"
-    }},
-
-    {{
-        nombre:"SMT3 SD2",
-        hora:"17:10"
-    }},
-
-    {{
-        nombre:"SDC1 SD",
-        hora:"17:10"
-    }},
-
-    {{
-        nombre:"SQR1 SD2",
-        hora:"17:10"
-    }},
-
-    {{
-        nombre:"SMX5 SD2",
-        hora:"17:20"
-    }},
-
-    {{
-        nombre:"SMX7 SD2",
-        hora:"17:20"
-    }},
-
-    {{
-        nombre:"SLW1 SD2",
-        hora:"17:30"
-    }},
-
-    {{
-       nombre:"SMT1 SD2",
-        hora:"17:30"
-    }},
-
-    {{
-       nombre:"SMX4 SD2",
-        hora:"17:40"
-    }},
-
-    {{
-       nombre:"SCJ1 SD2",
-        hora:"17:50"
-    }},
-
-    {{
-       nombre:"SMD2 SD2",
-        hora:"17:50"
-    }},
-
-    {{
-       nombre:"SGD3 SD2",
-        hora:"17:50"
-    }},
-
-    {{
-       nombre:"SCV1 SD2",
-        hora:"17:50"
-    }},
-
-    {{
-       nombre:"SMX20 SD3",
-        hora:"18:00"
-    }},
-
-    {{
-        nombre:"SMX2 SD2",
-        hora:"18:05"
-    }},
-
-    {{
-        nombre:"SLE1 SD2",
-        hora:"18:10"
-    }},
-
-    {{
-        nombre:"SPB1 SD2",
-        hora:"18:10"
-    }},
-
-    {{
-        nombre:"STL1 SD2",
-        hora:"18:10"
-    }},
-
-    {{
-        nombre:"SHP1 SD2",
-        hora:"18:20"
-    }},
-
-    {{
-        nombre:"SMT2 SD2",
-        hora:"18:40"
-    }},
-
-    {{
-        nombre:"SMX8-RSC SD2",
-        hora:"19:25"
-    }},
-
-    {{
-        nombre:"SHM1 SD2",
-        hora:"19:40"
-    }},
-
-    {{
-        nombre:"SCP1 AM1",
-        hora:"20:00"
-    }},
-
-    {{
-        nombre:"SMX4 AM3",
-        hora:"21:30"
-    }},
-
-    {{
-        nombre:"SMX2 AM3",
-        hora:"21:30"
-    }},
-
-    {{
-        nombre:"SMX9 AM3",
-        hora:"21:30"
-    }},
-
-    {{
-        nombre:"SMX5 AM3",
-        hora:"21:30"
-    }},
-
-    {{
-        nombre:"SMD1 AM1",
-        hora:"21:30"
-    }},
-
-    {{
-        nombre:"SZL1 AM1",
-        hora:"22:50"
-    }},
-
-    {{
-        nombre:"SPZ1 AM1",
-        hora:"23:00"
-    }},
-
-    {{
-        nombre:"SMX11 AM3",
-        hora:"23:10"
-    }},
-
-    {{
-        nombre:"SPB1 AM1",
-        hora:"23:10"
-    }},
-
-    {{
-        nombre:"SCH1 AM1",
-        hora:"23:30"
-    }},
-
-    {{
-        nombre:"SJA1 AM1",
-        hora:"23:30"
-    }},
-
-    {{
-        nombre:"SSL1 AM1",
-        hora:"23:30"
-    }}
-
+    {{ nombre: "STJ1 SD", hora: "16:30" }},
+    {{ nombre: "SEN1 SD", hora: "16:30" }},
+    {{ nombre: "SMX3 SD2", hora: "16:30" }},
+    {{ nombre: "SMX20 SD2", hora: "16:30" }},
+    {{ nombre: "SBJ1 SD2", hora: "16:30" }},
+    {{ nombre: "SMX9 SD2", hora: "16:40" }},
+    {{ nombre: "SMX11 SD2", hora: "17:00" }},
+    {{ nombre: "SGD1 SD2", hora: "17:00" }},
+    {{ nombre: "SCQ1 SD2", hora: "17:00" }},
+    {{ nombre: "SGD2 SD3", hora: "17:00" }},
+    {{ nombre: "SMT3 SD2", hora: "17:10" }},
+    {{ nombre: "SDC1 SD", hora: "17:10" }},
+    {{ nombre: "SQR1 SD2", hora: "17:10" }},
+    {{ nombre: "SMX5 SD2", hora: "17:20" }},
+    {{ nombre: "SMX7 SD2", hora: "17:20" }},
+    {{ nombre: "SLW1 SD2", hora: "17:30" }},
+    {{ nombre: "SMT1 SD2", hora: "17:30" }},
+    {{ nombre: "SMX4 SD2", hora: "17:40" }},
+    {{ nombre: "SCJ1 SD2", hora: "17:50" }},
+    {{ nombre: "SMD2 SD2", hora: "17:50" }},
+    {{ nombre: "SGD3 SD2", hora: "17:50" }},
+    {{ nombre: "SCV1 SD2", hora: "17:50" }},
+    {{ nombre: "SMX20 SD3", hora: "18:00" }},
+    {{ nombre: "SMX2 SD2", hora: "18:05" }},
+    {{ nombre: "SLE1 SD2", hora: "18:10" }},
+    {{ nombre: "SPB1 SD2", hora: "18:10" }},
+    {{ nombre: "STL1 SD2", hora: "18:10" }},
+    {{ nombre: "SHP1 SD2", hora: "18:20" }},
+    {{ nombre: "SMT2 SD2", hora: "18:40" }},
+    {{ nombre: "SMX8-RSC SD2", hora: "19:25" }},
+    {{ nombre: "SHM1 SD2", hora: "19:40" }},
+    {{ nombre: "SCP1 AM1", hora: "20:00" }},
+    {{ nombre: "SMX4 AM3", hora: "21:30" }},
+    {{ nombre: "SMX2 AM3", hora: "21:30" }},
+    {{ nombre: "SMX9 AM3", hora: "21:30" }},
+    {{ nombre: "SMX5 AM3", hora: "21:30" }},
+    {{ nombre: "SMD1 AM1", hora: "21:30" }},
+    {{ nombre: "SZL1 AM1", hora: "22:50" }},
+    {{ nombre: "SPZ1 AM1", hora: "23:00" }},
+    {{ nombre: "SMX11 AM3", hora: "23:10" }},
+    {{ nombre: "SPB1 AM1", hora: "23:10" }},
+    {{ nombre: "SCH1 AM1", hora: "23:30" }},
+    {{ nombre: "SJA1 AM1", hora: "23:30" }},
+    {{ nombre: "SSL1 AM1", hora: "23:30" }}
 ];
 
-let ultimaAlerta = "";
-
 function actualizarRelojRuteos() {{
-    const ahora = new Date();
-    
-    let elHoraActual = document.getElementById("hora-actual");
-    if (elHoraActual) elHoraActual.innerText = ahora.toLocaleTimeString('es-MX', {{ hour12: false }});
+    try {{
+        const ahora = new Date();
 
-    if (typeof ruteos === "undefined" || !Array.isArray(ruteos) || ruteos.length === 0) return;
-
-    // 1. Agrupar ruteos por hora de su jornada
-    const gruposPorHora = {{}};
-    ruteos.forEach(tarea => {{
-        if (!gruposPorHora[tarea.hora]) {{
-            gruposPorHora[tarea.hora] = [];
-        }}
-        gruposPorHora[tarea.hora].push(tarea.nombre);
-    }});
-
-    // 2. Convertir cada hora a un objeto Date real (evaluando hoy y mañana)
-    let listaEventos = [];
-    Object.keys(gruposPorHora).forEach(horaStr => {{
-        let partes = horaStr.split(":");
-        let fechaHoy = new Date();
-        fechaHoy.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
-
-        // Si la hora de hoy ya pasó, programarla para el ciclo del día siguiente
-        if (fechaHoy <= ahora) {{
-            fechaHoy.setDate(fechaHoy.getDate() + 1);
+        // 1. Actualizar Hora Actual
+        let elHoraActual = document.getElementById("hora-actual");
+        if (elHoraActual) {{
+            let h = String(ahora.getHours()).padStart(2, '0');
+            let m = String(ahora.getMinutes()).padStart(2, '0');
+            let s = String(ahora.getSeconds()).padStart(2, '0');
+            elHoraActual.innerText = `${{h}}:${{m}}:${{s}}`;
         }}
 
-        listaEventos.push({{
-            horaStr: horaStr,
-            nombres: gruposPorHora[horaStr],
-            fechaTarea: fechaHoy
+        if (!ruteos || ruteos.length === 0) return;
+
+        // 2. Agrupar ruteos por hora
+        const gruposPorHora = {{}};
+        ruteos.forEach(tarea => {{
+            if (!gruposPorHora[tarea.hora]) {{
+                gruposPorHora[tarea.hora] = [];
+            }}
+            gruposPorHora[tarea.hora].push(tarea.nombre);
         }});
-    }});
 
-    // 3. Ordenar para encontrar el evento más cercano en el tiempo
-    listaEventos.sort((a, b) => a.fechaTarea - b.fechaTarea);
-    let siguienteBloque = listaEventos[0];
+        // 3. Crear lista de eventos calculando hoy o mañana
+        let listaEventos = [];
+        Object.keys(gruposPorHora).forEach(horaStr => {{
+            let partes = horaStr.split(":");
+            let fechaTarea = new Date();
+            fechaTarea.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
 
-    const elProximo = document.getElementById("proximo-ruteo");
-    const elCuenta = document.getElementById("cuenta-regresiva");
-    const elHora = document.getElementById("hora-ruteo");
+            if (fechaTarea <= ahora) {{
+                fechaTarea.setDate(fechaTarea.getDate() + 1);
+            }}
 
-    if (!siguienteBloque) {{
-        if (elProximo) elProximo.innerText = "Sin tareas";
-        if (elHora) elHora.innerText = "--";
-        if (elCuenta) elCuenta.innerText = "--:--";
-    }} else {{
-        // 4. Mostrar los ruteos agrupados que coinciden a esa misma hora
-        if (elProximo) {{
-            elProximo.innerText = siguienteBloque.nombres.join(", ");
-            elProximo.style.fontSize = siguienteBloque.nombres.length > 2 ? "12px" : "15px";
+            listaEventos.push({{
+                horaStr: horaStr,
+                nombres: gruposPorHora[horaStr],
+                fechaTarea: fechaTarea
+            }});
+        }});
+
+        listaEventos.sort((a, b) => a.fechaTarea - b.fechaTarea);
+        let siguienteBloque = listaEventos[0];
+
+        const elProximo = document.getElementById("proximo-ruteo");
+        const elCuenta = document.getElementById("cuenta-regresiva");
+        const elHora = document.getElementById("hora-ruteo");
+
+        if (siguienteBloque) {{
+            if (elProximo) {{
+                elProximo.innerText = siguienteBloque.nombres.join(", ");
+                elProximo.style.fontSize = siguienteBloque.nombres.length > 3 ? "11px" : "14px";
+            }}
+            
+            if (elHora) {{
+                elHora.innerText = "A LAS " + siguienteBloque.horaStr;
+            }}
+
+            let diff = siguienteBloque.fechaTarea - ahora;
+            let totalSegundos = Math.floor(diff / 1000);
+            let horasRestantes = Math.floor(totalSegundos / 3600);
+            let minsRestantes = Math.floor((totalSegundos % 3600) / 60);
+            let secsRestantes = totalSegundos % 60;
+
+            if (elCuenta) {{
+                if (horasRestantes > 0) {{
+                    elCuenta.innerText = `${{String(horasRestantes).padStart(2, "0")}}:${{String(minsRestantes).padStart(2, "0")}}:${{String(secsRestantes).padStart(2, "0")}}`;
+                }} else {{
+                    elCuenta.innerText = `${{String(minsRestantes).padStart(2, "0")}}:${{String(secsRestantes).padStart(2, "0")}}`;
+                }}
+                elCuenta.style.color = (horasRestantes === 0 && minsRestantes < 5) ? "#FF0000" : "#7CFFB2";
+            }}
         }}
-        
-        if (elHora) {{
-            elHora.innerText = "A LAS " + siguienteBloque.horaStr;
-        }}
-
-        let diff = siguienteBloque.fechaTarea - ahora;
-        let mins = Math.floor(diff / 60000);
-        let secs = Math.floor((diff % 60000) / 1000);
-
-        if (elCuenta) {{
-            elCuenta.innerText = String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
-            elCuenta.style.color = mins < 5 ? "#FF0000" : "#7CFFB2";
-        }}
+    }} catch(e) {{
+        console.error("Error en reloj:", e);
     }}
 }}
+
+// Ejecución periódica limpia
+if (window.relojRuteosInterval) clearInterval(window.relojRuteosInterval);
+window.relojRuteosInterval = setInterval(actualizarRelojRuteos, 1000);
+actualizarRelojRuteos();
+
+
 
 // ==============================================================================
 // FUNCIÓN MOVER VERTICAL CON SOLTADO AUTOMÁTICO (POINTER CAPTURE)
