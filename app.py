@@ -2922,6 +2922,9 @@ app_html = f"""
             selectorCiclos.value = nuevoTabId;
             cambiarCiclo(nuevoTabId);
         }}
+		if (typeof cargarRuteosEnMenuLateral === 'function') {{
+            cargarRuteosEnMenuLateral();
+        }}
     }}
 
 
@@ -6428,19 +6431,29 @@ function iniciarArrastreFlotante(e) {{
         const selector = document.getElementById("ciclo-selector");
         const submenu = document.getElementById("submenu-ruteos-lateral");
         if (!selector || !submenu) return;
-        submenu.innerHTML = "";
+
+        submenu.innerHTML = ""; // Limpiar contenido previo
+
         Array.from(selector.options).forEach(opcion => {{
+            if (!opcion.value) return;
+
             const boton = document.createElement("button");
             boton.type = "button";
             boton.className = "ruteo-submenu-item";
-            boton.innerText = opcion.textContent;
+            
+            // Limpia caracteres extraños y resalta los ruteos personalizados
+            let textoLimpio = opcion.textContent.replace(/[\uFFFD\u200B-\u200D\uFEFF]/g, '').trim();
+            boton.innerText = textoLimpio;
             boton.setAttribute("data-valor", opcion.value);
+
             if (opcion.value === selector.value) {{
                 boton.classList.add("activo");
             }}
+
             boton.onclick = function() {{
                 seleccionarRuteoDesdeMenu(this.getAttribute("data-valor"));
             }};
+
             submenu.appendChild(boton);
         }});
     }}
