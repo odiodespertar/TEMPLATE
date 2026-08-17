@@ -4770,28 +4770,33 @@ app_html = f"""
                         prioUnits.forEach(unitName => {{
                             if (restante <= 0) return;
 
-                            let unidad = fleet.find(f => f.nombre.toLowerCase() === unitName.toLowerCase());
+                            // 🟢 1. Búsqueda flexible (por coincidencia exacta o parcial ignorando mayúsculas)
+                            let unitClean = unitName.toLowerCase().trim();
+                            let unidad = fleet.find(f => {{
+                                let fClean = f.nombre.toLowerCase().trim();
+                                return fClean === unitClean || fClean.includes(unitClean) || unitClean.includes(fClean);
+                            }});
+
                             if (!unidad || unidad.restante <= 0) return;
 
+                            // 🟢 2. Calcular exactas según el SPR de la unidad prioritaria
                             let necesarias = Math.ceil(restante / unidad.spr);
                             let usar = Math.min(necesarias, unidad.restante);
                             if (usar <= 0) return;
 
-                            let filaExistente = filas.find(f => f.querySelector('.s-type')?.value === unidad.nombre);
+                            // 🟢 3. Buscar fila disponible
                             let filaLibre = filas.find(f => {{
                                 let val = f.querySelector('.s-type')?.value?.trim() || "";
                                 let u = parseInt(f.querySelector('.u-manual')?.innerText) || 0;
                                 return u === 0 && (val === "" || val === "Seleccionar...");
                             }});
 
-                            let filaTarget = filaExistente || filaLibre;
-
-                            if (filaTarget) {{
-                                let actual = parseInt(filaTarget.querySelector('.u-manual')?.innerText) || 0;
-                                filaTarget.querySelector('.s-type').value = unidad.nombre;
-                                filaTarget.querySelector('.u-manual').innerText = actual + usar;
-                                filaTarget.querySelector('.spr-real-val').innerText = unidad.spr;
-                                editedRowsPlan.add(filaTarget);
+                            if (filaLibre) {{
+                                filaLibre.querySelector('.s-type').value = unidad.nombre;
+                                filaLibre.querySelector('.u-manual').innerText = usar;
+                                filaLibre.querySelector('.spr-real-val').innerText = unidad.spr;
+                                updateSelectColor(filaLibre.querySelector('.s-type'));
+                                editedRowsPlan.add(filaLibre);
 
                                 unidad.restante -= usar;
                                 restante -= (usar * unidad.spr);
