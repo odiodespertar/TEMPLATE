@@ -5714,43 +5714,66 @@ let ultimaAlerta = "";
 
 function actualizarRelojRuteos() {{
     const ahora = new Date();
-    document.getElementById("hora-actual").innerText = ahora.toLocaleTimeString();
-    
-    let siguiente = null;
-    for (let tarea of ruteos) {{
-        let partes = tarea.hora.split(":");
+    let elHoraActual = document.getElementById("hora-actual");
+    if (elHoraActual) elHoraActual.innerText = ahora.toLocaleTimeString();
+
+    // 1. Agrupar ruteos por hora exacta
+    const gruposPorHora = {{}};
+    ruteos.forEach(tarea => {{
+        if (!gruposPorHora[tarea.hora]) {{
+            gruposPorHora[tarea.hora] = [];
+        }}
+        gruposPorHora[tarea.hora].push(tarea.nombre);
+    }});
+
+    // 2. Ordenar horas y encontrar el siguiente bloque pendiente
+    const horasOrdenadas = Object.keys(gruposPorHora).sort();
+    let siguienteBloque = null;
+
+    for (let horaStr of horasOrdenadas) {{
+        let partes = horaStr.split(":");
         let fechaTarea = new Date();
         fechaTarea.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
+
         if (fechaTarea > ahora) {{
-            siguiente = {{ tarea, fechaTarea }};
+            siguienteBloque = {{
+                nombres: gruposPorHora[horaStr],
+                hora: horaStr,
+                fechaTarea: fechaTarea
+            }};
             break;
         }}
     }}
 
     const elProximo = document.getElementById("proximo-ruteo");
     const elCuenta = document.getElementById("cuenta-regresiva");
-	const elHora = document.getElementById("hora-ruteo");
+    const elHora = document.getElementById("hora-ruteo");
 
-    if (!siguiente) {{
-        elProximo.innerText = "Fin del turno";
+    if (!siguienteBloque) {{
+        if (elProximo) elProximo.innerText = "Fin del turno";
         if (elHora) elHora.innerText = "--";
-        elCuenta.innerText = "--:--";
+        if (elCuenta) elCuenta.innerText = "--:--";
     }} else {{
-        elProximo.innerText = siguiente.tarea.nombre;
-        if (elHora) {{
-             elHora.innerText = "A LAS " + siguiente.tarea.hora;
+        // 3. Concatenar los nombres separados por coma o salto de línea
+        if (elProximo) {{
+            elProximo.innerText = siguienteBloque.nombres.join(", ");
+            elProximo.style.fontSize = siguienteBloque.nombres.length > 2 ? "12px" : "15px";
         }}
-            
-        let diff = siguiente.fechaTarea - ahora;
+        
+        if (elHora) {{
+            elHora.innerText = "A LAS " + siguienteBloque.hora;
+        }}
+
+        let diff = siguienteBloque.fechaTarea - ahora;
         let mins = Math.floor(diff / 60000);
         let secs = Math.floor((diff % 60000) / 1000);
-            
-        elCuenta.innerText = String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
-        elCuenta.style.color = mins < 5 ? "#FF0000" : "#7CFFB2";
+
+        if (elCuenta) {{
+            elCuenta.innerText = String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+            elCuenta.style.color = mins < 5 ? "#FF0000" : "#7CFFB2";
+        }}
     }}
 }}
-setInterval(actualizarRelojRuteos, 1000);
-actualizarRelojRuteos();
 
 
 // ==============================================================================
