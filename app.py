@@ -2082,7 +2082,7 @@ app_html = f"""
 
             <div>
                 <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Información Adicional:</label>
-                <textarea id="input-contenido-nota-svc" placeholder="Escribe aquí la información adicional que el asistente debe considerar..." rows="4" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #141414; color: white; font-size: 14px; resize: vertical;"></textarea>
+                <textarea id="input-contenido-nota-svc" placeholder="Escribe aquí la información adicional que el ruteador debe considerar..." rows="4" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #141414; color: white; font-size: 14px; resize: vertical;"></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
