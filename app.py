@@ -3409,13 +3409,9 @@ app_html = f"""
 
         const excelBtn = document.getElementById('excel-btn');
         if (excelBtn) {{
-            if (n === 2 || n === 6 || n === 7 || n === 8 || n === 9) {{
-                excelBtn.style.setProperty('display', 'inline-block', 'important');
-            }} else {{
-                excelBtn.style.setProperty('display', 'none', 'important');
-            }}
+            // 🟢 Habilitado para todos los ruteos (fijos y creados dinámicamente)
+            excelBtn.style.setProperty('display', 'inline-block', 'important');
         }}
-    }}
 
     function showAlert(msg) {{
         document.getElementById('alert-msg').innerText = msg;
@@ -4272,69 +4268,68 @@ app_html = f"""
         }}
     }}
 
+
     function generarExcelPolys() {{
-        let body = document.getElementById("excel-polys-body");
-        if(!body) return;
+    let body = document.getElementById("excel-polys-body");
+    if (!body) return;
 
-        body.innerHTML = "";
-        let tabId = currentTab;
-        document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
-            let plan = bl.querySelector('tbody tr td')?.innerText.trim() || "";
-            let vol = bl.querySelector('.v-total-val')?.innerText.trim() || "0";
+    body.innerHTML = "";
+    let tabId = currentTab;
+    
+    // 🟢 Lee cualquier bloque de polígono de la pestaña activa
+    document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
+        let plan = bl.querySelector('td.plan-cell')?.innerText.trim() || "";
+        let vol = bl.querySelector('.v-total-val')?.innerText.trim() || "0";
 
-            let nodoExcel = bl.querySelector('.nodos-val')?.innerText.trim() ||
-                            bl.querySelector('.nodos-campeche')?.innerText.trim() || "0";
-            let nodoTxt = (parseInt(nodoExcel) || 0) > 0 ? nodoExcel : "-";
+        let nodoExcel = bl.querySelector('.nodos-val')?.innerText.trim() ||
+                        bl.querySelector('.nodos-campeche')?.innerText.trim() || "0";
+        let nodoTxt = (parseInt(nodoExcel) || 0) > 0 ? nodoExcel : "-";
 
-            let filasCalc = Array.from(bl.querySelectorAll('.calc-row'));
-            let filasValidas = filasCalc.filter(r => {{
-                let u = r.querySelector('.s-type')?.value || "";
-                return u !== "" && u !== "Seleccionar...";
-            }});
-
-            if (filasValidas.length === 0) return;
-
-            filasValidas.forEach((r, index) => {{
-                let unidad = r.querySelector('.s-type')?.value || "";
-                let asignadas = r.querySelector('.u-manual')?.innerText.trim() || "0";
-
-                let fRows = Array.from(document.querySelectorAll('#body-' + tabId + ' tr'));
-                let fRow = fRows.find(fr => fr.querySelector('.edit-name')?.innerText.trim() === unidad);
-                let valSpr = "-";
-
-                let filaHtml = '<tr>';
-                if (index === 0) {{
-                    filaHtml += `
-                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${{plan}}</td>
-                        <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{vol}}</td>
-                    `;
-                }}
-                filaHtml += `
-                    <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${{unidad}}</td>
-                    <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${{asignadas}}</td>
-                `;
-                if (index === 0) {{
-                    filaHtml += `<td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{nodoTxt}}</td>`;
-                }}
-                filaHtml += '</tr>';
-                body.innerHTML += filaHtml;
-            }});
+        let filasCalc = Array.from(bl.querySelectorAll('.calc-row'));
+        let filasValidas = filasCalc.filter(r => {{
+            let u = r.querySelector('.s-type')?.value || "";
+            return u !== "" && u !== "Seleccionar...";
         }});
 
-        let valRuteadasNormal = document.getElementById('total-ruteadas-' + tabId)?.innerText || "0";
-        let celdaTotalExcel = document.getElementById('excel-total-ruteadas-naranja');
-        if(celdaTotalExcel) celdaTotalExcel.innerText = valRuteadasNormal;
+        if (filasValidas.length === 0) return;
 
-        let tablaActual = document.querySelector('#tab-' + tabId + ' table');
-        if (tablaActual) {{
-            let filasFooter = tablaActual.querySelectorAll('tfoot tr');
-            filasFooter.forEach(fila => {{
-                if (!fila.innerText.includes("TOTAL RUTEADAS")) {{
-                    fila.style.display = 'none';
-                }}
-            }});
-        }}
+        filasValidas.forEach((r, index) => {{
+            let unidad = r.querySelector('.s-type')?.value || "";
+            let asignadas = r.querySelector('.u-manual')?.innerText.trim() || "0";
+
+            let filaHtml = '<tr>';
+            if (index === 0) {{
+                filaHtml += `
+                    <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; padding:3px; text-align:center; font-weight:bold; vertical-align:middle;">${{plan}}</td>
+                    <td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{vol}}</td>
+                `;
+            }}
+            filaHtml += `
+                <td style="border:1px solid #808080; padding-left:6px; vertical-align:middle;">${{unidad}}</td>
+                <td style="border:1px solid #808080; text-align:center; vertical-align:middle; font-weight:bold;">${{asignadas}}</td>
+            `;
+            if (index === 0) {{
+                filaHtml += `<td rowspan="${{filasValidas.length}}" style="border:1px solid #808080; text-align:center; font-weight:bold; vertical-align:middle;">${{nodoTxt}}</td>`;
+            }}
+            filaHtml += '</tr>';
+            body.innerHTML += filaHtml;
+        }});
+    }});
+
+    let valRuteadasNormal = document.getElementById('total-ruteadas-' + tabId)?.innerText || "0";
+    let celdaTotalExcel = document.getElementById('excel-total-ruteadas-naranja');
+    if (celdaTotalExcel) celdaTotalExcel.innerText = valRuteadasNormal;
+
+    let tablaActual = document.querySelector('#tab-' + tabId + ' table');
+    if (tablaActual) {{
+        let filasFooter = tablaActual.querySelectorAll('tfoot tr');
+        filasFooter.forEach(fila => {{
+            if (!fila.innerText.includes("TOTAL RUTEADAS")) {{
+                fila.style.display = 'none';
+            }}
+        }});
     }}
+}}
 
     function obtenerCarFlexible() {{
 
