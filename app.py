@@ -2063,6 +2063,38 @@ app_html = f"""
 </div>
 
 
+
+<!-- ============================================================================== -->
+<!-- 📝 MODAL: AGREGAR INFORMACIÓN DE SVC -->
+<!-- ============================================================================== -->
+<div id="modal-notas-svc" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 15, 18, 0.96); z-index: 9999999; padding: 25px; box-sizing: border-box; overflow-y: auto; font-family: sans-serif;">
+    <div style="max-width: 600px; margin: 50px auto; background: #25282b; border: 2px solid #20B2AA; border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 12px; margin-bottom: 20px;">
+            <h2 style="color: #20B2AA; margin: 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">📝 AGREGAR INFORMACIÓN DE SVC</h2>
+            <button onclick="cerrarModalNotasSVC()" style="cursor: pointer; background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;">✕ CERRAR</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">SVC / Estación:</label>
+                <input type="text" id="input-nota-svc" placeholder="Ej. SJA1" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #141414; color: white; font-size: 14px; font-weight: bold;">
+            </div>
+
+            <div>
+                <label style="color: #d0d0d0; font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Información Adicional:</label>
+                <textarea id="input-contenido-nota-svc" placeholder="Escribe aquí la información adicional que el asistente debe considerar..." rows="4" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #141414; color: white; font-size: 14px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                <button onclick="cerrarModalNotasSVC()" style="cursor: pointer; background: #555; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px;">Cancelar</button>
+                <button onclick="guardarNotaDesdeBot()" style="cursor: pointer; background: #20B2AA; color: white; border: none; padding: 8px 20px; font-weight: bold; border-radius: 6px; box-shadow: 0 4px 10px rgba(32,178,170,0.4);">💾 GUARDAR INFORMACIÓN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     const perfiles = {json.dumps(PERFILES)};
     const perfilActual = "{perfil_actual}";
@@ -2122,6 +2154,19 @@ app_html = f"""
         }} catch (e) {{}}
     }}
     setInterval(ocultarManageApp, 500);
+
+
+
+    function abrirModalNotasSVC() {{
+        cerrarMenuRuteos();
+        let modal = document.getElementById("modal-notas-svc");
+        if (modal) modal.style.display = "block";
+    }}
+
+    function cerrarModalNotasSVC() {{
+        let modal = document.getElementById("modal-notas-svc");
+        if (modal) modal.style.display = "none";
+    }}
 
 
 
@@ -6101,6 +6146,7 @@ function iniciarArrastreFlotante(e) {{
             inputNota.value = "";
 
             alert("✅ Información guardada correctamente para " + svc);
+			cerrarModalNotasSVC(); // 👈 Agrega esta línea aquí
 
         }} catch (err) {{
             console.error("Error inesperado al guardar nota:", err);
