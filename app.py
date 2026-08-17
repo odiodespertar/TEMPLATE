@@ -5776,7 +5776,7 @@ function iniciarArrastreFlotante(e) {{
 
 
     #cerrar-menu-ruteos:hover {{
-        color: #FF00FF;
+        color: #FFFF00;
     }}
 
 
