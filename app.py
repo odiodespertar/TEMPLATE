@@ -2175,10 +2175,10 @@ app_html = f"""
         if (boton) boton.style.display = "block";
     }}
 
-    async function guardarNotaDesdeBot() {{
-        // Lee los IDs únicos del Modal
-        const inputSvc = document.getElementById("modal-input-svc");
-        const inputNota = document.getElementById("modal-input-contenido");
+   async function guardarNotaDesdeBot() {{
+        // 🟢 Corregidos los IDs exactos de tu HTML
+        const inputSvc = document.getElementById("input-nota-svc");
+        const inputNota = document.getElementById("input-contenido-nota-svc");
 
         if (!inputSvc || !inputNota) return;
 
@@ -2203,7 +2203,7 @@ app_html = f"""
         }}
 
         try {{
-            // Actualiza si ya existe el SVC o inserta uno nuevo
+            // 🟢 Cambiado a .upsert() para sobrescribir si el SVC ya existe sin causar errores
             const {{ data, error }} = await supabaseClient
                 .from("notas_svc")
                 .upsert([
@@ -2239,7 +2239,6 @@ app_html = f"""
             alert("❌ Ocurrió un error al guardar la información.");
         }}
     }}
-
 
 
     // ==============================================================================
