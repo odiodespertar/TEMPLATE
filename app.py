@@ -5701,12 +5701,12 @@ const ruteos = [
     {{
         nombre:"SJA1 AM1",
         hora:"23:30"
-    }}
+    }},
 
     {{
         nombre:"SSL1 AM1",
         hora:"23:30"
-    }},
+    }}
 
 ];
 
