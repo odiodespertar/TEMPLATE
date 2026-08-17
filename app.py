@@ -3412,6 +3412,7 @@ app_html = f"""
             // 🟢 Habilitado para todos los ruteos (fijos y creados dinámicamente)
             excelBtn.style.setProperty('display', 'inline-block', 'important');
         }}
+	}}	
 
     function showAlert(msg) {{
         document.getElementById('alert-msg').innerText = msg;
