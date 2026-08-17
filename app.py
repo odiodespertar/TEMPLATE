@@ -3713,9 +3713,10 @@ app_html = f"""
         document.querySelectorAll('#polys-' + tabId + ' .poligono-bloque').forEach(bl => {{
             const permitidasSinStock = ["car 8h", "car - 8h", "car 5h", "car - 5h", "car 3h", "car - 3h"];
 
-            bl.querySelectorAll('.s-type').forEach(s => {{ 
+            bl.querySelectorAll('.s-type').forEach(s => {{
                 let cur = s.value; 
                 let opt = '<option value="">Seleccionar...</option>';
+                let curExiste = false;
                 
                 Object.keys(fleet).forEach(k => {{
                     let nameLower = k.toLowerCase().trim();
@@ -3727,8 +3728,14 @@ app_html = f"""
                     
                     if (tieneCapacidad || esPermitida || k === cur) {{
                         opt += `<option value="${{k}}">${{k}}</option>`;
+                        if (k === cur) curExiste = true;
                     }}
                 }});
+
+                // 🟢 SI LA UNIDAD SELECCIONADA NO ESTÁ EN EL FLEET, LA PRESERVAMOS OBLIGATORIAMENTE
+                if (cur && cur !== "" && cur !== "Seleccionar..." && !curExiste) {{
+                    opt += `<option value="${{cur}}">${{cur}}</option>`;
+                }}
                 
                 s.innerHTML = opt;
                 s.value = cur;
