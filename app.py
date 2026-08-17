@@ -5973,20 +5973,19 @@ function iniciarArrastreFlotante(e) {{
 
 
 
+    <!-- 📝 NOTAS SVC INDEPENDIENTES -->
+    <button
+        class="opcion-menu-ruteos"
+        onclick="abrirModalNotasSVC()">
+        📝 &nbsp; AGREGAR NOTA SVC
+    </button>
+
 
     <!-- ASISTENTE DE RUTEO EN MENÚ LATERAL -->
     <button
         class="opcion-menu-ruteos"
         onclick="accionMenuRuteos('bot')">
         🤖 &nbsp; ASISTENTE DE RUTEO
-    </button>
-
-
-	<!-- 📝 NOTAS SVC INDEPENDIENTES -->
-    <button
-        class="opcion-menu-ruteos"
-        onclick="abrirModalNotasSVC()">
-        📝 &nbsp; AGREGAR NOTA SVC
     </button>
 
 
