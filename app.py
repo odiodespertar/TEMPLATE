@@ -4329,7 +4329,7 @@ app_html = f"""
             }}
         }});
     }}
-}}
+
 
     function obtenerCarFlexible() {{
 
