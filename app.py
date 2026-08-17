@@ -5714,10 +5714,13 @@ let ultimaAlerta = "";
 
 function actualizarRelojRuteos() {{
     const ahora = new Date();
+    
     let elHoraActual = document.getElementById("hora-actual");
-    if (elHoraActual) elHoraActual.innerText = ahora.toLocaleTimeString();
+    if (elHoraActual) elHoraActual.innerText = ahora.toLocaleTimeString('es-MX', {{ hour12: false }});
 
-    // 1. Agrupar ruteos por hora exacta
+    if (typeof ruteos === "undefined" || !Array.isArray(ruteos) || ruteos.length === 0) return;
+
+    // 1. Agrupar ruteos por hora de su jornada
     const gruposPorHora = {{}};
     ruteos.forEach(tarea => {{
         if (!gruposPorHora[tarea.hora]) {{
@@ -5726,42 +5729,46 @@ function actualizarRelojRuteos() {{
         gruposPorHora[tarea.hora].push(tarea.nombre);
     }});
 
-    // 2. Ordenar horas y encontrar el siguiente bloque pendiente
-    const horasOrdenadas = Object.keys(gruposPorHora).sort();
-    let siguienteBloque = null;
-
-    for (let horaStr of horasOrdenadas) {{
+    // 2. Convertir cada hora a un objeto Date real (evaluando hoy y mañana)
+    let listaEventos = [];
+    Object.keys(gruposPorHora).forEach(horaStr => {{
         let partes = horaStr.split(":");
-        let fechaTarea = new Date();
-        fechaTarea.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
+        let fechaHoy = new Date();
+        fechaHoy.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
 
-        if (fechaTarea > ahora) {{
-            siguienteBloque = {{
-                nombres: gruposPorHora[horaStr],
-                hora: horaStr,
-                fechaTarea: fechaTarea
-            }};
-            break;
+        // Si la hora de hoy ya pasó, programarla para el ciclo del día siguiente
+        if (fechaHoy <= ahora) {{
+            fechaHoy.setDate(fechaHoy.getDate() + 1);
         }}
-    }}
+
+        listaEventos.push({{
+            horaStr: horaStr,
+            nombres: gruposPorHora[horaStr],
+            fechaTarea: fechaHoy
+        }});
+    }});
+
+    // 3. Ordenar para encontrar el evento más cercano en el tiempo
+    listaEventos.sort((a, b) => a.fechaTarea - b.fechaTarea);
+    let siguienteBloque = listaEventos[0];
 
     const elProximo = document.getElementById("proximo-ruteo");
     const elCuenta = document.getElementById("cuenta-regresiva");
     const elHora = document.getElementById("hora-ruteo");
 
     if (!siguienteBloque) {{
-        if (elProximo) elProximo.innerText = "Fin del turno";
+        if (elProximo) elProximo.innerText = "Sin tareas";
         if (elHora) elHora.innerText = "--";
         if (elCuenta) elCuenta.innerText = "--:--";
     }} else {{
-        // 3. Concatenar los nombres separados por coma o salto de línea
+        // 4. Mostrar los ruteos agrupados que coinciden a esa misma hora
         if (elProximo) {{
             elProximo.innerText = siguienteBloque.nombres.join(", ");
             elProximo.style.fontSize = siguienteBloque.nombres.length > 2 ? "12px" : "15px";
         }}
         
         if (elHora) {{
-            elHora.innerText = "A LAS " + siguienteBloque.hora;
+            elHora.innerText = "A LAS " + siguienteBloque.horaStr;
         }}
 
         let diff = siguienteBloque.fechaTarea - ahora;
@@ -5774,7 +5781,6 @@ function actualizarRelojRuteos() {{
         }}
     }}
 }}
-
 
 // ==============================================================================
 // FUNCIÓN MOVER VERTICAL CON SOLTADO AUTOMÁTICO (POINTER CAPTURE)
