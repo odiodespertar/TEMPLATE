@@ -5865,6 +5865,15 @@ function iniciarArrastreFlotante(e) {{
         🤖 &nbsp; ASISTENTE DE RUTEO
     </button>
 
+
+	<!-- 📝 NOTAS SVC INDEPENDIENTES -->
+    <button
+        class="opcion-menu-ruteos"
+        onclick="abrirModalNotasSVC()">
+        📝 &nbsp; AGREGAR NOTA SVC
+    </button>
+
+
     <!-- CAJA DE CHAT DEL BOT EN EL MENÚ -->
     <div id="panel-bot-lateral-contenido" style="display: none; margin-top: 10px; background: #17191b; border: 1px solid #34383d; border-radius: 12px; padding: 10px;">
         <div style="text-align: center; font-size: 26px;">🚚</div>
@@ -5873,47 +5882,6 @@ function iniciarArrastreFlotante(e) {{
         <button onclick="enviarConsultaBotLateral('resumen')" style="width: 100%; cursor: pointer; background: #28a745; color: white; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-bottom: 8px;">
             📋 Armar Resumen de Cierre
         </button>
-
-
-    <!-- 📝 APARTADO PARA AGREGAR INFORMACIÓN ADICIONAL DE SVC -->
-    <div style="margin-bottom: 10px; background: #202326; border: 1px solid #3a3f44; border-radius: 8px; overflow: hidden;">
-
-        <!-- BOTÓN PARA MOSTRAR / OCULTAR -->
-        <div
-            onclick="toggleNotasSVC()"
-            style="padding: 10px; cursor: pointer; font-size: 13px; font-weight: bold; color: #20B2AA; display: flex; align-items: center; justify-content: space-between; user-select: none;"
-        >
-            <span>📝 AGREGAR INFORMACIÓN DE SVC</span>
-            <span id="flecha-notas-svc" style="font-size: 12px;">▸</span>
-        </div>
-
-        <!-- CONTENIDO DE NOTAS -->
-        <div id="contenido-notas-svc" style="display: none; padding: 0 10px 10px 10px;">
-
-            <input
-                type="text"
-                id="input-nota-svc"
-                placeholder="SVC (ej. SJA1)"
-                style="width: 100%; box-sizing: border-box; padding: 7px; margin-bottom: 6px; border-radius: 5px; border: 1px solid #444; background: #141414; color: white; font-size: 13px;"
-            >
-
-            <textarea
-                id="input-contenido-nota-svc"
-                placeholder="Escribe aquí la información adicional..."
-                rows="3"
-                style="width: 100%; box-sizing: border-box; padding: 7px; margin-bottom: 7px; border-radius: 5px; border: 1px solid #444; background: #141414; color: white; font-size: 13px; resize: vertical;"
-            ></textarea>
-
-            <button
-                onclick="guardarNotaDesdeBot()"
-                style="width: 100%; cursor: pointer; background: #20B2AA; color: white; border: none; padding: 7px; border-radius: 6px; font-weight: bold; font-size: 12px;"
-            >
-                💾 GUARDAR INFORMACIÓN
-            </button>
-
-        </div>
-
-    </div>
 
 
         <div id="box-mensajes-bot" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; line-height: 1.6; font-size: 16px; padding: 6px;">
