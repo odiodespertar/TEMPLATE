@@ -4204,6 +4204,7 @@ app_html = f"""
             "total-no-car-9", "total-car-schedule-9", "total-car-real-9",
             "total-no-car-5", "total-car-schedule-5", "total-car-real-5"
         ];
+
         if (isExcel) {{
             if (bPaquetes) {{
                 estadoPaquetesAntesDeExcel = bPaquetes.style.display;
@@ -4211,18 +4212,19 @@ app_html = f"""
             }}
             
             generarExcelPolys();
-            btn.innerHTML = "VISTA NORMAL";
-            if(excel) excel.style.display = "block";
+            if (btn) btn.innerHTML = "VISTA NORMAL";
+            if (excel) excel.style.display = "block";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8", "polys-9"].forEach(id => {{
-                let el = document.getElementById(id);
-                if(el) el.style.display = "none";
+            // 🟢 OCULTAR OBLIGATORIAMENTE TODOS LOS BLOQUES DE POLÍGONOS EN PANTALLA
+            document.querySelectorAll('.p-content, div[id^="polys-"]').forEach(el => {{
+                el.style.setProperty('display', 'none', 'important');
             }});
+
             idsAocultar.forEach(id => {{
                 let el = document.getElementById(id);
-                if(el) {{
+                if (el) {{
                     let fila = el.closest('tr');
-                    if(fila) fila.style.display = 'none';
+                    if (fila) fila.style.display = 'none';
                 }}
             }});
         }} else {{
@@ -4230,45 +4232,32 @@ app_html = f"""
                 bPaquetes.style.display = estadoPaquetesAntesDeExcel;
             }}
             
-            btn.innerHTML = "VISTA EXCEL";
-            if(excel) excel.style.display = "none";
+            if (btn) btn.innerHTML = "VISTA EXCEL";
+            if (excel) excel.style.display = "none";
             
-            ["polys-1", "polys-2", "polys-4", "polys-5", "polys-6", "polys-7", "polys-8", "polys-9"].forEach(id => {{
-                let el = document.getElementById(id);
-                if(el) el.style.display = (id === "polys-" + currentTab) ? "block" : "none";
+            // 🟢 RESTAURAR EXCLUSIVAMENTE LA PESTAÑA ACTIVA AL SALIR DE EXCEL
+            document.querySelectorAll('.p-content, div[id^="polys-"]').forEach(el => {{
+                if (el.id === "polys-" + currentTab) {{
+                    el.style.setProperty('display', 'block', 'important');
+                }} else {{
+                    el.style.setProperty('display', 'none', 'important');
+                }}
             }});
             
-            // 📊 RESTAURACIÓN INTELIGENTE: Devolvemos la visibilidad al contador que corresponda según la pestaña activa
-            if (contScp1 && contSja1) {{
-                if (currentTab == 2) {{
-                    contScp1.style.display = 'block';
-                    contSja1.style.display = 'none';
-                }} else if (currentTab == 6) {{
-                    contScp1.style.display = 'none';
-                    contSja1.style.display = 'block';
-                }} else {{
-                    contScp1.style.display = 'none';
-                    contSja1.style.display = 'none';
-                }}
-            }}
-
-            // RESTAURACIÓN FORZADA:
-            // 1. Quitar el 'display: none' de las filas ocultas
             idsAocultar.forEach(id => {{
                 let el = document.getElementById(id);
-                if(el) {{
+                if (el) {{
                     let fila = el.closest('tr');
-                    if(fila) fila.style.removeProperty('display');
+                    if (fila) fila.style.removeProperty('display');
                 }}
             }});
-            // 2. Obligar a las filas del tfoot a mostrarse
+
             document.querySelectorAll('.meli-table tfoot tr').forEach(fila => {{
                 fila.style.setProperty('display', 'table-row', 'important');
-                actualizarVisibilidadContador();
             }});
         }}
     }}
-
+	
 
     function generarExcelPolys() {{
         let body = document.getElementById("excel-polys-body");
