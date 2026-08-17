@@ -2738,7 +2738,7 @@ app_html = f"""
 
         let botonesAccion = idBD ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px;">
-                <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #6495ED; color: white; border: none; padding: 4px 10px; font-size: 11px; color: #1e1e1f; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
+                <button onclick="guardarCambiosRuteoActual(${{nuevoTabId}}, ${{idBD}})" style="cursor:pointer; background: #6495ED; color: white; border: none; padding: 4px 10px; font-size: 11px; color: #FFF8DC; font-weight: bold; border-radius: 4px;">💾 GUARDAR CAMBIOS</button>
             </div>
         ` : '';
 
