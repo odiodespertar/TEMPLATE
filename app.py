@@ -5034,9 +5034,26 @@ function procesarAsignacionUnidadSJA1(poly) {{
 
 
     // ============================================================================================
-    // 📊 SECCIÓN 5: RECALCULAR COMPLETO Y REFRESCAR TOTALES// TERMINA DISTRIBUIDOR AUTOMATICO
+    // 📊 SECCIÓN 5: RECALCULAR COMPLETO, REGISTRAR Y GUARDAR ESTADO EN LOCALSTORAGE
     // ============================================================================================
+    
+    // 🟢 1. Marcar todas las filas que tienen unidades asignadas como 'editadas'
+    document.querySelectorAll('#polys-' + currentTab + ' .calc-row').forEach(row => {{
+        let uManual = parseInt(row.querySelector('.u-manual')?.innerText) || 0;
+        let sType = row.querySelector('.s-type')?.value || "";
+        
+        if (uManual > 0 && sType !== "" && sType !== "Seleccionar...") {{
+            editedRowsPlan.add(row);
+        }}
+    }});
+
+    // 🟢 2. Recalcular métricas
     recalc();
+
+    // 🟢 3. Forzar el guardado inmediato en LocalStorage
+    if (typeof guardarEstadoEnVivo === 'function') {{
+        guardarEstadoEnVivo();
+    }}
 }}
 
 
