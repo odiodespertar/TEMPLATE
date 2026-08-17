@@ -2158,7 +2158,6 @@ app_html = f"""
 
 
     function abrirModalNotasSVC() {{
-        // 🟢 Cierra el menú y asegura que el botón ☰ vuelva a aparecer
         const menu = document.getElementById("menu-lateral-ruteos");
         const boton = document.getElementById("btn-menu-lateral");
         if (menu) menu.classList.remove("abierto");
@@ -2166,6 +2165,79 @@ app_html = f"""
 
         let modal = document.getElementById("modal-notas-svc");
         if (modal) modal.style.display = "block";
+    }}
+
+    function cerrarModalNotasSVC() {{
+        let modal = document.getElementById("modal-notas-svc");
+        if (modal) modal.style.display = "none";
+
+        const boton = document.getElementById("btn-menu-lateral");
+        if (boton) boton.style.display = "block";
+    }}
+
+    async function guardarNotaDesdeBot() {{
+        // Lee los IDs únicos del Modal
+        const inputSvc = document.getElementById("modal-input-svc");
+        const inputNota = document.getElementById("modal-input-contenido");
+
+        if (!inputSvc || !inputNota) return;
+
+        const svc = inputSvc.value.trim().toUpperCase();
+        const contenido = inputNota.value.trim();
+
+        if (!svc) {{
+            alert("⚠️ Ingresa el SVC.");
+            inputSvc.focus();
+            return;
+        }}
+
+        if (!contenido) {{
+            alert("⚠️ Ingresa la información adicional.");
+            inputNota.focus();
+            return;
+        }}
+
+        if (!supabaseClient) {{
+            alert("⚠️ No hay conexión con Supabase.");
+            return;
+        }}
+
+        try {{
+            // Actualiza si ya existe el SVC o inserta uno nuevo
+            const {{ data, error }} = await supabaseClient
+                .from("notas_svc")
+                .upsert([
+                    {{
+                        svc: svc,
+                        contenido: contenido
+                    }}
+                ], {{ onConflict: 'svc' }});
+
+            if (error) {{
+                console.error("Error al guardar nota:", error);
+                alert("❌ No se pudo guardar la información: " + error.message);
+                return;
+            }}
+
+            if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
+                let idx = NOTAS_SVC.findIndex(n => String(n.svc).toUpperCase() === svc);
+                if (idx !== -1) {{
+                    NOTAS_SVC[idx].contenido = contenido;
+                }} else {{
+                    NOTAS_SVC.push({{ svc: svc, contenido: contenido }});
+                }}
+            }}
+
+            inputSvc.value = "";
+            inputNota.value = "";
+
+            alert("✅ Información guardada correctamente para " + svc);
+            cerrarModalNotasSVC();
+
+        }} catch (err) {{
+            console.error("Error inesperado al guardar nota:", err);
+            alert("❌ Ocurrió un error al guardar la información.");
+        }}
     }}
 
 
@@ -6088,71 +6160,7 @@ function iniciarArrastreFlotante(e) {{
     }}
 
 
-    // ==============================================================================
-    // 📝 GUARDAR INFORMACIÓN ADICIONAL DE UN SVC (CON LLAVES DOBLES CORREGIDAS)
-    // ==============================================================================
-    async function guardarNotaDesdeBot() {{
-        const inputSvc = document.getElementById("input-nota-svc");
-        const inputNota = document.getElementById("input-contenido-nota-svc");
-
-        if (!inputSvc || !inputNota) return;
-
-        const svc = inputSvc.value.trim().toUpperCase();
-        const contenido = inputNota.value.trim();
-
-        if (!svc) {{
-            alert("⚠️ Ingresa el SVC.");
-            inputSvc.focus();
-            return;
-        }}
-
-        if (!contenido) {{
-            alert("⚠️ Ingresa la información adicional.");
-            inputNota.focus();
-            return;
-        }}
-
-        if (!supabaseClient) {{
-            alert("⚠️ No hay conexión con Supabase.");
-            return;
-        }}
-
-        try {{
-            const {{ data, error }} = await supabaseClient
-                .from("notas_svc")
-                .insert([
-                    {{
-                        svc: svc,
-                        contenido: contenido
-                    }}
-                ]);
-
-            if (error) {{
-                console.error("Error al guardar nota:", error);
-                alert("❌ No se pudo guardar la información: " + error.message);
-                return;
-            }}
-
-            // 🟢 Sincronizar arreglo en vivo
-            if (typeof NOTAS_SVC !== "undefined" && Array.isArray(NOTAS_SVC)) {{
-                NOTAS_SVC.push({{
-                    svc: svc,
-                    contenido: contenido
-                }});
-            }}
-
-            // Limpiar campos
-            inputSvc.value = "";
-            inputNota.value = "";
-
-            alert("✅ Información guardada correctamente para " + svc);
-			cerrarModalNotasSVC(); // 👈 Agrega esta línea aquí
-
-        }} catch (err) {{
-            console.error("Error inesperado al guardar nota:", err);
-            alert("❌ Ocurrió un error al guardar la información.");
-        }}
-    }}
+  
 
 
 
