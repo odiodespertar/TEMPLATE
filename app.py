@@ -1696,7 +1696,7 @@ app_html = f"""
             ➖ 1h
         </button>
 
-		<button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background: linear-gradient(180deg, #6664ed 0%, #6495ED 100%); color: white; border: 1px solid #0284c7; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
+		<button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background: linear-gradient(180deg, #265726 0%, #8ec23e 100%); color: white; border: 1px solid #0284c7; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
             📊 VISTA EXCEL
         </button>
     </div>
