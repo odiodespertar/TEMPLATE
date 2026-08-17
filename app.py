@@ -1682,10 +1682,6 @@ app_html = f"""
         <button onclick="distribuirAutomatico()" style="cursor:pointer; background: #26d4ca; color: #2e3030; border: none; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 0 #2d968f; outline: none;">
             🧠 AUTO-CALCULAR
         </button>
-
-        <button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%); color: white; border: 1px solid #0284c7; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
-            📊 VISTA EXCEL
-        </button>
         
         <button class="filter-btn" onclick="filterRows(true)" style="cursor:pointer; background: linear-gradient(180deg, #4f4f4f 0%, #25282b 100%); color: white; border: 1px solid #25282b; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
             ACTIVAS
@@ -1698,6 +1694,10 @@ app_html = f"""
         <!-- NUEVOS BOTONES DE REDUCCIÓN DE HORAS -->
         <button onclick="reducirHoras()" style="cursor:pointer; background: #dc3545; color:white; border:none; font-size:12px; padding:4px 9px; border-radius:6px; font-weight:bold; outline: none;" title="Reducir 1 hora">
             ➖ 1h
+        </button>
+
+		<button id="excel-btn" onclick="toggleExcelView()" style="cursor:pointer; background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%); color: white; border: 1px solid #0284c7; font-size: 12px; padding: 4px 9px; border-radius: 6px; font-weight: bold; outline: none;">
+            📊 VISTA EXCEL
         </button>
     </div>
 
