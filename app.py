@@ -2158,14 +2158,14 @@ app_html = f"""
 
 
     function abrirModalNotasSVC() {{
-        cerrarMenuRuteos();
+        // 🟢 Cierra el menú y asegura que el botón ☰ vuelva a aparecer
+        const menu = document.getElementById("menu-lateral-ruteos");
+        const boton = document.getElementById("btn-menu-lateral");
+        if (menu) menu.classList.remove("abierto");
+        if (boton) boton.style.display = "block";
+
         let modal = document.getElementById("modal-notas-svc");
         if (modal) modal.style.display = "block";
-    }}
-
-    function cerrarModalNotasSVC() {{
-        let modal = document.getElementById("modal-notas-svc");
-        if (modal) modal.style.display = "none";
     }}
 
 
