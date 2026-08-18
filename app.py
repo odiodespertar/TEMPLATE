@@ -3060,15 +3060,34 @@ app_html = f"""
         bloquesPolys.forEach(bloque => {{
             let nombre = bloque.querySelector('.plan-cell')?.innerText.trim() || "PLAN";
             let filas = bloque.querySelectorAll('.calc-row').length || 3;
-            planesElegidos.push({{ nombre, filas }});
+            
+            // 🟢 Conservar las unidades prioritarias asignadas
+            let prioAttr = bloque.getAttribute("data-unidades-prioritarias") || bloque.getAttribute("data-unidad-prioritaria") || "";
+            let unidadesPrioritarias = prioAttr ? prioAttr.split(",").map(s => s.trim()).filter(s => s.length > 0) : [];
+
+            planesElegidos.push({{ 
+                nombre: nombre, 
+                filas: filas,
+                unidadesPrioritarias: unidadesPrioritarias 
+            }});
         }});
 
         let tieneORH = document.querySelectorAll(`#tab-${{tabId}} .edit-orh`).length > 0;
         let tieneOcup = document.querySelectorAll(`#tab-${{tabId}} .edit-ocup`).length > 0;
+        let llevaNodos = document.querySelectorAll(`#polys-${{tabId}} .nodos-val`).length > 0;
 
-        let nuevosDatos = {{ flota: flotaElegida, planes: planesElegidos, incluirORH: tieneORH, incluirOcup: tieneOcup }};
+        let nuevosDatos = {{ 
+            flota: flotaElegida, 
+            planes: planesElegidos, 
+            incluirORH: tieneORH, 
+            incluirOcup: tieneOcup,
+            llevaNodos: llevaNodos 
+        }};
+
         await actualizarRuteoEnBD(idBD, nuevosDatos);
     }}
+
+
 
     function cambiarCiclo(valorTab) {{
         document.querySelectorAll('.t-content').forEach(el => {{
