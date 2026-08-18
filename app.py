@@ -2495,11 +2495,17 @@ app_html = f"""
                 }}
             }});
 
-            // 2. Si se eliminó la pestaña que estaba visible, forzar cambio a la primera válida
-            if (!selectorCiclos.value || selectorCiclos.value == tabIdARemover) {{
-                if (selectorCiclos.options.length > 0) {{
-                    selectorCiclos.selectedIndex = 0;
-                    cambiarCiclo(selectorCiclos.value);
+            // 2. Si no la encontró por ID estricto, buscar por nombre
+            let chkEliminado = document.querySelector(`.chk-eliminar-ruteo[value="${{idBD}}"]`);
+            if (chkEliminado) {{
+                let nombreBuscado = chkEliminado.getAttribute("data-nombre")?.toUpperCase();
+                if (nombreBuscado) {{
+                    Array.from(selectorCiclos.options).forEach(opt => {{
+                        if (opt.innerText.toUpperCase().includes(nombreBuscado)) {{
+                            tabIdARemover = opt.value;
+                            opt.remove();
+                        }}
+                    }});
                 }}
             }}
         }}
@@ -2518,17 +2524,29 @@ app_html = f"""
             }}
         }});
 
-        // 5. Refrescar el submenú lateral si está abierto
+        // 5. 🟢 LIMPIAR LA MEMORIA LOCAL PARA QUE NO INTENTE CARGAR EL RUTEO BORRADO
+        try {{
+            let dataRaw = localStorage.getItem(STORAGE_KEY);
+            if (dataRaw) {{
+                let estado = JSON.parse(dataRaw);
+                delete estado['currentTabActive'];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+            }}
+        }} catch(e) {{}}
+
+        // 6. Refrescar el submenú lateral
         if (typeof cargarRuteosEnMenuLateral === 'function') {{
             cargarRuteosEnMenuLateral();
         }}
 
-        // 6. Refrescar visibilidad de la pestaña seleccionada actualmente
-        if (selectorCiclos && selectorCiclos.value) {{
-            cambiarCiclo(selectorCiclos.value);
+        // 7. 🟢 FORZAR EL CAMBIO A LA PRIMERA OPCIÓN VÁLIDA RESTANTE EN PANTALLA
+        if (selectorCiclos && selectorCiclos.options.length > 0) {{
+            selectorCiclos.selectedIndex = 0;
+            let nuevoValor = selectorCiclos.value;
+            cambiarCiclo(nuevoValor);
         }}
     }}
-
+	
 
     async function actualizarRuteoEnBD(idRuteoBD, nuevosDatos) {{
         if (!supabaseClient) return;
