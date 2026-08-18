@@ -2486,7 +2486,7 @@ app_html = f"""
         let tabIdARemover = null;
 
         if (selectorCiclos) {{
-            // 1. Buscar y remover la opción del selector por ID de BD o por el atributo guardado
+            // 1. Buscar y remover la opción del selector
             Array.from(selectorCiclos.options).forEach(opt => {{
                 let attrId = opt.getAttribute("data-id-bd");
                 if (attrId == idBD || opt.value == idBD) {{
@@ -2495,22 +2495,8 @@ app_html = f"""
                 }}
             }});
 
-            // 2. Si no la encontró por ID estricto, buscar en las opciones del modal la que coincida
-            let chkEliminado = document.querySelector(`.chk-eliminar-ruteo[value="${{idBD}}"]`);
-            if (chkEliminado) {{
-                let nombreBuscado = chkEliminado.getAttribute("data-nombre")?.toUpperCase();
-                if (nombreBuscado) {{
-                    Array.from(selectorCiclos.options).forEach(opt => {{
-                        if (opt.innerText.toUpperCase().includes(nombreBuscado)) {{
-                            tabIdARemover = opt.value;
-                            opt.remove();
-                        }}
-                    }});
-                }}
-            }}
-
-            // 3. Si el ruteo que borraste era el que tenías abierto en pantalla, cambiar a otro activo
-            if (selectorCiclos.value == tabIdARemover || !selectorCiclos.value) {{
+            // 2. Si se eliminó la pestaña que estaba visible, forzar cambio a la primera válida
+            if (!selectorCiclos.value || selectorCiclos.value == tabIdARemover) {{
                 if (selectorCiclos.options.length > 0) {{
                     selectorCiclos.selectedIndex = 0;
                     cambiarCiclo(selectorCiclos.value);
@@ -2518,29 +2504,28 @@ app_html = f"""
             }}
         }}
 
-        // 4. Remover la tabla de la flota del DOM en tiempo real
-        let divsFlota = document.querySelectorAll(".t-content");
-        divsFlota.forEach(el => {{
+        // 3. Remover la tabla de flota del DOM
+        document.querySelectorAll(".t-content").forEach(el => {{
             if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `tab-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
 
-        // 5. Remover los bloques de polígonos del DOM en tiempo real
-        let divsPoly = document.querySelectorAll(".p-content");
-        divsPoly.forEach(el => {{
+        // 4. Remover el bloque de polígonos del DOM
+        document.querySelectorAll(".p-content").forEach(el => {{
             if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `polys-${{tabIdARemover}}`)) {{
                 el.remove();
             }}
         }});
 
-        // 6. Refrescar el submenú lateral si está abierto
+        // 5. Refrescar el submenú lateral si está abierto
         if (typeof cargarRuteosEnMenuLateral === 'function') {{
             cargarRuteosEnMenuLateral();
         }}
 
-        if (typeof recalc === 'function') {{
-            recalc();
+        // 6. Refrescar visibilidad de la pestaña seleccionada actualmente
+        if (selectorCiclos && selectorCiclos.value) {{
+            cambiarCiclo(selectorCiclos.value);
         }}
     }}
 
@@ -3089,32 +3074,33 @@ app_html = f"""
 
 
     function cambiarCiclo(valorTab) {{
+        // Convertir a string para evitar fallos de coincidencia
+        const tabStr = String(valorTab);
+
         document.querySelectorAll('.t-content').forEach(el => {{
-            el.style.display = 'none';
+            el.style.setProperty('display', 'none', 'important');
         }});
-        const tablaActiva = document.getElementById('tab-' + valorTab);
+        const tablaActiva = document.getElementById('tab-' + tabStr);
         if (tablaActiva) {{
-            tablaActiva.style.display = 'block';
+            tablaActiva.style.setProperty('display', 'block', 'important');
         }}
 
         document.querySelectorAll('.p-content').forEach(el => {{
-            el.style.display = 'none';
+            el.style.setProperty('display', 'none', 'important');
         }});
-        const polyActivo = document.getElementById('polys-' + valorTab);
+        const polyActivo = document.getElementById('polys-' + tabStr);
         if (polyActivo) {{
-            polyActivo.style.display = 'block';
+            polyActivo.style.setProperty('display', 'block', 'important');
         }}
 
-        currentTab = parseInt(valorTab);
+        currentTab = tabStr;
 
-        // 🟢 NUEVO: Actualizar el título dinámico en el encabezado
+        // Actualizar el título dinámico en el encabezado
         let selector = document.getElementById("ciclo-selector");
         let headerNombre = document.getElementById("nombre-ruteo-activo-header");
         if (selector && headerNombre) {{
             let opcionSeleccionada = selector.options[selector.selectedIndex];
             if (opcionSeleccionada) {{
-			    let texto = opcionSeleccionada.text;
-                // Limpia el emoji si lo tiene y pone el nombre en grande
                 let nombreLimpio = opcionSeleccionada.text.replace(/[\uFFFD\u200B-\u200D\uFEFF]/g, '').trim();
                 headerNombre.innerText = nombreLimpio;
             }}
