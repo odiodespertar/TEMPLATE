@@ -2504,7 +2504,7 @@ app_html = f"""
             if (elPoly) elPoly.remove();
         }}
 
-        // 3. Limpiar el ID borrado del almacenamiento de sesión/local
+        // 3. Limpiar el ID borrado del almacenamiento de sesión/local 
         try {{
             localStorage.removeItem(STORAGE_KEY);
         }} catch(e) {{}}
