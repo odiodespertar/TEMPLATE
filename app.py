@@ -2924,7 +2924,6 @@ app_html = f"""
 
         let htmlPolys = "";
         planesElegidos.forEach(p => {{
-            // 🟢 Convertir la lista/arreglo de unidades prioritarias a texto separado por comas
             let prioUnitsStr = Array.isArray(p.unidadesPrioritarias) 
                 ? p.unidadesPrioritarias.join(",") 
                 : (p.unidadPrioritaria || "");
