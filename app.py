@@ -2486,7 +2486,7 @@ app_html = f"""
         let tabIdARemover = null;
 
         if (selectorCiclos) {{
-            // 1. Buscar y remover la opción del selector
+            // 1. Desconectar temporalmente los eventos de guardado automático
             Array.from(selectorCiclos.options).forEach(opt => {{
                 let attrId = opt.getAttribute("data-id-bd");
                 if (attrId == idBD || opt.value == idBD) {{
@@ -2494,56 +2494,32 @@ app_html = f"""
                     opt.remove();
                 }}
             }});
-
-            // 2. Si no la encontró por ID estricto, buscar por nombre
-            let chkEliminado = document.querySelector(`.chk-eliminar-ruteo[value="${{idBD}}"]`);
-            if (chkEliminado) {{
-                let nombreBuscado = chkEliminado.getAttribute("data-nombre")?.toUpperCase();
-                if (nombreBuscado) {{
-                    Array.from(selectorCiclos.options).forEach(opt => {{
-                        if (opt.innerText.toUpperCase().includes(nombreBuscado)) {{
-                            tabIdARemover = opt.value;
-                            opt.remove();
-                        }}
-                    }});
-                }}
-            }}
         }}
 
-        // 3. Remover la tabla de flota del DOM
-        document.querySelectorAll(".t-content").forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `tab-${{tabIdARemover}}`)) {{
-                el.remove();
-            }}
-        }});
+        // 2. Eliminar elementos del DOM
+        if (tabIdARemover) {{
+            const elTabla = document.getElementById(`tab-${{tabIdARemover}}`);
+            const elPoly = document.getElementById(`polys-${{tabIdARemover}}`);
+            if (elTabla) elTabla.remove();
+            if (elPoly) elPoly.remove();
+        }}
 
-        // 4. Remover el bloque de polígonos del DOM
-        document.querySelectorAll(".p-content").forEach(el => {{
-            if (el.getAttribute("data-id-bd") == idBD || (tabIdARemover && el.id === `polys-${{tabIdARemover}}`)) {{
-                el.remove();
-            }}
-        }});
-
-        // 5. 🟢 LIMPIAR LA MEMORIA LOCAL PARA QUE NO INTENTE CARGAR EL RUTEO BORRADO
+        // 3. Limpiar el ID borrado del almacenamiento de sesión/local
         try {{
-            let dataRaw = localStorage.getItem(STORAGE_KEY);
-            if (dataRaw) {{
-                let estado = JSON.parse(dataRaw);
-                delete estado['currentTabActive'];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
-            }}
+            localStorage.removeItem(STORAGE_KEY);
         }} catch(e) {{}}
 
-        // 6. Refrescar el submenú lateral
+        // 4. Actualizar menú lateral
         if (typeof cargarRuteosEnMenuLateral === 'function') {{
             cargarRuteosEnMenuLateral();
         }}
 
-        // 7. 🟢 FORZAR EL CAMBIO A LA PRIMERA OPCIÓN VÁLIDA RESTANTE EN PANTALLA
+        // 5. Forzar el despliegue del primer ruteo disponible (ej. EXTENDIDO / C1 SCP1)
         if (selectorCiclos && selectorCiclos.options.length > 0) {{
             selectorCiclos.selectedIndex = 0;
-            let nuevoValor = selectorCiclos.value;
-            cambiarCiclo(nuevoValor);
+            const primerValor = selectorCiclos.options[0].value;
+            selectorCiclos.value = primerValor;
+            cambiarCiclo(primerValor);
         }}
     }}
 	
@@ -3092,20 +3068,21 @@ app_html = f"""
 
 
     function cambiarCiclo(valorTab) {{
-        // Convertir a string para evitar fallos de coincidencia
+        if (!valorTab) return;
         const tabStr = String(valorTab);
 
-        document.querySelectorAll('.t-content').forEach(el => {{
+        // 1. Ocultar todas las tablas de flota y polígonos
+        document.querySelectorAll('.t-content, .p-content').forEach(el => {{
             el.style.setProperty('display', 'none', 'important');
         }});
+
+        // 2. Mostrar la tabla de flota de la pestaña seleccionada
         const tablaActiva = document.getElementById('tab-' + tabStr);
         if (tablaActiva) {{
             tablaActiva.style.setProperty('display', 'block', 'important');
         }}
 
-        document.querySelectorAll('.p-content').forEach(el => {{
-            el.style.setProperty('display', 'none', 'important');
-        }});
+        // 3. Mostrar el bloque de polígonos de la pestaña seleccionada
         const polyActivo = document.getElementById('polys-' + tabStr);
         if (polyActivo) {{
             polyActivo.style.setProperty('display', 'block', 'important');
@@ -3113,7 +3090,7 @@ app_html = f"""
 
         currentTab = tabStr;
 
-        // Actualizar el título dinámico en el encabezado
+        // 4. Actualizar el título en el encabezado superior
         let selector = document.getElementById("ciclo-selector");
         let headerNombre = document.getElementById("nombre-ruteo-activo-header");
         if (selector && headerNombre) {{
@@ -3123,12 +3100,11 @@ app_html = f"""
                 headerNombre.innerText = nombreLimpio;
             }}
         }}
-        
+
         if (typeof recalc === 'function') {{
             recalc();
         }}
     }}
-
 
 
     // ==============================================================================
